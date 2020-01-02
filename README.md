@@ -13,6 +13,6 @@ building, or completely prevent the usage of trained models in application proce
 
 This project focuses on the immediate corporate usability of machine learning & deep learning results and supports model building & usage within the **same unified** technical environment.
 
-We decided to select [**Google's CDAP**](https://cdap.io) as this unified environment has been designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
+We decided to select [**Google's CDAP**](https://cdap.io). This unified environment has been designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
 
 This project externalizes [**Apache Spark**](https://spark.apache.org) machine learning as CDAP data pipeline stages, adds missing time series analytics to Apache Spark and makes [**Intel's BigDL**](https://bigdl-project.github.io/) library accessible as CDAP pipeline stages.   
