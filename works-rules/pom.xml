@@ -26,9 +26,12 @@
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
     <version>0.3.0</version>
+	<relativePath>../pom.xml</relativePath>    
   </parent>
 
   <artifactId>works-rules</artifactId>
+  <packaging>jar</packaging>
+  
   <name>Works Rules</name>
   <description>Business rules support of CDAP-Spark.</description>
 
