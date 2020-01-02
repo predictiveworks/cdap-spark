@@ -19,4 +19,4 @@ This project externalizes [**Apache Spark**](https://spark.apache.org) machine l
 
 CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The picture below shows its main building blocks of and their relations to this project. 
 
-![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.svg)
+![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
