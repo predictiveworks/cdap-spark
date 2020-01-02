@@ -3,14 +3,13 @@ A wrapper for Apache Spark to make machine &amp; deep learning available as Goog
 
 Corporate adoption of machine learning or deep learning often runs into the same problem:
 
-A variety of (open source) solutions & engines enable data scientists to develop data models very fast. However, integrating 
+* A variety of (open source) solutions & engines enable data scientists to develop data models very fast. However, integrating 
 trained models into business processes is a completely different story.
 
-Different infrastructures and technologies in production environments either demand to reimplement important steps of model
+* Different infrastructures and technologies in production environments either demand to reimplement important steps of model
 building, or, complemently prevent the usage of trained models in application processes except with huge extra effort.
 
-Great machine learning or deep learning solutions with a wide range of sophisticated algorithms run the risk to produce small
-or no effect for corporate data processing.
+* Great machine learning or deep learning solutions with a wide range of sophisticated algorithms run the risk to produce small or no effect for corporate data processing.
 
 This project focuses on the immediate corporate usability of machine learning & deep learning results and supports model building & usage within the **same unified** technical environment.
 
