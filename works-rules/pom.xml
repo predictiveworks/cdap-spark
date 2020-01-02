@@ -35,6 +35,36 @@
   <name>Works Rules</name>
   <description>Business rules support of CDAP-Spark.</description>
 
+  <properties>
+
+    <main.basedir>${project.basedir}</main.basedir>
+
+    <docs.dir>docs</docs.dir>
+    <widgets.dir>widgets</widgets.dir>
+
+    <app.parents>system:cdap-data-pipeline[5.1.1,5.1.1],system:cdap-data-streams[5.1.1,5.1.1]</app.parents>
+
+    <drools.version>7.15.0.Final</drools.version>
+
+  </properties>
+
+  <dependencies>
+      
+    <!-- drools compiler -->
+    <dependency>
+	  <groupId>org.drools</groupId>
+	  <artifactId>drools-compiler</artifactId>
+	  <version>${drools.version}</version>
+    </dependency>
+    
+    <!-- drools compiler dependency -->
+	<dependency>
+	   <groupId>org.eclipse.jdt.core.compiler</groupId>
+	   <artifactId>ecj</artifactId>
+	   <version>4.6.1</version>
+	</dependency> 
+
+  </dependencies>
   <organization>
   	<name>Dr. Krusche &amp; Partner PartG</name>
   	<url>https://www.dr-kruscheundpartner.de</url>
