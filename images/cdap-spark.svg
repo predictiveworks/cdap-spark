@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="640"
+   height="480"
+   viewBox="0 0 640 480"
+   version="1.1"
+   id="svg820"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="cdap-spark.svg"
+   inkscape:export-filename="/Work/academy/google-cdap-gap.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs814">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 240 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="640 : 240 : 1"
+       inkscape:persp3d-origin="320 : 160 : 1"
+       id="perspective1415" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="132.85715"
+     inkscape:cy="180.8751"
+     inkscape:document-units="mm"
+     inkscape:current-layer="svg820"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1315"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata817">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g1196"
+     transform="translate(-4.7798518,-4.6577771)">
+    <g
+       id="g1152">
+      <rect
+         style="fill:none;fill-opacity:0.5;stroke:#da5201;stroke-width:2"
+         id="rect1736"
+         width="606.89551"
+         height="79.029694"
+         x="21.332104"
+         y="386.0463"
+         ry="1.7556838" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#da5201;fill-opacity:1;stroke:none"
+         x="287.95694"
+         y="435.26816"
+         id="text1740"><tspan
+           sodipodi:role="line"
+           id="tspan1738"
+           x="287.95694"
+           y="435.26816"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif">CDAP</tspan></text>
+      <rect
+         style="fill:none;fill-opacity:0.5;stroke:#1bacab;stroke-width:2"
+         id="rect930"
+         width="191.58144"
+         height="82.724312"
+         x="436.9227"
+         y="125.34181"
+         ry="1.8377616" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+         x="532.02527"
+         y="160.32962"
+         id="text934"><tspan
+           sodipodi:role="line"
+           id="tspan932"
+           x="532.02527"
+           y="160.32962"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle">Foresight</tspan><tspan
+           sodipodi:role="line"
+           x="532.02527"
+           y="186.99629"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle"
+           id="tspan941">Fabric</tspan></text>
+      <g
+         id="g1018"
+         transform="translate(-6.6543529,23.714309)">
+        <rect
+           style="fill:none;fill-opacity:0.5;stroke:#1bacab;stroke-width:2"
+           id="rect949"
+           width="191.58144"
+           height="82.724312"
+           x="235.64348"
+           y="101.6275"
+           ry="1.8377616" />
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+           x="331.83524"
+           y="135.90105"
+           id="text955"><tspan
+             sodipodi:role="line"
+             x="331.83524"
+             y="135.90105"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle"
+             id="tspan953">Template</tspan><tspan
+             id="tspan1012"
+             sodipodi:role="line"
+             x="331.83524"
+             y="162.56772"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle">Studio</tspan></text>
+      </g>
+      <g
+         id="g1032"
+         transform="translate(-1.0164969,78.714301)">
+        <rect
+           ry="1.8377616"
+           y="46.62751"
+           x="22.072065"
+           height="82.724312"
+           width="191.58144"
+           id="rect959"
+           style="fill:none;fill-opacity:0.5;stroke:#1bacab;stroke-width:2" />
+        <text
+           id="text965"
+           y="81.615318"
+           x="118.26382"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+           xml:space="preserve"><tspan
+             id="tspan963"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle"
+             y="81.615318"
+             x="118.26382"
+             sodipodi:role="line">Template</tspan><tspan
+             id="tspan1026"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif;text-align:center;text-anchor:middle"
+             y="108.28198"
+             x="118.26382"
+             sodipodi:role="line">Market</tspan></text>
+      </g>
+      <rect
+         ry="1.1483577"
+         y="222.58749"
+         x="21.332104"
+         height="51.69175"
+         width="606.89551"
+         id="rect999"
+         style="fill:none;fill-opacity:0.5;stroke:#1bacab;stroke-width:2" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+         x="232.68611"
+         y="253.58311"
+         id="text923"><tspan
+           sodipodi:role="line"
+           id="tspan921"
+           x="232.68611"
+           y="253.58311"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif">Business Templates</tspan></text>
+      <rect
+         ry="1.8377616"
+         y="288.8006"
+         x="436.63351"
+         height="82.724312"
+         width="191.58144"
+         id="rect879"
+         style="fill:#1bacab;fill-opacity:0.1;stroke:#1bacab;stroke-width:2" />
+      <text
+         id="text885"
+         y="335.3125"
+         x="469.33765"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+           y="335.3125"
+           x="469.33765"
+           id="tspan883"
+           sodipodi:role="line">CDAP Spark</tspan></text>
+      <rect
+         style="fill:none;fill-opacity:0.5;stroke:#1bacab;stroke-width:2"
+         id="rect881"
+         width="191.58144"
+         height="82.724312"
+         x="228.98912"
+         y="288.8006"
+         ry="1.8377616" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+         x="267.85471"
+         y="335.3125"
+         id="text891"><tspan
+           sodipodi:role="line"
+           id="tspan889"
+           x="267.85471"
+           y="335.3125"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif">CDAP Graph</tspan></text>
+      <rect
+         ry="1.8377616"
+         y="288.8006"
+         x="21.344761"
+         height="82.724312"
+         width="191.58144"
+         id="rect969"
+         style="fill:none;fill-opacity:0.5;stroke:#da5201;stroke-width:2" />
+      <text
+         id="text973"
+         y="336.95767"
+         x="49.66478"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#da5201;fill-opacity:1;stroke:none"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18.66666603px;font-family:sans-serif;-inkscape-font-specification:sans-serif"
+           y="336.95767"
+           x="49.66478"
+           id="tspan971"
+           sodipodi:role="line">CDAP Connect</tspan></text>
+    </g>
+    <g
+       transform="translate(0.4965503)"
+       id="g1078">
+      <g
+         transform="matrix(0.2518784,0,0,0.2518784,111.41003,6.4894311)"
+         inkscape:label="Ebene 1"
+         id="layer1-8">
+        <g
+           id="g827"
+           transform="matrix(1.1190578,0,0,1.1190578,-49.150243,-28.999072)">
+          <text
+             id="text817-0"
+             y="323.93161"
+             x="32.85714"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:341.33334351px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+             xml:space="preserve"><tspan
+               y="323.93161"
+               x="32.85714"
+               id="tspan815-2"
+               sodipodi:role="line">P</tspan></text>
+          <text
+             transform="rotate(-90)"
+             id="text821"
+             y="382.7326"
+             x="-329.88361"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:304px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+             xml:space="preserve"><tspan
+               y="382.7326"
+               x="-329.88361"
+               id="tspan819"
+               sodipodi:role="line">w</tspan></text>
+        </g>
+      </g>
+      <g
+         id="g2199"
+         transform="matrix(1.6557432,0,0,1.6557432,115.00741,-337.08967)">
+        <text
+           id="text2193"
+           y="245.88542"
+           x="72.14286"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+           xml:space="preserve"><tspan
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif"
+             y="245.88542"
+             x="72.14286"
+             id="tspan2191"
+             sodipodi:role="line">Predictive</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+           x="182.14285"
+           y="245.88542"
+           id="text2197"><tspan
+             sodipodi:role="line"
+             id="tspan2195"
+             x="182.14285"
+             y="245.88542"
+             style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:sans-serif;-inkscape-font-specification:sans-serif">Works.</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>
