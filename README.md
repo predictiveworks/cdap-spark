@@ -17,6 +17,6 @@ We decided to select [**Google's CDAP**](https://cdap.io). This unified environm
 
 This project externalizes [**Apache Spark**](https://spark.apache.org) machine learning as CDAP data pipeline stages, adds missing time series analytics to Apache Spark and also makes [**Intel's BigDL**](https://bigdl-project.github.io/) library accessible as CDAP pipeline stages.   
 
-CDAP Spark is part of [Predictive Works.](https://predictiveworks.eu). The picture below shows the main building blocks of Predictive Works. and their relation to this project. 
+CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The picture below shows its main building blocks of and their relations to this project. 
 
 ![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.svg)
