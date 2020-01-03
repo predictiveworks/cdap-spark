@@ -1,10 +1,9 @@
 # CDAP-Spark
 A wrapper for Apache Spark to make machine &amp; deep learning available as Google CDAP plugins
 
-Corporate adoption of machine learning or deep learning often runs into the same problem:
+## Why CDAP Spark?
 
-* A variety of (open source) solutions & engines enable data scientists to develop data models very fast. However, integrating 
-trained models into business processes is a completely different story:
+Corporate adoption of machine learning or deep learning often runs into the same problem. A variety of existing (open source) solutions & engines enable data scientists to develop data models very fast. However, integrating trained models into business processes is a completely different story:
 
 * Different infrastructures and technologies in production environments either demand to reimplement important steps of model
 building, or completely prevent the usage of trained models in application processes.
@@ -20,3 +19,19 @@ This project externalizes [**Apache Spark**](https://spark.apache.org) machine l
 CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The picture below shows its main building blocks of and their relations to this project. 
 
 ![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
+
+## Overview
+
+CDAP-Spark is designed to cover all aspects of corporate data processing and contains the following modules:
+
+### Works Core
+
+### Works DL
+
+### Works ML
+
+### Works Rules
+
+### Works SQL
+
+### Works TS
