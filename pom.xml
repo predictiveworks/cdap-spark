@@ -54,6 +54,13 @@
       <version>${cdap.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>co.cask.cdap</groupId>
+      <artifactId>cdap-api-spark2_2.11</artifactId>
+      <version>${cdap.version}</version>
+      <scope>provided</scope>
+    </dependency>
 	
 	<!-- hydrator dependencies -->
 
@@ -67,7 +74,7 @@
 	
     <dependency>
       <groupId>org.apache.spark</groupId>
-      <artifactId>spark-core_2.11</artifactId>
+      <artifactId>spark-sql_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
   
@@ -90,6 +97,7 @@
 	 </pluginManagement>
 	 
 	 <plugins>
+      <!-- maven compiler -->
        <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -118,5 +126,6 @@
   	<module>works-rules</module>
   	<module>works-ml</module>
   	<module>works-dl</module>
+  	<module>works-ts</module>
   </modules>
 </project>
