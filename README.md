@@ -1,5 +1,5 @@
 # CDAP-Spark
-A wrapper for Apache Spark to make machine &amp; deep learning available as Google CDAP plugins
+**CDAP Spark** is an all-in-one library that externalizes Apache Spark based machine learning, deep learning and complex event processing as plugins for Google CDAP data pipelines. It supports data analysts and scientists to build data driven applications without the need to write code.
 
 ## Why CDAP Spark?
 
@@ -26,12 +26,26 @@ CDAP-Spark is designed to cover all aspects of corporate data processing and con
 
 ### Works Core
 
+**Works Core** provides common functionality that is used by other modules of this project.
+
 ### Works DL
+
+**Works DL** externalizes deep learning algorithms (adapted from Intel's BigDL project) as plugins for Google CDAP data pipelines. Pipelines can be built without coding by either leveraging CDAP's visual pipeline editor or **Predictive Works.** template studio.
 
 ### Works ML
 
+**Works ML** externalizes Apache Spark machine learning algorithms as plugins for Google CDAP data pipelines. As is with **Works DL** pipelines can be built visually without any coding expertise.
+
 ### Works Rules
+
+**Works Rules** externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines. Drools compliant rules can be applied by an easy-to-use interface without the need to write code in any programming language.
+
+Drools business rules can be used with batch and stream pipelines, and, in the case of the latter ones, support complex event processing in real-time applications.
 
 ### Works SQL
 
+**Works SQL** supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. SQL statements can be specified by leveraging an easy-to-use interface and offer aggregation, grouping & filtering support e.g. for real-time applications. 
+
 ### Works TS
+
+**Works TS** complements Apache Spark with time series algorithms and also externalizes them as plugins for Google CDAP data pipelines.
