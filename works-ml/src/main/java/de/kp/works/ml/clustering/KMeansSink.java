@@ -117,9 +117,15 @@ public class KMeansSink extends BaseSink {
 		 */
 		String featuresCol = config.featuresCol;
 		Map<String, Object> params = config.getParamsAsMap();
-		
+		/*
+		 * The vectorCol specifies the internal column that has
+		 * to be built from the featuresCol and that is used for
+		 * training purposes
+		 */
+		String vectorCol = "_vector";
+
 		KMeansTrainer trainer = new KMeansTrainer();
-		KMeansModel model = trainer.train(source, featuresCol, params);
+		KMeansModel model = trainer.train(source, featuresCol, vectorCol, params);
 		/*
 		 * STEP #2: Store trained KMeans model including
 		 * its associated parameters and metrics

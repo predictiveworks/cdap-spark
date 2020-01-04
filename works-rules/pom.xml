@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   
   <name>Works Rules</name>
-  <description>Business rules support of CDAP-Spark.</description>
+  <description>Business rules support for CDAP-Spark.</description>
 
   <properties>
 

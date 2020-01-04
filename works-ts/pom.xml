@@ -35,6 +35,68 @@
   
   <name>Works TS</name>
   <description>Time series support of CDAP-Spark.</description>
+ 
+  <build>
+    <pluginManagement>
+      <plugins>
+      	<!-- scala maven -->
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>scala-maven-plugin</artifactId>
+          <version>3.4.4</version>
+          <configuration>
+            <args>
+              <arg>-target:jvm-1.8</arg>
+            </args>
+          </configuration>
+          <executions>
+            <execution>
+              <id>scala-compile-first</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>add-source</goal>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>scala-test-compile</id>
+              <!-- Needs to be before the test-compile phase -->
+              <phase>process-test-resources</phase>
+              <goals>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>      
+	  </plugins>
+	 </pluginManagement>
+	 
+	 <plugins>
+    	   <!-- scala maven -->
+       <plugin>
+         <groupId>net.alchim31.maven</groupId>
+         <artifactId>scala-maven-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>scala-compile-first</id>
+             <phase>process-resources</phase>
+             <goals>
+               <goal>add-source</goal>
+               <goal>compile</goal>
+             </goals>
+           </execution>
+           <execution>
+             <id>scala-test-compile</id>
+             <phase>process-test-resources</phase>
+             <goals>
+               <goal>testCompile</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+	 </plugins>
+
+  </build>
   
   <organization>
   	<name>Dr. Krusche &amp; Partner PartG</name>

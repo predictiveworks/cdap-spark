@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.regression.DecisionTreeRegressionModel;
-import org.apache.spark.ml.regression.DecisionTreeRegressor;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -26,7 +25,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class DecisionTreeRegManager extends AbstractModelManager {
+public class DecisionTreeRegressionManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeRegressor";
 
@@ -44,7 +43,7 @@ public class DecisionTreeRegManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			DecisionTreeRegressor model) throws IOException {
+			DecisionTreeRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

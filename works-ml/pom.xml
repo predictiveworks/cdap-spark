@@ -33,7 +33,7 @@
   <packaging>jar</packaging>
 
   <name>Works ML</name>
-  <description>Machine learning functionality of CDAP-Spark.</description>
+  <description>Machine learning functionality for CDAP-Spark.</description>
   
   <dependencies>
 	
@@ -44,6 +44,14 @@
       <artifactId>spark-mllib_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
+
+	<!-- cdap spark dependencies -->
+
+	<dependency>
+	  <groupId>de.kp.works</groupId>
+	  <artifactId>works-core</artifactId>
+	  <version>0.3.0</version>
+	</dependency>
 
   </dependencies>
  

@@ -24,6 +24,7 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
+import de.kp.works.ml.SparkMLManager;
 
 public class KMeansManager extends AbstractModelManager {
 
@@ -42,8 +43,8 @@ public class KMeansManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			KMeans model) throws IOException {
+	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+			KMeansModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
@@ -56,7 +57,7 @@ public class KMeansManager extends AbstractModelManager {
 		 * Leverage Apache Spark mechanism to write the KMeans model
 		 * to a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
 		/***** MODEL METADATA *****/
@@ -65,10 +66,11 @@ public class KMeansManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * clustering fileset
 		 */
-		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
+		String fsName = SparkMLManager.CLUSTERING_FS;
+		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
+		modelMeta.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
 				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
 				.add("fsName", fsName).add("fsPath", fsPath));
 

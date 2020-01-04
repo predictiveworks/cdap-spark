@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.classification.OneVsRestModel;
-import org.apache.spark.ml.classification.OneVsRest;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -31,19 +30,21 @@ public class OneVsRestClassifierManager extends AbstractModelManager {
 	private String ALGORITHM_NAME = "OneVsRestClassifier";
 
 	public OneVsRestModel read(Table table, FileSet fs, String modelName) throws IOException {
-		
+
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the OneVsRestClassifier model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the OneVsRestClassifier model from a
+		 * model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return OneVsRestModel.load(modelPath);
-		
+
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics, OneVsRest model) throws IOException {
+	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+			OneVsRestModel model) throws IOException {
 
 		/*
 		 * Define the path of this model on CDAP's internal classification fileset
@@ -51,14 +52,14 @@ public class OneVsRestClassifierManager extends AbstractModelManager {
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the OneVsRestClassifier model to a model
-		 * specific file set
+		 * Leverage Apache Spark mechanism to write the OneVsRestClassifier model to a
+		 * model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
 		/*
-		 * Append model metadata to the metadata table associated with the 
+		 * Append model metadata to the metadata table associated with the
 		 * classification fileset
 		 */
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);

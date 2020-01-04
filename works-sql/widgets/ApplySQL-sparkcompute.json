@@ -1,0 +1,36 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Apply SQL",
+
+"configuration-groups": [
+	{
+      "label": "Basic",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName",
+          "widget-attributes": {
+            "placeholder": "Name used to identify this query-based data machine for lineage"
+          }
+		}
+	  ]
+	},
+	{
+	  "label": "SQL Query",
+	  "properties": [
+        {
+          "widget-type": "textarea",
+          "label": "SQL Statement",
+          "name": "sql",
+          "widget-attributes": {
+            "rows": "10"
+          }
+        }
+	  ]
+	}
+
+]
+
+}

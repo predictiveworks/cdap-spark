@@ -17,7 +17,6 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.RandomForestRegressor;
 import org.apache.spark.ml.regression.RandomForestRegressionModel;
 
 import co.cask.cdap.api.common.Bytes;
@@ -44,7 +43,7 @@ public class RandomForestRegressorManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			RandomForestRegressor model) throws IOException {
+			RandomForestRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

@@ -17,7 +17,6 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.AFTSurvivalRegression;
 import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 
 import co.cask.cdap.api.common.Bytes;
@@ -26,7 +25,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class AFTSurvivalRegManager extends AbstractModelManager {
+public class AFTSurvivalRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "AFTSurvivalRegressor";
 
@@ -44,7 +43,7 @@ public class AFTSurvivalRegManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			AFTSurvivalRegression model) throws IOException {
+			AFTSurvivalRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

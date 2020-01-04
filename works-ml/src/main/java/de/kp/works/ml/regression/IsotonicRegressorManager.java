@@ -17,7 +17,6 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.IsotonicRegression;
 import org.apache.spark.ml.regression.IsotonicRegressionModel;
 
 import co.cask.cdap.api.common.Bytes;
@@ -26,9 +25,9 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class IsotonicRegManager extends AbstractModelManager {
+public class IsotonicRegressorManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "IsotonicRegressor";
+	private String ALGORITHM_NAME = "IsotonicRegressionRegressor";
 
 	public IsotonicRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
 		
@@ -44,7 +43,7 @@ public class IsotonicRegManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			IsotonicRegression model) throws IOException {
+			IsotonicRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

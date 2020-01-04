@@ -17,7 +17,6 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.GeneralizedLinearRegression;
 import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
 
 import co.cask.cdap.api.common.Bytes;
@@ -28,7 +27,7 @@ import de.kp.works.ml.AbstractModelManager;
 
 public class GeneralizedLinearRegressorManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "GeneralizedLinearRegressor";
+	private String ALGORITHM_NAME = "GeneralizedLinearRegressionRegressor";
 
 	public GeneralizedLinearRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
 		
@@ -44,7 +43,7 @@ public class GeneralizedLinearRegressorManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			GeneralizedLinearRegression model) throws IOException {
+			GeneralizedLinearRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

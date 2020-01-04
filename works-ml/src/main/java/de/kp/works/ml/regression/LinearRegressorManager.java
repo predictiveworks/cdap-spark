@@ -17,7 +17,6 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
 
 import co.cask.cdap.api.common.Bytes;
@@ -28,7 +27,7 @@ import de.kp.works.ml.AbstractModelManager;
 
 public class LinearRegressorManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "LinearRegressor";
+	private String ALGORITHM_NAME = "LinearRegressionRegressor";
 
 	public LinearRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
 		
@@ -44,7 +43,7 @@ public class LinearRegressorManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			LinearRegression model) throws IOException {
+			LinearRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 

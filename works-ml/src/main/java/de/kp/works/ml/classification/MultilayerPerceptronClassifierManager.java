@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
-import org.apache.spark.ml.classification.MultilayerPerceptronClassifier;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -45,7 +44,7 @@ public class MultilayerPerceptronClassifierManager extends AbstractModelManager 
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			MultilayerPerceptronClassifier model) throws IOException {
+			MultilayerPerceptronClassificationModel model) throws IOException {
 
 		/*
 		 * Define the path of this model on CDAP's internal classification fileset

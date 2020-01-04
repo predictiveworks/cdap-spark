@@ -336,16 +336,16 @@ public class SparkMLManager {
 		 */
 		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
 		/*
-		 * The metrics of a certain ML model; this is a JSON object
-		 * that contains metric data of a certain model instance
-		 */
-		fields.add(Schema.Field.of("metrics", Schema.of(Schema.Type.STRING)));
-		/*
 		 * The parameters of a certain ML model; this is a JSON object
 		 * that contains the parameter set that has been used to train
 		 * a certain model instance
 		 */
 		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The metrics of a certain ML model; this is a JSON object
+		 * that contains metric data of a certain model instance
+		 */
+		fields.add(Schema.Field.of("metrics", Schema.of(Schema.Type.STRING)));
 		/*
 		 * The fileset name of a certain ML model; the model itself is
 		 * persisted leveraging Apache Spark's internal mechanism backed

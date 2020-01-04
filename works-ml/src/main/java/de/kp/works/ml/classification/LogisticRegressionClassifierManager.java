@@ -25,9 +25,9 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class LogisticRegressionClasManager extends AbstractModelManager {
+public class LogisticRegressionClassifierManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "LogisticRegression";
+	private String ALGORITHM_NAME = "LogisticRegressionClassifier";
 
 	public LogisticRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
 
@@ -44,7 +44,7 @@ public class LogisticRegressionClasManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			LogisticRegression model) throws IOException {
+			LogisticRegressionModel model) throws IOException {
 
 		/*
 		 * Define the path of this model on CDAP's internal classification fileset

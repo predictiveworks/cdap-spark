@@ -17,8 +17,7 @@ package de.kp.works.ml.classification;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.classification.GBTClassificationModel;
-import org.apache.spark.ml.classification.GBTClassifier;
+import org.apache.spark.ml.classification.*;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -26,9 +25,9 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class GBTClasManager extends AbstractModelManager {
+public class GBTClassifierManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "gbtclassifier";
+	private String ALGORITHM_NAME = "GBTClassifier";
 
 	public GBTClassificationModel read(Table table, FileSet fs, String modelName) throws IOException {
 		
@@ -43,12 +42,13 @@ public class GBTClasManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, GBTClassifier model) throws IOException {
+	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+			GBTClassificationModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
-		
+
 		/*
-		 * Define the path of this model on CDAP's internal baseline fileset
+		 * Define the path of this model on CDAP's internal classification fileset
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
@@ -60,16 +60,17 @@ public class GBTClasManager extends AbstractModelManager {
 		model.save(modelPath);
 
 		/***** MODEL METADATA *****/
-		
+
 		/*
-		 * Append model metadata to the metadata table associated with the 
-		 * baseline fileset
+		 * Append model metadata to the metadata table associated with the
+		 * classification fileset
 		 */
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
 		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("fsName", fsName).add("fsPath", fsPath));
+				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
+				.add("fsName", fsName).add("fsPath", fsPath));
 
 	}
 

@@ -17,8 +17,7 @@ package de.kp.works.ml.classification;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
-import org.apache.spark.ml.classification.DecisionTreeClassifier;
+import org.apache.spark.ml.classification.*;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -26,7 +25,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class DecisionTreeClasManager extends AbstractModelManager {
+public class DecisionTreeClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeClassifier";
 
@@ -35,7 +34,7 @@ public class DecisionTreeClasManager extends AbstractModelManager {
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the DecisionTreeClassifier model
+		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
 		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
@@ -44,7 +43,7 @@ public class DecisionTreeClasManager extends AbstractModelManager {
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			DecisionTreeClassifier model) throws IOException {
+			DecisionTreeClassificationModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
@@ -54,7 +53,7 @@ public class DecisionTreeClasManager extends AbstractModelManager {
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the DeciosnTreeClassifier model
+		 * Leverage Apache Spark mechanism to write the DecisionTreeClassifier model
 		 * to a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
@@ -74,6 +73,5 @@ public class DecisionTreeClasManager extends AbstractModelManager {
 				.add("fsName", fsName).add("fsPath", fsPath));
 
 	}
-
 
 }

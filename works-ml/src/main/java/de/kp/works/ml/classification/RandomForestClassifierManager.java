@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.classification.RandomForestClassificationModel;
-import org.apache.spark.ml.classification.RandomForestClassifier;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -26,24 +25,26 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.ml.AbstractModelManager;
 
-public class RandomForestClasManager extends AbstractModelManager {
+public class RandomForestClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "RandomForestClassifier";
 
 	public RandomForestClassificationModel read(Table table, FileSet fs, String modelName) throws IOException {
-		
+
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the RandomForest model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the RandomForest model from a model
+		 * specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return RandomForestClassificationModel.load(modelPath);
-		
+
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics, RandomForestClassifier model) throws IOException {
+	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+			RandomForestClassificationModel model) throws IOException {
 
 		/*
 		 * Define the path of this model on CDAP's internal classification fileset
@@ -58,7 +59,7 @@ public class RandomForestClasManager extends AbstractModelManager {
 		model.save(modelPath);
 
 		/*
-		 * Append model metadata to the metadata table associated with the 
+		 * Append model metadata to the metadata table associated with the
 		 * classification fileset
 		 */
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
