@@ -1,5 +1,5 @@
 # CDAP-Spark
-**CDAP Spark** is an all-in-one library that externalizes Apache Spark based machine learning, deep learning and complex event processing as plugins for Google CDAP data pipelines. It supports data analysts and scientists to build data driven applications without the need to write code.
+**CDAP Spark** is an all-in-one library that externalizes Apache Spark based machine learning, deep learning and complex event processing in form of plugins for Google CDAP data pipelines. It boosts the work of data analysts and scientists to build data driven applications without coding.
 
 ## Why CDAP Spark?
 
