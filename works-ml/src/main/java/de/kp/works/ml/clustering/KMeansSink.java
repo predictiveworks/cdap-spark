@@ -123,15 +123,54 @@ public class KMeansSink extends BaseSink {
 		 * training purposes
 		 */
 		String vectorCol = "_vector";
-
-		KMeansTrainer trainer = new KMeansTrainer();
-		KMeansModel model = trainer.train(source, featuresCol, vectorCol, params);
 		/*
-		 * STEP #2: Store trained KMeans model including
+		 * Prepare provided dataset by vectorizing the feature
+		 * column which is specified as Array[Double]
+		 */
+		KMeansTrainer trainer = new KMeansTrainer();
+		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
+
+		KMeansModel model = trainer.train(vectorset, vectorCol, params);
+		/*
+		 * STEP #2: Compute silhouette coefficient as metric for this
+		 * KMeans parameter setting: to this end, the predictions are
+		 * computed based on the trained model and the vectorized data
+		 * set
+		 */
+		String predictionCol = "_cluster";
+		model.setPredictionCol(predictionCol);
+		
+		Dataset<Row> predictions = model.transform(vectorset);
+		/*
+		 * The KMeans evaluator computes the silhouette coefficent 
+		 * of the computed predictions as a means to evaluate the
+		 * quality of the chosen parameters
+		 */
+		KMeansEvaluator evaluator = new KMeansEvaluator();
+		
+		evaluator.setPredictionCol(predictionCol);
+		evaluator.setVectorCol(vectorCol);
+		
+		evaluator.setMetricName("silhouette");
+		evaluator.setDistanceMeasure("squaredEuclidean");
+		
+		Double coefficent = evaluator.evaluate(predictions);
+		/*
+		 * The silhouette coefficent is specified as JSON
+		 * metrics for this KMeans model and stored by the
+		 * KMeans manager
+		 */
+		Map<String,Object> metrics = new HashMap<>();
+		
+		metrics.put("name", "silhouette");
+		metrics.put("measure", "squaredEuclidean");
+		metrics.put("coefficient", coefficent);
+		/*
+		 * STEP #3: Store trained KMeans model including
 		 * its associated parameters and metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = "";
+		String metricsJson = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
 		new KMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
