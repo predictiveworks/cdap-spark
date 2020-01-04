@@ -34,7 +34,7 @@ CDAP-Spark is designed to cover all aspects of corporate data processing and con
 
 ### Works ML
 
-**Works ML** externalizes Apache Spark machine learning algorithms as plugins for Google CDAP data pipelines. As is with **Works DL** pipelines can be built visually without any coding expertise.
+**Works ML** externalizes Apache Spark machine learning algorithms as plugins for Google CDAP data pipelines.These pipelines can also be built visually without any coding expertise.
 
 ### Works Rules
 
