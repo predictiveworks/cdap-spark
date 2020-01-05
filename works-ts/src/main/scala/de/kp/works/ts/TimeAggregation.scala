@@ -146,7 +146,8 @@ class TimeAggregation(override val uid: String) extends Transformer with TimeAgg
      * values from the last non-null value before and the first
      * non-null value after the respective null value 
      */
-    interpolate(merged, $(timeCol), $(valueCol))       
+    val interpolated = interpolate(merged, "_timestamp", "_value")
+    interpolated.withColumnRenamed("_timestamp", $(timeCol)).withColumnRenamed("_value", $(valueCol))
 
   }
   /*
