@@ -35,6 +35,26 @@
   
   <name>Works TS</name>
   <description>Time series support of CDAP-Spark.</description>
+  
+  <dependencies>
+	
+	<!-- apache spark dependencies -->
+	
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.11</artifactId>
+      <version>${spark.version}</version>
+    </dependency>
+
+	<!-- cdap spark dependencies -->
+
+	<dependency>
+	  <groupId>de.kp.works</groupId>
+	  <artifactId>works-core</artifactId>
+	  <version>0.3.0</version>
+	</dependency>
+
+  </dependencies>
  
   <build>
     <pluginManagement>

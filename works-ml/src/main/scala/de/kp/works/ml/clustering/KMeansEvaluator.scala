@@ -42,6 +42,18 @@ trait KMeansEvaluatorParams extends Params {
   final val predictionCol = new Param[String](KMeansEvaluatorParams.this, "predictionCol",
     "The name of the prediction column", (value: String) => true)
 
+  /**
+   * param for metric name in evaluation (supports `"silhouette"` (default))
+   * @group param
+   */
+  val metricName: Param[String] = {
+    val allowedParams = ParamValidators.inArray(Array("silhouette"))
+    new Param(
+      this, "metricName", "metric name in evaluation (silhouette)", allowedParams)
+  }
+
+  /** @group getParam */
+  def getMetricName: String = $(metricName)
   /** @group getParam */
   def getPredictionCol: String = $(predictionCol)
 
@@ -75,19 +87,6 @@ class KMeansEvaluator(override val uid: String) extends Evaluator with KMeansEva
 
   /** @group setParam */
   def setVectorCol(value: String): this.type = set(vectorCol, value)
-
-  /**
-   * param for metric name in evaluation (supports `"silhouette"` (default))
-   * @group param
-   */
-  val metricName: Param[String] = {
-    val allowedParams = ParamValidators.inArray(Array("silhouette"))
-    new Param(
-      this, "metricName", "metric name in evaluation (silhouette)", allowedParams)
-  }
-
-  /** @group getParam */
-  def getMetricName: String = $(metricName)
 
   /** @group setParam */
   def setMetricName(value: String): this.type = set(metricName, value)

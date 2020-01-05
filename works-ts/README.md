@@ -1,2 +1,2 @@
 # Works TS
-Time series support for CDAP Spark
+Time series support for CDAP Spark.
