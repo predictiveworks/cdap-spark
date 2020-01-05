@@ -1,7 +1,7 @@
 # CDAP-Spark
 **CDAP Spark** is an all-in-one library that *externalizes* Apache Spark based machine learning, deep learning and complex event processing in form of plugins for Google CDAP data pipelines. It boosts the work of data analysts and scientists to build data driven applications without coding.
 
-Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
+> Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
 
 ## Why CDAP Spark?
 
@@ -24,7 +24,7 @@ CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The pictur
 
 ## Overview
 
-CDAP-Spark is designed to cover all aspects of corporate data processing and contains the following modules:
+CDAP-Spark is designed to offer all instruments of corporate data processing and contains the following modules:
 
 ### Works Core
 
