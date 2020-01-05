@@ -72,7 +72,10 @@ trait AutoCorrelationParams extends Params {
  * 
  * The auto correlation function is either computed for range of lag values
  * that is specified by its maximum value, or, by a sequence of discrete
- * lag values
+ * lag values.
+ * 
+ * Lags that result in high correlation will have values colse to 1 or -1, 
+ * for positive and negative correlations. 
  */
 class AutoCorrelation(override val uid: String)
   extends Estimator[AutoCorrelationModel] with AutoCorrelationParams with DefaultParamsWritable {
@@ -141,6 +144,10 @@ class AutoCorrelationModel(override val uid:String, val average:Double, val deno
   /** @group setParam */
   def setValueCol(value: String): this.type = set(valueCol, value)
 
+  /**
+   * This method computes the auto correlation function for a 
+   * univariate dataset (timeseries)
+   */
   override def transform(dataset:Dataset[_]):DataFrame = {
 
     if ($(maxLag) == -1 && $(lagValues).isEmpty)
