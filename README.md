@@ -46,6 +46,9 @@ Drools business rules can be used with batch and stream pipelines, and, in the c
 
 **Works SQL** supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. SQL statements can be specified by leveraging an easy-to-use interface and offer aggregation, grouping & filtering support e.g. for real-time applications. 
 
+![alt Works SQL](https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.png)
+
+
 ### Works TS
 
 **Works TS** complements Apache Spark with time series algorithms and also externalizes them as plugins for Google CDAP data pipelines.
