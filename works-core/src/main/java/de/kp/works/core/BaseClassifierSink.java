@@ -19,22 +19,24 @@ package de.kp.works.core;
  * 
  */
 
+import co.cask.cdap.api.data.schema.Schema;
+
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class BaseClassifierSink extends BaseSink {
-	
+
 	private static final long serialVersionUID = -5552264323513756802L;
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
-	
+
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 *Classification model components and metadata are persisted in a CDAP FileSet
+		 * Classification model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
@@ -44,7 +46,34 @@ public class BaseClassifierSink extends BaseSink {
 		 */
 		modelFs = SparkMLManager.getClassificationFS(context);
 		modelMeta = SparkMLManager.getClassificationMeta(context);
-		
+
 	}
 
+	public void validateSchema(Schema inputSchema, BaseClassifierConfig config, String className) {
+
+		if (inputSchema == null) {
+			throw new IllegalArgumentException(String.format("[%s] The input schema must not be empty.", className));
+		}
+		
+		/** FEATURES COLUMN **/
+		
+		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
+		if (featuresCol == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the feature vector.", className));
+		}
+
+		Schema.Type featuresType = featuresCol.getSchema().getType();
+		if (!featuresType.equals(Schema.Type.ARRAY)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the feature vector must be an ARRAY.", className));
+		}
+
+		Schema.Type featureType = featuresCol.getSchema().getComponentSchema().getType();
+		if (!featureType.equals(Schema.Type.DOUBLE)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data type of the feature value must be a DOUBLE.", className));
+		}
+
+	}
 }

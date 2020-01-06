@@ -1,8 +1,5 @@
 package de.kp.works.core;
 
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,6 +18,9 @@ import co.cask.cdap.api.dataset.table.Table;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
 
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;

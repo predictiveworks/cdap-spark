@@ -1,4 +1,4 @@
-package de.kp.works.ml.clustering;
+package de.kp.works.core;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -19,42 +19,40 @@ package de.kp.works.ml.clustering;
  * 
  */
 
+import java.util.Map;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.hydrator.common.Constants;
-import de.kp.works.core.BaseClusterSink;
 
-@Plugin(type = "sparksink")
-@Name("LDASink")
-@Description("A building stage for an Apache Spark based Latent Dirichlet Allocation clustering model.")
-public class LDASink extends BaseClusterSink {
+public class BaseClassifierConfig extends PluginConfig {
 
-	private static final long serialVersionUID = 7607102103139502481L;
+	private static final long serialVersionUID = -8367528839538247694L;
 
-	private LDAConfig config;
+	@Name(Constants.Reference.REFERENCE_NAME)
+	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
+	public String referenceName;
 
-	public LDASink(LDAConfig config) {
-		this.config = config;
+	@Description("The unique name of the classifier model.")
+	@Macro
+	public String modelName;
+
+	@Description("The name of the field that contains the feature vector.")
+	@Macro
+	public String featuresCol;
+
+	@Description("The name of the field that contains the label.")
+	@Macro
+	public String labelCol;
+    
+	public Map<String, Object> getParamsAsMap() {
+		return null;
 	}
-
-	public static class LDAConfig extends PluginConfig {
-		  
-		private static final long serialVersionUID = 7925435496096417998L;
-
-		@Name(Constants.Reference.REFERENCE_NAME)
-		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-		public String referenceName;
-		
-	    @Description("The unique name of the Latent Dirichlet Allocation model.")
-	    @Macro
-	    private String modelName;
-		
-		public void validate() {
-			
-		}
-		
+	
+	public String getParamsAsJSON() {
+		return null;
 	}
+	
 }
