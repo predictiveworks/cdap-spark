@@ -21,6 +21,8 @@ package de.kp.works.core;
 
 import java.util.Map;
 
+import com.google.gson.Gson;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -52,7 +54,10 @@ public class BaseClassifierConfig extends PluginConfig {
 	}
 	
 	public String getParamsAsJSON() {
-		return null;
+
+		Gson gson = new Gson();			
+		return gson.toJson(getParamsAsMap());
+		
 	}
 	
 }

@@ -19,8 +19,12 @@ package de.kp.works.ml.classification;
  * 
  */
 
+import java.util.Map;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+
+import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
@@ -62,6 +66,24 @@ public class DTClassifier extends BaseClassifierSink {
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		/*
+		 * STEP #1: Extract parameters and train classifier model
+		 */
+		String featuresCol = config.featuresCol;
+		Map<String, Object> params = config.getParamsAsMap();
+		/*
+		 * The vectorCol specifies the internal column that has
+		 * to be built from the featuresCol and that is used for
+		 * training purposes
+		 */
+		String vectorCol = "_vector";
+		/*
+		 * Prepare provided dataset by vectorizing the feature
+		 * column which is specified as Array[Double]
+		 */
+		DTTrainer trainer = new DTTrainer();
+		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
+		
 		// TODO
 	}
 
@@ -70,6 +92,15 @@ public class DTClassifier extends BaseClassifierSink {
 		private static final long serialVersionUID = -5216062714694933745L;
 		
 		public void validate() {
+
+			if (!Strings.isNullOrEmpty(modelName)) {
+				throw new IllegalArgumentException("[DTClassifierConfig] The model name must not be empty.");
+			}
+			if (!Strings.isNullOrEmpty(featuresCol)) {
+				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+			}
+			
+			// TODO validate parameters
 			
 		}
 		

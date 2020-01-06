@@ -19,8 +19,12 @@ package de.kp.works.ml.classification;
  * 
  */
 
+import java.util.Map;
+
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+
+import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
@@ -62,7 +66,26 @@ public class LRClassifier extends BaseClassifierSink {
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		/*
+		 * STEP #1: Extract parameters and train classifier model
+		 */
+		String featuresCol = config.featuresCol;
+		Map<String, Object> params = config.getParamsAsMap();
+		/*
+		 * The vectorCol specifies the internal column that has
+		 * to be built from the featuresCol and that is used for
+		 * training purposes
+		 */
+		String vectorCol = "_vector";
+		/*
+		 * Prepare provided dataset by vectorizing the feature
+		 * column which is specified as Array[Double]
+		 */
+		LRTrainer trainer = new LRTrainer();
+		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
+		
 		// TODO
+
 	}
 
 	public static class LRClassifierConfig extends BaseClassifierConfig {
@@ -70,7 +93,16 @@ public class LRClassifier extends BaseClassifierSink {
 		private static final long serialVersionUID = -4962647798125981464L;
 		
 		public void validate() {
+
+			if (!Strings.isNullOrEmpty(modelName)) {
+				throw new IllegalArgumentException("[LRClassifierConfig] The model name must not be empty.");
+			}
+			if (!Strings.isNullOrEmpty(featuresCol)) {
+				throw new IllegalArgumentException("[LRClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+			}
 			
+			// TODO validate parameters
+						
 		}
 		
 	}
