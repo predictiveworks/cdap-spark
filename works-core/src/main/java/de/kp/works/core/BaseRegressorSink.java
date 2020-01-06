@@ -24,26 +24,26 @@ import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseClassifierSink extends BaseSink {
-	
-	private static final long serialVersionUID = -5552264323513756802L;
+public class BaseRegressorSink extends BaseSink {
+
+	private static final long serialVersionUID = 8807040807659351717L;
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
-	
+
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 *Classification model components and metadata are persisted in a CDAP FileSet
+		 * Regression model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
-		SparkMLManager.createClassificationIfNotExists(context);
+		SparkMLManager.createRegressionIfNotExists(context);
 		/*
-		 * Retrieve classification specified dataset for later use incompute
+		 * Retrieve regression specified dataset for later use incompute
 		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
+		modelFs = SparkMLManager.getRegressionFS(context);
+		modelMeta = SparkMLManager.getRegressionMeta(context);
 		
 	}
 

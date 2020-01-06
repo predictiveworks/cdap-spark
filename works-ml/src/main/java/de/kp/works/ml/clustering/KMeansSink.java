@@ -30,28 +30,21 @@ import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import co.cask.hydrator.common.Constants;
-import de.kp.works.core.BaseSink;
-import de.kp.works.ml.SparkMLManager;
+import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("KMeansSink")
 @Description("A building stage for an Apache Spark based KMeans clustering model.")
-public class KMeansSink extends BaseSink {
+public class KMeansSink extends BaseClusterSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;
 
 	private KMeansConfig config;
-	
-	private FileSet modelFs;
-	private Table modelMeta;
 	
 	public KMeansSink(KMeansConfig config) {
 		this.config = config;
@@ -91,21 +84,6 @@ public class KMeansSink extends BaseSink {
 			throw new IllegalArgumentException("[KMeansSink] The data type of the feature value must be a DOUBLE.");
 		}
 		
-	}
-	
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * KMeans model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createClusteringIfNotExists(context);
-		/*
-		 * Retrieve clustering specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
 	}
 	
 	@Override

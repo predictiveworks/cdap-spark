@@ -23,8 +23,8 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.ml.AbstractModelManager;
-import de.kp.works.ml.SparkMLManager;
+import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class KMeansManager extends AbstractModelManager {
 
