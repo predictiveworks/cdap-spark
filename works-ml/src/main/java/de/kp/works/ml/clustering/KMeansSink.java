@@ -43,8 +43,7 @@ import de.kp.works.ml.SparkMLManager;
 
 @Plugin(type = "sparksink")
 @Name("KMeansSink")
-@Description("A KMeans model building stage.")
-
+@Description("A building stage for an Apache Spark based KMeans clustering model.")
 public class KMeansSink extends BaseSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;

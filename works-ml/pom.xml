@@ -36,14 +36,6 @@
   <description>Machine learning functionality for CDAP-Spark.</description>
   
   <dependencies>
-	
-	<!-- apache spark dependencies -->
-	
-    <dependency>
-      <groupId>org.apache.spark</groupId>
-      <artifactId>spark-mllib_2.11</artifactId>
-      <version>${spark.version}</version>
-    </dependency>
 
 	<!-- cdap spark dependencies -->
 

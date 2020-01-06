@@ -33,6 +33,18 @@
   <artifactId>works-core</artifactId>
   <packaging>jar</packaging>
 
+  <dependencies>
+	
+	<!-- apache spark dependencies -->
+	
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-mllib_2.11</artifactId>
+      <version>${spark.version}</version>
+    </dependency>
+
+  </dependencies>
+
   <name>Works Core</name>
   <description>Core functionality of CDAP-Spark</description>
   
