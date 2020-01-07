@@ -21,6 +21,8 @@ package de.kp.works.ml.regression;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
@@ -81,6 +83,19 @@ public class GBTRegressor extends BaseRegressorSink {
 		}
 
 		public void validate() {
+
+			/** MODEL & COLUMNS **/
+			if (!Strings.isNullOrEmpty(modelName)) {
+				throw new IllegalArgumentException("[GBTRegressorConfig] The model name must not be empty.");
+			}
+			if (!Strings.isNullOrEmpty(featuresCol)) {
+				throw new IllegalArgumentException("[GBTRegressorConfig] The name of the field that contains the feature vector must not be empty.");
+			}
+			if (!Strings.isNullOrEmpty(labelCol)) {
+				throw new IllegalArgumentException("[GBTRegressorConfig] The name of the field that contains the label value must not be empty.");
+			}
+			
+			/** PARAMETERS **/
 			
 		}
 		
