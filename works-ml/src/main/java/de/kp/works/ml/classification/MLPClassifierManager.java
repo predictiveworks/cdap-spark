@@ -29,8 +29,9 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
-public class MultilayerPerceptronClassifierManager extends AbstractModelManager {
+public class MLPClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "MultilayerPerceptronClassifier";
 
@@ -48,7 +49,7 @@ public class MultilayerPerceptronClassifierManager extends AbstractModelManager 
 
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+	public void save(Table table, FileSet fs, String modelName, String modelParams, String modelMetrics,
 			MultilayerPerceptronClassificationModel model) throws IOException {
 
 		/*
@@ -67,6 +68,7 @@ public class MultilayerPerceptronClassifierManager extends AbstractModelManager 
 		 * Append model metadata to the metadata table associated with the
 		 * classification fileset
 		 */
+		String fsName = SparkMLManager.CLASSIFICATION_FS;
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
