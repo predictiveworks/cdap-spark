@@ -1,5 +1,4 @@
 package de.kp.works.ml.regression;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,6 +17,9 @@ package de.kp.works.ml.regression;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import java.util.HashMap;
+import java.util.Map;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
@@ -60,6 +62,24 @@ public class IsotonicRegressor extends BaseRegressorSink {
 		  
 		private static final long serialVersionUID = -4928234679795163044L;
 		
+		public IsotonicConfig() {
+			/*
+			 * The default split of the dataset into train & test data
+			 * is set to 70:30
+			 */
+			dataSplit = "70:30";
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("split", dataSplit);
+
+			return params;
+		
+		}
+
 		public void validate() {
 			
 		}

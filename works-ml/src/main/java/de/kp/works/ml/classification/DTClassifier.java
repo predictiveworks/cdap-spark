@@ -28,6 +28,7 @@ import org.apache.spark.sql.Row;
 import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -92,26 +93,55 @@ public class DTClassifier extends BaseClassifierSink {
 
 		private static final long serialVersionUID = -5216062714694933745L;
 		
+		@Description("Impurity is a criterion how to calculate information gain. Supported values: 'entropy' and 'gini'. Default is 'gini'.")
+		@Macro
+		public String impurity;
+		
+		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
+				+ " on features at each node. More bins give higher granularity. Must be at least 2. Default is 32.")
+		@Macro
+		public Integer maxBins;
+		
+		@Description("Nonnegative value that maximum depth of the tree. E.g. depth 0 means 1 leaf node; "
+				+" depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
+		@Macro
+		public Integer maxDepth;
+
+		@Description("The minimum information gain for a split to be considered at a tree node. The value should be at least 0.0. Default is 0.0.")
+		@Macro
+		public Double minInfoGain;
+		
 		public DTClassifierConfig() {
-			/*
-			 * The default split of the dataset into train & test data
-			 * is set to 70:30
-			 */
+
 			dataSplit = "70:30";
+			
+			impurity = "gini";
+			minInfoGain = 0D;
+
+			maxBins = 32;
+			maxDepth = 5;
+
 		}
 	    
 		@Override
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();
-			params.put("split", dataSplit);
 
+			params.put("impurity", impurity);
+			params.put("minInfoGain", minInfoGain);
+			
+			params.put("maxBins", maxBins);
+			params.put("maxDepth", maxDepth);
+
+			params.put("split", dataSplit);
 			return params;
 		
 		}
 		
 		public void validate() {
 
+			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
 				throw new IllegalArgumentException("[DTClassifierConfig] The model name must not be empty.");
 			}
@@ -122,8 +152,16 @@ public class DTClassifier extends BaseClassifierSink {
 				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the label value must not be empty.");
 			}
 			
-			// TODO validate parameters
+			/** PARAMETERS **/
+			if (maxBins < 2)
+				throw new IllegalArgumentException("[DTClassifierConfig] The maximum bins must be at least 2.");
+
+			if (maxDepth < 0)
+				throw new IllegalArgumentException("[DTClassifierConfig] The maximum depth must be nonnegative.");
 			
+			if (minInfoGain < 0D)
+				throw new IllegalArgumentException("[DTClassifierConfig] The minimum information gain must be at least 0.0.");
+
 		}
 		
 	}

@@ -1,0 +1,81 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "DT Classifier",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Label Field",
+          "name": "labelCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Data Split",
+          "name": "datasSplit",
+          "widget-attributes": {
+            "default": "70:30"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "select",
+          "label": "Impurity",
+          "name": "impurity",
+          "widget-attributes": {
+            "values": [
+              "entropy",
+              "gini"
+            ],
+            "default": "gini"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Information Gain",
+          "name": "minInfoGain",
+          "widget-attributes": {
+            "default": "0.0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Bins",
+          "name": "maxBins",
+          "widget-attributes": {
+            "default": "32"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Depth",
+          "name": "maxDepth",
+          "widget-attributes": {
+            "default": "5"
+          }
+        }
+      ]
+    }
+  ]
+}

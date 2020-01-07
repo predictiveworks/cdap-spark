@@ -1,9 +1,4 @@
 package de.kp.works.core;
-
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,6 +17,14 @@ import co.cask.cdap.api.annotation.Name;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import java.util.Map;
+
+import com.google.gson.Gson;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
 
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.hydrator.common.Constants;
@@ -45,5 +48,21 @@ public class BaseRegressorConfig extends PluginConfig {
 	@Description("The name of the field that contains the label.")
 	@Macro
 	public String labelCol;
+
+	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+	@Macro
+	public String dataSplit;
+    
+	public Map<String, Object> getParamsAsMap() {
+		return null;
+	}
+	
+	public String getParamsAsJSON() {
+
+		Gson gson = new Gson();			
+		return gson.toJson(getParamsAsMap());
+		
+	}
+	
 
 }
