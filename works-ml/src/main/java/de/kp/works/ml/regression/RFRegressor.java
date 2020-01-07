@@ -21,7 +21,13 @@ package de.kp.works.ml.regression;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.ml.evaluation.RegressionEvaluator;
+import org.apache.spark.ml.regression.RandomForestRegressionModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
@@ -29,6 +35,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseRegressorConfig;
 import de.kp.works.core.BaseRegressorSink;
 
@@ -59,6 +66,74 @@ public class RFRegressor extends BaseRegressorSink {
 		validateSchema(inputSchema, config, RFRegressor.class.getName());
 
 	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		/*
+		 * STEP #1: Extract parameters and train regression model
+		 */
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
+
+		Map<String, Object> params = config.getParamsAsMap();
+		/*
+		 * The vectorCol specifies the internal column that has
+		 * to be built from the featuresCol and that is used for
+		 * training purposes
+		 */
+		String vectorCol = "_vector";
+		/*
+		 * Prepare provided dataset by vectorizing the feature
+		 * column which is specified as Array[Double]
+		 */
+		RFTrainer trainer = new RFTrainer();
+		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
+		/*
+		 * Split the vectorset into a train & test dataset for
+		 * later classification evaluation
+		 */
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
+		
+	    Dataset<Row> trainset = splitted[0];
+	    Dataset<Row> testset = splitted[1];
+
+	    RandomForestRegressionModel model = trainer.train(trainset, vectorCol, labelCol, params);
+		/*
+		 * STEP #2: Compute accuracy of the trained regression
+		 * model
+		 */
+	    String predictionCol = "_prediction";
+	    model.setPredictionCol(predictionCol);
+
+	    Dataset<Row> predictions = model.transform(testset);
+
+	    RegressionEvaluator evaluator = new RegressionEvaluator();
+	    evaluator.setLabelCol(labelCol);
+	    evaluator.setPredictionCol(predictionCol);
+	    
+	    String metricName = "rmse";
+	    evaluator.setMetricName(metricName);
+	    
+	    double accuracy = evaluator.evaluate(predictions);
+		/*
+		 * The accuracy coefficent is specified as JSON metrics for
+		 * this regression model and stored by the RFRegressorManager
+		 */
+		Map<String,Object> metrics = new HashMap<>();
+		
+		metrics.put("name", metricName);
+		metrics.put("coefficient", accuracy);
+		/*
+		 * STEP #3: Store trained regression model including its associated
+		 * parameters and metrics
+		 */
+		String paramsJson = config.getParamsAsJSON();
+		String metricsJson = new Gson().toJson(metrics);
+		
+		String modelName = config.modelName;
+		new RFRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+
+	}
 
 	public static class RFRegressorConfig extends BaseRegressorConfig {
 
@@ -76,7 +151,6 @@ public class RFRegressor extends BaseRegressorSink {
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();
-			params.put("split", dataSplit);
 
 			return params;
 		
