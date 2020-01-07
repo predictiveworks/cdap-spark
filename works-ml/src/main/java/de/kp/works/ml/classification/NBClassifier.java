@@ -113,6 +113,7 @@ public class NBClassifier extends BaseClassifierSink {
 		
 		public void validate() {
 
+			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
 				throw new IllegalArgumentException("[NBClassifierConfig] The model name must not be empty.");
 			}

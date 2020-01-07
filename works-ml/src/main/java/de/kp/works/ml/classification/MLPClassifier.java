@@ -112,6 +112,7 @@ public class MLPClassifier extends BaseClassifierSink {
 
 		public void validate() {
 
+			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
 				throw new IllegalArgumentException("[MLPClassifierConfig] The model name must not be empty.");
 			}
