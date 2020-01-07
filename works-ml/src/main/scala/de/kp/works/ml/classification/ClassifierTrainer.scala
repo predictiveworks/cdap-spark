@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression
+package de.kp.works.ml.classification
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -19,21 +19,8 @@ package de.kp.works.ml.regression
  * 
  */
 
-import java.util.{Map => JMap}
+import de.kp.works.ml.BaseTrainer
 
-import org.apache.spark.ml.regression._
+class ClassifierTrainer extends BaseTrainer {
 
-import org.apache.spark.sql._
-import org.apache.spark.sql.functions._
-
-class IsotonicTrainer extends RegressorTrainer {
-    
-  def train(params:JMap[String,Object]):IsotonicRegressionModel = {
-    
-    val regressor = new IsotonicRegression()
-    
-    null
- 
-  }
-  
 }

@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression
+package de.kp.works.ml.classification
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -21,19 +21,23 @@ package de.kp.works.ml.regression
 
 import java.util.{Map => JMap}
 
-import org.apache.spark.ml.regression._
+import org.apache.spark.ml.classification._
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 
-class IsotonicTrainer extends RegressorTrainer {
-    
-  def train(params:JMap[String,Object]):IsotonicRegressionModel = {
-    
-    val regressor = new IsotonicRegression()
-    
+class LRTrainer extends ClassifierTrainer {
+  
+  /**
+   * The dataset provided has been vectorized in a previous operations
+   */
+  def train(vectorset:Dataset[Row], vectorCol:String, labelCol:String, params:JMap[String,Object]): LogisticRegressionModel = {
+    /*
+     * The vectorCol is an internal _vector column; it is added
+     * by the vectorization operation
+     */
+    val classifier = new LogisticRegression()
     null
  
   }
-  
 }
