@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="640"
+   height="320"
+   viewBox="0 0 640 320"
+   version="1.1"
+   id="svg820"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="works-ml.svg"
+   inkscape:export-filename="/Work/academy/google-cdap-gap.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96">
+  <defs
+     id="defs814">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 240 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="640 : 240 : 1"
+       inkscape:persp3d-origin="320 : 160 : 1"
+       id="perspective1415" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="248.21429"
+     inkscape:cy="180.8751"
+     inkscape:document-units="mm"
+     inkscape:current-layer="svg820"
+     showgrid="false"
+     inkscape:window-width="2560"
+     inkscape:window-height="1315"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata817">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="g2599"
+     transform="translate(12.616417,18.209644)">
+    <g
+       id="layer1-8"
+       inkscape:label="Ebene 1"
+       transform="matrix(0.35579107,0,0,0.35579107,236.22537,21.032187)">
+      <g
+         transform="matrix(1.1190578,0,0,1.1190578,-49.150243,-28.999072)"
+         id="g827">
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:341.33334351px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
+           x="32.85714"
+           y="323.93161"
+           id="text817-0"><tspan
+             sodipodi:role="line"
+             id="tspan815-2"
+             x="32.85714"
+             y="323.93161">P</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:304px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
+           x="-329.88361"
+           y="382.7326"
+           id="text821"
+           transform="rotate(-90)"><tspan
+             sodipodi:role="line"
+             id="tspan819"
+             x="-329.88361"
+             y="382.7326">w</tspan></text>
+      </g>
+    </g>
+    <g
+       transform="matrix(1.8988218,0,0,1.8988218,-210.19773,28.502079)"
+       id="g2509">
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.32252121px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.65574324"
+         x="156.60031"
+         y="110.11851"
+         id="text2193"><tspan
+           sodipodi:role="line"
+           id="tspan2191"
+           x="156.60031"
+           y="110.11851"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:1.65574324">Works</tspan></text>
+      <text
+         id="text2197"
+         y="109.72007"
+         x="308.73206"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.32252121px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none;stroke-width:1.65574324"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:1.65574324"
+           y="109.72007"
+           x="308.73206"
+           id="tspan2195"
+           sodipodi:role="line">ML.</tspan></text>
+    </g>
+  </g>
+</svg>
