@@ -1,16 +1,15 @@
 # CDAP-Spark
-**CDAP Spark** is an all-in-one library that *externalizes* Apache Spark based machine learning, deep learning and complex event processing in form of plugins for Google CDAP data pipelines. It boosts the work of data analysts and scientists to build data driven applications without coding.
+**CDAP Spark** is an all-in-one library that *externalizes* Apache Spark based machine learning, deep learning, complex event processing and more in form of plugins for Google CDAP data pipelines. It boosts the work of data analysts and scientists to build data driven applications without coding.
+
+## Modules
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="800" alt="Works DL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="800" alt="Works ML"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ts.svg" width="800" alt="Works TS"> 
  :---: | :---: | :---: |
  **Deep Learning** | **Machine Learning** | **Time Series**
- BigDL Plugins | Apache Spark ML Plugins | Time Series Plugins
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-rules.svg" width="800" alt="Works Rules"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.svg" width="800" alt="Works SQL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-text.svg" width="800" alt="Works Text"> 
  :---: | :---: | :---: |
  **Drools Rules** | **Spark SQL** | **Text Analysis**
- Drools Plugins | Apache Spark SQL Plugins | Text Analysis Plugins
-
 
 > Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
 
