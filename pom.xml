@@ -127,5 +127,6 @@
   	<module>works-ml</module>
   	<module>works-dl</module>
   	<module>works-ts</module>
+  	<module>works-text</module>
   </modules>
 </project>

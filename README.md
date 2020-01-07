@@ -48,6 +48,10 @@ CDAP-Spark is designed to offer all instruments of corporate data processing and
 
 **Works ML** externalizes Apache Spark machine learning algorithms as plugins for Google CDAP data pipelines.These pipelines can also be built visually without any coding expertise.
 
+### Works TS
+
+**Works TS** complements Apache Spark with time series algorithms and also externalizes them as plugins for Google CDAP data pipelines.
+
 ### Works Rules
 
 **Works Rules** externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines. Drools compliant rules can be applied by an easy-to-use interface without the need to write code in any programming language.
@@ -60,7 +64,6 @@ Drools business rules can be used with batch and stream pipelines, and, in the c
 
 ![alt Works SQL](https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.png)
 
+### Works Text
 
-### Works TS
-
-**Works TS** complements Apache Spark with time series algorithms and also externalizes them as plugins for Google CDAP data pipelines.
+**Works Text** complements Apache Spark with text analysis algorithms and also externalizes them as plugins for Google CDAP data pipelines.
