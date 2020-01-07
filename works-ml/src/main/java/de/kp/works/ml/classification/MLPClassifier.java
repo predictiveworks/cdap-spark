@@ -136,7 +136,7 @@ public class MLPClassifier extends BaseClassifierSink {
 		String metricsJson = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
-		new MLPClassifierManager().save(modelMeta, modelFs, modelName, paramsJson, metricsJson, model);
+		new MLPClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 

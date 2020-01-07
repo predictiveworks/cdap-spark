@@ -29,6 +29,7 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class GBTClassifierManager extends AbstractModelManager {
 
@@ -47,7 +48,7 @@ public class GBTClassifierManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			GBTClassificationModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -70,6 +71,7 @@ public class GBTClassifierManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * classification fileset
 		 */
+		String fsName = SparkMLManager.CLASSIFICATION_FS;
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);

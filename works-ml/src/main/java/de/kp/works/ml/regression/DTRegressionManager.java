@@ -30,7 +30,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 
-public class DecisionTreeRegressionManager extends AbstractModelManager {
+public class DTRegressionManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeRegressor";
 

@@ -30,7 +30,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 
-public class OneVsRestClassifierManager extends AbstractModelManager {
+public class OVRClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "OneVsRestClassifier";
 

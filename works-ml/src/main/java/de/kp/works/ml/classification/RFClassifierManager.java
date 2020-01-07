@@ -49,7 +49,7 @@ public class RFClassifierManager extends AbstractModelManager {
 
 	}
 
-	public void save(Table table, FileSet fs, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			RandomForestClassificationModel model) throws IOException {
 
 		/*

@@ -21,10 +21,13 @@ package de.kp.works.ml.classification;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.ml.classification.LogisticRegressionModel;
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
+import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -71,6 +74,8 @@ public class LRClassifier extends BaseClassifierSink {
 		 * STEP #1: Extract parameters and train classifier model
 		 */
 		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
+
 		Map<String, Object> params = config.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has
@@ -84,8 +89,55 @@ public class LRClassifier extends BaseClassifierSink {
 		 */
 		LRTrainer trainer = new LRTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
+		/*
+		 * Split the vectorset into a train & test dataset for
+		 * later classification evaluation
+		 */
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 		
-		// TODO
+	    Dataset<Row> trainset = splitted[0];
+	    Dataset<Row> testset = splitted[1];
+		
+	    LogisticRegressionModel model = trainer.train(trainset, vectorCol, labelCol, params);
+		/*
+		 * STEP #2: Compute accuracy of the trained classification
+		 * model
+		 */
+	    String predictionCol = "_prediction";
+	    model.setPredictionCol(predictionCol);
+
+	    Dataset<Row> predictions = model.transform(testset);
+	    /*
+	     * This Logistic Regression plugin leverages the multiclass evaluator
+	     * independent of whether the algorithm is used for binary classification
+	     * or not.
+	     */
+	    MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator();
+	    evaluator.setLabelCol(labelCol);
+	    evaluator.setPredictionCol(predictionCol);
+	    
+	    String metricName = "accuracy";
+	    evaluator.setMetricName(metricName);
+	    
+	    double accuracy = evaluator.evaluate(predictions);
+		/*
+		 * The accuracy coefficent is specified as JSON
+		 * metrics for this classification model and stored
+		 * by the LRClassifierManager
+		 */
+		Map<String,Object> metrics = new HashMap<>();
+		
+		metrics.put("name", metricName);
+		metrics.put("coefficient", accuracy);
+		/*
+		 * STEP #3: Store trained classification model 
+		 * including its associated parameters and metrics
+		 */
+		String paramsJson = config.getParamsAsJSON();
+		String metricsJson = new Gson().toJson(metrics);
+		
+		String modelName = config.modelName;
+		new LRClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 

@@ -136,7 +136,7 @@ public class RFClassifier extends BaseClassifierSink {
 		String metricsJson = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
-		new RFClassifierManager().save(modelMeta, modelFs, modelName, paramsJson, metricsJson, model);
+		new RFClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 

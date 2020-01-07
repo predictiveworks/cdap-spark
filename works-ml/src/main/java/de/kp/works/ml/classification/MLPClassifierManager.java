@@ -49,7 +49,7 @@ public class MLPClassifierManager extends AbstractModelManager {
 
 	}
 
-	public void save(Table table, FileSet fs, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			MultilayerPerceptronClassificationModel model) throws IOException {
 
 		/*
