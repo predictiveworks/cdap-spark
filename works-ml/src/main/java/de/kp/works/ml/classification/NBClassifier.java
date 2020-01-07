@@ -1,5 +1,4 @@
 package de.kp.works.ml.classification;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,6 +18,7 @@ package de.kp.works.ml.classification;
  * 
  */
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.spark.sql.Dataset;
@@ -91,6 +91,25 @@ public class NBClassifier extends BaseClassifierSink {
 	public static class NBClassifierConfig extends BaseClassifierConfig {
 
 		private static final long serialVersionUID = 7463362537971476965L;
+	    
+		public NBClassifierConfig() {
+			/*
+			 * The default split of the dataset into train & test data
+			 * is set to 70:30
+			 */
+			dataSplit = "70:30";			
+			
+		}
+
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("split", dataSplit);
+
+			return params;
+		
+		}
 		
 		public void validate() {
 

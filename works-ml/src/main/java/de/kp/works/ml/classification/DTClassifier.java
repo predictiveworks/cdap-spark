@@ -1,5 +1,4 @@
 package de.kp.works.ml.classification;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,6 +17,8 @@ package de.kp.works.ml.classification;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import java.util.HashMap;
 
 import java.util.Map;
 
@@ -91,6 +92,24 @@ public class DTClassifier extends BaseClassifierSink {
 
 		private static final long serialVersionUID = -5216062714694933745L;
 		
+		public DTClassifierConfig() {
+			/*
+			 * The default split of the dataset into train & test data
+			 * is set to 70:30
+			 */
+			dataSplit = "70:30";
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("split", dataSplit);
+
+			return params;
+		
+		}
+		
 		public void validate() {
 
 			if (!Strings.isNullOrEmpty(modelName)) {
@@ -98,6 +117,9 @@ public class DTClassifier extends BaseClassifierSink {
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
 				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+			}
+			if (!Strings.isNullOrEmpty(labelCol)) {
+				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the label value must not be empty.");
 			}
 			
 			// TODO validate parameters

@@ -20,11 +20,12 @@ package de.kp.works.ml.regression;
  */
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
+import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
+import de.kp.works.core.BaseRegressorConfig;
 import de.kp.works.core.BaseRegressorSink;
 
 @Plugin(type = "sparksink")
@@ -34,23 +35,30 @@ public class DTRegressor extends BaseRegressorSink {
 
 	private static final long serialVersionUID = -6358575044891859770L;
 
-	private DTRegressor config;
+	private DTRegressorConfig config;
 	
-	public DTRegressor(DTRegressor config) {
+	public DTRegressor(DTRegressorConfig config) {
 		this.config = config;
 	}
 
-	public static class DTRegressorConfig extends PluginConfig {
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		config.validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		Schema inputSchema = stageConfigurer.getInputSchema();
+
+		validateSchema(inputSchema, config, DTRegressor.class.getName());
+
+	}
+
+	public static class DTRegressorConfig extends BaseRegressorConfig {
 
 		private static final long serialVersionUID = 40342346796142785L;
-		  
-		@Name(Constants.Reference.REFERENCE_NAME)
-		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-		public String referenceName;
-		
-	    @Description("The unique name of the Decision Tree regressor model.")
-	    @Macro
-	    private String modelName;
 		
 		public void validate() {
 			

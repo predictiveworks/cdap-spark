@@ -48,6 +48,10 @@ public class BaseClassifierConfig extends PluginConfig {
 	@Description("The name of the field that contains the label.")
 	@Macro
 	public String labelCol;
+
+	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+	@Macro
+	public String dataSplit;
     
 	public Map<String, Object> getParamsAsMap() {
 		return null;

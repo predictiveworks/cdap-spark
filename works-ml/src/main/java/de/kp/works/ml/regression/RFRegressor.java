@@ -20,11 +20,12 @@ package de.kp.works.ml.regression;
  */
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
+import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
+import de.kp.works.core.BaseRegressorConfig;
 import de.kp.works.core.BaseRegressorSink;
 
 @Plugin(type = "sparksink")
@@ -40,17 +41,24 @@ public class RFRegressor extends BaseRegressorSink {
 		this.config = config;
 	}
 
-	public static class RFRegressorConfig extends PluginConfig {
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		config.validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		Schema inputSchema = stageConfigurer.getInputSchema();
+
+		validateSchema(inputSchema, config, RFRegressor.class.getName());
+
+	}
+
+	public static class RFRegressorConfig extends BaseRegressorConfig {
 
 		private static final long serialVersionUID = 7150058657685557952L;
-
-		@Name(Constants.Reference.REFERENCE_NAME)
-		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-		public String referenceName;
-		
-	    @Description("The unique name of the Random Forest regressor model.")
-	    @Macro
-	    private String modelName;
 		
 		public void validate() {
 			

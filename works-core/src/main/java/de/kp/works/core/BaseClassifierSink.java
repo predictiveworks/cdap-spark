@@ -54,9 +54,9 @@ public class BaseClassifierSink extends BaseSink {
 		if (inputSchema == null) {
 			throw new IllegalArgumentException(String.format("[%s] The input schema must not be empty.", className));
 		}
-		
+
 		/** FEATURES COLUMN **/
-		
+
 		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
 		if (featuresCol == null) {
 			throw new IllegalArgumentException(String.format(
@@ -75,5 +75,21 @@ public class BaseClassifierSink extends BaseSink {
 					String.format("[%s] The data type of the feature value must be a DOUBLE.", className));
 		}
 
+		/** LABEL COLUMN **/
+
+		Schema.Field labelCol = inputSchema.getField(config.labelCol);
+		if (labelCol == null) {
+			throw new IllegalArgumentException(String
+					.format("[%s] The input schema must contain the field that defines the label value.", className));
+		}
+
+		Schema.Type labelType = labelCol.getSchema().getType();
+		/*
+		 * The label must be a numeric data type (double, float, int, long), which then
+		 * is casted to Double (see classification trainer)
+		 */
+		if (isNumericType(labelType) == false) {
+			throw new IllegalArgumentException("The data type of the label field must be numeric.");
+		}
 	}
 }

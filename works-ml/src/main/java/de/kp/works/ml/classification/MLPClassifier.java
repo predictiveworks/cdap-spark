@@ -1,5 +1,4 @@
 package de.kp.works.ml.classification;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,6 +18,7 @@ package de.kp.works.ml.classification;
  * 
  */
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.spark.sql.Dataset;
@@ -33,7 +33,6 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.hydrator.common.Constants;
 import de.kp.works.core.BaseClassifierConfig;
 import de.kp.works.core.BaseClassifierSink;
 
@@ -92,11 +91,25 @@ public class MLPClassifier extends BaseClassifierSink {
 	public static class MLPClassifierConfig extends BaseClassifierConfig {
 
 		private static final long serialVersionUID = 7824534239299625292L;
-		  
-		@Name(Constants.Reference.REFERENCE_NAME)
-		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-		public String referenceName;
+
+		public MLPClassifierConfig() {
+			/*
+			 * The default split of the dataset into train & test data
+			 * is set to 70:30
+			 */
+			dataSplit = "70:30";			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("split", dataSplit);
+
+			return params;
 		
+		}
+
 		public void validate() {
 
 			if (!Strings.isNullOrEmpty(modelName)) {
