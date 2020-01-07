@@ -21,16 +21,22 @@ package de.kp.works.ml.regression
 
 import java.util.{Map => JMap}
 
-import org.apache.spark.ml.regression._
+import org.apache.spark.ml.regression.{GBTRegressor => SparkGBTRegressor, GBTRegressionModel}
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 
 class GBTTrainer extends RegressorTrainer {
   
-  def train(params:JMap[String,Object]):GBTRegressionModel = {
-    
-    //val regressor = new GBTRegressor()
+  /**
+   * The dataset provided has been vectorized in a previous operations
+   */
+  def train(vectorset:Dataset[Row], vectorCol:String, labelCol:String, params:JMap[String,Object]):GBTRegressionModel = {
+    /*
+     * The vectorCol is an internal _vector column; it is added
+     * by the vectorization operation
+     */
+    val regressor = new SparkGBTRegressor()
     null
  
   }

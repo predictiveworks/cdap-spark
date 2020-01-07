@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression;
+package de.kp.works.ml.classification;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -22,7 +22,7 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
+import org.apache.spark.ml.classification.*;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -30,45 +30,42 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 
-public class GeneralizedLinearRegressorManager extends AbstractModelManager {
+public class LRClassifierManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "GeneralizedLinearRegressionRegressor";
+	private String ALGORITHM_NAME = "LogisticRegressionClassifier";
 
-	public GeneralizedLinearRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
-		
+	public LogisticRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the GeneralizedLinearRegression model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the LogisticRegression model from a
+		 * model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return GeneralizedLinearRegressionModel.load(modelPath);
-		
+		return LogisticRegressionModel.load(modelPath);
+
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			GeneralizedLinearRegressionModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
+			LogisticRegressionModel model) throws IOException {
 
 		/*
-		 * Define the path of this model on CDAP's internal regression fileset
+		 * Define the path of this model on CDAP's internal classification fileset
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the GeneralizedLinearRegression model
-		 * to a model specific file set
+		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
+		 * model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
-
 		/*
-		 * Append model metadata to the metadata table associated with the
-		 * regression fileset
+		 * Append model metadata to the metadata table associated with the classification
+		 * fileset
 		 */
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
@@ -80,4 +77,3 @@ public class GeneralizedLinearRegressorManager extends AbstractModelManager {
 	}
 
 }
-

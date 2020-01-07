@@ -28,8 +28,14 @@ import org.apache.spark.sql.functions._
 
 class RFTrainer extends RegressorTrainer {
       
-  def train(params:JMap[String,Object]):RandomForestRegressionModel = {
-    
+  /**
+   * The dataset provided has been vectorized in a previous operations
+   */
+  def train(vectorset:Dataset[Row], vectorCol:String, labelCol:String, params:JMap[String,Object]):RandomForestRegressionModel = {
+    /*
+     * The vectorCol is an internal _vector column; it is added
+     * by the vectorization operation
+     */
     val regressor = new RandomForestRegressor()
     null
  

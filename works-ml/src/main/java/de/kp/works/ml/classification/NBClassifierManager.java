@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression;
+package de.kp.works.ml.classification;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -22,7 +22,7 @@ package de.kp.works.ml.regression;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.RandomForestRegressionModel;
+import org.apache.spark.ml.classification.*;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -30,45 +30,42 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 
-public class RandomForestRegressorManager extends AbstractModelManager {
+public class NBClassifierManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "RandomForestRegressor";
+	private String ALGORITHM_NAME = "NaiveBayesClassifier";
 
-	public RandomForestRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
-		
+	public NaiveBayesModel read(Table table, FileSet fs, String modelName) throws IOException {
+
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the RandomForestRegression model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the NaiveBayes model from a model
+		 * specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return RandomForestRegressionModel.load(modelPath);
-		
+		return NaiveBayesModel.load(modelPath);
+
 	}
 
 	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			RandomForestRegressionModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
+			NaiveBayesModel model) throws IOException {
 
 		/*
-		 * Define the path of this model on CDAP's internal regression fileset
+		 * Define the path of this model on CDAP's internal classification fileset
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the RandomForestRegressor model
-		 * to a model specific file set
+		 * Leverage Apache Spark mechanism to write the NaiveBayes model to a model
+		 * specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
-
 		/*
 		 * Append model metadata to the metadata table associated with the
-		 * regression fileset
+		 * classification fileset
 		 */
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
@@ -80,4 +77,3 @@ public class RandomForestRegressorManager extends AbstractModelManager {
 	}
 
 }
-
