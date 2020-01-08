@@ -35,7 +35,7 @@ public class NBClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "NaiveBayesClassifier";
 
-	public NaiveBayesModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public NaiveBayesModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

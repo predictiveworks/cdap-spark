@@ -30,6 +30,7 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
@@ -141,13 +142,22 @@ public class NBClassifier extends BaseClassifierSink {
 	public static class NBClassifierConfig extends BaseClassifierConfig {
 
 		private static final long serialVersionUID = 7463362537971476965L;
-	    
+
+		@Description("The model type of the Naive Bayes classifier. Supported values are 'bernoulli' and 'multinomial'. " 
+				+ "Choosing the Bernoulli version of Naive Bayes requires the feature values to be binary (0 or 1). Default is 'multinomial'.")
+		@Macro
+		public String modelType;
+
+		@Description("The smoothing parameter of the Naive Bayes classifier. Default is 1.0.")
+		@Macro
+		public Double smoothing;
+		
 		public NBClassifierConfig() {
-			/*
-			 * The default split of the dataset into train & test data
-			 * is set to 70:30
-			 */
-			dataSplit = "70:30";			
+
+			dataSplit = "70:30";
+			
+			modelType = "multinomial";
+			smoothing = 1.0;
 			
 		}
 
@@ -155,7 +165,9 @@ public class NBClassifier extends BaseClassifierSink {
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();
-			params.put("split", dataSplit);
+
+			params.put("modelType", modelType);
+			params.put("smoothing", smoothing);
 
 			return params;
 		
@@ -165,16 +177,26 @@ public class NBClassifier extends BaseClassifierSink {
 
 			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException("[NBClassifierConfig] The model name must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException("[NBClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
+			}
+			if (!Strings.isNullOrEmpty(labelCol)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the label value must not be empty.",
+								this.getClass().getName()));
 			}
 			
-			// TODO validate parameters
+			/** PARAMETERS **/
+			if (smoothing < 0D)
+				throw new IllegalArgumentException(
+						String.format("[%s] The smoothing must be nonnegative.", this.getClass().getName()));
 						
 		}
-		
 		
 	}
 }

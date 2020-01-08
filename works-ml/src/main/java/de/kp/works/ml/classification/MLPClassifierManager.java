@@ -35,7 +35,7 @@ public class MLPClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "MultilayerPerceptronClassifier";
 
-	public MultilayerPerceptronClassificationModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public MultilayerPerceptronClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

@@ -1,6 +1,4 @@
 package de.kp.works.ml.classification
-
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -56,7 +54,17 @@ class NBTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new NaiveBayes()
-    null
     
+    val modelType = params.get("modelType").asInstanceOf[String]
+    classifier.setModelType(modelType)
+    
+    val smoothing = params.get("smoothing").asInstanceOf[Double]
+    classifier.setSmoothing(smoothing)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
+   
   }
 }

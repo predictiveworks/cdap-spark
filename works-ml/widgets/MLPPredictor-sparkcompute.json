@@ -1,0 +1,43 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "MLP Predictor",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Model Type",
+          "name": "modelType",
+          "widget-attributes": {
+            "values": [
+              "classifier"
+            ],
+            "default": "classifier"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Prediction Field",
+          "name": "predictionCol"
+        }
+      ]
+    }
+  ]
+}
