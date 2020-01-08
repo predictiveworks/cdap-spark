@@ -35,7 +35,7 @@ public class RFRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "RandomForestRegressor";
 
-	public RandomForestRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public RandomForestRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

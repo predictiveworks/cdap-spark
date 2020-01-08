@@ -35,7 +35,7 @@ public class RFClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "RandomForestClassifier";
 
-	public RandomForestClassificationModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public RandomForestClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

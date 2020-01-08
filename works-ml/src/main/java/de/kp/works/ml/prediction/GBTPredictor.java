@@ -18,23 +18,139 @@ package de.kp.works.ml.prediction;
  * 
  */
 
+import org.apache.spark.ml.classification.GBTClassificationModel;
+import org.apache.spark.ml.regression.GBTRegressionModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.MLUtils;
+import de.kp.works.ml.classification.GBTClassifierManager;
+import de.kp.works.ml.regression.GBTRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GBTPredictor")
-@Description("A prediction stage that leverages an Apache Spark based Gradient-Boosted Trees classifier model.")
-public class GBTPredictor extends BaseCompute {
+@Description("A prediction stage that leverages a trained Apache Spark based Gradient-Boosted Trees classifier or regressor model.")
+public class GBTPredictor extends BasePredictorCompute {
 
 	private static final long serialVersionUID = 4445941695722336690L;
 
+	private GBTPredictorConfig config;
+
+	private GBTClassificationModel classifier;
+	private GBTRegressionModel regressor;
+
+	public GBTPredictor(GBTPredictorConfig config) {
+		this.config = config;
+	}
+
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		config.validate();
+
+		if (config.modelType.equals("classifier")) {
+
+			modelFs = SparkMLManager.getClassificationFS(context);
+			modelMeta = SparkMLManager.getClassificationMeta(context);
+
+			classifier = new GBTClassifierManager().read(modelFs, modelMeta, config.modelName);
+			if (classifier == null)
+				throw new IllegalArgumentException(String
+						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
+
+		} else if (config.modelType.equals("regressor")) {
+
+			modelFs = SparkMLManager.getRegressionFS(context);
+			modelMeta = SparkMLManager.getRegressionMeta(context);
+
+			regressor = new GBTRegressorManager().read(modelFs, modelMeta, config.modelName);
+			if (regressor == null)
+				throw new IllegalArgumentException(String
+						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
+
+		} else
+			throw new IllegalArgumentException(
+					String.format("[%s] The model type '%s' is not supported.", this.getClass().getName(), config.modelType));
+
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+
+		config.validate();
+
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		/*
+		 * Try to determine input and output schema; if these schemas are not explicitly
+		 * specified, they will be inferred from the provided data records
+		 */
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null) {
+			/*
+			 * In cases where the input schema is explicitly provided, we determine the
+			 * output schema by explicitly adding the prediction column
+			 */
+			outputSchema = getOutputSchema(inputSchema, config.predictionCol);
+			stageConfigurer.setOutputSchema(outputSchema);
+
+		}
+
+	}
+
+	/**
+	 * This method computes predictions either by applying a trained Gradient
+	 * Boosted Trees classification or regression model; as a result, the source
+	 * dataset is enriched by an extra column (predictionCol) that specifies the 
+	 * target variable in form of a Double value
+	 */
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		/*
+		 * STEP #1: Extract configuration parameters
+		 */
+		String featuresCol = config.featuresCol;
+		String predictionCol = config.predictionCol;
+		/*
+		 * The vectorCol specifies the internal column that has to be built from the
+		 * featuresCol and that is used for prediction purposes
+		 */
+		String vectorCol = "_vector";
+		/*
+		 * Prepare provided dataset by vectorizing the feature column which is specified
+		 * as Array[Double]
+		 */
+		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol);
+		Dataset<Row> predictions = null;
+
+		if (config.modelType.equals("classifier")) {
+
+			classifier.setFeaturesCol(vectorCol);
+			classifier.setPredictionCol(predictionCol);
+
+			predictions = classifier.transform(vectorset);
+
+		} else {
+
+			regressor.setFeaturesCol(vectorCol);
+			regressor.setPredictionCol(predictionCol);
+
+			predictions = regressor.transform(vectorset);
+
+		}
+
+		Dataset<Row> output = predictions.drop(vectorCol);
+		return output;
 
 	}
 
@@ -43,7 +159,23 @@ public class GBTPredictor extends BaseCompute {
 		private static final long serialVersionUID = 8253356507092880481L;
 
 		public void validate() {
-			
+
+			/** MODEL & COLUMNS **/
+			if (!Strings.isNullOrEmpty(modelName)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+			}
+			if (!Strings.isNullOrEmpty(featuresCol)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
+			}
+			if (!Strings.isNullOrEmpty(predictionCol)) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The name of the field that contains the predicted label value must not be empty.",
+						this.getClass().getName()));
+			}
+
 		}
 	}
 
