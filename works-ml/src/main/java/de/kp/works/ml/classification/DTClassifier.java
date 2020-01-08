@@ -33,7 +33,6 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -46,11 +45,10 @@ import de.kp.works.core.BaseClassifierSink;
 public class DTClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
-
-	private DTClassifierConfig config;
 	
 	public DTClassifier(DTClassifierConfig config) {
 		this.config = config;
+		this.className = DTClassifier.class.getName();
 	}
 
 	@Override
@@ -62,9 +60,9 @@ public class DTClassifier extends BaseClassifierSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, DTClassifier.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	

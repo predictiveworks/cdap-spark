@@ -29,7 +29,6 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -43,10 +42,9 @@ public class OVRClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = 3428241323322243511L;
 	
-	private OVRClassifierConfig config;
-	
 	public OVRClassifier(OVRClassifierConfig config) {
 		this.config = config;
+		this.className = OVRClassifier.class.getName();
 	}
 
 	@Override
@@ -58,9 +56,9 @@ public class OVRClassifier extends BaseClassifierSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, OVRClassifier.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	

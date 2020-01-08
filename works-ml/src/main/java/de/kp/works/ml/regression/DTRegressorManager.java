@@ -30,11 +30,11 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 
-public class DTRegressionManager extends AbstractModelManager {
+public class DTRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeRegressor";
 
-	public DecisionTreeRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public DecisionTreeRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

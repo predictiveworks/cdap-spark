@@ -43,11 +43,11 @@ public class BaseClassifierConfig extends PluginConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The name of the field that contains the feature vector.")
+	@Description("The name of the field in the input schema that contains the feature vector.")
 	@Macro
 	public String featuresCol;
 
-	@Description("The name of the field that contains the label.")
+	@Description("The name of the field in the input schema that contains the label.")
 	@Macro
 	public String labelCol;
 
@@ -64,6 +64,9 @@ public class BaseClassifierConfig extends PluginConfig {
 		Gson gson = new Gson();			
 		return gson.toJson(getParamsAsMap());
 		
+	}
+	
+	public void validate() {
 	}
 	
 	public double[] getSplits() {

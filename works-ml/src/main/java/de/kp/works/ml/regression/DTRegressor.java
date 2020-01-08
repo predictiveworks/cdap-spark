@@ -26,7 +26,6 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import de.kp.works.core.BaseRegressorConfig;
@@ -38,11 +37,10 @@ import de.kp.works.core.BaseRegressorSink;
 public class DTRegressor extends BaseRegressorSink {
 
 	private static final long serialVersionUID = -6358575044891859770L;
-
-	private DTRegressorConfig config;
 	
 	public DTRegressor(DTRegressorConfig config) {
 		this.config = config;
+		this.className = DTRegressor.class.getName();
 	}
 
 	@Override
@@ -54,9 +52,9 @@ public class DTRegressor extends BaseRegressorSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, DTRegressor.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 

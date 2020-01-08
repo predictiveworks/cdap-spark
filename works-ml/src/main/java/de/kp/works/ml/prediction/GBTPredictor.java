@@ -1,4 +1,4 @@
-package de.kp.works.ml.classification;
+package de.kp.works.ml.prediction;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,13 +22,29 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
+import de.kp.works.core.BasePredictorConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("DTPredictor")
-@Description("A prediction stage that leverages an Apache Spark based Decision Tree classifier model.")
-public class DTPredictor extends BaseCompute {
+@Name("GBTPredictor")
+@Description("A prediction stage that leverages an Apache Spark based Gradient-Boosted Trees classifier model.")
+public class GBTPredictor extends BaseCompute {
 
-	private static final long serialVersionUID = 4611875710426366606L;
+	private static final long serialVersionUID = 4445941695722336690L;
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+
+	}
+
+	public static class GBTPredictorConfig extends BasePredictorConfig {
+
+		private static final long serialVersionUID = 8253356507092880481L;
+
+		public void validate() {
+			
+		}
+	}
 
 }

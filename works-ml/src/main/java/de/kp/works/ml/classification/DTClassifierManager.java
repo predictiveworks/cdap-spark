@@ -35,8 +35,9 @@ public class DTClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeClassifier";
 
-	public DecisionTreeClassificationModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public DecisionTreeClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
+		/* Get the latest fileset path */
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*

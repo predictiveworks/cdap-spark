@@ -18,10 +18,37 @@ package de.kp.works.core;
  * 
  */
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.plugin.PluginConfig;
+import co.cask.hydrator.common.Constants;
 
 public class BasePredictorConfig extends PluginConfig {
 
 	private static final long serialVersionUID = 7887257708238649738L;
+
+	@Name(Constants.Reference.REFERENCE_NAME)
+	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
+	public String referenceName;
+
+	@Description("The unique name of the classifier or regressor model that is used for prediction.")
+	@Macro
+	public String modelName;
+
+	@Description("The type of the model that is used for prediction, either 'classifier' or 'regressor'.")
+	@Macro
+	public String modelType;
+
+	@Description("The name of the field in the input schema that contains the feature vector.")
+	@Macro
+	public String featuresCol;
+
+	@Description("The name of the field in the output schema that contains the predicted label.")
+	@Macro
+	public String predictionCol;
+	
+	public void validate() {
+	}
 
 }

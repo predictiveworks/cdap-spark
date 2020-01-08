@@ -32,7 +32,6 @@ import com.google.gson.Gson;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -45,11 +44,10 @@ import de.kp.works.core.BaseClassifierSink;
 public class NBClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = -3067097831994994477L;
-
-	private NBClassifierConfig config;
 	
 	public NBClassifier(NBClassifierConfig config) {
 		this.config = config;
+		this.className = NBClassifier.class.getName();
 	}
 
 	@Override
@@ -61,9 +59,9 @@ public class NBClassifier extends BaseClassifierSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, NBClassifier.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	

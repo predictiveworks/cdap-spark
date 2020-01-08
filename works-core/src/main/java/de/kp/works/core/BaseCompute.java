@@ -35,76 +35,67 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 public abstract class BaseCompute extends SparkCompute<StructuredRecord, StructuredRecord> {
 
 	private static final long serialVersionUID = 6855738584152026479L;
+
 	/*
-	 * An indicator to determine whether an optionally provided
-	 * output schema must be taken into account or not
+	 * Reference to input & output schema
 	 */
-	private Boolean ignoreOutputSchema = false;
-	
+	protected Schema inputSchema;
+	protected Schema outputSchema;
+
 	public BaseCompute() {
 	}
-	
-	public Boolean getIgnoreOutputSchema() {
-		return ignoreOutputSchema;
-	}
-	
-	public void setIgnoreOutputSchema(Boolean indicator) {
-		ignoreOutputSchema = indicator;
-	}
-		
+
 	/**
-	 * This method is given a Spark RDD (Resilient Distributed Dataset) containing every object
-	 * that is received from the previous stage. It performs Spark operations on the input to 
-	 * transform it into an output RDD that will be sent to the next stage.
-	 * 
-	 * @param context
-	 * @param input
-	 * @return
-	 * @throws Exception
+	 * This method is given a Spark RDD (Resilient Distributed Dataset) containing
+	 * every object that is received from the previous stage. It performs Spark
+	 * operations on the input to transform it into an output RDD that will be sent
+	 * to the next stage.
 	 */
 	@Override
 	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
 			throws Exception {
 
 		JavaSparkContext jsc = context.getSparkContext();
-
+		/*
+		 * In case of an empty input the input is immediately returned without any
+		 * furthr processing
+		 */
 		if (input.isEmpty()) {
-			return jsc.emptyRDD();
+			return input;
 		}
-
-		Schema inputSchema = context.getInputSchema();
-
+		/*
+		 * Determine input schema: first, check whether the input schema is already
+		 * provided by a previous initializing or preparing step
+		 */
 		if (inputSchema == null) {
 			inputSchema = input.first().getSchema();
 		}
-	    
-		SparkSession session = new SparkSession(jsc.sc());		
+
+		SparkSession session = new SparkSession(jsc.sc());
 
 		/*
-		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row> 
+		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
 		 */
 		StructType structType = DataFrames.toDataType(inputSchema);
-		Dataset<Row> rows = SessionHelper.toDataset(input,structType,session);
-		
+		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
+
 		/*
-		 * STEP #2: Compute source with underlying Scala library
+		 * STEP #2: Compute source with underlying Scala library and derive the output
+		 * schema dynamically from the computed dataset
 		 */
 		Dataset<Row> output = compute(context, rows);
-		
-		Schema outputSchema = context.getOutputSchema();
-		
-		if (outputSchema == null || ignoreOutputSchema == true) {
+		if (outputSchema == null) {
 			outputSchema = DataFrames.toSchema(output.schema());
 		}
 		/*
-		 * STEP #3: Transform Dataset<Row> into JavaRDD<StructuredRecord> 
+		 * STEP #3: Transform Dataset<Row> into JavaRDD<StructuredRecord>
 		 */
 		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(output, outputSchema);
 		return records;
-		
+
 	}
 
-	public Dataset<Row> compute(SparkExecutionPluginContext context,Dataset<Row> source) throws Exception {
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		throw new Exception("[BaseCompute] Not implemented");
 	}
 }

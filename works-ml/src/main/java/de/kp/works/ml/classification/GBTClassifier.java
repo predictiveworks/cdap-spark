@@ -33,7 +33,6 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -46,11 +45,10 @@ import de.kp.works.core.BaseClassifierSink;
 public class GBTClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = 2970318408059323693L;
-
-	private GBTClassifierConfig config;
 	
 	public GBTClassifier(GBTClassifierConfig config) {
 		this.config = config;
+		this.className = GBTClassifier.class.getName();
 	}
 
 	@Override
@@ -62,9 +60,9 @@ public class GBTClassifier extends BaseClassifierSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, GBTClassifier.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	

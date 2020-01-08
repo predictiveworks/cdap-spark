@@ -26,7 +26,6 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import de.kp.works.core.BaseRegressorConfig;
@@ -39,10 +38,9 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 
 	private static final long serialVersionUID = -2096945742865221471L;
 	
-	private AFTSurvivalConfig config;
-	
 	public AFTSurvivalRegressor(AFTSurvivalConfig config) {
 		this.config = config;
+		this.className = AFTSurvivalRegressor.class.getName();
 	}
 
 	@Override
@@ -54,9 +52,9 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, AFTSurvivalRegressor.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 

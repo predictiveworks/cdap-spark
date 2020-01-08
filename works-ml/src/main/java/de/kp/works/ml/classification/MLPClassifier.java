@@ -32,7 +32,6 @@ import com.google.gson.Gson;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -46,10 +45,9 @@ public class MLPClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = -7445401286046769822L;
 	
-	private MLPClassifierConfig config;
-	
 	public MLPClassifier(MLPClassifierConfig config) {
 		this.config = config;
+		this.className = MLPClassifier.class.getName();
 	}
 
 	@Override
@@ -61,9 +59,9 @@ public class MLPClassifier extends BaseClassifierSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, MLPClassifier.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	

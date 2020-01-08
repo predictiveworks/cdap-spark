@@ -1,5 +1,4 @@
 package de.kp.works.core;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,9 +18,19 @@ package de.kp.works.core;
  * 
  */
 
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.StructType;
+
+import co.cask.cdap.api.data.format.StructuredRecord;
+
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
-
+import co.cask.cdap.api.spark.sql.DataFrames;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
@@ -45,6 +54,36 @@ public class BaseClusterSink extends BaseSink {
 		 */
 		modelFs = SparkMLManager.getClusteringFS(context);
 		modelMeta = SparkMLManager.getClusteringMeta(context);
+	}
+
+	@Override
+	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
+
+		JavaSparkContext jsc = context.getSparkContext();
+		/*
+		 * In case of an empty input immediately return 
+		 * without any further processing
+		 */
+		if (input.isEmpty())
+			return;
+
+		if (inputSchema == null) {
+			inputSchema = input.first().getSchema();
+		}
+
+		SparkSession session = new SparkSession(jsc.sc());
+
+		/*
+		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
+		 */
+		StructType structType = DataFrames.toDataType(inputSchema);
+		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
+		/*
+		 * STEP #2: Compute data model from 'rows' leveraging the underlying Scala
+		 * library of Predictive Works
+		 */
+		compute(context, rows);
+
 	}
 
 }

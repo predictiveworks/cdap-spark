@@ -1,5 +1,14 @@
 package de.kp.works.core;
 
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.StructType;
+
+import co.cask.cdap.api.data.format.StructuredRecord;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -23,6 +32,8 @@ import co.cask.cdap.api.data.schema.Schema;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.api.spark.sql.DataFrames;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
@@ -32,6 +43,9 @@ public class BaseClassifierSink extends BaseSink {
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
+	
+	protected BaseClassifierConfig config;
+	protected String className;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
@@ -49,11 +63,39 @@ public class BaseClassifierSink extends BaseSink {
 
 	}
 
-	public void validateSchema(Schema inputSchema, BaseClassifierConfig config, String className) {
+	@Override
+	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
+
+		JavaSparkContext jsc = context.getSparkContext();
+		/*
+		 * In case of an empty input immediately return 
+		 * without any further processing
+		 */
+		if (input.isEmpty())
+			return;
 
 		if (inputSchema == null) {
-			throw new IllegalArgumentException(String.format("[%s] The input schema must not be empty.", className));
+			
+			inputSchema = input.first().getSchema();
+			validateSchema(inputSchema, config);
 		}
+
+		SparkSession session = new SparkSession(jsc.sc());
+
+		/*
+		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
+		 */
+		StructType structType = DataFrames.toDataType(inputSchema);
+		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
+		/*
+		 * STEP #2: Compute data model from 'rows' leveraging the underlying Scala
+		 * library of Predictive Works
+		 */
+		compute(context, rows);
+
+	}
+
+	protected void validateSchema(Schema inputSchema, BaseClassifierConfig config) {
 
 		/** FEATURES COLUMN **/
 

@@ -25,7 +25,7 @@ import org.apache.spark.sql.functions._
 
 import scala.collection.mutable.WrappedArray
 
-trait BaseTrainer {
+object MLUtils {
       
   def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = {
     /*
@@ -40,5 +40,5 @@ trait BaseTrainer {
     dataset.withColumn(vectorCol, vector_udf(col(featuresCol)))
     
   }
-
+  
 }

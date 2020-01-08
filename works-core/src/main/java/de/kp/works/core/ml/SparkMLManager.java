@@ -1,5 +1,4 @@
 package de.kp.works.core.ml;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -23,6 +22,7 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.lib.FileSetProperties;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.dataset.table.TableProperties;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 
 /**
@@ -111,11 +111,24 @@ public class SparkMLManager {
 		return fs;
 		
 	}
-
+	
+	public static FileSet getClassificationFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(CLASSIFICATION_FS);
+		return fs;
+		
+	}
+	
 	public static Table getClassificationMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
 		
 		if (context.datasetExists(CLASSIFICATION_META) == false)
 			throw new Exception("Table to store classification model metadata does not exist.");
+		
+		Table table = context.getDataset(CLASSIFICATION_META);
+		return table;
+		
+	}
+	public static Table getClassificationMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
 		
 		Table table = context.getDataset(CLASSIFICATION_META);
 		return table;
@@ -166,10 +179,24 @@ public class SparkMLManager {
 		
 	}
 
+	public static FileSet getClusteringFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(CLUSTERING_FS);
+		return fs;
+		
+	}
+
 	public static Table getClusteringMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
 		
 		if (context.datasetExists(CLUSTERING_META) == false)
 			throw new Exception("Table to store clustering model metadata does not exist.");
+		
+		Table table = context.getDataset(CLUSTERING_META);
+		return table;
+		
+	}
+
+	public static Table getClusteringMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
 		
 		Table table = context.getDataset(CLUSTERING_META);
 		return table;
@@ -220,10 +247,24 @@ public class SparkMLManager {
 		
 	}
 
+	public static FileSet getRecommendationFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(RECOMMENDATION_FS);
+		return fs;
+		
+	}
+
 	public static Table getRecommendationMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
 		
 		if (context.datasetExists(RECOMMENDATION_META) == false)
 			throw new Exception("Table to store recommendation model metadata does not exist.");
+		
+		Table table = context.getDataset(RECOMMENDATION_META);
+		return table;
+		
+	}
+
+	public static Table getRecommendationMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
 		
 		Table table = context.getDataset(RECOMMENDATION_META);
 		return table;
@@ -274,10 +315,24 @@ public class SparkMLManager {
 		
 	}
 
+	public static FileSet getRegressionFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(REGRESSION_FS);
+		return fs;
+		
+	}
+
 	public static Table getRegressionMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
 		
 		if (context.datasetExists(REGRESSION_META) == false)
 			throw new Exception("Table to store regression model metadata does not exist.");
+		
+		Table table = context.getDataset(REGRESSION_META);
+		return table;
+		
+	}
+
+	public static Table getRegressionMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
 		
 		Table table = context.getDataset(REGRESSION_META);
 		return table;

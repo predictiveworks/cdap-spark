@@ -32,7 +32,6 @@ import com.google.gson.Gson;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -46,10 +45,9 @@ public class RFRegressor extends BaseRegressorSink {
 
 	private static final long serialVersionUID = 1969655374719118217L;
 	
-	private RFRegressorConfig config;
-	
 	public RFRegressor(RFRegressorConfig config) {
 		this.config = config;
+		this.className = RFRegressor.class.getName();
 	}
 
 	@Override
@@ -61,9 +59,9 @@ public class RFRegressor extends BaseRegressorSink {
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-
-		validateSchema(inputSchema, config, RFRegressor.class.getName());
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
 	}
 	
