@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Linear Predictor",
+"display-name": "Isotonic Predictor",
  "configuration-groups": [
     {
       "label": "Basic Configuration",

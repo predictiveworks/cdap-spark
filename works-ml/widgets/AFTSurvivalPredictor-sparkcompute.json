@@ -22,10 +22,9 @@
           "name": "modelType",
           "widget-attributes": {
             "values": [
-              "classifier",
-              "regressor"
+               "regressor"
             ],
-            "default": "classifier"
+            "default": "regressor"
           }
         },
         {

@@ -38,7 +38,18 @@ class IsotonicTrainer extends RegressorTrainer {
      */
     val regressor = new IsotonicRegression()
     
-    null
+    val isotonic = params.get("isotonic").asInstanceOf[String]
+    regressor.setIsotonic(true)
+
+    if (isotonic == "antitonic") regressor.setIsotonic(false)
+    
+    val featureIndex = params.get("featureIndex").asInstanceOf[Int]
+    regressor.setFeatureIndex(featureIndex)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+    
+    regressor.fit(vectorset)
  
   }
   
