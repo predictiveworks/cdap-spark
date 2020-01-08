@@ -36,7 +36,26 @@ class RFTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new RandomForestClassifier()
-    null
+    
+    val impurity = params.get("impurity").asInstanceOf[String]
+    classifier.setImpurity(impurity)
+
+    val maxBins = params.get("maxBins").asInstanceOf[Int]
+    classifier.setMaxBins(maxBins)
+    
+    val maxDepth = params.get("maxDepth").asInstanceOf[Int]
+    classifier.setMaxDepth(maxDepth)
+    
+    val minInfoGain = params.get("minInfoGain").asInstanceOf[Double]
+    classifier.setMinInfoGain(minInfoGain)
+    
+    val numTrees = params.get("numTrees").asInstanceOf[Int]
+    classifier.setNumTrees(numTrees)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
 
   }
 }

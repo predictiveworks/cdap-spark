@@ -45,7 +45,7 @@ import de.kp.works.core.BaseClassifierSink;
 public class DTClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
-	
+
 	public DTClassifier(DTClassifierConfig config) {
 		this.config = config;
 		this.className = DTClassifier.class.getName();
@@ -57,7 +57,7 @@ public class DTClassifier extends BaseClassifierSink {
 
 		/* Validate configuration */
 		config.validate();
-		
+
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
@@ -65,7 +65,7 @@ public class DTClassifier extends BaseClassifierSink {
 			validateSchema(inputSchema, config);
 
 	}
-	
+
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		/*
@@ -76,95 +76,91 @@ public class DTClassifier extends BaseClassifierSink {
 
 		Map<String, Object> params = config.getParamsAsMap();
 		/*
-		 * The vectorCol specifies the internal column that has
-		 * to be built from the featuresCol and that is used for
-		 * training purposes
+		 * The vectorCol specifies the internal column that has to be built from the
+		 * featuresCol and that is used for training purposes
 		 */
 		String vectorCol = "_vector";
 		/*
-		 * Prepare provided dataset by vectorizing the feature
-		 * column which is specified as Array[Double]
+		 * Prepare provided dataset by vectorizing the feature column which is specified
+		 * as Array[Double]
 		 */
 		DTTrainer trainer = new DTTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 		/*
-		 * Split the vectorset into a train & test dataset for
-		 * later classification evaluation
+		 * Split the vectorset into a train & test dataset for later classification
+		 * evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
-		
-	    Dataset<Row> trainset = splitted[0];
-	    Dataset<Row> testset = splitted[1];
-	    
-	    DecisionTreeClassificationModel model = trainer.train(trainset, vectorCol, labelCol, params);
-		/*
-		 * STEP #2: Compute accuracy of the trained classification
-		 * model
-		 */
-	    String predictionCol = "_prediction";
-	    model.setPredictionCol(predictionCol);
+		Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 
-	    Dataset<Row> predictions = model.transform(testset);
-	    /*
-	     * This Decision Tree plugin leverages the multiclass evaluator
-	     * independent of whether the algorithm is used for binary classification
-	     * or not.
-	     */
-	    MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator();
-	    evaluator.setLabelCol(labelCol);
-	    evaluator.setPredictionCol(predictionCol);
-	    
-	    String metricName = "accuracy";
-	    evaluator.setMetricName(metricName);
-	    
-	    double accuracy = evaluator.evaluate(predictions);
+		Dataset<Row> trainset = splitted[0];
+		Dataset<Row> testset = splitted[1];
+
+		DecisionTreeClassificationModel model = trainer.train(trainset, vectorCol, labelCol, params);
 		/*
-		 * The accuracy coefficent is specified as JSON
-		 * metrics for this classification model and stored
-		 * by the DTClassifierManager
+		 * STEP #2: Compute accuracy of the trained classification model
 		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
+		String predictionCol = "_prediction";
+		model.setPredictionCol(predictionCol);
+
+		Dataset<Row> predictions = model.transform(testset);
+		/*
+		 * This Decision Tree plugin leverages the multiclass evaluator independent of
+		 * whether the algorithm is used for binary classification or not.
+		 */
+		MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator();
+		evaluator.setLabelCol(labelCol);
+		evaluator.setPredictionCol(predictionCol);
+
+		String metricName = "accuracy";
+		evaluator.setMetricName(metricName);
+
+		double accuracy = evaluator.evaluate(predictions);
+		/*
+		 * The accuracy coefficent is specified as JSON metrics for this classification
+		 * model and stored by the DTClassifierManager
+		 */
+		Map<String, Object> metrics = new HashMap<>();
+
 		metrics.put("name", metricName);
 		metrics.put("coefficient", accuracy);
 		/*
-		 * STEP #3: Store trained classification model 
-		 * including its associated parameters and metrics
+		 * STEP #3: Store trained classification model including its associated
+		 * parameters and metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
-		
+
 		String modelName = config.modelName;
 		new DTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
-	    
+
 	}
 
 	public static class DTClassifierConfig extends BaseClassifierConfig {
 
 		private static final long serialVersionUID = -5216062714694933745L;
-		
+
 		@Description("Impurity is a criterion how to calculate information gain. Supported values: 'entropy' and 'gini'. Default is 'gini'.")
 		@Macro
 		public String impurity;
-		
+
 		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
 				+ " on features at each node. More bins give higher granularity. Must be at least 2. Default is 32.")
 		@Macro
 		public Integer maxBins;
-		
+
 		@Description("Nonnegative value that maximum depth of the tree. E.g. depth 0 means 1 leaf node; "
-				+" depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
+				+ " depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
 		@Macro
 		public Integer maxDepth;
 
 		@Description("The minimum information gain for a split to be considered at a tree node. The value should be at least 0.0. Default is 0.0.")
 		@Macro
 		public Double minInfoGain;
-		
+
 		public DTClassifierConfig() {
 
 			dataSplit = "70:30";
-			
+
 			impurity = "gini";
 			minInfoGain = 0D;
 
@@ -172,46 +168,54 @@ public class DTClassifier extends BaseClassifierSink {
 			maxDepth = 5;
 
 		}
-	    
+
 		@Override
 		public Map<String, Object> getParamsAsMap() {
-			
+
 			Map<String, Object> params = new HashMap<>();
 
 			params.put("impurity", impurity);
 			params.put("minInfoGain", minInfoGain);
-			
+
 			params.put("maxBins", maxBins);
 			params.put("maxDepth", maxDepth);
 
 			return params;
-		
+
 		}
-		
+
 		public void validate() {
 
 			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException("[DTClassifierConfig] The model name must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(labelCol)) {
-				throw new IllegalArgumentException("[DTClassifierConfig] The name of the field that contains the label value must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the label value must not be empty.",
+								this.getClass().getName()));
 			}
-			
+
 			/** PARAMETERS **/
 			if (maxBins < 2)
-				throw new IllegalArgumentException("[DTClassifierConfig] The maximum bins must be at least 2.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The maximum bins must be at least 2.", this.getClass().getName()));
 
 			if (maxDepth < 0)
-				throw new IllegalArgumentException("[DTClassifierConfig] The maximum depth must be nonnegative.");
-			
+				throw new IllegalArgumentException(
+						String.format("[%s] The maximum depth must be nonnegative.", this.getClass().getName()));
+
 			if (minInfoGain < 0D)
-				throw new IllegalArgumentException("[DTClassifierConfig] The minimum information gain must be at least 0.0.");
+				throw new IllegalArgumentException(String
+						.format("[%s] The minimum information gain must be at least 0.0.", this.getClass().getName()));
 
 		}
-		
+
 	}
 }

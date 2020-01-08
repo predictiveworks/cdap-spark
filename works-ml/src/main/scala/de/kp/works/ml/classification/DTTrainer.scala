@@ -36,7 +36,23 @@ class DTTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new DecisionTreeClassifier()
-    null
+    
+    val impurity = params.get("impurity").asInstanceOf[String]
+    classifier.setImpurity(impurity)
+    
+    val maxBins = params.get("maxBins").asInstanceOf[Int]
+    classifier.setMaxBins(maxBins)
+    
+    val maxDepth = params.get("maxDepth").asInstanceOf[Int]
+    classifier.setMaxDepth(maxDepth)
+    
+    val minInfoGain = params.get("minInfoGain").asInstanceOf[Double]
+    classifier.setMinInfoGain(minInfoGain)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
 
   }
 }

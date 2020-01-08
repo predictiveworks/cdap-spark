@@ -37,7 +37,29 @@ class GBTTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new SparkGBTClassifier()
-    null
+			
+    val lossType = params.get("lossType").asInstanceOf[String]
+    classifier.setLossType(lossType)
+    
+    val maxBins = params.get("maxBins").asInstanceOf[Int]
+    classifier.setMaxBins(maxBins)
+    
+    val maxDepth = params.get("maxDepth").asInstanceOf[Int]
+    classifier.setMaxDepth(maxDepth)
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    classifier.setMaxIter(maxIter)
+    
+    val minInfoGain = params.get("minInfoGain").asInstanceOf[Double]
+    classifier.setMinInfoGain(minInfoGain)
+    
+    val stepSize = params.get("stepSize").asInstanceOf[Double]
+    classifier.setStepSize(stepSize)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
     
   }
 }

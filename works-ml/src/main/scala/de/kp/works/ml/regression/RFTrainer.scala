@@ -37,7 +37,23 @@ class RFTrainer extends RegressorTrainer {
      * by the vectorization operation
      */
     val regressor = new RandomForestRegressor()
-    null
+
+    val maxBins = params.get("maxBins").asInstanceOf[Int]
+    regressor.setMaxBins(maxBins)
+    
+    val maxDepth = params.get("maxDepth").asInstanceOf[Int]
+    regressor.setMaxDepth(maxDepth)
+    
+    val minInfoGain = params.get("minInfoGain").asInstanceOf[Double]
+    regressor.setMinInfoGain(minInfoGain)
+    
+    val numTrees = params.get("numTrees").asInstanceOf[Int]
+    regressor.setNumTrees(numTrees)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+    
+    regressor.fit(vectorset)
  
   }
 

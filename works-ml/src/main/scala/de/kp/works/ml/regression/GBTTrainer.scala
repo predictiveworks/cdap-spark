@@ -37,7 +37,29 @@ class GBTTrainer extends RegressorTrainer {
      * by the vectorization operation
      */
     val regressor = new SparkGBTRegressor()
-    null
+			
+    val lossType = params.get("lossType").asInstanceOf[String]
+    regressor.setLossType(lossType)
+    
+    val maxBins = params.get("maxBins").asInstanceOf[Int]
+    regressor.setMaxBins(maxBins)
+    
+    val maxDepth = params.get("maxDepth").asInstanceOf[Int]
+    regressor.setMaxDepth(maxDepth)
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    regressor.setMaxIter(maxIter)
+    
+    val minInfoGain = params.get("minInfoGain").asInstanceOf[Double]
+    regressor.setMinInfoGain(minInfoGain)
+    
+    val stepSize = params.get("stepSize").asInstanceOf[Double]
+    regressor.setStepSize(stepSize)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+    
+    regressor.fit(vectorset)
  
   }
   

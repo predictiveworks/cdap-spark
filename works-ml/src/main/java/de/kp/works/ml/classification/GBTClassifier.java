@@ -45,7 +45,7 @@ import de.kp.works.core.BaseClassifierSink;
 public class GBTClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = 2970318408059323693L;
-	
+
 	public GBTClassifier(GBTClassifierConfig config) {
 		this.config = config;
 		this.className = GBTClassifier.class.getName();
@@ -57,7 +57,7 @@ public class GBTClassifier extends BaseClassifierSink {
 
 		/* Validate configuration */
 		config.validate();
-		
+
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
@@ -65,7 +65,7 @@ public class GBTClassifier extends BaseClassifierSink {
 			validateSchema(inputSchema, config);
 
 	}
-	
+
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		/*
@@ -76,64 +76,60 @@ public class GBTClassifier extends BaseClassifierSink {
 
 		Map<String, Object> params = config.getParamsAsMap();
 		/*
-		 * The vectorCol specifies the internal column that has
-		 * to be built from the featuresCol and that is used for
-		 * training purposes
+		 * The vectorCol specifies the internal column that has to be built from the
+		 * featuresCol and that is used for training purposes
 		 */
 		String vectorCol = "_vector";
 		/*
-		 * Prepare provided dataset by vectorizing the feature
-		 * column which is specified as Array[Double]
+		 * Prepare provided dataset by vectorizing the feature column which is specified
+		 * as Array[Double]
 		 */
 		GBTTrainer trainer = new GBTTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 		/*
-		 * Split the vectorset into a train & test dataset for
-		 * later classification evaluation
+		 * Split the vectorset into a train & test dataset for later classification
+		 * evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
-		
-	    Dataset<Row> trainset = splitted[0];
-	    Dataset<Row> testset = splitted[1];
+		Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 
-	    GBTClassificationModel model = trainer.train(trainset, vectorCol, labelCol, params);
-		/*
-		 * STEP #2: Compute accuracy of the trained classification
-		 * model
-		 */
-	    String predictionCol = "_prediction";
-	    model.setPredictionCol(predictionCol);
+		Dataset<Row> trainset = splitted[0];
+		Dataset<Row> testset = splitted[1];
 
-	    Dataset<Row> predictions = model.transform(testset);
-	    /*
-	     * This GBT Classifier plugin leverages the multiclass evaluator
-	     * independent of whether the algorithm is used for binary classification
-	     * or not.
-	     */
-	    MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator();
-	    evaluator.setLabelCol(labelCol);
-	    evaluator.setPredictionCol(predictionCol);
-	    
-	    String metricName = "accuracy";
-	    evaluator.setMetricName(metricName);
-	    
-	    double accuracy = evaluator.evaluate(predictions);
+		GBTClassificationModel model = trainer.train(trainset, vectorCol, labelCol, params);
 		/*
-		 * The accuracy coefficent is specified as JSON
-		 * metrics for this classification model and stored
-		 * by the GBTClassifierManager
+		 * STEP #2: Compute accuracy of the trained classification model
 		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
+		String predictionCol = "_prediction";
+		model.setPredictionCol(predictionCol);
+
+		Dataset<Row> predictions = model.transform(testset);
+		/*
+		 * This GBT Classifier plugin leverages the multiclass evaluator independent of
+		 * whether the algorithm is used for binary classification or not.
+		 */
+		MulticlassClassificationEvaluator evaluator = new MulticlassClassificationEvaluator();
+		evaluator.setLabelCol(labelCol);
+		evaluator.setPredictionCol(predictionCol);
+
+		String metricName = "accuracy";
+		evaluator.setMetricName(metricName);
+
+		double accuracy = evaluator.evaluate(predictions);
+		/*
+		 * The accuracy coefficent is specified as JSON metrics for this classification
+		 * model and stored by the GBTClassifierManager
+		 */
+		Map<String, Object> metrics = new HashMap<>();
+
 		metrics.put("name", metricName);
 		metrics.put("coefficient", accuracy);
 		/*
-		 * STEP #3: Store trained classification model 
-		 * including its associated parameters and metrics
+		 * STEP #3: Store trained classification model including its associated
+		 * parameters and metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
-		
+
 		String modelName = config.modelName;
 		new GBTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
@@ -146,14 +142,14 @@ public class GBTClassifier extends BaseClassifierSink {
 		@Description("The type of the loss function the Gradient-Boosted Trees algorithm tries to minimize. Default is 'logistic'.")
 		@Macro
 		public String lossType;
-		
+
 		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
 				+ " on features at each node. More bins give higher granularity. Must be at least 2. Default is 32.")
 		@Macro
 		public Integer maxBins;
-		
+
 		@Description("Nonnegative value that maximum depth of the tree. E.g. depth 0 means 1 leaf node; "
-				+" depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
+				+ " depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
 		@Macro
 		public Integer maxDepth;
 
@@ -164,32 +160,34 @@ public class GBTClassifier extends BaseClassifierSink {
 		@Description("The minimum information gain for a split to be considered at a tree node. The value should be at least 0.0. Default is 0.0.")
 		@Macro
 		public Double minInfoGain;
-		
+
 		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.1")
 		@Macro
 		public Double stepSize;
-		
+
 		public GBTClassifierConfig() {
 
 			dataSplit = "70:30";
-			
+
 			lossType = "logistic";
 			minInfoGain = 0D;
 
 			maxBins = 32;
 			maxDepth = 5;
-			
+
 			maxIter = 20;
 			stepSize = 0.1;
 
 		}
-	    
+
 		@Override
 		public Map<String, Object> getParamsAsMap() {
-			
+
 			Map<String, Object> params = new HashMap<>();
+
+			params.put("lossType", lossType);
 			params.put("minInfoGain", minInfoGain);
-			
+
 			params.put("maxBins", maxBins);
 			params.put("maxDepth", maxDepth);
 
@@ -197,39 +195,49 @@ public class GBTClassifier extends BaseClassifierSink {
 			params.put("stepSize", stepSize);
 
 			return params;
-		
+
 		}
 
 		public void validate() {
 
 			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException("[GBTClassifierConfig] The model name must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException("[GBTClassifierConfig] The name of the field that contains the feature vector must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(labelCol)) {
-				throw new IllegalArgumentException("[GBTClassifierConfig] The name of the field that contains the label value must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the label value must not be empty.",
+								this.getClass().getName()));
 			}
-			
+
 			/** PARAMETERS **/
 			if (maxBins < 2)
-				throw new IllegalArgumentException("[GBTClassifierConfig] The maximum bins must be at least 2.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The maximum bins must be at least 2.", this.getClass().getName()));
 
 			if (maxDepth < 0)
-				throw new IllegalArgumentException("[GBTClassifierConfig] The maximum depth must be nonnegative.");
-			
+				throw new IllegalArgumentException(
+						String.format("[%s] The maximum depth must be nonnegative.", this.getClass().getName()));
+
 			if (minInfoGain < 0D)
-				throw new IllegalArgumentException("[GBTClassifierConfig] The minimum information gain must be at least 0.0.");
-			
+				throw new IllegalArgumentException(String
+						.format("[%s] The minimum information gain must be at least 0.0.", this.getClass().getName()));
+
 			if (maxIter < 1)
-				throw new IllegalArgumentException("[GBTClassifierConfig] The maximum number of iterations must be at least 1.");
-						
+				throw new IllegalArgumentException(String.format(
+						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
+
 			if (stepSize <= 0D || stepSize > 1D)
-				throw new IllegalArgumentException("[GBTClassifierConfig] The learning rate must be in interval (0, 1].");
+				throw new IllegalArgumentException(
+						String.format("[%s] The learning rate must be in interval (0, 1].", this.getClass().getName()));
 
 		}
-		
+
 	}
 }
