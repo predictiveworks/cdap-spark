@@ -155,7 +155,7 @@ public class LRClassifier extends BaseClassifierSink {
 		@Macro
 		public Double regParam;
 
-		@Description("The positive convergence tolerance of iterations. Smaller values wuth lead to higher accuracy with the cost "
+		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
 				+ "of more iterations. Default is 1e-6")
 		@Macro
 		public Double tol;

@@ -37,7 +37,26 @@ class LinearTrainer extends RegressorTrainer {
      * by the vectorization operation
      */
     val regressor = new LinearRegression()
-    null
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    regressor.setMaxIter(maxIter);
+    
+    val elasticNetParam = params.get("elasticNetParam").asInstanceOf[Double]
+    regressor.setElasticNetParam(elasticNetParam)
+    
+    val regParam = params.get("regParam").asInstanceOf[Double]
+    regressor.setRegParam(regParam)
+    
+    val tol = params.get("tol").asInstanceOf[Double]
+    regressor.setTol(tol)
+
+    val solver = params.get("solver").asInstanceOf[String]
+    regressor.setSolver(solver)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+    
+    regressor.fit(vectorset)
  
   }
   

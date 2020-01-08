@@ -34,7 +34,7 @@ public class LinearRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "LinearRegressionRegressor";
 
-	public LinearRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public LinearRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
