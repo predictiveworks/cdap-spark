@@ -1,0 +1,66 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "AFT Regressor",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Label Field",
+          "name": "labelCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Censor Field",
+          "name": "censorCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Data Split",
+          "name": "datasSplit",
+          "widget-attributes": {
+            "default": "70:30"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Iterations",
+          "name": "maxIter",
+          "widget-attributes": {
+            "default": "100"
+          }
+        },
+         {
+          "widget-type": "textbox",
+          "label": "Conversion Tolerance",
+          "name": "tol",
+          "widget-attributes": {
+            "default": "1E-6"
+          }
+        }
+       ]
+    }
+  ]
+}

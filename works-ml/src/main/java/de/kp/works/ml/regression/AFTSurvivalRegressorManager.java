@@ -29,12 +29,13 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class AFTSurvivalRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "AFTSurvivalRegressor";
 
-	public AFTSurvivalRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public AFTSurvivalRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
@@ -47,7 +48,7 @@ public class AFTSurvivalRegressorManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			AFTSurvivalRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -70,6 +71,7 @@ public class AFTSurvivalRegressorManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * regression fileset
 		 */
+		String fsName = SparkMLManager.REGRESSION_FS;
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);

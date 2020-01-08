@@ -31,13 +31,24 @@ class AFTSurvivalTrainer extends RegressorTrainer {
   /**
    * The dataset provided has been vectorized in a previous operations
    */
-  def train(vectorset:Dataset[Row], vectorCol:String, labelCol:String, params:JMap[String,Object]):AFTSurvivalRegressionModel = {
+  def train(vectorset:Dataset[Row], vectorCol:String, labelCol:String, censorCol:String, params:JMap[String,Object]):AFTSurvivalRegressionModel = {
     /*
      * The vectorCol is an internal _vector column; it is added
      * by the vectorization operation
      */    
     val regressor = new AFTSurvivalRegression()
-    null
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    regressor.setMaxIter(maxIter);
+    
+    val tol = params.get("tol").asInstanceOf[Double]
+    regressor.setTol(tol)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+
+    regressor.setCensorCol(censorCol)    
+    regressor.fit(vectorset)
     
   }
 }

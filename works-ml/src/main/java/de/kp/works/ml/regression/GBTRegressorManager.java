@@ -29,6 +29,7 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class GBTRegressorManager extends AbstractModelManager {
 
@@ -47,7 +48,7 @@ public class GBTRegressorManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			GBTRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -70,6 +71,7 @@ public class GBTRegressorManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * regression fileset
 		 */
+		String fsName = SparkMLManager.REGRESSION_FS;
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
