@@ -24,6 +24,7 @@ import java.util.Map;
 import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
@@ -37,7 +38,7 @@ import de.kp.works.core.BaseRegressorSink;
 public class GLRegressor extends BaseRegressorSink {
 
 	private static final long serialVersionUID = -3133087003110797539L;
-	
+
 	public GLRegressor(GLRegressorConfig config) {
 		this.config = config;
 		this.className = GLRegressor.class.getName();
@@ -49,7 +50,7 @@ public class GLRegressor extends BaseRegressorSink {
 
 		/* Validate configuration */
 		config.validate();
-		
+
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
@@ -61,41 +62,142 @@ public class GLRegressor extends BaseRegressorSink {
 	public static class GLRegressorConfig extends BaseRegressorConfig {
 
 		private static final long serialVersionUID = -17449766299180019L;
-		
+
+		@Description("The maximum number of iterations to train the Linear Regression model. Default is 25.")
+		@Macro
+		public Integer maxIter;
+
+		@Description("The nonnegative regularization parameter. Default is 0.0.")
+		@Macro
+		public Double regParam;
+
+		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
+				+ "of more iterations. Default is 1e-6")
+		@Macro
+		public Double tol;
+
+		/*
+		 * The only solver algorithm is currently 'irls'; therefore, this parameter is
+		 * omitted
+		 */
+
+		@Description("The name of the family which is a description of the error distribution used in this model. "
+				+ "Supported values are: 'gaussian', 'binomial', 'poisson' and 'gamma'. The family values are correlated with the name of the link function. Default is 'gaussian'.")
+		@Macro
+		public String family;
+
+		@Description("The name of the link function which provides the relationship between the linear predictor and the mean of the distribution function. "
+				+ "Supported values are: 'identity', 'log', 'inverse', 'logit', 'probit', 'cloglog' and 'sqrt'. Default is 'identity' (gaussian).")
+		@Macro
+		public String link;
+
 		public GLRegressorConfig() {
-			/*
-			 * The default split of the dataset into train & test data
-			 * is set to 70:30
-			 */
+
 			dataSplit = "70:30";
+			maxIter = 25;
+
+			regParam = 0D;
+			tol = 1e-6;
+
+			family = "gaussian";
+
 		}
-	    
+
 		@Override
 		public Map<String, Object> getParamsAsMap() {
-			
+
 			Map<String, Object> params = new HashMap<>();
-			params.put("split", dataSplit);
+			params.put("maxIter", maxIter);
+
+			params.put("regParam", regParam);
+			params.put("tol", tol);
+
+			params.put("family", family);
+			params.put("link", link);
 
 			return params;
-		
+
+		}
+
+		private Boolean validateFamilyAndLink() {
+
+			switch (family) {
+			case "gaussian": {
+
+				if (link.equals("identity") || link.equals("log") || link.equals("inverse"))
+					return true;
+				else
+					return false;
+			}
+
+			case "binomial": {
+
+				if (link.equals("logit") || link.equals("probit") || link.equals("cloglog"))
+					return true;
+				else
+					return false;
+
+			}
+			case "poisson": {
+
+				if (link.equals("log") || link.equals("identity") || link.equals("sqrt"))
+					return true;
+				else
+					return false;
+
+			}
+			case "gamma": {
+
+				if (link.equals("inverse") || link.equals("identity") || link.equals("log"))
+					return true;
+				else
+					return false;
+
+			}
+			default:
+				return false;
+			}
+
 		}
 
 		public void validate() {
 
-			/** MODEL & COLUMNS **/
 			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException("[GLRegressorConfig] The model name must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException("[GLRegressorConfig] The name of the field that contains the feature vector must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(labelCol)) {
-				throw new IllegalArgumentException("[GLRegressorConfig] The name of the field that contains the label value must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the label value must not be empty.",
+								this.getClass().getName()));
 			}
-			
+
 			/** PARAMETERS **/
-			
+			if (maxIter < 1)
+				throw new IllegalArgumentException(String.format(
+						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
+
+			if (regParam < 0D)
+				throw new IllegalArgumentException(String
+						.format("[%s] The regularization parameter must be at least 0.0.", this.getClass().getName()));
+
+			if (tol <= 0D)
+				throw new IllegalArgumentException(
+						String.format("[%s] The iteration tolerance must be positive.", this.getClass().getName()));
+
+			if (validateFamilyAndLink() == false) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The combination of the family parameter and the selected link function is not supported.",
+						this.getClass().getName()));
+
+			}
 		}
-				
+
 	}
+
 }

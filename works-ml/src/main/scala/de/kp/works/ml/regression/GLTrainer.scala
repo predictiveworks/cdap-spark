@@ -37,7 +37,26 @@ class GLTrainer extends RegressorTrainer {
      * by the vectorization operation
      */
     val regressor = new GeneralizedLinearRegression()
-    null
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    regressor.setMaxIter(maxIter);
+     
+    val regParam = params.get("regParam").asInstanceOf[Double]
+    regressor.setRegParam(regParam)
+    
+    val tol = params.get("tol").asInstanceOf[Double]
+    regressor.setTol(tol)
+
+    val family = params.get("family").asInstanceOf[String]
+    regressor.setFamily(family)
+
+    val link = params.get("link").asInstanceOf[String]
+    regressor.setLink(link)
+
+    regressor.setFeaturesCol(vectorCol)
+    regressor.setLabelCol(labelCol)
+    
+    regressor.fit(vectorset)
  
   }
 

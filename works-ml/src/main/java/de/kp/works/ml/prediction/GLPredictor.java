@@ -18,7 +18,7 @@ package de.kp.works.ml.prediction;
  * 
  */
 
-import org.apache.spark.ml.regression.LinearRegressionModel;
+import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -35,20 +35,20 @@ import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.regression.LinearRegressorManager;
+import de.kp.works.ml.regression.GLRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("LinearPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Linear Regression regressor model.")
-public class LinearPredictor extends BasePredictorCompute {
+@Name("GLPredictor")
+@Description("A prediction stage that leverages a trained Apache Spark based Generalized Linear Regression regressor model.")
+public class GLPredictor extends BasePredictorCompute {
 
-	private static final long serialVersionUID = -1443274244219761815L;
+	private static final long serialVersionUID = 4505262483800490605L;
 
-	private LinearPredictorConfig config;
+	private GLPredictorConfig config;
 
-	private LinearRegressionModel regressor;
+	private GeneralizedLinearRegressionModel regressor;
 
-	public LinearPredictor(LinearPredictorConfig config) {
+	public GLPredictor(GLPredictorConfig config) {
 		this.config = config;
 	}
 
@@ -59,7 +59,7 @@ public class LinearPredictor extends BasePredictorCompute {
 		modelFs = SparkMLManager.getRegressionFS(context);
 		modelMeta = SparkMLManager.getRegressionMeta(context);
 
-		regressor = new LinearRegressorManager().read(modelFs, modelMeta, config.modelName);
+		regressor = new GLRegressorManager().read(modelFs, modelMeta, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -122,7 +122,7 @@ public class LinearPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class LinearPredictorConfig extends BasePredictorConfig {
+	public static class GLPredictorConfig extends BasePredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 
@@ -148,3 +148,4 @@ public class LinearPredictor extends BasePredictorCompute {
 	}
 
 }
+

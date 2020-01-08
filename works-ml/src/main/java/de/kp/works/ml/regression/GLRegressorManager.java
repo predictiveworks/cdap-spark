@@ -34,7 +34,7 @@ public class GLRegressorManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "GeneralizedLinearRegressionRegressor";
 
-	public GeneralizedLinearRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public GeneralizedLinearRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
