@@ -35,7 +35,7 @@ public class LRClassifierManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "LogisticRegressionClassifier";
 
-	public LogisticRegressionModel read(Table table, FileSet fs, String modelName) throws IOException {
+	public LogisticRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

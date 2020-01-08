@@ -37,7 +37,23 @@ class LRTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new LogisticRegression()
-    null
- 
+    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    classifier.setMaxIter(maxIter);
+    
+    val elasticNetParam = params.get("elasticNetParam").asInstanceOf[Double]
+    classifier.setElasticNetParam(elasticNetParam)
+    
+    val regParam = params.get("regParam").asInstanceOf[Double]
+    classifier.setRegParam(regParam)
+    
+    val tol = params.get("tol").asInstanceOf[Double]
+    classifier.setTol(tol)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
+
   }
 }

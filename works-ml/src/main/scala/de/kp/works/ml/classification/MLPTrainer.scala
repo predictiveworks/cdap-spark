@@ -36,6 +36,38 @@ class MLPTrainer extends ClassifierTrainer {
      * by the vectorization operation
      */
     val classifier = new MultilayerPerceptronClassifier()
-    null
+
+    val solver = params.get("solver").asInstanceOf[String]
+    classifier.setSolver(solver)
+    
+    val layers = getLayers(params.get("layers").asInstanceOf[String])
+    classifier.setLayers(layers)
+
+    val blockSize = params.get("blockSize").asInstanceOf[Int]
+    classifier.setBlockSize(blockSize)
+
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    classifier.setMaxIter(maxIter)
+
+    val stepSize = params.get("stepSize").asInstanceOf[Double]
+    classifier.setStepSize(stepSize)
+
+    val tol = params.get("tol").asInstanceOf[Double]
+    classifier.setTol(tol)
+
+    classifier.setFeaturesCol(vectorCol)
+    classifier.setLabelCol(labelCol)
+    
+    classifier.fit(vectorset)
+    
   }
+  
+  private def getLayers(layersStr: String):Array[Int] = {
+    
+    layersStr.split(",").map(layer => {
+      Integer.parseInt(layer.trim)
+    })
+    
+  }
+
 }
