@@ -1,5 +1,4 @@
 package de.kp.works.ml.regression
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,8 +18,13 @@ package de.kp.works.ml.regression
  * 
  */
 
-import de.kp.works.ml.BaseTrainer
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 
-class RegressorTrainer extends BaseTrainer {
+import de.kp.works.ml.MLUtils
+
+trait RegressorTrainer {
+      
+  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(dataset, featuresCol, vectorCol)
   
 }

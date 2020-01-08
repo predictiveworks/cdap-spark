@@ -19,8 +19,13 @@ package de.kp.works.ml.classification
  * 
  */
 
-import de.kp.works.ml.BaseTrainer
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 
-class ClassifierTrainer extends BaseTrainer {
+import de.kp.works.ml.MLUtils
 
+trait ClassifierTrainer {
+      
+  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(dataset, featuresCol, vectorCol)
+  
 }
