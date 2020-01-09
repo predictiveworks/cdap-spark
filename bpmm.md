@@ -2,7 +2,7 @@
 
 [**Predictive Works.**](https://predictiveworks.eu) has been designed to facilitate the corporate adoption of Predictive Analytics for enterprises at any scale.
 
-## Why?
+## Why BPMM?
 The landscape of modern big data and scalable analytics solutions is complex and often opaque for many enterprises. The approch to give value to the continously increasing amout of data typically ends in a plethora of different technologies and solutions with little interoperability.
 
 We want to share a business maturity model that supports companies to gain sustainable value from their data with a strong focus on *unification* & *standardization*. This model also builds the foundation for **Predictive Works.**
@@ -11,7 +11,7 @@ The BPMM is a practical guide with actionable recommendations based on (existing
 
 ## Maturity Levels
 
-The BPMM is the result of a long standing experience how many companies approach predictive analytics and defines 4 maturity levels:
+The BPMM is the result of a long standing experience how many companies approach predictive analytics and defines 5 maturity levels:
 
 ### Level 1
 
