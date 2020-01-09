@@ -34,12 +34,10 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.hydrator.common.Constants;
+import de.kp.works.core.BaseClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -49,10 +47,9 @@ public class KMeansSink extends BaseClusterSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;
 
-	private KMeansConfig config;
-	
 	public KMeansSink(KMeansConfig config) {
 		this.config = config;
+		this.className = KMeansSink.class.getName();
 	}
 
 	@Override
@@ -61,36 +58,18 @@ public class KMeansSink extends BaseClusterSink {
 
 		/* Validate configuration */
 		config.validate();
-		
+
 		/*
-		 * Validate whether the input schema exists, contains the specified
-		 * field for the feature vector and defines the feature vector as an
-		 * ARRAY[DOUBLE]
+		 * Validate whether the input schema exists, contains the specified field for
+		 * the feature vector and defines the feature vector as an ARRAY[DOUBLE]
 		 */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		Schema inputSchema = stageConfigurer.getInputSchema();
-		
-		if (inputSchema == null) {
-			throw new IllegalArgumentException("[KMeansSink] The input schema must not be empty.");
-		}
-		
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException("[KMeansSink] The input schema must contain the field that defines the feature vector.");
-		}
-		
-		Schema.Type featuresType = featuresCol.getSchema().getType();
-		if (!featuresType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException("[KMeansSink] The field that defines the feature vector must be an ARRAY.");
-		}
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
 
-		Schema.Type featureType = featuresCol.getSchema().getComponentSchema().getType();
-		if (!featureType.equals(Schema.Type.DOUBLE)) {
-			throw new IllegalArgumentException("[KMeansSink] The data type of the feature value must be a DOUBLE.");
-		}
-		
 	}
-	
+
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
@@ -100,161 +79,146 @@ public class KMeansSink extends BaseClusterSink {
 		String featuresCol = config.featuresCol;
 		Map<String, Object> params = config.getParamsAsMap();
 		/*
-		 * The vectorCol specifies the internal column that has
-		 * to be built from the featuresCol and that is used for
-		 * training purposes
+		 * The vectorCol specifies the internal column that has to be built from the
+		 * featuresCol and that is used for training purposes
 		 */
 		String vectorCol = "_vector";
 		/*
-		 * Prepare provided dataset by vectorizing the feature
-		 * column which is specified as Array[Double]
+		 * Prepare provided dataset by vectorizing the feature column which is specified
+		 * as Array[Double]
 		 */
 		KMeansTrainer trainer = new KMeansTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 
 		KMeansModel model = trainer.train(vectorset, vectorCol, params);
 		/*
-		 * STEP #2: Compute silhouette coefficient as metric for this
-		 * KMeans parameter setting: to this end, the predictions are
-		 * computed based on the trained model and the vectorized data
-		 * set
+		 * STEP #2: Compute silhouette coefficient as metric for this KMeans parameter
+		 * setting: to this end, the predictions are computed based on the trained model
+		 * and the vectorized data set
 		 */
 		String predictionCol = "_cluster";
 		model.setPredictionCol(predictionCol);
-		
+
 		Dataset<Row> predictions = model.transform(vectorset);
 		/*
-		 * The KMeans evaluator computes the silhouette coefficent 
-		 * of the computed predictions as a means to evaluate the
-		 * quality of the chosen parameters
+		 * The KMeans evaluator computes the silhouette coefficent of the computed
+		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
 		KMeansEvaluator evaluator = new KMeansEvaluator();
-		
+
 		evaluator.setPredictionCol(predictionCol);
 		evaluator.setVectorCol(vectorCol);
-		
+
 		evaluator.setMetricName("silhouette");
 		evaluator.setDistanceMeasure("squaredEuclidean");
-		
+
 		Double coefficent = evaluator.evaluate(predictions);
 		/*
-		 * The silhouette coefficent is specified as JSON
-		 * metrics for this KMeans model and stored by the
-		 * KMeans manager
+		 * The silhouette coefficent is specified as JSON metrics for this KMeans model
+		 * and stored by the KMeans manager
 		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
+		Map<String, Object> metrics = new HashMap<>();
+
 		metrics.put("name", "silhouette");
 		metrics.put("measure", "squaredEuclidean");
 		metrics.put("coefficient", coefficent);
 		/*
-		 * STEP #3: Store trained KMeans model including
-		 * its associated parameters and metrics
+		 * STEP #3: Store trained KMeans model including its associated parameters and
+		 * metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
-		
+
 		String modelName = config.modelName;
 		new KMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
-		
+
 	}
 
-	public static class KMeansConfig extends PluginConfig {
+	public static class KMeansConfig extends BaseClusterConfig {
 
 		private static final long serialVersionUID = -1071711175500255534L;
-		  
-		@Name(Constants.Reference.REFERENCE_NAME)
-		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-		public String referenceName;
-		
-	    @Description("The unique name of the KMeans clustering model.")
-	    @Macro
-	    private String modelName;
-		
-	    @Description("The name of the field that contains the feature vector.")
-	    @Macro
-	    private String featuresCol;
-		
-	    @Description("The number of cluster that have to be created.")
-	    @Macro
-	    private Integer k;
-		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+
+		@Description("The number of cluster that have to be created.")
+		@Macro
+		private Integer k;
+
+		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
 		@Nullable
-	    @Macro
-	    private Integer maxIter;
-		
-	    @Description("The convergence tolerance of the algorithm. Default value: 1e-4")
+		@Macro
+		private Integer maxIter;
+
+		@Description("The convergence tolerance of the algorithm. Default value: 1e-4")
 		@Nullable
-	    @Macro
-	    private Double tolerance;
-		
-	    @Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value: 2")
+		@Macro
+		private Double tolerance;
+
+		@Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value: 2")
 		@Nullable
-	    @Macro
-	    private Integer initSteps;
-		
-	    @Description("The initialization model of the algorithm. This can be either 'random' to choose random "
-	    		+"random points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value: 'parallel'")
+		@Macro
+		private Integer initSteps;
+
+		@Description("The initialization mode of the algorithm. This can be either 'random' to choose random "
+				+ "random points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value: 'parallel'")
 		@Nullable
-	    @Macro
-	    private String initMode;
-	    
-	    public KMeansConfig() {
-	    	
-	    		referenceName = "KMeansSink";
-	    		
-	    		maxIter = 20;
-	    		tolerance = 1e-4;
-	    		
-	    		initSteps = 2;
-	    		initMode = "parallel";
-	    				
-	    }
-	    
+		@Macro
+		private String initMode;
+
+		public KMeansConfig() {
+
+			referenceName = "KMeansSink";
+
+			maxIter = 20;
+			tolerance = 1e-4;
+
+			initSteps = 2;
+			initMode = "parallel";
+
+		}
+
 		public Map<String, Object> getParamsAsMap() {
-			
-			Map<String,Object> params = new HashMap<String,Object>();
+
+			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("k", k);
 			params.put("maxIter", maxIter);
-			
+
 			params.put("tolerance", tolerance);
-			
+
 			params.put("initSteps", initSteps);
 			params.put("initMode", initMode);
-			
+
 			return params;
 
 		}
-		
-		public String getParamsAsJSON() {
 
-			Gson gson = new Gson();			
-			return gson.toJson(getParamsAsMap());
-			
-		}
-		
 		public void validate() {
 
 			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException("[KMeansConfig] The model name must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException("[KMeansConfig] The name of the field that contains the feature vector must not be empty.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+								this.getClass().getName()));
 			}
 			if (k <= 1) {
-				throw new IllegalArgumentException("[KMeansConfig] The number of clusters must be greater than 1.");
+				throw new IllegalArgumentException(String.format("[%s] The number of clusters must be greater than 1.",
+						this.getClass().getName()));
 			}
 			if (maxIter <= 0) {
-				throw new IllegalArgumentException("[KMeansConfig] The number of iterations must be greater than 0.");
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of iterations must be greater than 0.", this.getClass().getName()));
 			}
 			if (initSteps <= 0) {
-				throw new IllegalArgumentException("[KMeansConfig] The number of initial steps must be greater than 0.");
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of initial steps must be greater than 0.", this.getClass().getName()));
 			}
 			if (!(initMode.equals("random") || initMode.equals("parallel"))) {
-				throw new IllegalArgumentException("[KMeansConfig] The initialization mode must be either 'parallel' or 'random'.");
+				throw new IllegalArgumentException(
+						String.format("[%s] The initialization mode must be either 'parallel' or 'random'.",
+								this.getClass().getName()));
 			}
-			
+
 		}
 	}
 }

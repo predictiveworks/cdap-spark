@@ -26,7 +26,7 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
@@ -40,6 +40,33 @@ public class BaseClusterSink extends BaseSink {
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
+
+	protected BaseClusterConfig config;
+	protected String className;
+	
+	protected void validateSchema(Schema inputSchema, BaseClusterConfig config) {
+
+		/** FEATURES COLUMN **/
+
+		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
+		if (featuresCol == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the feature vector.", className));
+		}
+
+		Schema.Type featuresType = featuresCol.getSchema().getType();
+		if (!featuresType.equals(Schema.Type.ARRAY)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the feature vector must be an ARRAY.", className));
+		}
+
+		Schema.Type featureType = featuresCol.getSchema().getComponentSchema().getType();
+		if (!featureType.equals(Schema.Type.DOUBLE)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data type of the feature value must be a DOUBLE.", className));
+		}
+
+	}
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
@@ -68,7 +95,10 @@ public class BaseClusterSink extends BaseSink {
 			return;
 
 		if (inputSchema == null) {
+
 			inputSchema = input.first().getSchema();
+			validateSchema(inputSchema, config);
+
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());

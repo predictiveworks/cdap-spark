@@ -21,20 +21,19 @@ package de.kp.works.ml.clustering;
 
 import java.io.IOException;
 import java.util.Date;
-
 import org.apache.spark.ml.clustering.*;
-
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class LDAManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "LDA";
-
-	public DistributedLDAModel read(Table table, FileSet fs, String modelName) throws IOException {
+	private String ALGORITHM_NAME = "DistributedLDA";
+	
+	public LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
@@ -47,8 +46,8 @@ public class LDAManager extends AbstractModelManager {
 		
 	}
 
-	public void save(Table table, FileSet fs, String fsName, String modelName, String modelParams, String modelMetrics,
-			DistributedLDAModel model) throws IOException {
+	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			LDAModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
@@ -70,6 +69,7 @@ public class LDAManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * clustering fileset
 		 */
+		String fsName = SparkMLManager.CLUSTERING_FS;
 		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);

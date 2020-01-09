@@ -1,6 +1,4 @@
 package de.kp.works.ml.clustering
-
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,27 +22,12 @@ import java.util.{Map => JMap}
 import org.apache.spark.ml.clustering._
 import org.apache.spark.mllib.clustering.{KMeans => MLlibKMeans}
 
-import org.apache.spark.ml.linalg.Vectors
-
 import org.apache.spark.sql._
-import org.apache.spark.sql.functions._
-
-import scala.collection.mutable.WrappedArray
+import de.kp.works.ml.MLUtils
 
 class KMeansTrainer() {
   
-  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = {
-    /*
-     * The trainset contains an Array of Double value and KMeans 
-     * expects a Vector representation
-     */
-    val vector_udf = udf {features:WrappedArray[Double] => {
-      Vectors.dense(features.toArray)
-    }}
-
-    trainset.withColumn(vectorCol, vector_udf(col(featuresCol)))
-    
-  }
+  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(trainset, featuresCol, vectorCol)
   
   def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):KMeansModel = {
     

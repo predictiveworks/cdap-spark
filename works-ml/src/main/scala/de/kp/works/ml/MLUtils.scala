@@ -18,7 +18,7 @@ package de.kp.works.ml
  * 
  */
 
-import org.apache.spark.ml.linalg.Vectors
+import org.apache.spark.ml.linalg.{Vector, Vectors}
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
@@ -30,8 +30,8 @@ object MLUtils {
   def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = {
     /*
      * The dataset contains an Array of Double value (from CDAP structured
-     * record) and the classifier or regression trainer expects a Vector 
-     * representation
+     * record) and the classifier, clustering or regression trainer expects
+     * a Vector representation
      */
     val vector_udf = udf {features:WrappedArray[Double] => {
       Vectors.dense(features.toArray)
@@ -40,5 +40,18 @@ object MLUtils {
     dataset.withColumn(vectorCol, vector_udf(col(featuresCol)))
     
   }
-  
+       
+  def devectorize(dataset:Dataset[Row], vectorCol:String, featureCol:String): Dataset[Row] = {
+    /*
+     * The dataset contains an Apache Spark Vector and must be transformed
+     * into an Array of Double value (to CDAP Structured Record)
+     */
+    val devector_udf = udf {vector:Vector => {
+      vector.toArray
+    }}
+
+    dataset.withColumn(featureCol, devector_udf(col(vectorCol)))
+    
+  }
+ 
 }
