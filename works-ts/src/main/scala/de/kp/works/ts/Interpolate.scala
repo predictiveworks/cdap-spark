@@ -19,7 +19,6 @@ package de.kp.works.ts
  */
 
 import org.apache.spark.ml.param._
-import org.apache.spark.ml.param.shared._
 
 import org.apache.spark.ml.Transformer
 import org.apache.spark.ml.util._
@@ -56,12 +55,6 @@ trait TimeInterpolateParams extends TimeParams {
 class Interpolate(override val uid: String) extends Transformer with TimeInterpolateParams {
   
   def this() = this(Identifiable.randomUID("interpolate"))
-
-  private val date_to_timestamp = udf {date:java.sql.Date => new java.sql.Timestamp(date.getTime)}
-
-  private val long_to_timestamp = udf {time:Long => new java.sql.Timestamp(time)}
-
-  private val time_to_timestamp = udf {time:java.sql.Timestamp => time}
 
   private def rowNumberSpec(): WindowSpec = {
     
@@ -100,16 +93,7 @@ class Interpolate(override val uid: String) extends Transformer with TimeInterpo
      * This transformer operates on a TimestampType column;
      * as a first step, we have to transform the dataset
      */
-    val timecol = col($(timeCol))
-    val timeset = dataset.schema($(timeCol)).dataType match {
-
-      case DateType => dataset.withColumn($(timeCol), date_to_timestamp(timecol))
-      case LongType => dataset.withColumn($(timeCol), long_to_timestamp(timecol))
-      case TimestampType => dataset.withColumn($(timeCol), time_to_timestamp(timecol))
-      
-      case _ => throw new IllegalArgumentException("[Interpolate] Unsupported time data type detected.")
-
-    }
+    val timeset = createTimeset(dataset)
     /*
   	   * Define interpolation function
      */

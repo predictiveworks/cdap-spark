@@ -21,6 +21,8 @@ package de.kp.works.ts
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
 
+import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait TimeParams extends Params {
@@ -65,5 +67,30 @@ trait TimeParams extends Params {
     }
     
   }
+
+  protected val date_to_timestamp = udf {date:java.sql.Date => new java.sql.Timestamp(date.getTime)}
+
+  protected val long_to_timestamp = udf {time:Long => new java.sql.Timestamp(time)}
+
+  protected val time_to_timestamp = udf {time:java.sql.Timestamp => time}
   
+  protected def createTimeset(dataset:Dataset[_]):Dataset[Row] = {
+    /*
+     * Time transformer operate on a TimestampType column;
+     * as a first step, we have to transform the dataset
+     */
+    val timecol = col($(timeCol))
+    val timeset = dataset.schema($(timeCol)).dataType match {
+
+      case DateType => dataset.withColumn($(timeCol), date_to_timestamp(timecol))
+      case LongType => dataset.withColumn($(timeCol), long_to_timestamp(timecol))
+      case TimestampType => dataset.withColumn($(timeCol), time_to_timestamp(timecol))
+      
+      case _ => throw new IllegalArgumentException("[TimeParams] Unsupported time data type detected.")
+
+    }
+
+    timeset
+  
+  }
 }
