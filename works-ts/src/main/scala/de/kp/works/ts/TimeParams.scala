@@ -32,10 +32,10 @@ trait TimeParams extends Params {
       "Name of the value field", (value:String) => true)
  
   /** @group setParam */
-  def setTimeCo(value:String): this.type = set(timeCol, value)
+  def setTimeCol(value:String): this.type = set(timeCol, value)
  
   /** @group setParam */
-  def setValueCo(value:String): this.type = set(valueCol, value)
+  def setValueCol(value:String): this.type = set(valueCol, value)
  
   def validateSchema(schema:StructType):Unit = {
     

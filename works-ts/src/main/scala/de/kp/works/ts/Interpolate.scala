@@ -40,7 +40,7 @@ trait TimeInterpolateParams extends TimeParams {
   setDefault(groupCol -> null)
  
   /** @group setParam */
-  def setGroupCo(value:String): this.type = set(groupCol, value)
+  def setGroupCol(value:String): this.type = set(groupCol, value)
   
   override def validateSchema(schema:StructType):Unit = {
     super.validateSchema(schema)
@@ -204,7 +204,7 @@ object InterpolateTest {
  */
      df.show
 
-     val interpolator = new Interpolate().setGroupCo("group").setTimeCo("ts").setValueCo("value")
+     val interpolator = new Interpolate().setGroupCol("group").setTimeCol("ts").setValueCol("value")
      val rs = interpolator.transform(df)
 /*
 +-----+--------------------+-----+

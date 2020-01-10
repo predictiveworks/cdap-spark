@@ -20,6 +20,11 @@ package de.kp.works.ts;
 
 import javax.annotation.Nullable;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -27,6 +32,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseTimeCompute;
 import de.kp.works.core.BaseTimeConfig;
 
@@ -39,11 +45,16 @@ public class TsInterpolate extends BaseTimeCompute {
 
 	private static final long serialVersionUID = -25164752921823527L;
 
+	private TsInterpolateConfig config;
+
+	public TsInterpolate(TsInterpolateConfig config) {
+		this.config = config;
+	}
+	
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		TsInterpolateConfig timeConfig = (TsInterpolateConfig)config;
-		timeConfig.validate();
+		((TsInterpolateConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -62,6 +73,24 @@ public class TsInterpolate extends BaseTimeCompute {
 		}
 
 	}
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		Interpolate computer = new Interpolate();
+		
+		String timeCol = config.timeCol;
+		computer.setTimeCol(timeCol);
+		
+		String valueCol = config.valueCol;
+		computer.setValueCol(valueCol);
+
+		if (!Strings.isNullOrEmpty(config.groupCol))
+			computer.setGroupCol(config.groupCol);
+
+		Dataset<Row> output = computer.transform(source);
+		return output;
+
+	}
 
 	public static class TsInterpolateConfig extends BaseTimeConfig {
 
@@ -73,6 +102,7 @@ public class TsInterpolate extends BaseTimeCompute {
 		public String groupCol;
 
 		public void validate() {
+			super.validate();
 		}
 	}
 

@@ -18,6 +18,8 @@ package de.kp.works.core;
  * 
  */
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -40,4 +42,18 @@ public class BaseTimeConfig extends PluginConfig {
 	@Macro
 	public String valueCol;
 
+	public void validate() {
+
+		if (!Strings.isNullOrEmpty(timeCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the time value must not be empty.",
+							this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(valueCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the value must not be empty.",
+							this.getClass().getName()));
+		}
+
+	}
 }
