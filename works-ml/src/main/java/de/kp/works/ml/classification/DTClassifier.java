@@ -26,7 +26,6 @@ import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
@@ -41,7 +40,8 @@ import de.kp.works.core.BaseClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("DTClassifer")
-@Description("A building stage for an Apache Spark based Decision Tree classifier model.")
+@Description("A building stage for an Apache Spark based Decision Tree classifier model. This stages expects a dataset that contains at least 2 fields to train the classifier model: "
+		+ "A field that contains the features formatted as an array of double values, and, another field that class or label value also specified as a double value.")
 public class DTClassifier extends BaseClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
@@ -56,7 +56,7 @@ public class DTClassifier extends BaseClassifierSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		config.validate();
+		((DTClassifierConfig)config).validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
@@ -185,22 +185,7 @@ public class DTClassifier extends BaseClassifierSink {
 		}
 
 		public void validate() {
-
-			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(labelCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the label value must not be empty.",
-								this.getClass().getName()));
-			}
+			super.validate();
 
 			/** PARAMETERS **/
 			if (maxBins < 2)

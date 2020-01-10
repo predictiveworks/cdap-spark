@@ -1,4 +1,13 @@
-# K-Means
+# Clustering
+
+## What is in it for you?
+
+**Works-ML** externalizes the following clustering algorithms provided by Apache Spark ML:
+
+* K-Means
+* Latent Dirichlet Allocation
+
+## K-Means
 
 Machine learning can be categorized into three main categories:
 
@@ -21,3 +30,5 @@ K-Means can be used to identify unknown groups in complex and unlabeled datasets
 * Detect unauthorized IoT devices based on network traffic
 * Identity crime locality
 * Group inventory by sales
+
+## Latent Dirichlet Allocation

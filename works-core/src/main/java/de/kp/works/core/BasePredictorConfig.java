@@ -18,6 +18,8 @@ package de.kp.works.core;
  * 
  */
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -49,6 +51,23 @@ public class BasePredictorConfig extends PluginConfig {
 	public String predictionCol;
 	
 	public void validate() {
+
+		/** MODEL & COLUMNS **/
+		if (!Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(featuresCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+							this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(predictionCol)) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The name of the field that contains the predicted label value must not be empty.",
+					this.getClass().getName()));
+		}
+
 	}
 
 }

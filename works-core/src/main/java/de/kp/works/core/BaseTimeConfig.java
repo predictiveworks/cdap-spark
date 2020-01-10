@@ -19,6 +19,7 @@ package de.kp.works.core;
  */
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.hydrator.common.Constants;
@@ -30,5 +31,13 @@ public class BaseTimeConfig extends PluginConfig {
 	@Name(Constants.Reference.REFERENCE_NAME)
 	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
 	public String referenceName;
+
+	@Description("The name of the field in the input schema that contains the time value.")
+	@Macro
+	public String timeCol;
+
+	@Description("The name of the field in the input schema that contains the value.")
+	@Macro
+	public String valueCol;
 
 }

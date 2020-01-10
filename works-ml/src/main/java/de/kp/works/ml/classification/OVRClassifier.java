@@ -52,7 +52,7 @@ public class OVRClassifier extends BaseClassifierSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		config.validate();
+		((OVRClassifierConfig)config).validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();

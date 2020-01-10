@@ -20,6 +20,7 @@ package de.kp.works.core;
 
 import java.util.Map;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
@@ -56,6 +57,17 @@ public class BaseClusterConfig extends PluginConfig {
 	}
 	
 	public void validate() {
+
+		if (!Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(featuresCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+							this.getClass().getName()));
+		}
+
 	}
 
 }

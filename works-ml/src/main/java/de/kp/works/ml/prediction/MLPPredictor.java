@@ -22,8 +22,6 @@ import org.apache.spark.ml.classification.MultilayerPerceptronClassificationMode
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
@@ -36,7 +34,6 @@ import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.MLPClassifierManager;
-
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MLPPredictor")
@@ -55,7 +52,7 @@ public class MLPPredictor extends BasePredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
+		((MLPPredictorConfig)config).validate();
 
 		modelFs = SparkMLManager.getClassificationFS(context);
 		modelMeta = SparkMLManager.getClassificationMeta(context);
@@ -70,7 +67,7 @@ public class MLPPredictor extends BasePredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		((MLPPredictorConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -129,22 +126,7 @@ public class MLPPredictor extends BasePredictorCompute {
 		private static final long serialVersionUID = -3792791640714779280L;
 
 		public void validate() {
-
-			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted label value must not be empty.",
-						this.getClass().getName()));
-			}
+			super.validate();
 
 		}
 	}

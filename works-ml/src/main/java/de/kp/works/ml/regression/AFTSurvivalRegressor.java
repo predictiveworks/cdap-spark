@@ -57,7 +57,7 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		config.validate();
+		((AFTSurvivalConfig)config).validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
@@ -207,22 +207,9 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 		}
 
 		public void validate() {
+			super.validate();
 
 			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(labelCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the label value must not be empty.",
-								this.getClass().getName()));
-			}
 			if (!Strings.isNullOrEmpty(censorCol)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the censor value must not be empty.",

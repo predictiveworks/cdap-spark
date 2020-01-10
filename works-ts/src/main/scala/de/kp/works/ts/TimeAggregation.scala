@@ -1,14 +1,18 @@
 package de.kp.works.ts
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
- * This software is the confidential and proprietary information of 
- * Dr. Krusche & Partner PartG ("Confidential Information"). 
- * 
- * You shall not disclose such Confidential Information and shall use 
- * it only in accordance with the terms of the license agreement you 
- * entered into with Dr. Krusche & Partner PartG.
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  * 
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
@@ -146,58 +150,7 @@ class TimeAggregation(override val uid: String) extends Transformer with TimeAgg
      * values from the last non-null value before and the first
      * non-null value after the respective null value 
      */
-    val interpolated = interpolate(merged, "_timestamp", "_value")
-    interpolated.withColumnRenamed("_timestamp", $(timeCol)).withColumnRenamed("_value", $(valueCol))
-
-  }
-  /*
-   * This method supports linear interpolation of missing value
-   */
-  def interpolate(dataset:DataFrame,timeCol:String, valueCol:String):DataFrame = {
-
-    /* 
-     * Create row number over window and a column with 
-     * row number only for non missing values 
-     */
-    val w = Window.partitionBy().orderBy(timeCol)
-    /* 
-     * Create relative references to the start value 
-     * (last value not missing) 
-     */
-    val wStart = Window.partitionBy().orderBy(timeCol).rowsBetween(Window.unboundedPreceding,-1)
-    /* 
-     * create relative references to the end value 
-     * (first value not missing) 
-     */
-    val wEnd = Window.partitionBy().orderBy(timeCol).rowsBetween(0, Window.unboundedFollowing)
-    /*
-     * Define interpolation function
-     */
-    val interpolation = (col("start_val") + (col("end_val") - col("start_val")) / col("diff_rn") * col("curr_rn"))
-    /*
-     * Specify drop columns
-     */
-    val dropColumns = Array("rn", "rn_not_null", "start_val", "end_val", "start_rn", "end_rn", "diff_rn", "curr_rn")
-    /*
-     * Apply interpolation
-     */
-    dataset
-      .withColumn("rn", row_number().over(w))
-      .withColumn("rn_not_null", when(col(valueCol).isNotNull(), col("rn")))
-      .withColumn("start_val", last(valueCol,true).over(wStart))
-      .withColumn("start_rn", last("rn_not_null",true).over(wStart))
-      .withColumn("end_val", first(valueCol, true).over(wEnd))
-      .withColumn("end_rn", first("rn_not_null", true).over(wEnd))
-      /* 
-       * Create references to gap length and current gap position
-       */
-      .withColumn("diff_rn", col("end_rn") - col("start_rn"))
-      .withColumn("curr_rn", col("diff_rn") - (col("end_rn") - col("rn")))
-      /*
-       * Calculate interpolation value
-       */
-      .withColumn(valueCol, when(col(valueCol).isNull(), interpolation).otherwise(col(valueCol)))
-      .drop(dropColumns: _*)
+    merged.withColumnRenamed("_timestamp", $(timeCol)).withColumnRenamed("_value", $(valueCol))
 
   }
   

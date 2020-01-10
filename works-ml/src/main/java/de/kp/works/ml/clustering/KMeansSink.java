@@ -28,7 +28,6 @@ import org.apache.spark.ml.clustering.KMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -57,7 +56,7 @@ public class KMeansSink extends BaseClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		config.validate();
+		((KMeansConfig)config).validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -191,16 +190,8 @@ public class KMeansSink extends BaseClusterSink {
 		}
 
 		public void validate() {
+			super.validate();
 
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
 			if (k <= 1) {
 				throw new IllegalArgumentException(String.format("[%s] The number of clusters must be greater than 1.",
 						this.getClass().getName()));

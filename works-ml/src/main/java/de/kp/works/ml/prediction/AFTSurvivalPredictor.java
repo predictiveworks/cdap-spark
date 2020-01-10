@@ -22,8 +22,6 @@ import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
@@ -54,7 +52,7 @@ public class AFTSurvivalPredictor extends BasePredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
+		((AFTSurvivalPredictorConfig)config).validate();
 
 		modelFs = SparkMLManager.getRegressionFS(context);
 		modelMeta = SparkMLManager.getRegressionMeta(context);
@@ -69,7 +67,7 @@ public class AFTSurvivalPredictor extends BasePredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		((AFTSurvivalPredictorConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -128,22 +126,7 @@ public class AFTSurvivalPredictor extends BasePredictorCompute {
 		private static final long serialVersionUID = 7210199521231877169L;
 
 		public void validate() {
-
-			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted label value must not be empty.",
-						this.getClass().getName()));
-			}
+			super.validate();
 
 		}
 	}

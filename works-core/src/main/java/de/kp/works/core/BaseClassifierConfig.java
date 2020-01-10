@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
@@ -67,6 +68,22 @@ public class BaseClassifierConfig extends PluginConfig {
 	}
 	
 	public void validate() {
+
+		/** MODEL & COLUMNS **/
+		if (!Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(featuresCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
+							this.getClass().getName()));
+		}
+		if (!Strings.isNullOrEmpty(labelCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the label value must not be empty.",
+							this.getClass().getName()));
+		}
 	}
 	
 	public double[] getSplits() {

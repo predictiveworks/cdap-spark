@@ -1,5 +1,4 @@
 package de.kp.works.core;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -92,6 +91,30 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 		 */
 		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(output, outputSchema);
 		return records;
+
+	}
+
+	protected Boolean isNumericType(Schema.Type dataType) {
+		switch (dataType) {
+		case ARRAY:
+		case BOOLEAN:
+		case BYTES:
+		case MAP:
+		case NULL:
+		case RECORD:
+		case ENUM:
+		case STRING:
+		case UNION:
+			return false;
+		case DOUBLE:
+		case FLOAT:
+		case INT:
+		case LONG:
+			return true;
+
+		default:
+			return false;
+		}
 
 	}
 

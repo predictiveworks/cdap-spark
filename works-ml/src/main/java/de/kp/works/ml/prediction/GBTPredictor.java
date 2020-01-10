@@ -23,8 +23,6 @@ import org.apache.spark.ml.regression.GBTRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
@@ -57,7 +55,7 @@ public class GBTPredictor extends BasePredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
+		((GBTPredictorConfig)config).validate();
 
 		if (config.modelType.equals("classifier")) {
 
@@ -88,7 +86,7 @@ public class GBTPredictor extends BasePredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		((GBTPredictorConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -159,22 +157,7 @@ public class GBTPredictor extends BasePredictorCompute {
 		private static final long serialVersionUID = 8253356507092880481L;
 
 		public void validate() {
-
-			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-								this.getClass().getName()));
-			}
-			if (!Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted label value must not be empty.",
-						this.getClass().getName()));
-			}
+			super.validate();
 
 		}
 	}
