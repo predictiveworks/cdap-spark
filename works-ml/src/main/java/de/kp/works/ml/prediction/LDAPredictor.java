@@ -18,6 +18,9 @@ package de.kp.works.ml.prediction;
  * 
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.spark.ml.clustering.LDAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -25,6 +28,7 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -87,6 +91,20 @@ public class LDAPredictor extends BasePredictorCompute {
 
 	}
 
+	/**
+	 * A helper method to compute the output schema in that use cases where an input
+	 * schema is explicitly given
+	 */
+	@Override
+	public Schema getOutputSchema(Schema inputSchema, String predictionField) {
+
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
+		
+		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
+
+	}	
+	
 	/**
 	 * This method computes predictions either by applying a trained LDA
 	 * clustering model; as a result, the source dataset is enriched by an

@@ -1,0 +1,53 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Count Vocabulary",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        }
+       ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Vocabulary Size",
+          "name": "vocabSize"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Document Frequency",
+          "name": "minDF",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Term Frequency",
+          "name": "minTF",
+          "widget-attributes": {
+            "default": "1"
+          }
+        }
+      ]
+    }
+  ]
+}

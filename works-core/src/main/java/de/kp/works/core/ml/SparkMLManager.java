@@ -71,6 +71,22 @@ public class SparkMLManager {
 	public static String CLUSTERING_FS_BASE = "models/clustering/";
 	/*
 	 * The model of the internal dataset that is used to 
+	 * persist metadata with respect to feature models.
+	 */
+	public static String FEATURE_META = "featureMeta";
+	/*
+	 * The fileset name of the internal fileset that is
+	 * used to store feature models (e.g. count vectorizer 
+	 * or word2vec models)
+	 */
+	public static String FEATURE_FS = "featureFs";
+	/*
+	 * Note, we do NOT specify an absolute base path (begins with /) as 
+	 * this would be interpreted as an absolute path in the file system
+	 */
+	public static String FEATURE_FS_BASE = "models/feature/";
+	/*
+	 * The model of the internal dataset that is used to 
 	 * persist metadata with respect to recommendation models.
 	 */
 	public static String RECOMMENDATION_META = "recommendationMeta";
@@ -230,6 +246,74 @@ public class SparkMLManager {
 			builder.setSchema(metaSchema);
 			
 			context.createDataset(CLUSTERING_META, Table.class.getName(), builder.build());
+			
+		};
+		
+	}
+
+	/***** FEATURES *****/
+
+	public static FileSet getFeatureFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+		
+		if (context.datasetExists(FEATURE_FS) == false)
+			throw new Exception("Fileset to store feature model components does not exist.");
+		
+		FileSet fs = context.getDataset(FEATURE_FS);
+		return fs;
+		
+	}
+
+	public static FileSet getFeatureFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(FEATURE_FS);
+		return fs;
+		
+	}
+
+	public static Table getFeatureMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+		
+		if (context.datasetExists(FEATURE_META) == false)
+			throw new Exception("Table to store feature model metadata does not exist.");
+		
+		Table table = context.getDataset(FEATURE_META);
+		return table;
+		
+	}
+
+	public static Table getFeatureMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		Table table = context.getDataset(FEATURE_META);
+		return table;
+		
+	}
+
+	public static void createFeatureIfNotExists(SparkPluginContext context) throws DatasetManagementException {
+		
+		if (context.datasetExists(FEATURE_FS) == false) {
+			/*
+			 * The feature fileset does not exist yet; this path is relative to the
+			 * data directory of the CDAP namespace in which the FileSet is created. 
+			 * 
+			 * Note, we do NOT specify an absolute base path (begins with /) as this
+			 * would be interpreted as an absolute path in the file system
+			 */
+			context.createDataset(FEATURE_FS, FileSet.class.getName(), FileSetProperties.builder().setBasePath(FEATURE_FS_BASE).build());			
+		}
+		
+		if (context.datasetExists(FEATURE_META) == false) {
+			/*
+			 * This is the first time, that we train a feature model;
+			 * therefore, the associated metadata dataset has to be created
+			 */
+			Schema metaSchema = createMetaSchema("featureSchema");
+			/*
+			 * Create a CDAP table with the schema provided
+			 */
+			TableProperties.Builder builder = TableProperties.builder();
+			builder.setDescription("This table contains a timeseries of metadata information about Predictive Works feature models.");
+			builder.setSchema(metaSchema);
+			
+			context.createDataset(FEATURE_META, Table.class.getName(), builder.build());
 			
 		};
 		

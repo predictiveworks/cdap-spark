@@ -1,4 +1,4 @@
-package de.kp.works.ml.clustering;
+package de.kp.works.ml.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,7 +21,7 @@ package de.kp.works.ml.clustering;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.clustering.*;
+import org.apache.spark.ml.feature.CountVectorizerModel;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -30,35 +30,35 @@ import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class KMeansManager extends AbstractModelManager {
+public class CountVectorizerManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "KMeans";
+	private String ALGORITHM_NAME = "CountVectorizer";
 
-	public KMeansModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public CountVectorizerModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the KMeans clustering model
+		 * Leverage Apache Spark mechanism to read the CountVectorizer model
 		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return KMeansModel.load(modelPath);
+		return CountVectorizerModel.load(modelPath);
 		
 	}
 
 	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
-			KMeansModel model) throws IOException {
+			CountVectorizerModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
 		/*
-		 * Define the path of this model on CDAP's internal clustering fileset
+		 * Define the path of this model on CDAP's internal feature fileset
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the KMeans model
+		 * Leverage Apache Spark mechanism to write the CountVectorizer model
 		 * to a model specific file set
 		 */
 		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
@@ -70,7 +70,7 @@ public class KMeansManager extends AbstractModelManager {
 		 * Append model metadata to the metadata table associated with the
 		 * clustering fileset
 		 */
-		String fsName = SparkMLManager.CLUSTERING_FS;
+		String fsName = SparkMLManager.FEATURE_FS;
 		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);

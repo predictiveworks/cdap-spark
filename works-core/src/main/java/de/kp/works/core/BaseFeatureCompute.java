@@ -18,8 +18,14 @@ package de.kp.works.core;
  * 
  */
 
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
+
 public class BaseFeatureCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -852876404206487204L;
+	
+	protected FileSet modelFs;
+	protected Table modelMeta;
 
 }
