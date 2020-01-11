@@ -29,8 +29,6 @@ import org.apache.spark.sql.expressions.{Window, WindowSpec}
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
-import scala.collection.JavaConversions._
-
 trait TimeInterpolateParams extends TimeParams {
   
   final val groupCol = new Param[String](TimeInterpolateParams.this, "groupCol",
