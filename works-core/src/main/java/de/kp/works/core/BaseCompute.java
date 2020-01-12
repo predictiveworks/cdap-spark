@@ -94,6 +94,10 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 
 	}
 
+	protected void validateSchema() {
+		
+	}
+	
 	protected Boolean isNumericType(Schema.Type dataType) {
 		switch (dataType) {
 		case ARRAY:

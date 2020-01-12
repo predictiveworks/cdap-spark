@@ -102,4 +102,40 @@ public class BaseFeatureSink extends BaseSink {
 		}
 	}
 
+	protected void isArrayOfDouble(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!fieldType.equals(Schema.Type.ARRAY)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the model input must be an ARRAY.", className));
+		}
+
+		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		if (!fieldCompType.equals(Schema.Type.DOUBLE)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data type of the input field components must be a DOUBLE.", className));
+		}
+		
+	}
+
+	protected void isArrayOfString(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!fieldType.equals(Schema.Type.ARRAY)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the model input must be an ARRAY.", className));
+		}
+
+		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		if (!fieldCompType.equals(Schema.Type.STRING)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data type of the input field components must be a STRING.", className));
+		}
+		
+	}
+	
 }

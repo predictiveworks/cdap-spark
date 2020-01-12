@@ -45,8 +45,6 @@ public class W2Vec extends BaseFeatureCompute {
 
 	private static final long serialVersionUID = -7817740878594710658L;
 
-	private W2VecConfig config;
-
 	private Word2VecModel model;
 
 	public W2Vec(W2VecConfig config) {
@@ -79,6 +77,8 @@ public class W2Vec extends BaseFeatureCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
+			
+			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -89,6 +89,16 @@ public class W2Vec extends BaseFeatureCompute {
 		}
 
 	}
+	
+	@Override
+	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+		super.validateSchema(inputSchema, config);
+		
+		/** INPUT COLUMN **/
+		isArrayOfString(config.inputCol);
+		
+	}
+	
 	/**
 	 * This method computes the transformed features by applying a trained
 	 * Word2Vec model; as a result, the source dataset is enriched by

@@ -34,6 +34,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -65,6 +66,15 @@ public class CountVecBuilder extends BaseFeatureSink {
 		if (inputSchema != null)
 			validateSchema(inputSchema, config);
 
+	}
+	
+	@Override
+	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+		super.validateSchema(inputSchema, config);
+		
+		/** INPUT COLUMN **/
+		isArrayOfString(config.inputCol);
+		
 	}
 	
 	@Override

@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.CountVectorizerModel;
+import org.apache.spark.ml.feature.PCAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -38,26 +38,26 @@ import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("CountVec")
-@Description("A transformation stage that leverages the Apache Spark CountVectorizer based on a trained CountVectorizer model.")
-public class CountVec extends BaseFeatureCompute {
+@Name("PCAProj")
+@Description("A transformation stage that leverages a trained PCA model to project feature vectors onto a lower dimensional vector space.")
+public class PCAProj extends BaseFeatureCompute {
 
-	private static final long serialVersionUID = -6547859144514311308L;
+	private static final long serialVersionUID = -7592807362852855002L;
 
-	private CountVectorizerModel model;
+	private PCAModel model;
 
-	public CountVec(CountVecConfig config) {
+	public PCAProj(PCAProjConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((CountVecConfig)config).validate();
+		((PCAProjConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new CountVecManager().read(modelFs, modelMeta, config.modelName);
+		model = new PCAManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -67,7 +67,7 @@ public class CountVec extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((CountVecConfig)config).validate();
+		((PCAProjConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -76,7 +76,7 @@ public class CountVec extends BaseFeatureCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-
+			
 			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
@@ -94,15 +94,15 @@ public class CountVec extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
+		isArrayOfDouble(config.inputCol);
 		
 	}
 
 	/**
 	 * This method computes the transformed features by applying a trained
-	 * CountVectorizer model; as a result, the source dataset is enriched by
-	 * an extra column (outputCol) that specifies the target variable in 
-	 * form of an Array[Double]
+	 * PCA model; as a result, the source dataset is enriched by an extra 
+	 * column (outputCol) that specifies the target variable in form of an 
+	 * Array[Double]
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
@@ -128,9 +128,9 @@ public class CountVec extends BaseFeatureCompute {
 
 	}	
 
-	public static class CountVecConfig extends BaseFeatureConfig {
+	public static class PCAProjConfig extends BaseFeatureConfig {
 
-		private static final long serialVersionUID = 6791984345238136178L;
+		private static final long serialVersionUID = 8801441172298876792L;
 
 		public void validate() {
 			super.validate();

@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.spark.ml.feature.PCAModel;
+import org.apache.spark.ml.feature.MinHashLSHModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -29,8 +29,6 @@ import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
@@ -38,16 +36,13 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
 import de.kp.works.core.BaseFeatureSink;
 
-@Plugin(type = "sparksink")
-@Name("PCABuilder")
-@Description("A building stage for an Apache Spark based Principal Component Analysis feature model.")
-public class PCABuilder extends BaseFeatureSink {
+public class MinHashLSHBuilder extends BaseFeatureSink {
 
-	private static final long serialVersionUID = -698695950116408878L;
+	private static final long serialVersionUID = 1064127164732936531L;
 
-	public PCABuilder(PCABuilderConfig config) {
+	public MinHashLSHBuilder(MinHashLSHBuilderConfig config) {
 		this.config = config;
-		this.className = PCABuilder.class.getName();
+		this.className = MinHashLSHBuilder.class.getName();
 	}
 
 	@Override
@@ -55,18 +50,23 @@ public class PCABuilder extends BaseFeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((PCABuilderConfig)config).validate();
+		((MinHashLSHBuilderConfig)config).validate();
 
+		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			/*
-			 * Check whether the input columns is of data type
-			 * Array[Double]
-			 */
 			validateSchema(inputSchema, config);
 
+	}
+	
+	@Override
+	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+		super.validateSchema(inputSchema, config);
+		
+		/** INPUT COLUMN **/
+		isArrayOfDouble(config.inputCol);
+		
 	}
 
 	@Override
@@ -83,45 +83,42 @@ public class PCABuilder extends BaseFeatureSink {
 		 * Prepare provided dataset by vectorizing the feature column which is specified
 		 * as Array[Double]
 		 */
-		PCATrainer trainer = new PCATrainer();
+		MinHashLSHTrainer trainer = new MinHashLSHTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 
-		PCAModel model = trainer.train(vectorset, vectorCol, params);
+		MinHashLSHModel model = trainer.train(vectorset, vectorCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
-		 * Store trained PCA model including its associated parameters and
+		 * Store trained MinHash LSH model including its associated parameters and
 		 * metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new PCAManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new MinHashLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
-	
-	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
-		
-	}
 
-	public static class PCABuilderConfig extends BaseFeatureModelConfig {
+	public static class MinHashLSHBuilderConfig extends BaseFeatureModelConfig {
 
-		private static final long serialVersionUID = -8154181932750250998L;
+		private static final long serialVersionUID = -7853341044335453501L;
 		
-		@Description("The positive number of principle components.")
+		@Description("The number of hash tables used in LSH OR-amplification. LSH OR-amplification can be used to reduce the false negative rate. "
+				+ "Higher values for this parameter lead to a reduced false negative rate, at the expense of added computational complexity. Default is 1.")
 		@Macro
-		public Integer k;
+		public Integer numHashTables;
+		
+		public MinHashLSHBuilderConfig() {
+			numHashTables = 1;
+		}
 
+		@Override
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("k", k);
+			Map<String, Object> params = new HashMap<>();
+			params.put("numHashTables", numHashTables);
 
 			return params;
 
@@ -130,11 +127,12 @@ public class PCABuilder extends BaseFeatureSink {
 		public void validate() {
 			super.validate();
 
-			if (k < 1) {
-				throw new IllegalArgumentException(String.format("[%s] The number of principal components must be greater than 0.",
-						this.getClass().getName()));
-			}
-			
+			/** PARAMETERS **/
+			if (numHashTables < 1)
+				throw new IllegalArgumentException(String.format(
+						"[%s] The number of hash tables must be at least 1.", this.getClass().getName()));
+
 		}
+		
 	}
 }

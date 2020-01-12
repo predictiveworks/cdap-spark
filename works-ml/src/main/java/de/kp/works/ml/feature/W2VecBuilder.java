@@ -96,20 +96,7 @@ public class W2VecBuilder extends BaseFeatureSink {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-
-		Schema.Field inputCol = inputSchema.getField(config.inputCol);
-		Schema.Type inputType = inputCol.getSchema().getType();
-
-		if (!inputType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the sentence of words must be an ARRAY.", className));
-		}
-
-		Schema.Type inputCompType = inputCol.getSchema().getComponentSchema().getType();
-		if (!inputCompType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of a word must be a STRING.", className));
-		}
+		isArrayOfString(config.inputCol);
 		
 	}
 

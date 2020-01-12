@@ -45,8 +45,6 @@ public class HashTF extends BaseFeatureCompute {
 
 	private static final long serialVersionUID = 8394737976482170698L;
 
-	private HashTFConfig config;
-
 	public HashTF(HashTFConfig config) {
 		this.config = config;
 	}
@@ -62,6 +60,8 @@ public class HashTF extends BaseFeatureCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
+			
+			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -72,15 +72,27 @@ public class HashTF extends BaseFeatureCompute {
 		}
 
 	}
+	
+	@Override
+	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+		super.validateSchema(inputSchema, config);
+		
+		/** INPUT COLUMN **/
+		isArrayOfString(config.inputCol);
+		
+	}
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		HashTFConfig hashConfig = (HashTFConfig)config;
+		
 		HashingTF transformer = new HashingTF();
 
-		transformer.setInputCol(config.inputCol);
-		transformer.setOutputCol(config.outputCol);
+		transformer.setInputCol(hashConfig.inputCol);
+		transformer.setOutputCol(hashConfig.outputCol);
 
-		transformer.setNumFeatures(config.numFeatures);
+		transformer.setNumFeatures(hashConfig.numFeatures);
 
 		Dataset<Row> output = transformer.transform(source);
 		return output;
