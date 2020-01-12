@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Count Vocabulary",
+"display-name": "CountVec Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",

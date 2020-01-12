@@ -43,6 +43,11 @@ public class BaseTimeConfig extends PluginConfig {
 	public String valueCol;
 
 	public void validate() {
+		
+		if (!Strings.isNullOrEmpty(referenceName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
+		}
 
 		if (!Strings.isNullOrEmpty(timeCol)) {
 			throw new IllegalArgumentException(

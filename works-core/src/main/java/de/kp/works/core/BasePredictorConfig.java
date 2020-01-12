@@ -51,6 +51,11 @@ public class BasePredictorConfig extends PluginConfig {
 	public String predictionCol;
 	
 	public void validate() {
+		
+		if (!Strings.isNullOrEmpty(referenceName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
+		}
 
 		/** MODEL & COLUMNS **/
 		if (!Strings.isNullOrEmpty(modelName)) {

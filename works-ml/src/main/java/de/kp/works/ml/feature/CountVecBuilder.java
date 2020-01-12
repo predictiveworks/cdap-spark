@@ -41,15 +41,15 @@ import de.kp.works.core.BaseFeatureModelConfig;
 import de.kp.works.core.BaseFeatureSink;
 
 @Plugin(type = "sparksink")
-@Name("CountVectorizer")
+@Name("CountVecBuilder")
 @Description("A building stage for an Apache Spark based CountVectorizer model.")
-public class CountVocabulary extends BaseFeatureSink {
+public class CountVecBuilder extends BaseFeatureSink {
 
 	private static final long serialVersionUID = 2389361295065144103L;
 
-	public CountVocabulary(CountVocabularyConfig config) {
+	public CountVecBuilder(CountVecBuilderConfig config) {
 		this.config = config;
-		this.className = CountVocabulary.class.getName();
+		this.className = CountVecBuilder.class.getName();
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class CountVocabulary extends BaseFeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((CountVocabularyConfig)config).validate();
+		((CountVecBuilderConfig)config).validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
@@ -70,7 +70,7 @@ public class CountVocabulary extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		CountVocabularyConfig vocabConfig = (CountVocabularyConfig)config;
+		CountVecBuilderConfig vocabConfig = (CountVecBuilderConfig)config;
 		
 		CountVectorizer trainer = new CountVectorizer();
 		trainer.setInputCol(config.inputCol);
@@ -91,11 +91,11 @@ public class CountVocabulary extends BaseFeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
-		new CountVectorizerManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new CountVecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
 	}
 
-	public static class CountVocabularyConfig extends BaseFeatureModelConfig {
+	public static class CountVecBuilderConfig extends BaseFeatureModelConfig {
 
 		private static final long serialVersionUID = 7825023669549623718L;
 		
@@ -115,7 +115,7 @@ public class CountVocabulary extends BaseFeatureSink {
 		@Macro
 		public Integer minTF;
 		
-		public CountVocabularyConfig() {
+		public CountVecBuilderConfig() {
 			minDF = 1;	
 			minTF = 1;
 		}

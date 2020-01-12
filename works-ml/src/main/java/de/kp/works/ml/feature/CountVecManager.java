@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.feature.Word2VecModel;
+import org.apache.spark.ml.feature.CountVectorizerModel;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -30,25 +30,25 @@ import co.cask.cdap.api.dataset.table.Table;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class Word2VecManager extends AbstractModelManager {
+public class CountVecManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "Word2Vec";
+	private String ALGORITHM_NAME = "CountVectorizer";
 
-	public Word2VecModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public CountVectorizerModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the Word2Vec model
+		 * Leverage Apache Spark mechanism to read the CountVectorizer model
 		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return Word2VecModel.load(modelPath);
+		return CountVectorizerModel.load(modelPath);
 		
 	}
 
 	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
-			Word2VecModel model) throws IOException {
+			CountVectorizerModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
@@ -58,7 +58,7 @@ public class Word2VecManager extends AbstractModelManager {
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the Word2Vec model
+		 * Leverage Apache Spark mechanism to write the CountVectorizer model
 		 * to a model specific file set
 		 */
 		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();

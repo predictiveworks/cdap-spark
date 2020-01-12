@@ -38,28 +38,28 @@ import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("CountVectorize")
+@Name("CountVec")
 @Description("A transformation stage that leverages the Apache Spark CountVectorizer based on a trained CountVectorizer model.")
-public class CountVectorize extends BaseFeatureCompute {
+public class CountVec extends BaseFeatureCompute {
 
 	private static final long serialVersionUID = -6547859144514311308L;
 
-	private CountVectorizeConfig config;
+	private CountVecConfig config;
 
 	private CountVectorizerModel model;
 
-	public CountVectorize(CountVectorizeConfig config) {
+	public CountVec(CountVecConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((CountVectorizeConfig)config).validate();
+		((CountVecConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new CountVectorizerManager().read(modelFs, modelMeta, config.modelName);
+		model = new CountVecManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -69,7 +69,7 @@ public class CountVectorize extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((CountVectorizeConfig)config).validate();
+		((CountVecConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -118,7 +118,7 @@ public class CountVectorize extends BaseFeatureCompute {
 
 	}	
 
-	public static class CountVectorizeConfig extends BaseFeatureConfig {
+	public static class CountVecConfig extends BaseFeatureConfig {
 
 		private static final long serialVersionUID = 6791984345238136178L;
 

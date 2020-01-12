@@ -57,6 +57,11 @@ public class BaseClusterConfig extends PluginConfig {
 	}
 	
 	public void validate() {
+		
+		if (!Strings.isNullOrEmpty(referenceName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
+		}
 
 		if (!Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(

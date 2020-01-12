@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Count Vectorize",
+"display-name": "Count Vectorizer",
  "configuration-groups": [
     {
       "label": "Basic Configuration",

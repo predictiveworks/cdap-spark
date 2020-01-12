@@ -51,6 +51,11 @@ public class BaseFeatureConfig extends PluginConfig {
 	public String outputCol;
 
 	public void validate() {
+		
+		if (!Strings.isNullOrEmpty(referenceName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
+		}
 
 		/** COLUMNS **/
 		if (!Strings.isNullOrEmpty(inputCol)) {
