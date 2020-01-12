@@ -41,7 +41,6 @@ import de.kp.works.core.BaseFeatureSink;
 @Plugin(type = "sparksink")
 @Name("PCABuilder")
 @Description("A building stage for an Apache Spark based Principal Component Analysis feature model.")
-
 public class PCABuilder extends BaseFeatureSink {
 
 	private static final long serialVersionUID = -698695950116408878L;
