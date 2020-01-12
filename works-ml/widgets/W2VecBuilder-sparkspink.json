@@ -1,0 +1,80 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Word2Vec Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        }
+       ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Iterations",
+          "name": "maxIter",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Learning Rate",
+          "name": "stepSize",
+          "widget-attributes": {
+            "default": "0.025"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Vector Size",
+          "name": "vectorSize",
+          "widget-attributes": {
+            "default": "100"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Window Size",
+          "name": "windowSize",
+          "widget-attributes": {
+            "default": "5"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Word Frequency",
+          "name": "minCount",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Sentence Length",
+          "name": "maxSentenceLength",
+          "widget-attributes": {
+            "default": "1000"
+          }
+        }
+      ]
+    }
+  ]
+}

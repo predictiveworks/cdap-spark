@@ -20,24 +20,36 @@ package de.kp.works.ml.feature
 import java.util.{Map => JMap}
 
 import org.apache.spark.ml.feature._
-
 import org.apache.spark.sql._
-import de.kp.works.ml.MLUtils
 
-class PCATrainer {
+class W2VecTrainer {
+      
+  def train(dataset:Dataset[Row], inputCol:String, params:JMap[String,Object]):Word2VecModel = {
     
-  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(trainset, featuresCol, vectorCol)
+    val model = new Word2Vec()
     
-  def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):PCAModel = {
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
+    model.setMaxIter(maxIter)
     
-    val model = new PCA()
+    val stepSize = params.get("stepSize").asInstanceOf[Double]
+    model.setStepSize(stepSize)
+    
+    val vectorSize = params.get("vectorSize").asInstanceOf[Int]
+    model.setVectorSize(vectorSize)
+    
+    val windowSize = params.get("windowSize").asInstanceOf[Int]
+    model.setWindowSize(windowSize)
+    
+    val minCount = params.get("minCount").asInstanceOf[Int]
+    model.setMinCount(minCount)
+    
+    val maxSentenceLength = params.get("maxSentenceLength").asInstanceOf[Int]
+    model.setMaxSentenceLength(maxSentenceLength)
+    
+    model.setInputCol(inputCol)
+    model.fit(dataset)
 
-    val k = params.get("k").asInstanceOf[Int]
-    model.setK(k)
-    
-    model.setInputCol(vectorCol)
-    model.fit(vectorset)
-    
   }
+    
 
 }
