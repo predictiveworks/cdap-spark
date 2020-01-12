@@ -53,5 +53,25 @@ object MLUtils {
     dataset.withColumn(featureCol, devector_udf(col(vectorCol)))
     
   }
- 
+	/*
+	 * The type of outputCol is Seq[Vector] where the dimension of the array
+	 * equals numHashTables, and the dimensions of the vectors are currently 
+	 * set to 1. 
+	 * 
+	 * In future releases, we will implement AND-amplification so that users 
+	 * can specify the dimensions of these vectors.
+	 * 
+	 * For compliances purposes with CDAP data schemas, we have to resolve
+	 * the output format as Array Of Double
+	 */
+  def flattenMinHash(dataset:Dataset[Row], outputCol:String): Dataset[Row] = {
+    
+    val flatten_udf = udf {hashes: WrappedArray[Vector] => {
+      hashes.toArray.flatMap(vector => vector.toArray)
+    }}
+    
+    dataset.withColumn(outputCol, flatten_udf(col(outputCol)))
+
+  }
+  
 }

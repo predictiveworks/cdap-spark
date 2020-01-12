@@ -60,14 +60,16 @@ object MinHashLSHTest {
 
     /** BUILD MODEL **/    
     val minHash = new MinHashLSH()
-      .setNumHashTables(5)
+      .setNumHashTables(1)
       .setInputCol("features")
     
     val model = minHash.fit(df)
     model.set(model.outputCol, "myhashes")
     
-    val rs = model.transform(df)
+    val rs = MLUtils.flattenMinHash(model.transform(df), "myhashes")
     rs.show()
+    
+    println(rs.schema)
     
   }
 }
