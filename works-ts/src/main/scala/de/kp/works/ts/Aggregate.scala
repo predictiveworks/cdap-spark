@@ -143,8 +143,27 @@ object AggregateTest {
     }
   }
 
+  def test_func(rows: scala.collection.mutable.WrappedArray[Row]): Array[Row] = {
+    rows.map(row => {
+      val vs = row.toSeq ++ Seq(1)
+      Row.fromSeq(vs)
+    }).toArray
+  }
+  
   def main(args: Array[String]) {
 
+    val schema = StructType(Array(
+      StructField("group", StringType, true),
+      StructField("ts", StringType, true),
+      StructField("value", IntegerType, true),
+      StructField("index", StringType, true)))
+
+    val old_schema = StructType(Array(
+      StructField("ts", StringType, true),
+      StructField("value", IntegerType, true),
+      StructField("index", StringType, true)))
+    val new_schema = StructType(old_schema.fields ++ Array(StructField("xyz", IntegerType, true)))      
+    
     val session = SparkSession.builder
       .appName("AggregateTest")
       .master("local")
@@ -157,21 +176,14 @@ object AggregateTest {
       Row("A", "01-07-2018 12:00", 10, "d"),
       Row("A", "01-08-2018 13:00", 11, "e"))
 
-    val schema = StructType(Array(
-      StructField("group", StringType, true),
-      StructField("ts", StringType, true),
-      StructField("value", IntegerType, true),
-      StructField("index", StringType, true)))
+    val test_udf = udf(test_func _, DataTypes.createArrayType(new_schema))
 
     val ds = session.createDataFrame(session.sparkContext.parallelize(data), schema)
-    val df = ds.withColumn("ts", unix_timestamp(col("ts"), "yyyy-MM-dd HH:mm").cast("timestamp"))
-
-    val res = df
-      .groupBy(col("group"), window(col("ts"), "10 minutes")).agg(mean("value").as("mean"))
-      .withColumn("ts", window_to_timestamp(col("window.start"), col("window.end")))
-    //.drop("window")
-
-    res.show
-
+    
+     val as = ds.groupBy("group").agg(collect_list(struct(Array(col("ts"),col("value"),col("index")): _*)).as("items"))
+    
+    val rs = as.withColumn("new_items", explode(test_udf(col("items")))).withColumn("ts", col("new_items").getItem("xyz"))
+    rs.show
+    
   }
 }

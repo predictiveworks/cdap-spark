@@ -19,12 +19,31 @@ package de.kp.works.ts.util;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 
 public class MathUtils {
+
+	/********************
+	 * 
+	 * COMMON FUNCTIONS
+	 * 
+	 */
+
+	/**
+	 * @param x
+	 * @return
+	 */
+	public static double biSquare(double x) {
+		double bs = 0;
+		if (x < 1.0) {
+			bs = Math.pow((1 - x * x), 2);
+		}
+		return bs;
+	}
 
 	/**
 	 * @param size
@@ -93,6 +112,43 @@ public class MathUtils {
 
 		return table;
 
+	}
+
+	/**
+	 * @param vec
+	 * @param absVec
+	 * @return
+	 */
+	public static void getAbsolute(double[] vec, double[] absVec) {
+		for (int i = 0; i < vec.length; ++i) {
+			absVec[i] = Math.abs(vec[i]);
+		}
+	}
+
+	/**
+	 * @param vec
+	 */
+	public static void getAbsolute(double[] vec) {
+		for (int i = 0; i < vec.length; ++i) {
+			vec[i] = Math.abs(vec[i]);
+		}
+	}
+
+	/**
+	 * @param vec
+	 * @return
+	 */
+	public static double getMedian(double[] vec) {
+		double med = 0;
+		Arrays.sort(vec);
+		int size = vec.length;
+		int half = size / 2;
+		if (size % 2 == 1) {
+			med = vec[half];
+		} else {
+			med = (vec[half - 1] + vec[half]) / 2;
+		}
+		return med;
 	}
 
 	/**
