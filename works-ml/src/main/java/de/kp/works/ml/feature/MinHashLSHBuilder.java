@@ -79,7 +79,7 @@ public class MinHashLSHBuilder extends BaseFeatureSink {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isArrayOfNumeric(config.inputCol);
 		
 	}
 

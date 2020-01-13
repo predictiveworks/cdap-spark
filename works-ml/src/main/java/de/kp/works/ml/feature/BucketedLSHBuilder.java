@@ -85,7 +85,7 @@ public class BucketedLSHBuilder extends BaseFeatureSink {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isArrayOfNumeric(config.inputCol);
 		
 	}
 

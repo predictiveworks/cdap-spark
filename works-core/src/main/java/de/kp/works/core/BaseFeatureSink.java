@@ -120,6 +120,24 @@ public class BaseFeatureSink extends BaseSink {
 		
 	}
 
+	protected void isArrayOfNumeric(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!fieldType.equals(Schema.Type.ARRAY)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
+		}
+
+		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		if (!isNumericType(fieldCompType)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
+		}
+		
+	}
+
 	protected void isArrayOfString(String fieldName) {
 
 		Schema.Field field = inputSchema.getField(fieldName);

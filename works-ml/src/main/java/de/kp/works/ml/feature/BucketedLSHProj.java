@@ -95,7 +95,7 @@ public class BucketedLSHProj extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isArrayOfNumeric(config.inputCol);
 		
 	}
 

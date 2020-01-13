@@ -21,11 +21,12 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.MinHashLSHModel;
+import org.apache.spark.ml.feature.Binarizer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -36,43 +37,20 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
 
-import de.kp.works.ml.MLUtils;
-import de.kp.works.core.ml.SparkMLManager;
-
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("MinHashLSHProj")
-@Description("A transformation stage that leverages a trained MinHash LSH model to project feature vectors onto hash value vectors.")
-public class MinHashLSHProj extends BaseFeatureCompute {
-	/*
-	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage
-	 * must have a vector binarization stage in front of it.
-	 */
-	private static final long serialVersionUID = 1435132891116854304L;
+@Name("BinaryProj")
+@Description("A transformation stage that leverages the Apache Spark Feature Binarizer to map continuous features onto binary values.")
+public class BinaryProj extends BaseFeatureCompute {
+	
+	private static final long serialVersionUID = 4868372641130255213L;
 
-	private MinHashLSHModel model;
-
-	public MinHashLSHProj(MinHashLSHProjConfig config) {
+	public BinaryProj(BinaryProjConfig config) {
 		this.config = config;
 	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((MinHashLSHProjConfig)config).validate();
-
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = new MinHashLSHManager().read(modelFs, modelMeta, config.modelName);
-		if (model == null)
-			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
-					this.getClass().getName(), config.modelName));
-
-	}
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((MinHashLSHProjConfig)config).validate();
+		((BinaryProjConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -102,34 +80,20 @@ public class MinHashLSHProj extends BaseFeatureCompute {
 		isArrayOfNumeric(config.inputCol);
 		
 	}
-
-	/**
-	 * This method computes the transformed features by applying a trained
-	 * MinHashLSH model; as a result, the source dataset is enriched by an 
-	 * extra column (outputCol) that specifies the target variable in form 
-	 * of an Array[Double]
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		BinaryProjConfig hashConfig = (BinaryProjConfig)config;
 		
-		/*
-		 * In v2.1.3 the MinHashLSH model does not contain
-		 * methods setInputCol & setOutputCol
-		 */
-		model.set(model.inputCol(), config.inputCol);
-		model.set(model.outputCol(), config.outputCol);
-		/*
-		 * The type of outputCol is Seq[Vector] where the dimension of the array
-		 * equals numHashTables, and the dimensions of the vectors are currently 
-		 * set to 1. 
-		 * 
-		 * In future releases, we will implement AND-amplification so that users 
-		 * can specify the dimensions of these vectors.
-		 * 
-		 * For compliances purposes with CDAP data schemas, we have to resolve
-		 * the output format as Array Of Double
-		 */
-		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(source), config.outputCol);
+		Binarizer transformer = new Binarizer();
+
+		transformer.setInputCol(hashConfig.inputCol);
+		transformer.setOutputCol(hashConfig.outputCol);
+
+		transformer.setThreshold(hashConfig.threshold);
+
+		Dataset<Row> output = transformer.transform(source);
 		return output;
 
 	}
@@ -147,12 +111,26 @@ public class MinHashLSHProj extends BaseFeatureCompute {
 
 	}	
 
-	public static class MinHashLSHProjConfig extends BaseFeatureConfig {
+	public static class BinaryProjConfig extends BaseFeatureConfig {
 
-		private static final long serialVersionUID = 8801441172298876792L;
+		private static final long serialVersionUID = 6791984345238136178L;
 
+		@Description("The nonnegative threshold used to binarize continuous features. The features greater than the threshold, "
+				+ "will be binarized to 1.0. The features equal to or less than the threshold, will be binarized to 0.0. Default is 0.0.")
+		@Macro
+		public Double threshold;
+	
+		public BinaryProjConfig() {
+			threshold = 0.0;
+		}
+		
 		public void validate() {
 			super.validate();
+			
+			if (threshold < 0) {
+				throw new IllegalArgumentException(String
+						.format("[%s] The threshold of binarization must be nonnegative.", this.getClass().getName()));
+			}
 
 		}
 	}
