@@ -37,23 +37,22 @@ import de.kp.works.core.BaseTimeCompute;
 import de.kp.works.core.BaseTimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("TsInterpolate")
-@Description("A timeseries interpolation stage that adds missing values. This stage interpolates missing values "
-		+ "from the last non-null value before and the first on-null value after the respective null value.")
-public class TsInterpolate extends BaseTimeCompute {
+@Name("TsAggregate")
+@Description("A timeseries aggregation stage that leverages a tumbling window.")
+public class TsAggregate extends BaseTimeCompute {
 
-	private static final long serialVersionUID = -25164752921823527L;
+	private static final long serialVersionUID = 404643815476832744L;
 
-	private TsInterpolateConfig config;
+	private TsAggregateConfig config;
 
-	public TsInterpolate(TsInterpolateConfig config) {
+	public TsAggregate(TsAggregateConfig config) {
 		this.config = config;
 	}
-	
+
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((TsInterpolateConfig)config).validate();
+		((TsAggregateConfig) config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -72,37 +71,60 @@ public class TsInterpolate extends BaseTimeCompute {
 		}
 
 	}
+
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		Interpolate computer = new Interpolate();
-		
-		String timeCol = config.timeCol;
-		computer.setTimeCol(timeCol);
-		
-		String valueCol = config.valueCol;
-		computer.setValueCol(valueCol);
+		Aggregate computer = new Aggregate();
+
+		computer.setTimeCol(config.timeCol);
+		computer.setValueCol(config.valueCol);
 
 		if (!Strings.isNullOrEmpty(config.groupCol))
 			computer.setGroupCol(config.groupCol);
 
+		computer.setWindowDuration(config.windowDuration);
+		computer.setAggregationMethod(config.aggregationMethod);
+		
 		Dataset<Row> output = computer.transform(source);
 		return output;
 
 	}
 
-	public static class TsInterpolateConfig extends BaseTimeConfig {
+	public static class TsAggregateConfig extends BaseTimeConfig {
 
-		private static final long serialVersionUID = -833273325170246060L;
+		private static final long serialVersionUID = -8785851598214457493L;
 
 		@Description("The name of the field in the input schema that contains the group value.")
 		@Macro
 		@Nullable
 		public String groupCol;
 
+		@Description("The time window used to aggregate intermediate values. Default is 10 minutes.")
+		@Macro
+		public String windowDuration;
+
+		@Description("The name of the aggregation method. Supported values are 'avg', 'mean' and 'sum'. Default is 'avg'.")
+		@Macro
+		public String aggregationMethod;
+
+		public TsAggregateConfig() {
+
+			aggregationMethod = "avg";
+			windowDuration = "10 minutes";
+
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (!Strings.isNullOrEmpty(windowDuration)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The window duration must not be empty.", this.getClass().getName()));
+			}
+
 		}
+
 	}
 
 }

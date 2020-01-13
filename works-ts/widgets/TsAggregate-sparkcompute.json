@@ -1,0 +1,53 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "TS Aggregate",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time Field",
+          "name": "timeCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Value Field",
+          "name": "valueCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Group Field",
+          "name": "groupCol"
+        },
+        {
+          "widget-type": "select",
+          "label": "Aggregation Method",
+          "name": "modelType",
+          "widget-attributes": {
+            "values": [
+              "avg",
+              "mean",
+              "sum"
+            ],
+            "default": "avg"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Window Duration",
+          "name": "windowDuration",
+          "widget-attributes": {
+            "default": "10 minutes"
+          }
+        }
+      ]
+    }
+  ]
+}
