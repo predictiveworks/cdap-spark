@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.MinHashLSHModel;
+import org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -35,34 +35,30 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-
-import de.kp.works.ml.MLUtils;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("MinHashLSHProj")
-@Description("A transformation stage that leverages a trained MinHash LSH model to project feature vectors onto hash value vectors.")
-public class MinHashLSHProj extends BaseFeatureCompute {
-	/*
-	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage
-	 * must have a vector binarization stage in front of it.
-	 */
-	private static final long serialVersionUID = 1435132891116854304L;
+@Name("BucketedLSHProj")
+@Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model to project feature vectors onto hash value vectors.")
+public class BucketedLSHProj extends BaseFeatureCompute {
 
-	private MinHashLSHModel model;
+	private static final long serialVersionUID = -5333140801597897278L;
 
-	public MinHashLSHProj(MinHashLSHProjConfig config) {
+	private BucketedRandomProjectionLSHModel model;
+
+	public BucketedLSHProj(BucketedLSHProjConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((MinHashLSHProjConfig)config).validate();
+		((BucketedLSHProjConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new MinHashLSHManager().read(modelFs, modelMeta, config.modelName);
+		model = new BucketedLSHManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -72,7 +68,7 @@ public class MinHashLSHProj extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((MinHashLSHProjConfig)config).validate();
+		((BucketedLSHProjConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -104,16 +100,28 @@ public class MinHashLSHProj extends BaseFeatureCompute {
 	}
 
 	/**
+	 * A helper method to compute the output schema in that use cases where an input
+	 * schema is explicitly given
+	 */
+	public Schema getOutputSchema(Schema inputSchema, String outputField) {
+
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
+		
+		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
+
+	}	
+	/**
 	 * This method computes the transformed features by applying a trained
-	 * MinHashLSH model; as a result, the source dataset is enriched by an 
-	 * extra column (outputCol) that specifies the target variable in form 
-	 * of an Array[Double]
+	 * BucketedRandomProjectionLSH model; as a result, the source dataset 
+	 * is enriched by an extra column (outputCol) that specifies the target 
+	 * variable in form of an Array[Double]
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
 		/*
-		 * In v2.1.3 the MinHashLSH model does not contain
+		 * In v2.1.3 the BucketedRandomProjectionLSH model does not contain
 		 * methods setInputCol & setOutputCol
 		 */
 		model.set(model.inputCol(), config.inputCol);
@@ -134,20 +142,7 @@ public class MinHashLSHProj extends BaseFeatureCompute {
 
 	}
 
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	public Schema getOutputSchema(Schema inputSchema, String outputField) {
-
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
-		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
-
-	}	
-
-	public static class MinHashLSHProjConfig extends BaseFeatureConfig {
+	public static class BucketedLSHProjConfig extends BaseFeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
 

@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.spark.ml.feature.MinHashLSHModel;
+import org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,24 +39,30 @@ import de.kp.works.core.BaseFeatureModelConfig;
 import de.kp.works.core.BaseFeatureSink;
 
 @Plugin(type = "sparksink")
-@Name("MinHashLSHBuilder")
-@Description("A building stage for an Apache Spark based MinHash LSH model.")
-public class MinHashLSHBuilder extends BaseFeatureSink {
+@Name("BucketedLSHBuilder")
+@Description("A building stage for an Apache Spark based Bucketed Random Projection LSH model.")
+public class BucketedLSHBuilder extends BaseFeatureSink {
 	/*
-	 * MinHash is an LSH family for Jaccard distance where input features are sets of natural numbers. 
-	 * This algorithm applies a random hash function g to each element in the set and take the minimum 
-	 * of all hashed values.
+	 * Bucketed Random Projection is an LSH family for Euclidean distance. 
+	 * Its LSH family projects feature vectors x onto a random unit vector v 
+	 * and portions the projected results into hash buckets:
 	 * 
-	 * The input sets for MinHash are represented as binary vectors, where the vector indices represent 
-	 * the elements themselves and the non-zero values in the vector represent the presence of that element 
-	 * in the set. While both dense and sparse vectors are supported, typically sparse vectors are recommended 
-	 * for efficiency. 
+	 * 			h(x) = (x * v) / r
+	 * 
+	 * where r is a user-defined bucket length. The bucket length can be used 
+	 * to control the average size of hash buckets (and thus the number of buckets). 
+	 * 
+	 * A larger bucket length (i.e., fewer buckets) increases the probability of features 
+	 * being hashed to the same bucket (increasing the numbers of true and false positives).
+	 * 
+	 * Bucketed Random Projection accepts arbitrary vectors as input features, and supports
+	 * both sparse and dense vectors.
 	 */
-	private static final long serialVersionUID = 1064127164732936531L;
+	private static final long serialVersionUID = 4538434693829022065L;
 
-	public MinHashLSHBuilder(MinHashLSHBuilderConfig config) {
+	public BucketedLSHBuilder(BucketedLSHBuilderConfig config) {
 		this.config = config;
-		this.className = MinHashLSHBuilder.class.getName();
+		this.className = BucketedLSHBuilder.class.getName();
 	}
 
 	@Override
@@ -64,7 +70,7 @@ public class MinHashLSHBuilder extends BaseFeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((MinHashLSHBuilderConfig)config).validate();
+		((BucketedLSHBuilderConfig)config).validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
@@ -97,25 +103,25 @@ public class MinHashLSHBuilder extends BaseFeatureSink {
 		 * Prepare provided dataset by vectorizing the feature column which is specified
 		 * as Array[Double]
 		 */
-		MinHashLSHTrainer trainer = new MinHashLSHTrainer();
+		BucketedLSHTrainer trainer = new BucketedLSHTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 
-		MinHashLSHModel model = trainer.train(vectorset, vectorCol, params);
+		BucketedRandomProjectionLSHModel model = trainer.train(vectorset, vectorCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
-		 * Store trained MinHash LSH model including its associated parameters and
-		 * metrics
+		 * Store trained Bucketed Random Projection LSH model including its associated 
+		 * parameters and metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new MinHashLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new BucketedLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 
-	public static class MinHashLSHBuilderConfig extends BaseFeatureModelConfig {
+	public static class BucketedLSHBuilderConfig extends BaseFeatureModelConfig {
 
 		private static final long serialVersionUID = -7853341044335453501L;
 		
@@ -124,15 +130,21 @@ public class MinHashLSHBuilder extends BaseFeatureSink {
 		@Macro
 		public Integer numHashTables;
 		
-		public MinHashLSHBuilderConfig() {
+		public BucketedLSHBuilderConfig() {
 			numHashTables = 1;
 		}
 
+		@Description("The length of each hash bucket, a larger bucket lowers the false negative rate. The number of buckets will be "
+				+ "'(max L2 norm of input vectors) / bucketLength'.")
+		@Macro
+		public Double bucketLength;
+		
 		@Override
 		public Map<String, Object> getParamsAsMap() {
 
 			Map<String, Object> params = new HashMap<>();
 			params.put("numHashTables", numHashTables);
+			params.put("bucketLength", bucketLength);
 
 			return params;
 
@@ -146,7 +158,12 @@ public class MinHashLSHBuilder extends BaseFeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of hash tables must be at least 1.", this.getClass().getName()));
 
+			if (bucketLength <= 0D)
+				throw new IllegalArgumentException(String.format(
+						"[%s] The bucket length  must be greater than 0.0.", this.getClass().getName()));
+
 		}
 		
 	}
+	
 }
