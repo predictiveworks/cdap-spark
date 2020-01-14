@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.feature.W2Vec.W2VecConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -120,12 +121,18 @@ public class TFIDFProj extends BaseFeatureCompute {
 		Integer numFeatures = (Integer)manager.getParam(modelMeta, config.modelName, "numFeatures");
 		transformer.setNumFeatures(numFeatures);
 
-		Dataset<Row> transformed = transformer.transform(source);
+		Dataset<Row> transformedTF = transformer.transform(source);
 		
 		model.setInputCol("_features");
-		model.setOutputCol(config.outputCol);
-		
-		Dataset<Row> output = model.transform(transformed).drop("_features");		
+		/*
+		 * The internal output of the TF-IDF model is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		model.setOutputCol("_vector");		
+		Dataset<Row> transformed = model.transform(transformedTF).drop("_features");		
+
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 		return output;
 
 	}

@@ -40,6 +40,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BucketProj")
@@ -107,13 +108,18 @@ public class BucketProj extends BaseFeatureCompute {
 		BucketProjConfig bucketConfig = (BucketProjConfig)config;
 		
 		Bucketizer transformer = new Bucketizer();
-
 		transformer.setInputCol(bucketConfig.inputCol);
-		transformer.setOutputCol(bucketConfig.outputCol);
-
+		/*
+		 * The internal output of the bucketizer is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		transformer.setOutputCol("_vector");
 		transformer.setSplits(bucketConfig.getSplits());
 
-		Dataset<Row> output = transformer.transform(source);
+		Dataset<Row> transformed = transformer.transform(source);		
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", bucketConfig.outputCol).drop("_vector");
+
 		return output;
 
 	}

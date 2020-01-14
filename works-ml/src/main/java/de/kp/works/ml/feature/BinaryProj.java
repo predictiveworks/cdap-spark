@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BinaryProj")
@@ -87,13 +88,18 @@ public class BinaryProj extends BaseFeatureCompute {
 		BinaryProjConfig hashConfig = (BinaryProjConfig)config;
 		
 		Binarizer transformer = new Binarizer();
-
 		transformer.setInputCol(hashConfig.inputCol);
-		transformer.setOutputCol(hashConfig.outputCol);
-
+		/*
+		 * The internal output of the binarizer is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */
+		transformer.setOutputCol("_vector");
 		transformer.setThreshold(hashConfig.threshold);
 
-		Dataset<Row> output = transformer.transform(source);
+		Dataset<Row> transformed = transformer.transform(source);		
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
+
 		return output;
 
 	}

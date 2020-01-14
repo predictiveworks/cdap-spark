@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("HashTF")
@@ -107,13 +108,18 @@ public class HashTF extends BaseFeatureCompute {
 		HashTFConfig hashConfig = (HashTFConfig)config;
 		
 		HashingTF transformer = new HashingTF();
-
 		transformer.setInputCol(hashConfig.inputCol);
-		transformer.setOutputCol(hashConfig.outputCol);
-
+		/*
+		 * The internal output of the hasher is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		transformer.setOutputCol("_vector");
 		transformer.setNumFeatures(hashConfig.numFeatures);
 
-		Dataset<Row> output = transformer.transform(source);
+		Dataset<Row> transformed = transformer.transform(source);
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
+
 		return output;
 
 	}

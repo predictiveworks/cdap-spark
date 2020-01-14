@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("CountVec")
@@ -108,9 +109,16 @@ public class CountVec extends BaseFeatureCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		model.setInputCol(config.inputCol);
-		model.setOutputCol(config.outputCol);
+		/*
+		 * The internal output of the vectorizer is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		model.setOutputCol("_vector");
 
-		Dataset<Row> output = model.transform(source);
+		Dataset<Row> transformed = model.transform(source);
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
+
 		return output;
 
 	}
