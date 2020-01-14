@@ -106,9 +106,14 @@ public class BucketProj extends BaseFeatureCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		BucketProjConfig bucketConfig = (BucketProjConfig)config;
+		/*
+		 * Build internal column from input column and cast to 
+		 * double vector
+		 */
+		Dataset<Row> vectorset = MLUtils.vectorize(source, bucketConfig.inputCol, "_input", true);
 		
 		Bucketizer transformer = new Bucketizer();
-		transformer.setInputCol(bucketConfig.inputCol);
+		transformer.setInputCol("_input");
 		/*
 		 * The internal output of the bucketizer is an ML specific
 		 * vector representation; this must be transformed into
@@ -117,8 +122,8 @@ public class BucketProj extends BaseFeatureCompute {
 		transformer.setOutputCol("_vector");
 		transformer.setSplits(bucketConfig.getSplits());
 
-		Dataset<Row> transformed = transformer.transform(source);		
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", bucketConfig.outputCol).drop("_vector");
+		Dataset<Row> transformed = transformer.transform(vectorset);		
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", bucketConfig.outputCol).drop("_input").drop("_vector");
 
 		return output;
 

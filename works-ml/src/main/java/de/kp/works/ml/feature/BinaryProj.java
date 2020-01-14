@@ -85,20 +85,25 @@ public class BinaryProj extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		BinaryProjConfig hashConfig = (BinaryProjConfig)config;
+		BinaryProjConfig binaryConfig = (BinaryProjConfig)config;
+		/*
+		 * Build internal column from input column and cast to 
+		 * double vector
+		 */
+		Dataset<Row> vectorset = MLUtils.vectorize(source, binaryConfig.inputCol, "_input", true);
 		
 		Binarizer transformer = new Binarizer();
-		transformer.setInputCol(hashConfig.inputCol);
+		transformer.setInputCol("_input");
 		/*
 		 * The internal output of the binarizer is an ML specific
 		 * vector representation; this must be transformed into
 		 * an Array[Double] to be compliant with Google CDAP
 		 */
 		transformer.setOutputCol("_vector");
-		transformer.setThreshold(hashConfig.threshold);
+		transformer.setThreshold(binaryConfig.threshold);
 
-		Dataset<Row> transformed = transformer.transform(source);		
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
+		Dataset<Row> transformed = transformer.transform(vectorset);		
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", binaryConfig.outputCol).drop("_input").drop("_vector");
 
 		return output;
 
