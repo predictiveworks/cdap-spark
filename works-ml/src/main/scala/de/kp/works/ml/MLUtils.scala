@@ -22,12 +22,17 @@ import org.apache.spark.ml.linalg.{Vector, Vectors}
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
+  import org.apache.spark.sql.types._
 
 import scala.collection.mutable.WrappedArray
 
 object MLUtils {
       
-  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = {
+  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = 
+    vectorize(dataset, featuresCol, vectorCol, false)
+      
+  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String, cast:Boolean = false): Dataset[Row] = {
+
     /*
      * The dataset contains an Array of Double value (from CDAP structured
      * record) and the classifier, clustering or regression trainer expects
@@ -37,10 +42,14 @@ object MLUtils {
       Vectors.dense(features.toArray)
     }}
 
-    dataset.withColumn(vectorCol, vector_udf(col(featuresCol)))
+    if (cast == true) {
+      dataset.withColumn(vectorCol, vector_udf(col(featuresCol).cast(ArrayType(DoubleType))))
+    
+    } else
+      dataset.withColumn(vectorCol, vector_udf(col(featuresCol)))
     
   }
-       
+  
   def devectorize(dataset:Dataset[Row], vectorCol:String, featureCol:String): Dataset[Row] = {
     /*
      * The dataset contains an Apache Spark Vector and must be transformed
@@ -74,4 +83,27 @@ object MLUtils {
 
   }
   
+}
+
+object MLUtilsTest {
+  
+  def main(args:Array[String]) {
+    
+    val session = SparkSession.builder
+      .appName("MLUtilsTest")
+      .master("local")
+      .getOrCreate()
+
+    val data = Array(
+     Array(1L,2L,3L),
+     Array(4L,5L,6L),
+     Array(7L,8L,9L)
+    )
+    
+    val df = session.createDataFrame(data.map(Tuple1.apply)).toDF("features")
+    val casted = df.withColumn("_casted", col("features").cast(ArrayType(DoubleType)))
+
+    casted.show
+  
+  }
 }
