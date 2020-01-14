@@ -22,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.spark.ml.feature.HashingTF;
+import org.apache.spark.ml.feature.IDFModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -36,41 +36,44 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.feature.W2Vec.W2VecConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("HashTF")
-@Description("A transformation stage that leverages the Apache Spark HashingTF and maps a sequence of terms to their "
-		+ "term frequencies using the hashing trick. Currently the Austin Appleby's MurmurHash 3 algorithm is used.")
-public class HashTF extends BaseFeatureCompute {
-	/*
-	 * HashingTF is a Transformer which takes sets of terms and converts those sets into 
-	 * fixed-length feature vectors. In text processing, a 'set of terms' might be a bag 
-	 * of words. HashingTF utilizes the hashing trick. 
-	 * 
-	 * A raw feature is mapped into an index (term) by applying a hash function. The hash 
-	 * function used here is MurmurHash 3. Then term frequencies are calculated based on 
-	 * the mapped indices. 
-	 * 
-	 * This approach avoids the need to compute a global term-to-index map, which can be 
-	 * expensive for a large corpus, but it suffers from potential hash collisions, where 
-	 * different raw features may become the same term after hashing. 
-	 * 
-	 * To reduce the chance of collision, we can increase the target feature dimension, i.e. 
-	 * the number of buckets of the hash table. Since a simple modulo is used to transform 
-	 * the hash function to a column index, it is advisable to use a power of two as the 
-	 * feature dimension, otherwise the features will not be mapped evenly to the columns. 
-	 * 
-	 * The default feature dimension is 218=262,144.
-	 */
-	private static final long serialVersionUID = 8394737976482170698L;
+@Name("TFIDFProj")
+@Description("A transformation stage that leverages an Apache Spark based TF-IDF model to map a sequence of words into "
+		+ "its feature vector. Term frequency-inverse document frequency (TF-IDF) is a feature vectorization method widely "
+		+ "used in text mining to reflect the importance of a term to a document in the corpus.")
+public class TFIDFProj extends BaseFeatureCompute {
 
-	public HashTF(HashTFConfig config) {
+	private static final long serialVersionUID = 5252236917563666462L;
+
+	private IDFModel model;
+	private TFIDFManager manager;
+
+	public TFIDFProj(TFIDFProjConfig config) {
 		this.config = config;
+		this.manager = new TFIDFManager();
 	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		((W2VecConfig)config).validate();
+
+		modelFs = SparkMLManager.getFeatureFS(context);
+		modelMeta = SparkMLManager.getFeatureMeta(context);
+
+		model = manager.read(modelFs, modelMeta, config.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
+					this.getClass().getName(), config.modelName));
+
+	}
+
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((HashTFConfig)config).validate();
+		((W2VecConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -104,16 +107,25 @@ public class HashTF extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		HashTFConfig hashConfig = (HashTFConfig)config;
+		TFIDFProjConfig tfidfConfig = (TFIDFProjConfig)config;
 		
 		HashingTF transformer = new HashingTF();
 
-		transformer.setInputCol(hashConfig.inputCol);
-		transformer.setOutputCol(hashConfig.outputCol);
+		transformer.setInputCol(tfidfConfig.inputCol);
+		transformer.setOutputCol("_features");
+		/*
+		 * Determine number of features from TF-IDF model
+		 * metadata information
+		 */
+		Integer numFeatures = (Integer)manager.getParam(modelMeta, config.modelName, "numFeatures");
+		transformer.setNumFeatures(numFeatures);
 
-		transformer.setNumFeatures(hashConfig.numFeatures);
-
-		Dataset<Row> output = transformer.transform(source);
+		Dataset<Row> transformed = transformer.transform(source);
+		
+		model.setInputCol("_features");
+		model.setOutputCol(config.outputCol);
+		
+		Dataset<Row> output = model.transform(transformed).drop("_features");		
 		return output;
 
 	}
@@ -131,21 +143,12 @@ public class HashTF extends BaseFeatureCompute {
 
 	}	
 	
-	public static class HashTFConfig extends BaseFeatureConfig {
+	public static class TFIDFProjConfig extends BaseFeatureConfig {
 
-		private static final long serialVersionUID = 6791984345238136178L;
-
-		@Description("The nonnegative number of features to transform a sequence of terms into.")
-		@Macro
-		public Integer numFeatures;
+		private static final long serialVersionUID = 6981782808377365083L;
 		
 		public void validate() {
 			super.validate();
-			
-			if (numFeatures == null || numFeatures <= 0) {
-				throw new IllegalArgumentException(String
-						.format("[%s] The number of features must be greater than 0.", this.getClass().getName()));
-			}
 
 		}
 	}
