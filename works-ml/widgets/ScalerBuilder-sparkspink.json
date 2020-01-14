@@ -1,0 +1,85 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Scaler Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Model Type",
+          "name": "modelType",
+          "widget-attributes": {
+            "values": [
+              "maxabs",
+              "minmax",
+              "standard"
+            ],
+            "default": "standard"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Lower Bound",
+          "name": "min",
+          "widget-attributes": {
+            "default": "0.0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Upper Bound",
+          "name": "max",
+          "widget-attributes": {
+            "default": "1.0"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "With Mean",
+          "name": "withMean",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "false"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "With Std",
+          "name": "withStd",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Feature Scaler",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Model Type",
+          "name": "modelType",
+          "widget-attributes": {
+            "values": [
+              "maxabs",
+              "minmax",
+              "standard"
+            ],
+            "default": "standard"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        }
+      ]
+    }
+  ]
+}
