@@ -30,7 +30,7 @@ class TFIDFTrainer {
      * STEP #1: Leverage the Hashing TF transformer to turn
      * the sequence of words into a feature vector
      */
-		val tf = new HashingTF()
+		val tf = new org.apache.spark.ml.feature.HashingTF()
 
 		tf.setInputCol(inputCol);
 		tf.setOutputCol("_features");

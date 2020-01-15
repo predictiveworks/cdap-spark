@@ -67,13 +67,15 @@ public class LinearRegressor extends BaseRegressorSink {
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		LinearConfig regressorConfig = (LinearConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train regression model
 		 */
-		String featuresCol = config.featuresCol;
-		String labelCol = config.labelCol;
+		String featuresCol = regressorConfig.featuresCol;
+		String labelCol = regressorConfig.labelCol;
 
-		Map<String, Object> params = config.getParamsAsMap();
+		Map<String, Object> params = regressorConfig.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -90,7 +92,7 @@ public class LinearRegressor extends BaseRegressorSink {
 		 * Split the vectorset into a train & test dataset for
 		 * later regression evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
+	    Dataset<Row>[] splitted = vectorset.randomSplit(regressorConfig.getSplits());
 		
 	    Dataset<Row> trainset = splitted[0];
 	    Dataset<Row> testset = splitted[1];
@@ -125,10 +127,10 @@ public class LinearRegressor extends BaseRegressorSink {
 		 * STEP #3: Store trained regression model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = regressorConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 		
-		String modelName = config.modelName;
+		String modelName = regressorConfig.modelName;
 		new LinearRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}

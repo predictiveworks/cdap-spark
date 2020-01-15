@@ -18,6 +18,7 @@ package de.kp.works.core;
  * 
  */
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.base.Strings;
@@ -46,7 +47,10 @@ public class BaseFeatureModelConfig extends PluginConfig {
 	public String inputCol;
 
 	public Map<String, Object> getParamsAsMap() {
-		return null;
+		
+		Map<String, Object> params = new HashMap<>();
+		return params;
+
 	}
 
 	public String getParamsAsJSON() {

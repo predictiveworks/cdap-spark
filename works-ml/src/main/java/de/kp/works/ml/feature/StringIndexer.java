@@ -21,12 +21,11 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.HashingTF;
+import org.apache.spark.ml.feature.StringIndexerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -36,42 +35,39 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.ml.MLUtils;
+import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("HashTF")
-@Description("A transformation stage that leverages the Apache Spark HashingTF and maps a sequence of terms to their "
-		+ "term frequencies using the hashing trick. Currently the Austin Appleby's MurmurHash 3 algorithm is used.")
-public class HashTF extends BaseFeatureCompute {
-	/*
-	 * HashingTF is a Transformer which takes sets of terms and converts those sets into 
-	 * fixed-length feature vectors. In text processing, a 'set of terms' might be a bag 
-	 * of words. HashingTF utilizes the hashing trick. 
-	 * 
-	 * A raw feature is mapped into an index (term) by applying a hash function. The hash 
-	 * function used here is MurmurHash 3. Then term frequencies are calculated based on 
-	 * the mapped indices. 
-	 * 
-	 * This approach avoids the need to compute a global term-to-index map, which can be 
-	 * expensive for a large corpus, but it suffers from potential hash collisions, where 
-	 * different raw features may become the same term after hashing. 
-	 * 
-	 * To reduce the chance of collision, we can increase the target feature dimension, i.e. 
-	 * the number of buckets of the hash table. Since a simple modulo is used to transform 
-	 * the hash function to a column index, it is advisable to use a power of two as the 
-	 * feature dimension, otherwise the features will not be mapped evenly to the columns. 
-	 * 
-	 * The default feature dimension is 218=262,144.
-	 */
-	private static final long serialVersionUID = 8394737976482170698L;
+@Name("StringIndexer")
+@Description("A transformation stage that leverages the Apache Spark StringIndexer based on a trained StringIndexer model.")
+public class StringIndexer extends BaseFeatureCompute {
 
-	public HashTF(HashTFConfig config) {
+	private static final long serialVersionUID = -4361931347919726410L;
+
+	private StringIndexerModel model;
+
+	public StringIndexer(StringIndexerConfig config) {
 		this.config = config;
 	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		((StringIndexerConfig)config).validate();
+
+		modelFs = SparkMLManager.getFeatureFS(context);
+		modelMeta = SparkMLManager.getFeatureMeta(context);
+
+		model = new StringIndexerManager().read(modelFs, modelMeta, config.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
+					this.getClass().getName(), config.modelName));
+
+	}
+
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((HashTFConfig)config).validate();
+		((StringIndexerConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -80,7 +76,7 @@ public class HashTF extends BaseFeatureCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			
+
 			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
@@ -98,28 +94,23 @@ public class HashTF extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
+		isString(config.inputCol);
 		
 	}
-	
+
+	/**
+	 * This method computes the transformed features by applying a trained
+	 * StringIndexer model; as a result, the source dataset is enriched by
+	 * an extra column (outputCol) that specifies the target variable in 
+	 * form of a Double
+	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		HashTFConfig hashConfig = (HashTFConfig)config;
-		
-		HashingTF transformer = new HashingTF();
-		transformer.setInputCol(hashConfig.inputCol);
-		/*
-		 * The internal output of the hasher is an ML specific
-		 * vector representation; this must be transformed into
-		 * an Array[Double] to be compliant with Google CDAP
-		 */		
-		transformer.setOutputCol("_vector");
-		transformer.setNumFeatures(hashConfig.numFeatures);
+		model.setInputCol(config.inputCol);
+		model.setOutputCol(config.outputCol);
 
-		Dataset<Row> transformed = transformer.transform(source);
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
-
+		Dataset<Row> output = model.transform(source);
 		return output;
 
 	}
@@ -132,26 +123,17 @@ public class HashTF extends BaseFeatureCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
-	
-	public static class HashTFConfig extends BaseFeatureConfig {
 
-		private static final long serialVersionUID = 6791984345238136178L;
+	public static class StringIndexerConfig extends BaseFeatureConfig {
 
-		@Description("The nonnegative number of features to transform a sequence of terms into.")
-		@Macro
-		public Integer numFeatures;
-		
+		private static final long serialVersionUID = -3630481748921019607L;
+
 		public void validate() {
 			super.validate();
-			
-			if (numFeatures == null || numFeatures <= 0) {
-				throw new IllegalArgumentException(String
-						.format("[%s] The number of features must be greater than 0.", this.getClass().getName()));
-			}
 
 		}
 	}

@@ -32,6 +32,86 @@
   <artifactId>works-dl</artifactId>
   <packaging>jar</packaging>
 
+  <dependencies>
+ 
+	<!-- cdap spark dependencies -->
+
+	<dependency>
+	  <groupId>de.kp.works</groupId>
+	  <artifactId>works-core</artifactId>
+	  <version>0.3.0</version>
+	</dependency>
+ 
+    <!-- https://mvnrepository.com/artifact/com.intel.analytics.bigdl/bigdl-SPARK -->
+    <dependency>
+      <groupId>com.intel.analytics.bigdl</groupId>
+      <artifactId>bigdl-SPARK_2.1</artifactId>
+      <version>0.10.0</version>
+    </dependency>  
+  </dependencies>
+ 
+  <build>
+    <pluginManagement>
+      <plugins>
+      	<!-- scala maven -->
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>scala-maven-plugin</artifactId>
+          <version>3.4.4</version>
+          <configuration>
+            <args>
+              <arg>-target:jvm-1.8</arg>
+            </args>
+          </configuration>
+          <executions>
+            <execution>
+              <id>scala-compile-first</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>add-source</goal>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>scala-test-compile</id>
+              <!-- Needs to be before the test-compile phase -->
+              <phase>process-test-resources</phase>
+              <goals>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>      
+	  </plugins>
+	 </pluginManagement>
+	 
+	 <plugins>
+    	   <!-- scala maven -->
+       <plugin>
+         <groupId>net.alchim31.maven</groupId>
+         <artifactId>scala-maven-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>scala-compile-first</id>
+             <phase>process-resources</phase>
+             <goals>
+               <goal>add-source</goal>
+               <goal>compile</goal>
+             </goals>
+           </execution>
+           <execution>
+             <id>scala-test-compile</id>
+             <phase>process-test-resources</phase>
+             <goals>
+               <goal>testCompile</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+	 </plugins>
+
+  </build>
+
   <name>Works DL</name>
   <description>Deep learning functionality for CDAP-Spark. This is a CDAP wrapper for Intel’s BigDL library.</description>
 

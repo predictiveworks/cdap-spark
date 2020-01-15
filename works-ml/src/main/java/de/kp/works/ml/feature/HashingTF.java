@@ -21,11 +21,11 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.PCAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -35,40 +35,42 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("PCAProj")
-@Description("A transformation stage that leverages a trained PCA model to project feature vectors onto a lower dimensional vector space.")
-public class PCAProj extends BaseFeatureCompute {
+@Name("HashingTF")
+@Description("A transformation stage that leverages the Apache Spark HashingTF and maps a sequence of terms to their "
+		+ "term frequencies using the hashing trick. Currently the Austin Appleby's MurmurHash 3 algorithm is used.")
+public class HashingTF extends BaseFeatureCompute {
+	/*
+	 * HashingTF is a Transformer which takes sets of terms and converts those sets into 
+	 * fixed-length feature vectors. In text processing, a 'set of terms' might be a bag 
+	 * of words. HashingTF utilizes the hashing trick. 
+	 * 
+	 * A raw feature is mapped into an index (term) by applying a hash function. The hash 
+	 * function used here is MurmurHash 3. Then term frequencies are calculated based on 
+	 * the mapped indices. 
+	 * 
+	 * This approach avoids the need to compute a global term-to-index map, which can be 
+	 * expensive for a large corpus, but it suffers from potential hash collisions, where 
+	 * different raw features may become the same term after hashing. 
+	 * 
+	 * To reduce the chance of collision, we can increase the target feature dimension, i.e. 
+	 * the number of buckets of the hash table. Since a simple modulo is used to transform 
+	 * the hash function to a column index, it is advisable to use a power of two as the 
+	 * feature dimension, otherwise the features will not be mapped evenly to the columns. 
+	 * 
+	 * The default feature dimension is 218=262,144.
+	 */
+	private static final long serialVersionUID = 8394737976482170698L;
 
-	private static final long serialVersionUID = -7592807362852855002L;
-
-	private PCAModel model;
-
-	public PCAProj(PCAProjConfig config) {
+	public HashingTF(HashTFConfig config) {
 		this.config = config;
 	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((PCAProjConfig)config).validate();
-
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = new PCAManager().read(modelFs, modelMeta, config.modelName);
-		if (model == null)
-			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
-					this.getClass().getName(), config.modelName));
-
-	}
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((PCAProjConfig)config).validate();
+		((HashTFConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -95,29 +97,28 @@ public class PCAProj extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isArrayOfString(config.inputCol);
 		
 	}
-
-	/**
-	 * This method computes the transformed features by applying a trained
-	 * PCA model; as a result, the source dataset is enriched by an extra 
-	 * column (outputCol) that specifies the target variable in form of an 
-	 * Array[Double]
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		model.setInputCol(config.inputCol);
+		HashTFConfig hashConfig = (HashTFConfig)config;
+		
+		org.apache.spark.ml.feature.HashingTF transformer = new org.apache.spark.ml.feature.HashingTF();
+		transformer.setInputCol(hashConfig.inputCol);
 		/*
-		 * The internal output of the PCA model is an ML specific
+		 * The internal output of the hasher is an ML specific
 		 * vector representation; this must be transformed into
 		 * an Array[Double] to be compliant with Google CDAP
 		 */		
-		model.setOutputCol("_vector");
-		Dataset<Row> transformed = model.transform(source);
+		transformer.setOutputCol("_vector");
+		transformer.setNumFeatures(hashConfig.numFeatures);
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
+		Dataset<Row> transformed = transformer.transform(source);
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
+
 		return output;
 
 	}
@@ -134,13 +135,22 @@ public class PCAProj extends BaseFeatureCompute {
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
+	
+	public static class HashTFConfig extends BaseFeatureConfig {
 
-	public static class PCAProjConfig extends BaseFeatureConfig {
+		private static final long serialVersionUID = 6791984345238136178L;
 
-		private static final long serialVersionUID = 8801441172298876792L;
-
+		@Description("The nonnegative number of features to transform a sequence of terms into.")
+		@Macro
+		public Integer numFeatures;
+		
 		public void validate() {
 			super.validate();
+			
+			if (numFeatures == null || numFeatures <= 0) {
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of features must be greater than 0.", this.getClass().getName()));
+			}
 
 		}
 	}

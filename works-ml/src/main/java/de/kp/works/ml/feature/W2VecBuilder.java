@@ -37,7 +37,6 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
 import de.kp.works.core.BaseFeatureSink;
-import de.kp.works.ml.feature.PCABuilder.PCABuilderConfig;
 
 @Plugin(type = "sparksink")
 @Name("W2VecBuilder")
@@ -56,7 +55,7 @@ public class W2VecBuilder extends BaseFeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((PCABuilderConfig)config).validate();
+		((W2VecBuilderConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
@@ -73,20 +72,21 @@ public class W2VecBuilder extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		Map<String, Object> params = config.getParamsAsMap();
+		W2VecBuilderConfig builderConfig = (W2VecBuilderConfig)config;
+		Map<String, Object> params = builderConfig.getParamsAsMap();
 
 		W2VecTrainer trainer = new W2VecTrainer();
-		Word2VecModel model = trainer.train(source, config.inputCol, params);
+		Word2VecModel model = trainer.train(source, builderConfig.inputCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = builderConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = config.modelName;
+		String modelName = builderConfig.modelName;
 		new W2VecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}

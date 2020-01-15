@@ -21,7 +21,6 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.Binarizer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,19 +38,19 @@ import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("BinaryProj")
+@Name("Binarizer")
 @Description("A transformation stage that leverages the Apache Spark Feature Binarizer to map continuous features onto binary values.")
-public class BinaryProj extends BaseFeatureCompute {
+public class Binarizer extends BaseFeatureCompute {
 	
 	private static final long serialVersionUID = 4868372641130255213L;
 
-	public BinaryProj(BinaryProjConfig config) {
+	public Binarizer(BinarizerConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BinaryProjConfig)config).validate();
+		((BinarizerConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -85,14 +84,14 @@ public class BinaryProj extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		BinaryProjConfig binaryConfig = (BinaryProjConfig)config;
+		BinarizerConfig binaryConfig = (BinarizerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, binaryConfig.inputCol, "_input", true);
 		
-		Binarizer transformer = new Binarizer();
+		org.apache.spark.ml.feature.Binarizer transformer = new org.apache.spark.ml.feature.Binarizer();
 		transformer.setInputCol("_input");
 		/*
 		 * The internal output of the binarizer is an ML specific
@@ -122,7 +121,7 @@ public class BinaryProj extends BaseFeatureCompute {
 
 	}	
 
-	public static class BinaryProjConfig extends BaseFeatureConfig {
+	public static class BinarizerConfig extends BaseFeatureConfig {
 
 		private static final long serialVersionUID = 6791984345238136178L;
 
@@ -131,7 +130,7 @@ public class BinaryProj extends BaseFeatureCompute {
 		@Macro
 		public Double threshold;
 	
-		public BinaryProjConfig() {
+		public BinarizerConfig() {
 			threshold = 0.0;
 		}
 		

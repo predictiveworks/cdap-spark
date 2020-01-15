@@ -85,32 +85,32 @@ public class ScalerBuilder extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		ScalerBuilderConfig scalerConfig = (ScalerBuilderConfig)config;
+		ScalerBuilderConfig builderConfig = (ScalerBuilderConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, scalerConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, builderConfig.inputCol, "_input", true);
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = scalerConfig.getParamsAsJSON();
+		String paramsJson = builderConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 		
-		String modelType = scalerConfig.modelType;
+		String modelType = builderConfig.modelType;
 		if (modelType.equals("minmax")) {
 			
 			MinMaxScaler minMaxScaler = new MinMaxScaler();
 			minMaxScaler.setInputCol("_input");
 		
-			minMaxScaler.setMin(scalerConfig.min);
-			minMaxScaler.setMax(scalerConfig.max);
+			minMaxScaler.setMin(builderConfig.min);
+			minMaxScaler.setMax(builderConfig.max);
 			
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
 
-			String modelName = scalerConfig.modelName;
+			String modelName = builderConfig.modelName;
 			new ScalerManager().saveMinMaxScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 			
 			
@@ -121,7 +121,7 @@ public class ScalerBuilder extends BaseFeatureSink {
 			
 			MaxAbsScalerModel model = maxAbsScaler.fit(vectorset);
 
-			String modelName = scalerConfig.modelName;
+			String modelName = builderConfig.modelName;
 			new ScalerManager().saveMaxAbsScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 			
 		} else {
@@ -129,13 +129,13 @@ public class ScalerBuilder extends BaseFeatureSink {
 			StandardScaler standardScaler = new StandardScaler();
 			standardScaler.setInputCol("_input");
 			
-			if (scalerConfig.withMean.equals("false"))
+			if (builderConfig.withMean.equals("false"))
 				standardScaler.setWithMean(false);
 			
 			else 
 				standardScaler.setWithMean(true);
 			
-			if (scalerConfig.withStd.equals("false"))
+			if (builderConfig.withStd.equals("false"))
 				standardScaler.setWithStd(false);
 			
 			else 
@@ -143,7 +143,7 @@ public class ScalerBuilder extends BaseFeatureSink {
 				
 			StandardScalerModel model = standardScaler.fit(vectorset);
 
-			String modelName = scalerConfig.modelName;
+			String modelName = builderConfig.modelName;
 			new ScalerManager().saveStandardScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 		}

@@ -78,11 +78,12 @@ public class BisectingKMeansSink extends BaseClusterSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		BisectingKMeansConfig clusterConfig = (BisectingKMeansConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train Bisecting KMeans model
 		 */
-		String featuresCol = config.featuresCol;
-		Map<String, Object> params = config.getParamsAsMap();
+		String featuresCol = clusterConfig.featuresCol;
+		Map<String, Object> params = clusterConfig.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -131,10 +132,10 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		 * STEP #3: Store trained Bisecting KMeans model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = clusterConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = config.modelName;
+		String modelName = clusterConfig.modelName;
 		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}

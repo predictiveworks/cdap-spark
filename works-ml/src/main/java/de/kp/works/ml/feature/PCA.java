@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel;
+import org.apache.spark.ml.feature.PCAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,26 +39,26 @@ import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("BucketedLSHProj")
-@Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model to project feature vectors onto hash value vectors.")
-public class BucketedLSHProj extends BaseFeatureCompute {
+@Name("PCA")
+@Description("A transformation stage that leverages a trained PCA model to project feature vectors onto a lower dimensional vector space.")
+public class PCA extends BaseFeatureCompute {
 
-	private static final long serialVersionUID = -5333140801597897278L;
+	private static final long serialVersionUID = -7592807362852855002L;
 
-	private BucketedRandomProjectionLSHModel model;
+	private PCAModel model;
 
-	public BucketedLSHProj(BucketedLSHProjConfig config) {
+	public PCA(PCAConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((BucketedLSHProjConfig)config).validate();
+		((PCAConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new BucketedLSHManager().read(modelFs, modelMeta, config.modelName);
+		model = new PCAManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -68,7 +68,7 @@ public class BucketedLSHProj extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BucketedLSHProjConfig)config).validate();
+		((PCAConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -95,8 +95,31 @@ public class BucketedLSHProj extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
+		isArrayOfDouble(config.inputCol);
 		
+	}
+
+	/**
+	 * This method computes the transformed features by applying a trained
+	 * PCA model; as a result, the source dataset is enriched by an extra 
+	 * column (outputCol) that specifies the target variable in form of an 
+	 * Array[Double]
+	 */
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		model.setInputCol(config.inputCol);
+		/*
+		 * The internal output of the PCA model is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		model.setOutputCol("_vector");
+		Dataset<Row> transformed = model.transform(source);
+
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
+		return output;
+
 	}
 
 	/**
@@ -111,38 +134,8 @@ public class BucketedLSHProj extends BaseFeatureCompute {
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
-	/**
-	 * This method computes the transformed features by applying a trained
-	 * BucketedRandomProjectionLSH model; as a result, the source dataset 
-	 * is enriched by an extra column (outputCol) that specifies the target 
-	 * variable in form of an Array[Double]
-	 */
-	@Override
-	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		
-		/*
-		 * In v2.1.3 the BucketedRandomProjectionLSH model does not contain
-		 * methods setInputCol & setOutputCol
-		 */
-		model.set(model.inputCol(), config.inputCol);
-		model.set(model.outputCol(), config.outputCol);
-		/*
-		 * The type of outputCol is Seq[Vector] where the dimension of the array
-		 * equals numHashTables, and the dimensions of the vectors are currently 
-		 * set to 1. 
-		 * 
-		 * In future releases, we will implement AND-amplification so that users 
-		 * can specify the dimensions of these vectors.
-		 * 
-		 * For compliances purposes with CDAP data schemas, we have to resolve
-		 * the output format as Array Of Double
-		 */
-		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(source), config.outputCol);
-		return output;
 
-	}
-
-	public static class BucketedLSHProjConfig extends BaseFeatureConfig {
+	public static class PCAConfig extends BaseFeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
 

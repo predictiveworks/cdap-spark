@@ -30,13 +30,13 @@ class MinHashLSHTrainer {
     
   def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):MinHashLSHModel = {
     
-    val model = new MinHashLSH()
+    val minHashLSH = new org.apache.spark.ml.feature.MinHashLSH()
 
     val numHashTables = params.get("numHashTables").asInstanceOf[Int]
-    model.setNumHashTables(numHashTables)
+    minHashLSH.setNumHashTables(numHashTables)
     
-    model.setInputCol(vectorCol)
-    model.fit(vectorset)
+    minHashLSH.setInputCol(vectorCol)
+    minHashLSH.fit(vectorset)
     
   }
   
@@ -59,7 +59,7 @@ object MinHashLSHTest {
     )).toDF("id", "features")
 
     /** BUILD MODEL **/    
-    val minHash = new MinHashLSH()
+    val minHash = new org.apache.spark.ml.feature.MinHashLSH()
       .setNumHashTables(1)
       .setInputCol("features")
     

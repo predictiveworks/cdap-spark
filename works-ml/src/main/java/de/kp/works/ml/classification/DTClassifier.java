@@ -68,13 +68,15 @@ public class DTClassifier extends BaseClassifierSink {
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		DTClassifierConfig classifierConfig = (DTClassifierConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train classifier model
 		 */
-		String featuresCol = config.featuresCol;
-		String labelCol = config.labelCol;
+		String featuresCol = classifierConfig.featuresCol;
+		String labelCol = classifierConfig.labelCol;
 
-		Map<String, Object> params = config.getParamsAsMap();
+		Map<String, Object> params = classifierConfig.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -90,7 +92,7 @@ public class DTClassifier extends BaseClassifierSink {
 		 * Split the vectorset into a train & test dataset for later classification
 		 * evaluation
 		 */
-		Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
+		Dataset<Row>[] splitted = vectorset.randomSplit(classifierConfig.getSplits());
 
 		Dataset<Row> trainset = splitted[0];
 		Dataset<Row> testset = splitted[1];
@@ -127,10 +129,10 @@ public class DTClassifier extends BaseClassifierSink {
 		 * STEP #3: Store trained classification model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = classifierConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = config.modelName;
+		String modelName = classifierConfig.modelName;
 		new DTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}

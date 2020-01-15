@@ -114,6 +114,18 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 		
 	}
 
+	protected void isString(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!fieldType.equals(Schema.Type.STRING)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the input must be a STRING.", this.getClass().getName()));
+		}
+
+	}
+
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		throw new Exception("[ERROR] Not implemented");
 	}

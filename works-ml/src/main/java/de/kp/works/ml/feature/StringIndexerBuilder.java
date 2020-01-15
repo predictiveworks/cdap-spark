@@ -21,14 +21,13 @@ package de.kp.works.ml.feature;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.spark.ml.feature.PCAModel;
+import org.apache.spark.ml.feature.StringIndexerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -39,15 +38,20 @@ import de.kp.works.core.BaseFeatureModelConfig;
 import de.kp.works.core.BaseFeatureSink;
 
 @Plugin(type = "sparksink")
-@Name("PCABuilder")
-@Description("A building stage for an Apache Spark based Principal Component Analysis feature model.")
-public class PCABuilder extends BaseFeatureSink {
+@Name("StringIndexerBuilder")
+@Description("A building stage for an Apache Spark based String Indexer model.")
+public class StringIndexerBuilder extends BaseFeatureSink {
+	/*
+	 * A label indexer that maps a string column of labels to an ML column of label indices.
+	 * If the input column is numeric, we cast it to string and index the string values.
+	 * The indices are in [0, numLabels), ordered by label frequencies.
+	 * So the most frequent label gets index 0.
+	 */
+	private static final long serialVersionUID = -2360022873735403321L;
 
-	private static final long serialVersionUID = -698695950116408878L;
-
-	public PCABuilder(PCABuilderConfig config) {
+	public StringIndexerBuilder(StringIndexerBuilderConfig config) {
 		this.config = config;
-		this.className = PCABuilder.class.getName();
+		this.className = StringIndexerBuilder.class.getName();
 	}
 
 	@Override
@@ -55,16 +59,12 @@ public class PCABuilder extends BaseFeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((PCABuilderConfig)config).validate();
+		((StringIndexerBuilderConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			/*
-			 * Check whether the input columns is of data type
-			 * Array[Double]
-			 */
 			validateSchema(inputSchema, config);
 
 	}
@@ -72,35 +72,24 @@ public class PCABuilder extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		PCABuilderConfig builderConfig = (PCABuilderConfig)config;
+		StringIndexerBuilderConfig builderConfig = (StringIndexerBuilderConfig)config;
+
+		org.apache.spark.ml.feature.StringIndexer trainer = new org.apache.spark.ml.feature.StringIndexer();
+		trainer.setInputCol(builderConfig.inputCol);
+
+		StringIndexerModel model = trainer.fit(source);
 		
-		String featuresCol = builderConfig.inputCol;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
-		/*
-		 * The vectorCol specifies the internal column that has to be built from the
-		 * featuresCol and that is used for training purposes
-		 */
-		String vectorCol = "_vector";
-		/*
-		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
-		 */
-		PCATrainer trainer = new PCATrainer();
-		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
-
-		PCAModel model = trainer.train(vectorset, vectorCol, params);
-
 		Map<String, Object> metrics = new HashMap<>();
 		/*
-		 * Store trained PCA model including its associated parameters and
-		 * metrics
+		 * Store trained StringIndexer model including its associated
+		 * parameters and metrics
 		 */
 		String paramsJson = builderConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
-		new PCAManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
-
+		String modelName = config.modelName;
+		new StringIndexerManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		
 	}
 	
 	@Override
@@ -108,35 +97,16 @@ public class PCABuilder extends BaseFeatureSink {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isString(config.inputCol);
 		
 	}
 
-	public static class PCABuilderConfig extends BaseFeatureModelConfig {
+	public static class StringIndexerBuilderConfig extends BaseFeatureModelConfig {
 
-		private static final long serialVersionUID = -8154181932750250998L;
-		
-		@Description("The positive number of principle components.")
-		@Macro
-		public Integer k;
-
-		public Map<String, Object> getParamsAsMap() {
-
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("k", k);
-
-			return params;
-
-		}
+		private static final long serialVersionUID = -97589053635760766L;
 		
 		public void validate() {
 			super.validate();
-
-			if (k < 1) {
-				throw new IllegalArgumentException(String.format("[%s] The number of principal components must be greater than 0.",
-						this.getClass().getName()));
-			}
-			
 		}
 	}
 }

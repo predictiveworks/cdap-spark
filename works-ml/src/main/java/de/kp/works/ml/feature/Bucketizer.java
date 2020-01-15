@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.spark.ml.feature.Bucketizer;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -43,9 +42,9 @@ import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("BucketProj")
+@Name("Bucketizer")
 @Description("A transformation stage that leverages the Apache Spark Feature Bucketizer to map continuous features onto feature buckets.")
-public class BucketProj extends BaseFeatureCompute {
+public class Bucketizer extends BaseFeatureCompute {
 	/*
 	 * Bucketizer transforms a column of continuous features to a column of feature buckets, where the buckets 
 	 * are specified by users. It takes a parameter: splits.
@@ -65,13 +64,13 @@ public class BucketProj extends BaseFeatureCompute {
 
 	private static final long serialVersionUID = 139261697861873381L;
 
-	public BucketProj(BucketProjConfig config) {
+	public Bucketizer(BucketizerConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BucketProjConfig)config).validate();
+		((BucketizerConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -105,14 +104,14 @@ public class BucketProj extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		BucketProjConfig bucketConfig = (BucketProjConfig)config;
+		BucketizerConfig bucketConfig = (BucketizerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, bucketConfig.inputCol, "_input", true);
 		
-		Bucketizer transformer = new Bucketizer();
+		org.apache.spark.ml.feature.Bucketizer transformer = new org.apache.spark.ml.feature.Bucketizer();
 		transformer.setInputCol("_input");
 		/*
 		 * The internal output of the bucketizer is an ML specific
@@ -142,7 +141,7 @@ public class BucketProj extends BaseFeatureCompute {
 
 	}	
 
-	public static class BucketProjConfig extends BaseFeatureConfig {
+	public static class BucketizerConfig extends BaseFeatureConfig {
 	
 		private static final long serialVersionUID = -4048306352805978020L;
 		
@@ -154,7 +153,7 @@ public class BucketProj extends BaseFeatureCompute {
 		@Macro
 		public String splits;
 
-		public BucketProjConfig() {
+		public BucketizerConfig() {
 			
 		}
 		

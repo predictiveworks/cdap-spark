@@ -80,27 +80,27 @@ public class CountVecBuilder extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		CountVecBuilderConfig vocabConfig = (CountVecBuilderConfig)config;
+		CountVecBuilderConfig builderConfig = (CountVecBuilderConfig)config;
 		
 		CountVectorizer trainer = new CountVectorizer();
-		trainer.setInputCol(config.inputCol);
+		trainer.setInputCol(builderConfig.inputCol);
 		
-		Double minDF = new Double(vocabConfig.minDF);
+		Double minDF = new Double(builderConfig.minDF);
 		trainer.setMinDF(minDF);
 		
-		Double minTF = new Double(vocabConfig.minTF);
+		Double minTF = new Double(builderConfig.minTF);
 		trainer.setMinTF(minTF);
 
-		if (vocabConfig.vocabSize != null)
-			trainer.setVocabSize(vocabConfig.vocabSize);
+		if (builderConfig.vocabSize != null)
+			trainer.setVocabSize(builderConfig.vocabSize);
 		
 		CountVectorizerModel model = trainer.fit(source);		
 		Map<String,Object> metrics = new HashMap<>();
 		
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = builderConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 		
-		String modelName = config.modelName;
+		String modelName = builderConfig.modelName;
 		new CountVecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
 	}

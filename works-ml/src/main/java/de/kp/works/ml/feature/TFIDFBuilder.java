@@ -84,20 +84,21 @@ public class TFIDFBuilder extends BaseFeatureSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		Map<String, Object> params = config.getParamsAsMap();
+		TFIDFBuilderConfig builderConfig = (TFIDFBuilderConfig)config;		
+		Map<String, Object> params = builderConfig.getParamsAsMap();
 
 		TFIDFTrainer trainer = new TFIDFTrainer();
-		IDFModel model = trainer.train(source, config.inputCol, params);
+		IDFModel model = trainer.train(source, builderConfig.inputCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
+		String paramsJson = builderConfig.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = config.modelName;
+		String modelName = builderConfig.modelName;
 		new TFIDFManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}

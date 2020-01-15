@@ -21,12 +21,11 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.Normalizer;
+import org.apache.spark.ml.feature.MinHashLSHModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -36,22 +35,44 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
+
 import de.kp.works.ml.MLUtils;
+import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("NormProj")
-@Description("A transformation stage normalize a feature vector to have unit norm using the given p-norm.")
-public class NormProj extends BaseFeatureCompute {
+@Name("MinHashLSH")
+@Description("A transformation stage that leverages a trained MinHash LSH model to project feature vectors onto hash value vectors.")
+public class MinHashLSH extends BaseFeatureCompute {
+	/*
+	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage
+	 * must have a vector binarization stage in front of it.
+	 */
+	private static final long serialVersionUID = 1435132891116854304L;
 
-	private static final long serialVersionUID = 8637506241398507943L;
+	private MinHashLSHModel model;
 
-	public NormProj(NormProjConfig config) {
+	public MinHashLSH(MinHashLSHConfig config) {
 		this.config = config;
 	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		((MinHashLSHConfig)config).validate();
+
+		modelFs = SparkMLManager.getFeatureFS(context);
+		modelMeta = SparkMLManager.getFeatureMeta(context);
+
+		model = new MinHashLSHManager().read(modelFs, modelMeta, config.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
+					this.getClass().getName(), config.modelName));
+
+	}
+
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((NormProjConfig)config).validate();
+		((MinHashLSHConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -83,6 +104,37 @@ public class NormProj extends BaseFeatureCompute {
 	}
 
 	/**
+	 * This method computes the transformed features by applying a trained
+	 * MinHashLSH model; as a result, the source dataset is enriched by an 
+	 * extra column (outputCol) that specifies the target variable in form 
+	 * of an Array[Double]
+	 */
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		/*
+		 * In v2.1.3 the MinHashLSH model does not contain
+		 * methods setInputCol & setOutputCol
+		 */
+		model.set(model.inputCol(), config.inputCol);
+		model.set(model.outputCol(), config.outputCol);
+		/*
+		 * The type of outputCol is Seq[Vector] where the dimension of the array
+		 * equals numHashTables, and the dimensions of the vectors are currently 
+		 * set to 1. 
+		 * 
+		 * In future releases, we will implement AND-amplification so that users 
+		 * can specify the dimensions of these vectors.
+		 * 
+		 * For compliances purposes with CDAP data schemas, we have to resolve
+		 * the output format as Array Of Double
+		 */
+		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(source), config.outputCol);
+		return output;
+
+	}
+
+	/**
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
@@ -94,55 +146,15 @@ public class NormProj extends BaseFeatureCompute {
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
-	
-	@Override
-	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		/*
-		 * Build internal column from input column and cast to 
-		 * double vector
-		 */
-		NormProjConfig normConfig = (NormProjConfig)config;
-		Dataset<Row> vectorset = MLUtils.vectorize(source, normConfig.inputCol, "_input", true);
-		
-		Normalizer transformer = new Normalizer();
-		transformer.setInputCol("_input");
-		/*
-		 * The internal output of the binarizer is an ML specific
-		 * vector representation; this must be transformed into
-		 * an Array[Double] to be compliant with Google CDAP
-		 */
-		transformer.setOutputCol("_vector");
-		transformer.setP((double)normConfig.norm);
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
+	public static class MinHashLSHConfig extends BaseFeatureConfig {
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", normConfig.outputCol).drop("_input").drop("_vector");
-		return output;
-	    		
-	}
-	
-	
-	public static class NormProjConfig extends BaseFeatureConfig {
+		private static final long serialVersionUID = 8801441172298876792L;
 
-		private static final long serialVersionUID = 4977817064737125270L;
-
-		@Description("The p-norm to use for normalization. Supported values are '1' and '2'. Default is 2. ")
-		@Macro
-		public Integer norm;
-		
-		public NormProjConfig() {
-			norm = 2;
-		}
-		
 		public void validate() {
 			super.validate();
-			
-			if (!(norm == 1 || norm == 2)) {
-				throw new IllegalArgumentException(String
-						.format("[%s] The p-norm must be either 1 or 2.", this.getClass().getName()));
-			}
 
 		}
-		
 	}
+
 }

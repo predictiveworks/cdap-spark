@@ -30,7 +30,7 @@ class PCATrainer {
     
   def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):PCAModel = {
     
-    val model = new PCA()
+    val model = new org.apache.spark.ml.feature.PCA()
 
     val k = params.get("k").asInstanceOf[Int]
     model.setK(k)

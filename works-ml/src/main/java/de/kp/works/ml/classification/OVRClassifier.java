@@ -64,11 +64,13 @@ public class OVRClassifier extends BaseClassifierSink {
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		OVRClassifierConfig classifierConfig = (OVRClassifierConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train classifier model
 		 */
-		String featuresCol = config.featuresCol;
-		Map<String, Object> params = config.getParamsAsMap();
+		String featuresCol = classifierConfig.featuresCol;
+		Map<String, Object> params = classifierConfig.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for

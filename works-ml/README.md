@@ -8,6 +8,11 @@ Machine learning support for CDAP-Spark
 
 ### Normalizer
 
+### String Indexer
+
+The String Indexer encodes an input string of labels to label indices. The indices are in [0, numLabels), and are ordered 
+label frequency, i.e. the most frequent label is assigned '0'. The unseen labels will be put at index numLabels if the user chooses to keep them. If the input is numeric, it is casted to a string.
+
 ## Feature Scaling
 
 ### Max-Abs Scaler
