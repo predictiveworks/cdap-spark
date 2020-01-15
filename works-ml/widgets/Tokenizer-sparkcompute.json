@@ -1,0 +1,60 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Tokenizer",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Regex Pattern",
+          "name": "pattern",
+          "widget-attributes": {
+            "default": "\\s+"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token Length",
+          "name": "minTokenLength",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Gaps",
+          "name": "gaps",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
+        }
+      ]
+    }
+  ]
+}

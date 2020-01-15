@@ -22,6 +22,8 @@ Machine learning support for CDAP-Spark
 
 ### Hashing TF
 
+### Regex Tokenizer
+
 ### TF-IDF
 
 ### Word2Vec

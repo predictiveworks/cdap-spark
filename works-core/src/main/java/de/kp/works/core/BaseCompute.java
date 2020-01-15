@@ -148,7 +148,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 
 		if (!fieldType.equals(Schema.Type.ARRAY)) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
+					String.format("[%s] The field that defines the input must be an ARRAY.", this.getClass().getName()));
 		}
 
 		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
@@ -166,7 +166,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 
 		if (!fieldType.equals(Schema.Type.ARRAY)) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
+					String.format("[%s] The field that defines the input must be an ARRAY.", this.getClass().getName()));
 		}
 
 		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
@@ -177,6 +177,18 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 		
 	}
 
+	protected void isString(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!fieldType.equals(Schema.Type.STRING)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the input must be a STRING.", this.getClass().getName()));
+		}
+
+	}
+	
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		throw new Exception("[BaseCompute] Not implemented");
 	}
