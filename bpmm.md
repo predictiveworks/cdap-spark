@@ -13,6 +13,8 @@ The BPMM is a practical guide with actionable recommendations based on (existing
 
 The BPMM is the result of a long standing experience how many companies approach predictive analytics and defines 5 maturity levels:
 
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/maturity-levels.png" width="800" alt="Maturity Levels">
+
 ### Level 1
 
 At this level, corporate adoption of predictive analytics is guided by management terms such as "minimum viable product", "pilot project", "quick wins" and more. Such a situation usually indicates that no robust data (analytics) strategy exists. 
