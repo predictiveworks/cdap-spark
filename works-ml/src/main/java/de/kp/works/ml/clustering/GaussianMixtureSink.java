@@ -21,7 +21,7 @@ package de.kp.works.ml.clustering;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.spark.ml.clustering.BisectingKMeansModel;
+import org.apache.spark.ml.clustering.GaussianMixtureModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -38,21 +38,13 @@ import de.kp.works.core.BaseClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
-@Name("BisectingKMeansSink")
-@Description("A building stage for an Apache Spark based Bisecting KMeans clustering model.")
-public class BisectingKMeansSink extends BaseClusterSink {
-	/*
-	 * Bisecting k-means is a kind of hierarchical clustering using
-	 * a divisive (or “top-down”) approach: all observations start in
-	 * one cluster, and splits are performed recursively as one moves
-	 * down the hierarchy.
-	 * 
-	 * Bisecting K-means can often be much faster than regular K-means, 
-	 * but it will generally produce a different clustering.
-	 */
-	private static final long serialVersionUID = 7306065544750480510L;
+@Name("GaussianMixtureSink")
+@Description("A building stage for an Apache Spark based Gaussian Mixture clustering model.")
+public class GaussianMixtureSink extends BaseClusterSink {
 
-	public BisectingKMeansSink(BisectingKMeansConfig config) {
+	private static final long serialVersionUID = -8171201794590284739L;
+
+	public GaussianMixtureSink(GaussianMixtureConfig config) {
 		this.config = config;
 		this.className = BisectingKMeansSink.class.getName();
 	}
@@ -62,7 +54,7 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((BisectingKMeansConfig)config).validate();
+		((GaussianMixtureConfig)config).validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -79,7 +71,7 @@ public class BisectingKMeansSink extends BaseClusterSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		/*
-		 * STEP #1: Extract parameters and train Bisecting KMeans model
+		 * STEP #1: Extract parameters and train Gaussian Mixture model
 		 */
 		String featuresCol = config.featuresCol;
 		Map<String, Object> params = config.getParamsAsMap();
@@ -92,12 +84,12 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		 * Prepare provided dataset by vectorizing the feature column which is specified
 		 * as Array[Numeric]
 		 */
-		BisectingKMeansTrainer trainer = new BisectingKMeansTrainer();
+		GaussianMixtureTrainer trainer = new GaussianMixtureTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 
-		BisectingKMeansModel model = trainer.train(vectorset, vectorCol, params);
+		GaussianMixtureModel model = trainer.train(vectorset, vectorCol, params);
 		/*
-		 * STEP #2: Compute silhouette coefficient as metric for this Bisecting KMeans
+		 * STEP #2: Compute silhouette coefficient as metric for this Gaussian Mixture
 		 * parameter setting: to this end, the predictions are computed based on the 
 		 * trained model and the vectorized data set
 		 */
@@ -119,8 +111,8 @@ public class BisectingKMeansSink extends BaseClusterSink {
 
 		Double coefficent = evaluator.evaluate(predictions);
 		/*
-		 * The silhouette coefficent is specified as JSON metrics for this Bisecting 
-		 * KMeans model and stored by the Bisecting KMeans manager
+		 * The silhouette coefficent is specified as JSON metrics for this Gaussian
+		 * Mixture model and stored by the Gaussian Mixture manager
 		 */
 		Map<String, Object> metrics = new HashMap<>();
 
@@ -128,49 +120,47 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		metrics.put("measure", "squaredEuclidean");
 		metrics.put("coefficient", coefficent);
 		/*
-		 * STEP #3: Store trained Bisecting KMeans model including its associated 
+		 * STEP #3: Store trained Gaussian Mixture model including its associated 
 		 * parameters and metrics
 		 */
 		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new GaussianMixtureManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
-	
-	public static class BisectingKMeansConfig extends BaseClusterConfig {
 
-		private static final long serialVersionUID = -1120652583264276007L;
+	public static class GaussianMixtureConfig extends BaseClusterConfig {
+
+		private static final long serialVersionUID = 3332346148556050711L;
 		
-		@Description("The desired number of leaf clusters. Must be > 1. Default is 4.")
+		@Description("The number of independent Gaussian distributions in the dataset. Must be > 1. Default is 2.")
 		@Macro
 		public Integer k;
-
-		@Description("The minimum number of points (if greater than or equal to 1.0) or the minimum proportion "
-				+ "of points (if less than 1.0) of a divisible cluster. Default is 1.0.")
-		@Macro
-		public Double minDivisibleClusterSize;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 100")
 	    @Macro
 	    private Integer maxIter;
 
-	    public BisectingKMeansConfig() {
-	    	
-	    		k = 4;
-	    		maxIter = 20;
-	    		minDivisibleClusterSize = 1.0;
-	    	
-	    }
+		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
+				+ "of more iterations. Default is 0.01.")
+		@Macro
+		public Double tol;		
+		
+		public GaussianMixtureConfig() {
+			k = 2;
+			maxIter = 100;
+			tol = 0.01;
+		}
 
 		public Map<String, Object> getParamsAsMap() {
 
 			Map<String, Object> params = new HashMap<String, Object>();
 			params.put("k", k);
 			params.put("maxIter", maxIter);
+			params.put("tol", tol);
 
-			params.put("minDivisibleClusterSize", minDivisibleClusterSize);
 			return params;
 
 		}
@@ -186,11 +176,6 @@ public class BisectingKMeansSink extends BaseClusterSink {
 				throw new IllegalArgumentException(String
 						.format("[%s] The number of iterations must be greater than 0.", this.getClass().getName()));
 			}
-			if (minDivisibleClusterSize <= 0.0) {
-				throw new IllegalArgumentException(String
-						.format("[%s] The minimum number of points or proporation of points must be greater than to 0.0.", this.getClass().getName()));
-			}
-	    
 		}
 	}
 }

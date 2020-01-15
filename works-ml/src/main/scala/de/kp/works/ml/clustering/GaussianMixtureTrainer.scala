@@ -22,23 +22,23 @@ import java.util.{Map => JMap}
 import org.apache.spark.ml.clustering._
 import org.apache.spark.sql._
 
-class BisectingKMeansTrainer extends ClusterTrainer {
-  
-  def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):BisectingKMeansModel = {
+class GaussianMixtureTrainer extends ClusterTrainer {
     
-    val bisectingKMeans = new BisectingKMeans()
+  def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):GaussianMixtureModel = {
+    
+    val gaussianMixture = new GaussianMixture()
     
     val k = params.get("k").asInstanceOf[Int] 
-    bisectingKMeans.setK(k)
+    gaussianMixture.setK(k)
     
     val maxIter = params.get("maxIter").asInstanceOf[Int] 
-    bisectingKMeans.setMaxIter(maxIter)
+    gaussianMixture.setMaxIter(maxIter)
      
-    val minDivisibleClusterSize = params.get("minDivisibleClusterSize").asInstanceOf[Double] 
-    bisectingKMeans.setMinDivisibleClusterSize(minDivisibleClusterSize)
+    val tol = params.get("tol").asInstanceOf[Double] 
+    gaussianMixture.setTol(tol)
      
-    bisectingKMeans.setFeaturesCol(vectorCol)
-    bisectingKMeans.fit(vectorset)
+    gaussianMixture.setFeaturesCol(vectorCol)
+    gaussianMixture.fit(vectorset)
     
   }
 

@@ -23,14 +23,8 @@ import org.apache.spark.ml.clustering._
 import org.apache.spark.mllib.clustering.{KMeans => MLlibKMeans}
 
 import org.apache.spark.sql._
-import de.kp.works.ml.MLUtils
 
-class KMeansTrainer() {
-  
-  /*
-   * The features can be defined as an Array of Numeric (Double, Float, Int, Long)
-   */
-  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(trainset, featuresCol, vectorCol, true)
+class KMeansTrainer() extends ClusterTrainer {
   
   def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):KMeansModel = {
     

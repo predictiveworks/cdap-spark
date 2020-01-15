@@ -1,0 +1,54 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Gaussian Mixture",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Clusters",
+          "name": "k"
+        },
+
+         {
+          "widget-type": "textbox",
+          "label": "Maximum Iterations",
+          "name": "maxIter",
+          "widget-attributes": {
+            "default": "100"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Conversion Tolerance",
+          "name": "tol",
+          "widget-attributes": {
+            "default": "0.01"
+          }
+        }
+       ]
+    }
+  ]
+}
