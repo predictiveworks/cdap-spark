@@ -24,7 +24,9 @@ import org.apache.spark.sql.functions._
 import de.kp.works.ml.MLUtils
 
 trait RegressorTrainer {
-      
-  def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(dataset, featuresCol, vectorCol)
+  /*
+   * The features can be defined as an Array of Numeric (Double, Float, Int, Long)
+   */
+   def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(dataset, featuresCol, vectorCol, true)
   
 }

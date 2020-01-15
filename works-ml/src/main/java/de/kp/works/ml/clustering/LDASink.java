@@ -87,7 +87,7 @@ public class LDASink extends BaseClusterSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
+		 * as Array[Numeric]
 		 */
 		LDATrainer trainer = new LDATrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

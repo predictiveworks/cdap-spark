@@ -82,7 +82,7 @@ public class IsotonicRegressor extends BaseRegressorSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature
-		 * column which is specified as Array[Double]
+		 * column which is specified as Array[Numeric]
 		 */
 		IsotonicTrainer trainer = new IsotonicTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

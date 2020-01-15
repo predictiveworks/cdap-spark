@@ -1,34 +1,14 @@
 package de.kp.works.ml.clustering;
 
-/*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
- * the License.
- * 
- * @author Stefan Krusche, Dr. Krusche & Partner PartG
- * 
- */
-
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.Nullable;
 
-import org.apache.spark.ml.clustering.KMeansModel;
-
+import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.gson.Gson;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -40,15 +20,23 @@ import de.kp.works.core.BaseClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
-@Name("KMeansSink")
-@Description("A building stage for an Apache Spark based KMeans clustering model.")
-public class KMeansSink extends BaseClusterSink {
+@Name("BisectingKMeansSink")
+@Description("A building stage for an Apache Spark based Bisecting KMeans clustering model.")
+public class BisectingKMeansSink extends BaseClusterSink {
+	/*
+	 * Bisecting k-means is a kind of hierarchical clustering using
+	 * a divisive (or “top-down”) approach: all observations start in
+	 * one cluster, and splits are performed recursively as one moves
+	 * down the hierarchy.
+	 * 
+	 * Bisecting K-means can often be much faster than regular K-means, 
+	 * but it will generally produce a different clustering.
+	 */
+	private static final long serialVersionUID = 7306065544750480510L;
 
-	private static final long serialVersionUID = 8351695775316345380L;
-
-	public KMeansSink(KMeansConfig config) {
+	public BisectingKMeansSink(BisectingKMeansConfig config) {
 		this.config = config;
-		this.className = KMeansSink.class.getName();
+		this.className = BisectingKMeansSink.class.getName();
 	}
 
 	@Override
@@ -56,7 +44,7 @@ public class KMeansSink extends BaseClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((KMeansConfig)config).validate();
+		((BisectingKMeansConfig)config).validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -73,7 +61,7 @@ public class KMeansSink extends BaseClusterSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		/*
-		 * STEP #1: Extract parameters and train KMeans model
+		 * STEP #1: Extract parameters and train Bisecting KMeans model
 		 */
 		String featuresCol = config.featuresCol;
 		Map<String, Object> params = config.getParamsAsMap();
@@ -86,14 +74,14 @@ public class KMeansSink extends BaseClusterSink {
 		 * Prepare provided dataset by vectorizing the feature column which is specified
 		 * as Array[Numeric]
 		 */
-		KMeansTrainer trainer = new KMeansTrainer();
+		BisectingKMeansTrainer trainer = new BisectingKMeansTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);
 
-		KMeansModel model = trainer.train(vectorset, vectorCol, params);
+		BisectingKMeansModel model = trainer.train(vectorset, vectorCol, params);
 		/*
-		 * STEP #2: Compute silhouette coefficient as metric for this KMeans parameter
-		 * setting: to this end, the predictions are computed based on the trained model
-		 * and the vectorized data set
+		 * STEP #2: Compute silhouette coefficient as metric for this Bisecting KMeans
+		 * parameter setting: to this end, the predictions are computed based on the 
+		 * trained model and the vectorized data set
 		 */
 		String predictionCol = "_cluster";
 		model.setPredictionCol(predictionCol);
@@ -129,50 +117,34 @@ public class KMeansSink extends BaseClusterSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new KMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
+	
+	public static class BisectingKMeansConfig extends BaseClusterConfig {
 
-	public static class KMeansConfig extends BaseClusterConfig {
-
-		private static final long serialVersionUID = -1071711175500255534L;
-
-		@Description("The number of cluster that have to be created.")
+		private static final long serialVersionUID = -1120652583264276007L;
+		
+		@Description("The desired number of leaf clusters. Must be > 1. Default is 4.")
 		@Macro
-		private Integer k;
+		public Integer k;
 
-		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
-		@Nullable
+		@Description("The minimum number of points (if greater than or equal to 1.0) or the minimum proportion "
+				+ "of points (if less than 1.0) of a divisible cluster. Default is 1.0.")
 		@Macro
-		private Integer maxIter;
+		public Double minDivisibleClusterSize;
+		
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+	    @Macro
+	    private Integer maxIter;
 
-		@Description("The convergence tolerance of the algorithm. Default value: 1e-4")
-		@Nullable
-		@Macro
-		private Double tolerance;
-
-		@Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value: 2")
-		@Nullable
-		@Macro
-		private Integer initSteps;
-
-		@Description("The initialization mode of the algorithm. This can be either 'random' to choose random "
-				+ "random points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value: 'parallel'")
-		@Nullable
-		@Macro
-		private String initMode;
-
-		public KMeansConfig() {
-
-			referenceName = "KMeansSink";
-
-			maxIter = 20;
-			tolerance = 1e-4;
-
-			initSteps = 2;
-			initMode = "parallel";
-
-		}
+	    public BisectingKMeansConfig() {
+	    	
+	    		k = 4;
+	    		maxIter = 20;
+	    		minDivisibleClusterSize = 1.0;
+	    	
+	    }
 
 		public Map<String, Object> getParamsAsMap() {
 
@@ -180,11 +152,7 @@ public class KMeansSink extends BaseClusterSink {
 			params.put("k", k);
 			params.put("maxIter", maxIter);
 
-			params.put("tolerance", tolerance);
-
-			params.put("initSteps", initSteps);
-			params.put("initMode", initMode);
-
+			params.put("minDivisibleClusterSize", minDivisibleClusterSize);
 			return params;
 
 		}
@@ -193,23 +161,18 @@ public class KMeansSink extends BaseClusterSink {
 			super.validate();
 
 			if (k <= 1) {
-				throw new IllegalArgumentException(String.format("[%s] The number of clusters must be greater than 1.",
+				throw new IllegalArgumentException(String.format("[%s] The number of leaf clusters must be greater than 1.",
 						this.getClass().getName()));
 			}
 			if (maxIter <= 0) {
 				throw new IllegalArgumentException(String
 						.format("[%s] The number of iterations must be greater than 0.", this.getClass().getName()));
 			}
-			if (initSteps <= 0) {
+			if (minDivisibleClusterSize <= 0.0) {
 				throw new IllegalArgumentException(String
-						.format("[%s] The number of initial steps must be greater than 0.", this.getClass().getName()));
+						.format("[%s] The minimum number of points or proporation of points must be greater than to 0.0.", this.getClass().getName()));
 			}
-			if (!(initMode.equals("random") || initMode.equals("parallel"))) {
-				throw new IllegalArgumentException(
-						String.format("[%s] The initialization mode must be either 'parallel' or 'random'.",
-								this.getClass().getName()));
-			}
-
+	    
 		}
 	}
 }

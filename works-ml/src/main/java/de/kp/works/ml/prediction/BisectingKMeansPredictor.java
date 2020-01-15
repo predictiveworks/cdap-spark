@@ -18,7 +18,7 @@ package de.kp.works.ml.prediction;
  * 
  */
 
-import org.apache.spark.ml.classification.LogisticRegressionModel;
+import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -33,33 +33,33 @@ import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.classification.LRClassifierManager;
+import de.kp.works.ml.clustering.BisectingKMeansManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("LRPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Logistic Regression classifier model.")
-public class LRPredictor extends BasePredictorCompute {
+@Name("BisectingKMeansPredictor")
+@Description("A prediction stage that leverages a trained Apache Spark based Bisecting KMeans clustering model.")
+public class BisectingKMeansPredictor extends BasePredictorCompute {
 
-	private static final long serialVersionUID = -4919226198000991487L;
+	private static final long serialVersionUID = -7843836179229489547L;
 
-	private LRPredictorConfig config;
+	private BisectingKMeansPredictorConfig config;
 
-	private LogisticRegressionModel classifier;
+	private BisectingKMeansModel model;
 
-	public LRPredictor(LRPredictorConfig config) {
+	public BisectingKMeansPredictor(BisectingKMeansPredictorConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((LRPredictorConfig)config).validate();
+		((BisectingKMeansPredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
+		modelFs = SparkMLManager.getClusteringFS(context);
+		modelMeta = SparkMLManager.getClusteringMeta(context);
 
-		classifier = new LRClassifierManager().read(modelFs, modelMeta, config.modelName);
-		if (classifier == null)
-			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
+		model = new BisectingKMeansManager().read(modelFs, modelMeta, config.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
 
 	}
@@ -67,7 +67,7 @@ public class LRPredictor extends BasePredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((LRPredictorConfig)config).validate();
+		((BisectingKMeansPredictorConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -89,10 +89,10 @@ public class LRPredictor extends BasePredictorCompute {
 	}
 
 	/**
-	 * This method computes predictions either by applying a trained Logistic
-	 * Regression classification model; as a result, the source dataset is enriched
-	 * by an extra column (predictionCol) that specifies the target variable in form
-	 * of a Double value
+	 * This method computes predictions either by applying a trained Bisecting 
+	 * KMeans clustering model; as a result, the source dataset is enriched by
+	 * an extra column (predictionCol) that specifies the target variable in 
+	 * form of a Double value
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
@@ -112,19 +112,19 @@ public class LRPredictor extends BasePredictorCompute {
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
 
-		classifier.setFeaturesCol(vectorCol);
-		classifier.setPredictionCol(predictionCol);
+		model.setFeaturesCol(vectorCol);
+		model.setPredictionCol(predictionCol);
 
-		Dataset<Row> predictions = classifier.transform(vectorset);
+		Dataset<Row> predictions = model.transform(vectorset);
 
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
 	}
 
-	public static class LRPredictorConfig extends BasePredictorConfig {
+	public static class BisectingKMeansPredictorConfig extends BasePredictorConfig {
 
-		private static final long serialVersionUID = -3792791640714779280L;
+		private static final long serialVersionUID = -3385481976641988848L;
 
 		public void validate() {
 			super.validate();

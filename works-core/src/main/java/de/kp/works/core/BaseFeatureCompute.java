@@ -98,59 +98,5 @@ public class BaseFeatureCompute extends BaseCompute {
 					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
 		}
 	}
-
-	protected void isArrayOfDouble(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.DOUBLE)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a DOUBLE.", this.getClass().getName()));
-		}
-		
-	}
-
-	protected void isArrayOfNumeric(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!isNumericType(fieldCompType)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
-		}
-		
-	}
-
-	protected void isArrayOfString(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a STRING.", this.getClass().getName()));
-		}
-		
-	}
 	
 }

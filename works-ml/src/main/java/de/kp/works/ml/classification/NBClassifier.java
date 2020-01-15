@@ -82,7 +82,7 @@ public class NBClassifier extends BaseClassifierSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature
-		 * column which is specified as Array[Double]
+		 * column which is specified as Array[Numeric]
 		 */
 		NBTrainer trainer = new NBTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

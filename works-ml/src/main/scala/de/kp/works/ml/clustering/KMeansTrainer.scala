@@ -27,53 +27,25 @@ import de.kp.works.ml.MLUtils
 
 class KMeansTrainer() {
   
-  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(trainset, featuresCol, vectorCol)
+  /*
+   * The features can be defined as an Array of Numeric (Double, Float, Int, Long)
+   */
+  def vectorize(trainset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = MLUtils.vectorize(trainset, featuresCol, vectorCol, true)
   
   def train(vectorset:Dataset[Row], vectorCol:String, params:JMap[String,Object]):KMeansModel = {
     
     val kmeans = new KMeans()
-    /*
-     * Parameters:
-     * 
-     * - k        : The number of clusters to create  
-     * 
-     * - initMode : This can be either "random" to choose random points as initial cluster centers, 
-     *              or "k-means||" to use a parallel variant  of k-means++  (Bahmani et al., Scalable 
-     *              K-Means++, VLDB 2012). Default: k-means||.
-     *             
-     * - initSteps: The number of steps for the k-means|| initialization mode. This is an advanced
-     *              setting -- the default of 2 is almost always enough. Default: 2.
-     *
-     * - maxIter  : The number of iterations for the k-means algorithm
-     * 
-     * - tol      : The convergence tolerance for iterative algorithms
-     * 
-     */
+
     val k = params.get("k").asInstanceOf[Int]
     kmeans.setK(k)
     
-    val maxIter = {
-      if (params.containsKey("maxIter")) {
-        params.get("maxIter").asInstanceOf[Int]
-      } else 20
-    }
-    
+    val maxIter = params.get("maxIter").asInstanceOf[Int]
     kmeans.setMaxIter(maxIter)
     
-    val initSteps = {
-      if (params.containsKey("initSteps")) {
-        params.get("initSteps").asInstanceOf[Int]
-      } else 2
-    }
-    
+    val initSteps = params.get("initSteps").asInstanceOf[Int]
     kmeans.setInitSteps(initSteps)
     
-    val tol = {
-      if (params.containsKey("tolerance")) {
-        params.get("tolerance").asInstanceOf[Double]
-      } else 1e-4
-    }
-    
+    val tol = params.get("tolerance").asInstanceOf[Double]
     kmeans.setTol(tol)
 
     val initMode = {

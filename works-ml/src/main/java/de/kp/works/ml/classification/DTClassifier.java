@@ -82,7 +82,7 @@ public class DTClassifier extends BaseClassifierSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
+		 * as Array[Numeric]
 		 */
 		DTTrainer trainer = new DTTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

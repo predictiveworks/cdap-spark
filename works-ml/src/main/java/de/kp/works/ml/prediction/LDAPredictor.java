@@ -80,6 +80,7 @@ public class LDAPredictor extends BasePredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
+			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -125,9 +126,9 @@ public class LDAPredictor extends BasePredictorCompute {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
+		 * as Array[Numeric]
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
 
 		model.setFeaturesCol(vectorCol);
 		/*

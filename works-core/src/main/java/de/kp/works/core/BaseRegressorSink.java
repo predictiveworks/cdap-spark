@@ -43,7 +43,6 @@ public class BaseRegressorSink extends BaseSink {
 	protected Table modelMeta;
 	
 	protected BaseRegressorConfig config;
-	protected String className;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
@@ -103,17 +102,7 @@ public class BaseRegressorSink extends BaseSink {
 					"[%s] The input schema must contain the field that defines the feature vector.", className));
 		}
 
-		Schema.Type featuresType = featuresCol.getSchema().getType();
-		if (!featuresType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the feature vector must be an ARRAY.", className));
-		}
-
-		Schema.Type featureType = featuresCol.getSchema().getComponentSchema().getType();
-		if (!featureType.equals(Schema.Type.DOUBLE)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the feature value must be a DOUBLE.", className));
-		}
+		isArrayOfNumeric(config.featuresCol);
 
 		/** LABEL COLUMN **/
 

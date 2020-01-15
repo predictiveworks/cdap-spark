@@ -81,7 +81,7 @@ public class LRClassifier extends BaseClassifierSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
+		 * as Array[Numeric]
 		 */
 		LRTrainer trainer = new LRTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

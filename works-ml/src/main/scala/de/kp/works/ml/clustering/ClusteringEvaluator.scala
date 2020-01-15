@@ -34,12 +34,12 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
-trait KMeansEvaluatorParams extends Params {
+trait ClusteringEvaluatorParams extends Params {
 
-  final val vectorCol = new Param[String](KMeansEvaluatorParams.this, "vectorCol",
+  final val vectorCol = new Param[String](ClusteringEvaluatorParams.this, "vectorCol",
     "The name of the features column", (value: String) => true)
 
-  final val predictionCol = new Param[String](KMeansEvaluatorParams.this, "predictionCol",
+  final val predictionCol = new Param[String](ClusteringEvaluatorParams.this, "predictionCol",
     "The name of the prediction column", (value: String) => true)
 
   /**
@@ -65,7 +65,7 @@ trait KMeansEvaluatorParams extends Params {
  *
  * __KUP__
  *
- * [KMeansEvaluator] is a downgrading of [ClusterEvaluator] available in v2.3.0
+ * [ClusteringEvaluator] is a downgrading of [ClusterEvaluator] available in v2.3.0
  * for Apache Spark v2.1.3
  *
  * The metric computes the Silhouette measure using the specified distance measure.
@@ -74,11 +74,11 @@ trait KMeansEvaluatorParams extends Params {
  * between 1 and -1, where a value close to 1 means that the points in a cluster are close to the
  * other points in the same cluster and far from the points of the other clusters.
  */
-class KMeansEvaluator(override val uid: String) extends Evaluator with KMeansEvaluatorParams {
+class ClusteringEvaluator(override val uid: String) extends Evaluator with ClusteringEvaluatorParams {
 
   def this() = this(Identifiable.randomUID("kmeansEvaluator"))
 
-  override def copy(pMap: ParamMap): KMeansEvaluator = this.defaultCopy(pMap)
+  override def copy(pMap: ParamMap): ClusteringEvaluator = this.defaultCopy(pMap)
 
   override def isLargerBetter: Boolean = true
 
@@ -133,15 +133,15 @@ class KMeansEvaluator(override val uid: String) extends Evaluator with KMeansEva
   }
 
   override def toString: String = {
-    s"KMeansEvaluator: uid=$uid, metricName=${$(metricName)}, " +
+    s"ClusteringEvaluator: uid=$uid, metricName=${$(metricName)}, " +
       s"distanceMeasure=${$(distanceMeasure)}"
   }
   
 }
 
-object KMeansEvaluator extends DefaultParamsReadable[KMeansEvaluator] {
+object ClusteringEvaluator extends DefaultParamsReadable[ClusteringEvaluator] {
 
-  override def load(path: String): KMeansEvaluator = super.load(path)
+  override def load(path: String): ClusteringEvaluator = super.load(path)
 
 }
 

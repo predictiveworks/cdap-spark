@@ -81,7 +81,7 @@ public class GBTClassifier extends BaseClassifierSink {
 		String vectorCol = "_vector";
 		/*
 		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Double]
+		 * as Array[Numeric]
 		 */
 		GBTTrainer trainer = new GBTTrainer();
 		Dataset<Row> vectorset = trainer.vectorize(source, featuresCol, vectorCol);

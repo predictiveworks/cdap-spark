@@ -32,6 +32,21 @@ public class BasePredictorCompute extends BaseCompute {
 	protected FileSet modelFs;
 	protected Table modelMeta;
 
+	protected void validateSchema(Schema inputSchema, BasePredictorConfig config) {
+
+		/** FEATURES COLUMN **/
+
+		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
+		if (featuresCol == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
+		}
+
+		/** FEATURES COLUMN **/
+		isArrayOfNumeric(config.featuresCol);
+
+	}
+
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
