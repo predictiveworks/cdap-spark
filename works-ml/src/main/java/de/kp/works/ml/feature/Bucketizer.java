@@ -97,33 +97,26 @@ public class Bucketizer extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
+		isNumeric(config.inputCol);
 		
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		BucketizerConfig bucketConfig = (BucketizerConfig)config;
 		/*
-		 * Build internal column from input column and cast to 
-		 * double vector
+		 * Tranformation from Numeric to Double
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, bucketConfig.inputCol, "_input", true);
+		BucketizerConfig bucketConfig = (BucketizerConfig)config;
+		Dataset<Row> castset = MLUtils.castToDouble(source, bucketConfig.inputCol, "_input");
 		
 		org.apache.spark.ml.feature.Bucketizer transformer = new org.apache.spark.ml.feature.Bucketizer();
 		transformer.setInputCol("_input");
-		/*
-		 * The internal output of the bucketizer is an ML specific
-		 * vector representation; this must be transformed into
-		 * an Array[Double] to be compliant with Google CDAP
-		 */		
-		transformer.setOutputCol("_vector");
+		transformer.setOutputCol(bucketConfig.outputCol);
+
 		transformer.setSplits(bucketConfig.getSplits());
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", bucketConfig.outputCol).drop("_input").drop("_vector");
-
+		Dataset<Row> output = transformer.transform(castset).drop("_input");		
 		return output;
 
 	}

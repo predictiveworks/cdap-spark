@@ -28,9 +28,13 @@ import scala.collection.mutable.WrappedArray
 
 object MLUtils {
       
+  def castToDouble(dataset:Dataset[Row], inputCol:String, castCol:String): Dataset[Row] = {
+      dataset.withColumn(castCol, col(inputCol).cast(DoubleType))
+  }
+  
   def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String): Dataset[Row] = 
     vectorize(dataset, featuresCol, vectorCol, false)
-      
+    
   def vectorize(dataset:Dataset[Row], featuresCol:String, vectorCol:String, cast:Boolean = false): Dataset[Row] = {
 
     /*

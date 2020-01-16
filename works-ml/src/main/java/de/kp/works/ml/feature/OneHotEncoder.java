@@ -101,6 +101,9 @@ public class OneHotEncoder extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		/*
+		 * Transformation from [Numeric] to Array[Double]
+		 */
 		OneHotEncoderConfig encoderConfig = (OneHotEncoderConfig)config;
 		
 		org.apache.spark.ml.feature.OneHotEncoder transformer = new org.apache.spark.ml.feature.OneHotEncoder();

@@ -106,7 +106,10 @@ public class StringToIndex extends BaseFeatureCompute {
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		
+		/*
+		 * Transformation from [String] to [Double]
+		 */
 		model.setInputCol(config.inputCol);
 		model.setOutputCol(config.outputCol);
 

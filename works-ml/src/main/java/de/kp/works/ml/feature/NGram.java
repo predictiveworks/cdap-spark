@@ -84,7 +84,10 @@ public class NGram extends BaseFeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		
+		/*
+		 * Transformation from Array[String] to Array[String]
+		 */
 		NGramConfig ngramConfig = (NGramConfig)config;
 		
 		org.apache.spark.ml.feature.NGram transformer = new org.apache.spark.ml.feature.NGram();

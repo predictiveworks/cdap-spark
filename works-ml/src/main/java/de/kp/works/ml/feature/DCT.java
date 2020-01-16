@@ -111,6 +111,8 @@ public class DCT extends BaseFeatureCompute {
 
 		DCTConfig transformConfig = (DCTConfig)config;
 		/*
+		 * Transformation from Array[Numeric] to Array[Double]
+		 * 
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */

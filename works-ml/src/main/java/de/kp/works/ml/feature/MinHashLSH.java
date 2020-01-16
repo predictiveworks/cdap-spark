@@ -113,6 +113,8 @@ public class MinHashLSH extends BaseFeatureCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		/*
+		 * Transformation from Array[Numeric] to Array[Double]
+		 * 
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */

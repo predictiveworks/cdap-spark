@@ -83,7 +83,9 @@ public class Binarizer extends BaseFeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		/*
+		 * Transformation from Array[Numeric] to Array[Double]
+		 */		
 		BinarizerConfig binaryConfig = (BinarizerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 

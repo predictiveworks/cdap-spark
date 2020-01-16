@@ -121,6 +121,9 @@ public class QuantileDiscretizer extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		/*
+		 * Transformation from [Numeric] to [Double]
+		 */
 		QuantileDiscretizerConfig discretizerConfig = (QuantileDiscretizerConfig)config;
 		
 		org.apache.spark.ml.feature.QuantileDiscretizer transformer = new org.apache.spark.ml.feature.QuantileDiscretizer();

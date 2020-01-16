@@ -92,7 +92,9 @@ public class IndexToString extends BaseFeatureCompute {
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		/*
+		 * Transformation from [Numeric] to [String]
+		 */
 		String[] labels = model.labels();
 		
 		org.apache.spark.ml.feature.IndexToString transformer = new org.apache.spark.ml.feature.IndexToString();

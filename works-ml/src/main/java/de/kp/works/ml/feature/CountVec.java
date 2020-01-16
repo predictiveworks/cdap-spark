@@ -108,6 +108,9 @@ public class CountVec extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		/*
+		 * Transformation from Array[String] to Array[Double]
+		 */
 		model.setInputCol(config.inputCol);
 		/*
 		 * The internal output of the vectorizer is an ML specific

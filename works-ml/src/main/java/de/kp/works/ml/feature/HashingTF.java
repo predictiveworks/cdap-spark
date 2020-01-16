@@ -103,7 +103,9 @@ public class HashingTF extends BaseFeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		/*
+		 * Transformation from Array[String] to Array[Double]
+		 */
 		HashTFConfig hashConfig = (HashTFConfig)config;
 		
 		org.apache.spark.ml.feature.HashingTF transformer = new org.apache.spark.ml.feature.HashingTF();

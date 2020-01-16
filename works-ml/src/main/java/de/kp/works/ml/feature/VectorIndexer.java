@@ -101,7 +101,7 @@ public class VectorIndexer extends BaseFeatureCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	

@@ -95,7 +95,7 @@ public class PCA extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
+		isArrayOfNumeric(config.inputCol);
 		
 	}
 
@@ -107,17 +107,24 @@ public class PCA extends BaseFeatureCompute {
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		/*
+		 * Transformation from Array[Numeric] to Array[Double]
+		 * 
+		 * Build internal column from input column and cast to 
+		 * double vector
+		 */
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 
-		model.setInputCol(config.inputCol);
+		model.setInputCol("_input");
 		/*
 		 * The internal output of the PCA model is an ML specific
 		 * vector representation; this must be transformed into
 		 * an Array[Double] to be compliant with Google CDAP
 		 */		
 		model.setOutputCol("_vector");
-		Dataset<Row> transformed = model.transform(source);
+		Dataset<Row> transformed = model.transform(vectorset);
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
 		return output;
 
 	}

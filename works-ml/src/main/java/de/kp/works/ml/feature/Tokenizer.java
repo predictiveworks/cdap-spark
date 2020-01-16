@@ -103,7 +103,9 @@ public class Tokenizer extends BaseFeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
+		/*
+		 * Transformation from [String] to Array[String]
+		 */
 		TokenizerConfig tokenConfig = (TokenizerConfig)config;
 		
 		org.apache.spark.ml.feature.RegexTokenizer transformer = new org.apache.spark.ml.feature.RegexTokenizer();

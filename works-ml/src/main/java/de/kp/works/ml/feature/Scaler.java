@@ -118,6 +118,15 @@ public class Scaler extends BaseFeatureCompute {
 		}
 
 	}
+	
+	@Override
+	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+		super.validateSchema(inputSchema, config);
+		
+		/** INPUT COLUMN **/
+		isArrayOfNumeric(config.inputCol);
+		
+	}
 
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
@@ -134,6 +143,9 @@ public class Scaler extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
+		/*
+		 * Transformation from Array[Numeric] to Array[Double]
+		 */
 		ScalerConfig scalerConfig = (ScalerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 

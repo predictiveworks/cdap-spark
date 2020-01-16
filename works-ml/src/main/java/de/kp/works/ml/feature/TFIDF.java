@@ -108,6 +108,9 @@ public class TFIDF extends BaseFeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		/*
+		 * Transformation from Array[String] to Array[Double]
+		 */
 		TFIDFConfig tfidfConfig = (TFIDFConfig)config;
 		
 		HashingTF transformer = new HashingTF();
