@@ -1,0 +1,41 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Vector Indexer Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Categories",
+          "name": "maxCategories",
+          "widget-attributes": {
+            "default": "20"
+          }
+        }
+      ]
+    }
+
+  ]
+}
