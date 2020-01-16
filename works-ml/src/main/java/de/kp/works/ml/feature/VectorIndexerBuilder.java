@@ -99,6 +99,16 @@ public class VectorIndexerBuilder extends BaseFeatureSink {
 		public VectorIndexerBuilderConfig() {
 			maxCategories = 20;
 		}
+		
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+
+			Map<String, Object> params = new HashMap<>();
+			params.put("maxCategories", maxCategories);
+
+			return params;
+
+		}
 
 		public void validate() {
 			super.validate();

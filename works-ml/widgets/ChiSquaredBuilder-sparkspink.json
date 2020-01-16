@@ -1,0 +1,74 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Chi-Squared Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Label Field",
+          "name": "labelCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+       {
+          "widget-type": "select",
+          "label": "Selector Type",
+          "name": "selectorType",
+          "widget-attributes": {
+            "values": [
+              "fpr",
+              "percentile",
+              "numTopFeatures"
+            ],
+            "default": "numTopFeatures"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Top Features",
+          "name": "numTopFeatures",
+          "widget-attributes": {
+            "default": "50"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Percentile of Features",
+          "name": "percentile",
+          "widget-attributes": {
+            "default": "0.1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Highest P-Value",
+          "name": "fpr",
+          "widget-attributes": {
+            "default": "0.05"
+          }
+        }
+      ]
+    }
+  ]
+}

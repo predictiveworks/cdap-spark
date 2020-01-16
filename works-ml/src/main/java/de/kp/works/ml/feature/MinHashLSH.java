@@ -111,12 +111,18 @@ public class MinHashLSH extends BaseFeatureCompute {
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		/*
+		 * Build internal column from input column and cast to 
+		 * double vector
+		 */
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 		
 		/*
 		 * In v2.1.3 the MinHashLSH model does not contain
 		 * methods setInputCol & setOutputCol
 		 */
-		model.set(model.inputCol(), config.inputCol);
+		model.set(model.inputCol(), "_input");
 		model.set(model.outputCol(), config.outputCol);
 		/*
 		 * The type of outputCol is Seq[Vector] where the dimension of the array
@@ -129,7 +135,7 @@ public class MinHashLSH extends BaseFeatureCompute {
 		 * For compliances purposes with CDAP data schemas, we have to resolve
 		 * the output format as Array Of Double
 		 */
-		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(source), config.outputCol);
+		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(vectorset), config.outputCol).drop("_input");
 		return output;
 
 	}

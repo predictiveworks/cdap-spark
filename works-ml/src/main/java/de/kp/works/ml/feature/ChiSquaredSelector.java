@@ -21,7 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel;
+import org.apache.spark.ml.feature.ChiSqSelectorModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,26 +39,27 @@ import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("BucketedLSH")
-@Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model to project feature vectors onto hash value vectors.")
-public class BucketedLSH extends BaseFeatureCompute {
+@Name("ChiSquaredSelector")
+@Description("A transformation stage that leverages a trained Chi-Squared Selector model to select "
+		+ "categorical features to use for predicting categorical labels.")
+public class ChiSquaredSelector extends BaseFeatureCompute {
 
-	private static final long serialVersionUID = -5333140801597897278L;
+	private static final long serialVersionUID = 181964982743803324L;
 
-	private BucketedRandomProjectionLSHModel model;
+	private ChiSqSelectorModel model;
 
-	public BucketedLSH(BucketedLSHConfig config) {
+	public ChiSquaredSelector(ChiSquaredSelectorConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((BucketedLSHConfig)config).validate();
+		((ChiSquaredSelectorConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new BucketedLSHManager().read(modelFs, modelMeta, config.modelName);
+		model = new ChiSquaredManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -68,7 +69,7 @@ public class BucketedLSH extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BucketedLSHConfig)config).validate();
+		((ChiSquaredSelectorConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -113,49 +114,38 @@ public class BucketedLSH extends BaseFeatureCompute {
 	}	
 	/**
 	 * This method computes the transformed features by applying a trained
-	 * BucketedRandomProjectionLSH model; as a result, the source dataset 
-	 * is enriched by an extra column (outputCol) that specifies the target 
-	 * variable in form of an Array[Double]
+	 * Chi-Squared Selector model; as a result, the source dataset is enriched 
+	 * by an extra column (outputCol) that specifies the target variable in form 
+	 * of an Array[Double]
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
+		ChiSquaredSelectorConfig selectorConfig = (ChiSquaredSelectorConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, selectorConfig.inputCol, "_input", true);
 		
-		/*
-		 * In v2.1.3 the BucketedRandomProjectionLSH model does not contain
-		 * methods setInputCol & setOutputCol
-		 */
-		model.set(model.inputCol(), "_input");
-		model.set(model.outputCol(), config.outputCol);
-		/*
-		 * The type of outputCol is Seq[Vector] where the dimension of the array
-		 * equals numHashTables, and the dimensions of the vectors are currently 
-		 * set to 1. 
-		 * 
-		 * In future releases, we will implement AND-amplification so that users 
-		 * can specify the dimensions of these vectors.
-		 * 
-		 * For compliances purposes with CDAP data schemas, we have to resolve
-		 * the output format as Array Of Double
-		 */
-		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(vectorset), config.outputCol).drop("_input");
+		model.setFeaturesCol("_input");
+		model.setOutputCol("_vector");
+		
+		Dataset<Row> transformed = model.transform(vectorset);
+
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
 		return output;
 
 	}
 
-	public static class BucketedLSHConfig extends BaseFeatureConfig {
+	public static class ChiSquaredSelectorConfig extends BaseFeatureConfig {
 
-		private static final long serialVersionUID = 8801441172298876792L;
+		private static final long serialVersionUID = 6059733954453473186L;
 
 		public void validate() {
 			super.validate();
 
 		}
+		
 	}
-
 }

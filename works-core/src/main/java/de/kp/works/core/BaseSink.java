@@ -114,6 +114,18 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 		
 	}
 
+	protected void isNumeric(String fieldName) {
+
+		Schema.Field field = inputSchema.getField(fieldName);
+		Schema.Type fieldType = field.getSchema().getType();
+
+		if (!isNumericType(fieldType)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The field that defines the input must be NUMERIC.", this.getClass().getName()));
+		}
+
+	}
+
 	protected void isString(String fieldName) {
 
 		Schema.Field field = inputSchema.getField(fieldName);

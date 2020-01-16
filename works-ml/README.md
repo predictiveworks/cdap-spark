@@ -37,6 +37,10 @@ label frequency, i.e. the most frequent label is assigned '0'. The unseen labels
 
 ### Standard Scaler
 
+## Feature Selection
+
+### Chi-Squared Selector
+
 ## Text Processing
 
 ### Count Vectorizer
