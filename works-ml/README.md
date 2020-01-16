@@ -6,13 +6,21 @@ Machine learning support for CDAP-Spark
 
 ### Binarizer
 
+### Discrete Cosine
+
+### Index-to-String
+
 ### Normalizer
 
 ### One Hot Encoder
 
 ### Quantile Discretizer
 
-### String Indexer
+The QuantileDiscretizer takes a column with continuous features and outputs a column with binned categorical features. 
+
+The number of bins can be set using *numBuckets* parameter. It is possible that the number of buckets used will be smaller than this value, for example, if there are too few distinct values of the input to create enough distinct quantiles.
+
+### String-to-Index
 
 ### Vector Assembler
 

@@ -1,0 +1,39 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Discrete Cosine",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "select",
+          "label": "Inverse",
+          "name": "inverse",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "false"
+          }
+        }
+      ]
+    }
+  ]
+}
