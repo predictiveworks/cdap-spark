@@ -21,7 +21,8 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.feature.StringIndexerModel;
+import org.apache.spark.ml.feature.HashingTF;
+import org.apache.spark.ml.feature.IDFModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -36,28 +37,34 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.ml.MLUtils;
+import de.kp.works.ml.feature.W2Vec.W2VecConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("StringIndexer")
-@Description("A transformation stage that leverages the Apache Spark StringIndexer based on a trained StringIndexer model.")
-public class StringIndexer extends BaseFeatureCompute {
+@Name("TFIDF")
+@Description("A transformation stage that leverages an Apache Spark based TF-IDF model to map a sequence of words into "
+		+ "its feature vector. Term frequency-inverse document frequency (TF-IDF) is a feature vectorization method widely "
+		+ "used in text mining to reflect the importance of a term to a document in the corpus.")
+public class TFIDF extends BaseFeatureCompute {
 
-	private static final long serialVersionUID = -4361931347919726410L;
+	private static final long serialVersionUID = 5252236917563666462L;
 
-	private StringIndexerModel model;
+	private IDFModel model;
+	private TFIDFManager manager;
 
-	public StringIndexer(StringIndexerConfig config) {
+	public TFIDF(TFIDFConfig config) {
 		this.config = config;
+		this.manager = new TFIDFManager();
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((StringIndexerConfig)config).validate();
+		((W2VecConfig)config).validate();
 
 		modelFs = SparkMLManager.getFeatureFS(context);
 		modelMeta = SparkMLManager.getFeatureMeta(context);
 
-		model = new StringIndexerManager().read(modelFs, modelMeta, config.modelName);
+		model = manager.read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -67,7 +74,7 @@ public class StringIndexer extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((StringIndexerConfig)config).validate();
+		((W2VecConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -76,7 +83,7 @@ public class StringIndexer extends BaseFeatureCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-
+			
 			validateSchema(inputSchema, config);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
@@ -94,23 +101,38 @@ public class StringIndexer extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isString(config.inputCol);
+		isArrayOfString(config.inputCol);
 		
 	}
-
-	/**
-	 * This method computes the transformed features by applying a trained
-	 * StringIndexer model; as a result, the source dataset is enriched by
-	 * an extra column (outputCol) that specifies the target variable in 
-	 * form of a Double
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		model.setInputCol(config.inputCol);
-		model.setOutputCol(config.outputCol);
+		TFIDFConfig tfidfConfig = (TFIDFConfig)config;
+		
+		HashingTF transformer = new HashingTF();
 
-		Dataset<Row> output = model.transform(source);
+		transformer.setInputCol(tfidfConfig.inputCol);
+		transformer.setOutputCol("_features");
+		/*
+		 * Determine number of features from TF-IDF model
+		 * metadata information
+		 */
+		Integer numFeatures = (Integer)manager.getParam(modelMeta, config.modelName, "numFeatures");
+		transformer.setNumFeatures(numFeatures);
+
+		Dataset<Row> transformedTF = transformer.transform(source);
+		
+		model.setInputCol("_features");
+		/*
+		 * The internal output of the TF-IDF model is an ML specific
+		 * vector representation; this must be transformed into
+		 * an Array[Double] to be compliant with Google CDAP
+		 */		
+		model.setOutputCol("_vector");		
+		Dataset<Row> transformed = model.transform(transformedTF).drop("_features");		
+
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 		return output;
 
 	}
@@ -123,15 +145,15 @@ public class StringIndexer extends BaseFeatureCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
+	
+	public static class TFIDFConfig extends BaseFeatureConfig {
 
-	public static class StringIndexerConfig extends BaseFeatureConfig {
-
-		private static final long serialVersionUID = -3630481748921019607L;
-
+		private static final long serialVersionUID = 6981782808377365083L;
+		
 		public void validate() {
 			super.validate();
 

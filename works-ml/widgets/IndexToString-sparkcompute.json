@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "String Indexer",
+"display-name": "Index-to-String",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
