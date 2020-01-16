@@ -1,0 +1,43 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Quantile Discretizer",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Number of Buckets",
+          "name": "numBuckets",
+          "widget-attributes": {
+            "default": "2"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Relative Error",
+          "name": "relativeError",
+          "widget-attributes": {
+            "default": "0.001"
+          }
+        }
+      ]
+    }
+  ]
+}

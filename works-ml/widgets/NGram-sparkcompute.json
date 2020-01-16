@@ -1,0 +1,35 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "NGram",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "NGram Length",
+          "name": "n",
+          "widget-attributes": {
+            "default": "2"
+          }
+        }
+      ]
+    }
+  ]
+}

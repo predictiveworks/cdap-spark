@@ -1,0 +1,27 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Vector Assembler",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Input Fields",
+          "name": "inputCols"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Output Field",
+          "name": "outputCol"
+        }
+      ]
+    }
+  ]
+}
