@@ -48,12 +48,12 @@ trait TimeAggregateParams extends TimeParams {
   def setWindowDuration(value: String): this.type = set(windowDuration, value)
     
   /**
-   * param for aggregation method (supports "avg" (default), "mean", "sum")
+   * param for aggregation method (supports "avg" (default), "count", "mean", "sum")
    * @group param
    */
   final val aggregationMethod: Param[String] = {
 
-    val allowedParams = ParamValidators.inArray(Array("avg", "mean", "sum"))
+    val allowedParams = ParamValidators.inArray(Array("avg", "count", "mean", "sum"))
     new Param(
       this, "aggregationMethod", "Aggregation method for time series aggregation", allowedParams)
   }
@@ -98,6 +98,7 @@ class Aggregate(override val uid: String) extends Transformer with TimeAggregate
      */
     val method = $(aggregationMethod) match {
       case "avg" => avg($(valueCol))
+      case "count" => count($(valueCol))
       case "mean" => mean($(valueCol))
       case "sum" => sum($(valueCol))
       case other => throw new IllegalArgumentException(s"[Aggregate] Aggregation method '$other' is not supported.")

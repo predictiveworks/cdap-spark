@@ -8,6 +8,8 @@ Machine learning support for CDAP-Spark
 
 ### Normalizer
 
+### One Hot Encoder
+
 ### String Indexer
 
 The String Indexer encodes an input string of labels to label indices. The indices are in [0, numLabels), and are ordered 

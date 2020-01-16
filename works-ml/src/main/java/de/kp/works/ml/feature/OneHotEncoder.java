@@ -38,19 +38,23 @@ import de.kp.works.core.BaseFeatureConfig;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("Normalizer")
-@Description("A transformation stage to normalize a feature vector to have unit norm using the given p-norm.")
-public class Normalizer extends BaseFeatureCompute {
+@Name("OneHotEncoder")
+@Description("A transformation stage to map input labels (indices) to binary vectors This encoding allows "
+		+ "algorithms which expect continuous features to use categorical features. This transformer expects a Numeric input "
+		+ "and generates an Array[Double] as output.")
+public class OneHotEncoder extends BaseFeatureCompute {
+	/*
+	 * Transformation: Numeric -> Array[Double]
+	 */
+	private static final long serialVersionUID = -7284145086498844486L;
 
-	private static final long serialVersionUID = 8637506241398507943L;
-
-	public Normalizer(NormalizerConfig config) {
+	public OneHotEncoder(OneHotEncoderConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((NormalizerConfig)config).validate();
+		((OneHotEncoderConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -77,7 +81,7 @@ public class Normalizer extends BaseFeatureCompute {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
+		isNumeric(config.inputCol);
 		
 	}
 
@@ -96,51 +100,47 @@ public class Normalizer extends BaseFeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		/*
-		 * Build internal column from input column and cast to 
-		 * double vector
-		 */
-		NormalizerConfig normConfig = (NormalizerConfig)config;
-		Dataset<Row> vectorset = MLUtils.vectorize(source, normConfig.inputCol, "_input", true);
+
+		OneHotEncoderConfig encoderConfig = (OneHotEncoderConfig)config;
 		
-		org.apache.spark.ml.feature.Normalizer transformer = new org.apache.spark.ml.feature.Normalizer();
-		transformer.setInputCol("_input");
+		org.apache.spark.ml.feature.OneHotEncoder transformer = new org.apache.spark.ml.feature.OneHotEncoder();
+		transformer.setInputCol(encoderConfig.inputCol);
 		/*
 		 * The internal output of the binarizer is an ML specific
 		 * vector representation; this must be transformed into
 		 * an Array[Double] to be compliant with Google CDAP
 		 */
 		transformer.setOutputCol("_vector");
-		transformer.setP((double)normConfig.norm);
+		
+		Boolean dropLast = encoderConfig.dropLast.equals("true") ? true : false;
+		transformer.setDropLast(dropLast);
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
+		Dataset<Row> transformed = transformer.transform(source);		
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", normConfig.outputCol).drop("_input").drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", encoderConfig.outputCol).drop("_vector");
 		return output;
 	    		
 	}
+
+	/*
+	 * One-hot encoding maps a column of label indices to a column of binary vectors, 
+	 * with at most a single one-value. 
+	 * 
+	 * This encoding allows algorithms which expect continuous features, such as 
+	 * Logistic Regression, to use categorical features.
+	 */
+	
+	public static class OneHotEncoderConfig extends BaseFeatureConfig {
+
+		private static final long serialVersionUID = -7779791054523852532L;
 		
-	public static class NormalizerConfig extends BaseFeatureConfig {
-
-		private static final long serialVersionUID = 4977817064737125270L;
-
-		@Description("The p-norm to use for normalization. Supported values are '1' and '2'. Default is 2. ")
+		@Description("An indicator to specify whether to drop the last category in the encoder vectors. Default is 'true'.")
 		@Macro
-		public Integer norm;
-		
-		public NormalizerConfig() {
-			norm = 2;
-		}
-		
-		public void validate() {
-			super.validate();
-			
-			if (!(norm == 1 || norm == 2)) {
-				throw new IllegalArgumentException(String
-						.format("[%s] The p-norm must be either 1 or 2.", this.getClass().getName()));
-			}
+		public String dropLast;
 
+		public OneHotEncoderConfig() {
+			dropLast = "true";
 		}
-		
 	}
+	
 }

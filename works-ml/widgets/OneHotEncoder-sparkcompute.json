@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Bucketizer",
+"display-name": "One Hot Encoder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -22,10 +22,18 @@
           "name": "outputCol"
         },
         {
-          "widget-type": "textbox",
-          "label": "Splits",
-          "name": "splits"
+          "widget-type": "select",
+          "label": "Drop Last Category",
+          "name": "dropLast",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
         }
+
       ]
     }
   ]
