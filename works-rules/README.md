@@ -11,4 +11,4 @@ Suppose a machine learning data pipeline has been used to identify anomalies in 
 
 **Works Rules** integrates with Drools rule engine and makes it available as a [CDAP](https://cdap.io) data pipeline plugin to transform either data records of historical datasets or real-time events of a data stream.
 
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-ml.png" width="800" alt="Works Rules">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-rules.png" width="800" alt="Works Rules">
