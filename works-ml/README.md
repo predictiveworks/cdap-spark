@@ -1,10 +1,20 @@
 # Works ML
 
-Machine learning support for CDAP-Spark
+This project aims to implement the vision of **Visual ML** - Code-free orchestration of data pipelines (or workflow) to respond to machine learning use cases.
 
-## Feature Conversion
+**Works ML** integrates [Apache Spark MLlib](https://spark.apache.org/) machine learning library with [Google CDAP](https://cdap.io) and offers approved ML features as plugins for CDAP data pipelines.
 
-### Binarizer
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-ml.png" width="800" alt="Works ML">
+
+The following ML features are supported:
+
+## Feature Engineering
+
+Conversion | Scaling | Selection
+--- | --- | ---
+
+<p>Binarizer<br>Discrete Cosine</p> | Max-Abs Scaler  |   
+
 
 ### Discrete Cosine
 

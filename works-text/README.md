@@ -6,7 +6,7 @@ This project aims to implement the vision of **Visual NLP** - Code-free orchestr
 
 **Works Text** integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines.
 
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-text/images/works-text.png" width="800" alt="Works DL">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-text/images/works-text.png" width="800" alt="Works Text">
 
 The following NLP features are externalized as pipeline plugins:
 
