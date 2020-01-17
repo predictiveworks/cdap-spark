@@ -1,4 +1,6 @@
+<p align="center">
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-rules.svg" width="360" alt="Works Rules"> 
+</p>
 
 # Works Rules  
 
