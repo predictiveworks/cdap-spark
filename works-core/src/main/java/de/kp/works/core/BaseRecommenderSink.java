@@ -27,7 +27,6 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
@@ -35,31 +34,15 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseClassifierSink extends BaseSink {
+public class BaseRecommenderSink extends BaseSink {
 
-	private static final long serialVersionUID = -5552264323513756802L;
+	private static final long serialVersionUID = 1446304577663186523L;
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
+
+	protected BaseRecommenderConfig config;
 	
-	protected BaseClassifierConfig config;
-
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Classification model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createClassificationIfNotExists(context);
-		/*
-		 * Retrieve classification specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
-
-	}
-
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
 
@@ -92,33 +75,24 @@ public class BaseClassifierSink extends BaseSink {
 
 	}
 
-	protected void validateSchema(Schema inputSchema, BaseClassifierConfig config) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-
-		/** LABEL COLUMN **/
-
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", className));
-		}
-
-		Schema.Type labelType = labelCol.getSchema().getType();
+	@Override
+	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
+		 * Recommendation model components and metadata are persisted in a CDAP FileSet
+		 * as well as a Table; at this stage, we have to make sure that these internal
+		 * metadata structures are present
 		 */
-		if (isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
-		}
+		SparkMLManager.createRecommendationIfNotExists(context);
+		/*
+		 * Retrieve recommendation specified dataset for later use incompute
+		 */
+		modelFs = SparkMLManager.getRecommendationFS(context);
+		modelMeta = SparkMLManager.getRecommendationMeta(context);
+		
 	}
+
+	protected void validateSchema(Schema inputSchema, BaseRecommenderConfig config) {
+		// TODO
+	}
+
 }
