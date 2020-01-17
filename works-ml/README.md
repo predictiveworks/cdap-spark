@@ -86,5 +86,7 @@ The following ML features are supported:
 
 [Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
 
-Seahorse is an excellent approach towards **Visual ML**, but it is *limited* to Apache Spark based machine learning. **Works ML** is more: It is a building block of CDAP Spark, and, a member of a family of projects that support **Visual Analytics**  from deep learning to machine learning, business rules, SQL queries up to time series analysis and natural language processing.
+>Seahorse is an excellent approach towards **Visual ML**, but it is *limited* to Apache Spark based machine learning. 
+
+**Works ML** is more: It is a member of a family of projects that support **Visual Analytics** based on a standardized plugin approach, from deep learning and machine learning to business rules, SQL queries up to time series analysis and natural language processing.
 
