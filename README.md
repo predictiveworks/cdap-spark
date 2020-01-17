@@ -38,7 +38,7 @@ CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The pictur
 
 ### Why not use Seahorse Visual Spark?
 
-[Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) in a fast, simple and interactive way - based on a visual editor.
+[Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
 
 CDAP Spark is also based on Apache Spark as its foundation for distributed in-memory processing. But it is not restricted to Apache Spark's machine learning channel. CDAP Spark complements this channel with deep learning, timeseries and als business rule support.
 

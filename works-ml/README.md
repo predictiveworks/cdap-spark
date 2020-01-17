@@ -80,3 +80,11 @@ The following ML features are supported:
 ## Model Tracking
 
 **Model Tracking:** Works ML uses Google CDAP *datasets* to support storing & retrieving of model components and associated metadata such as chosen parameters and model metrics and more. 
+
+
+## Why not use Seahorse Visual Spark?
+
+[Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
+
+Seahorse is an excellent approach towards **Visual ML**, but it is *limited* to Apache Spark based machine learning. **Works ML** is more: It is a building block of CDAP Spark, and, a member of a family of projects that support **Visual Analytics**  from deep learning to machine learning, business rules, SQL queries up to time series analysis and natural language processing.
+
