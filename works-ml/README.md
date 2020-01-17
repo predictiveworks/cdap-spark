@@ -13,43 +13,15 @@ The following ML features are supported:
 Conversion | Scaling | Selection
 --- | --- | ---
 
-Binarizer<br>Discrete Cosine | Max-Abs Scaler  | Chi-Squared Selector  
-
-
-### Discrete Cosine
-
-### Index-to-String
-
-### Normalizer
-
-### One Hot Encoder
-
-### Quantile Discretizer
-
-The QuantileDiscretizer takes a column with continuous features and outputs a column with binned categorical features. 
-
-The number of bins can be set using *numBuckets* parameter. It is possible that the number of buckets used will be smaller than this value, for example, if there are too few distinct values of the input to create enough distinct quantiles.
-
-### String-to-Index
-
-### Vector Assembler
-
-The String Indexer encodes an input string of labels to label indices. The indices are in [0, numLabels), and are ordered 
-label frequency, i.e. the most frequent label is assigned '0'. The unseen labels will be put at index numLabels if the user chooses to keep them. If the input is numeric, it is casted to a string.
-
-### Vector Indexer
-
-## Feature Scaling
-
-### Max-Abs Scaler
-
-### Min-Max Scaler
-
-### Standard Scaler
-
-## Feature Selection
-
-### Chi-Squared Selector
+Binarizer | Max-Abs Scaler | Chi-Squared Selector  
+Discrete Cosine | Min-Max Scaler | 
+Index-to-String | Standard Scaler | 
+Normalizer | | 
+One Hot Encoder | | 
+Quantile Discretizer | | 
+String-to-Index | | 
+Vector Assembler | | 
+Vector Indexer | | 
 
 ## Text Processing
 
