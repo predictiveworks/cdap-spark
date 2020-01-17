@@ -13,7 +13,7 @@ The following ML features are supported:
 Conversion | Scaling | Selection
 --- | --- | ---
 
-<p>Binarizer<br>Discrete Cosine</p> | Max-Abs Scaler  |   
+Binarizer<br>Discrete Cosine | Max-Abs Scaler  | Chi-Squared Selector  
 
 
 ### Discrete Cosine
