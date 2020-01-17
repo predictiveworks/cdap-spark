@@ -18,6 +18,12 @@ package de.kp.works.core;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.google.common.base.Strings;
+import com.google.gson.Gson;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -35,6 +41,34 @@ public class BaseRecommenderConfig extends PluginConfig {
 	@Description("The unique name of the recommendation model.")
 	@Macro
 	public String modelName;
+    
+	public Map<String, Object> getParamsAsMap() {
+		
+		Map<String, Object> params = new HashMap<>();
+		return params;
 
+	}
+	
+	public String getParamsAsJSON() {
+
+		Gson gson = new Gson();			
+		return gson.toJson(getParamsAsMap());
+		
+	}
+
+	public void validate() {
+		
+		if (!Strings.isNullOrEmpty(referenceName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
+		}
+
+		/** MODEL & COLUMNS **/
+		if (!Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+		
+	}
 
 }

@@ -19,6 +19,7 @@ package de.kp.works.core;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -58,7 +59,10 @@ public class BaseRegressorConfig extends PluginConfig {
 	public String dataSplit;
     
 	public Map<String, Object> getParamsAsMap() {
-		return null;
+		
+		Map<String, Object> params = new HashMap<>();
+		return params;
+
 	}
 	
 	public String getParamsAsJSON() {
