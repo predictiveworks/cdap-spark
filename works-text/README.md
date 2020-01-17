@@ -1,5 +1,8 @@
-# Works Text
+<p align="center">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-text.svg" width="360" alt="Works Text"> 
+</p>
 
+# 
 This project aims to implement the vision of **Visual NLP** - Code-free orchestration of data pipelines (or workflow) to respond to natural language processing use cases.
 
 >Do not reinvent the wheel again

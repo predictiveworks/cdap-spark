@@ -1,5 +1,8 @@
-# Works ML
+<p align="center">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="360" alt="Works ML"> 
+</p>
 
+# 
 This project aims to implement the vision of **Visual ML** - Code-free orchestration of data pipelines (or workflow) to respond to machine learning use cases.
 
 **Works ML** integrates [Apache Spark MLlib](https://spark.apache.org/) machine learning library with [Google CDAP](https://cdap.io) and offers approved ML features as plugins for CDAP data pipelines.
