@@ -25,7 +25,7 @@ We want to share this business maturity model to help companies gain sustainable
 
 The *BPMM* takes a 360° view on corporate analytics: predictive applications always come with a business context that defines the root cause of a certain data solution. Solving a certain business problem & answering predictive questions often requires a set of data solutions that implements the different aspects or tasks originating from the business problem.
 
-All this is tremendous treasure of business knowledge *what enterprise do with their data* and has to be persisted and has to be made 
+All this is tremendous treasure of business knowledge *what enterprise do with their data* and has to be persisted and made accessible with ease to respond to future business problems.
 
 ## Implementaion
 
