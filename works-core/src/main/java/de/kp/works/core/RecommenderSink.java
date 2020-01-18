@@ -34,7 +34,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseRecommenderSink extends BaseSink {
+public class RecommenderSink extends BaseSink {
 
 	private static final long serialVersionUID = 1446304577663186523L;
 
@@ -92,7 +92,6 @@ public class BaseRecommenderSink extends BaseSink {
 	}
 
 	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-		// TODO
 	}
 
 }

@@ -84,6 +84,30 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 
 	}
 
+	protected Boolean isIntegerType(Schema.Type dataType) {
+		switch (dataType) {
+		case ARRAY:
+		case BOOLEAN:
+		case BYTES:
+		case MAP:
+		case NULL:
+		case RECORD:
+		case ENUM:
+		case STRING:
+		case UNION:
+		case DOUBLE:
+		case FLOAT:
+		case LONG:
+			return false;
+		case INT:
+			return true;
+
+		default:
+			return false;
+		}
+
+	}
+
 	protected void isArrayOfDouble(String fieldName) {
 
 		Schema.Field field = inputSchema.getField(fieldName);

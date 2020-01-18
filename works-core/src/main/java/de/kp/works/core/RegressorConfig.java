@@ -64,6 +64,12 @@ public class RegressorConfig extends BaseConfig {
 					String.format("[%s] The name of the field that contains the label value must not be empty.",
 							this.getClass().getName()));
 		}
+		if (!Strings.isNullOrEmpty(dataSplit)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The data split must not be empty.",
+							this.getClass().getName()));
+		}
+		
 	}
 	
 	public double[] getSplits() {

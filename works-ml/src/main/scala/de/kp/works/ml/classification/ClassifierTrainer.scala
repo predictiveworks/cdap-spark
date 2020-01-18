@@ -1,5 +1,4 @@
 package de.kp.works.ml.classification
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
