@@ -18,6 +18,7 @@ package de.kp.works.ts
  * 
  */
 
+import org.apache.spark.ml.linalg.{Vector, Vectors}
 import org.apache.spark.ml.param._
 
 import org.apache.spark.ml.Transformer
@@ -32,7 +33,7 @@ import org.apache.spark.sql.types._
 import scala.collection.mutable.WrappedArray
 
 case class LabeledPoint(
-    features: Array[Double],
+    features: Vector,
     label: Double
 )
 
@@ -46,7 +47,11 @@ trait TimeLaggingParams extends TimeParams {
     
   final val lag = new Param[Int](TimeLaggingParams.this, "lag",
       "The number of past points of time to take into account for vectorization.", (value:Int) => true)
- 
+
+  final val laggingType = new Param[String](this, "laggingType",
+    "The selector type of the lagging algorithm. Supported values are: 'featuresOnly' and 'featuresAndLabels'.",
+    ParamValidators.inArray[String](Array("featuresOnly", "featuresAndLabels")))
+      
   /** @group setParam */
   def setFeaturesCol(value:String): this.type = set(featuresCol, value)
  
@@ -55,8 +60,11 @@ trait TimeLaggingParams extends TimeParams {
  
   /** @group setParam */
   def setLag(value:Int): this.type = set(lag, value)
+ 
+  /** @group setParam */
+  def setLaggingType(value:String): this.type = set(laggingType, value)
       
-  setDefault(featuresCol -> "features", labelCol -> "label", lag -> 10)
+  setDefault(featuresCol -> "features", labelCol -> "label", lag -> 10, laggingType -> "featuresAndLabels")
   
   override def validateSchema(schema:StructType):Unit = {
     super.validateSchema(schema)
@@ -92,45 +100,81 @@ class Lagging(override val uid: String) extends Transformer with TimeLaggingPara
      * the time column into a (reversible) LongType
      */
     val timeset = createTimeset(dataset)
-    
-    /* 
-     * Specify a window with lag + 1 values as we want to take
-     * feature vector (lag) and target value (1) into account
-     */
-    val spec = Window.partitionBy().rowsBetween(-$(lag), 0)
-    /*
-     * User defined function to transform lag window into
-     * a labeled point
-     */
-    val buildLabelPoint = buildLabelPoint_udf($(lag))
+    val k = $(lag)
 
-    val result = timeset
-      /* Transform into (lag + 1) vectors */ 
-      .withColumn("_vector", collect_list(col($(valueCol))).over(spec))
+    if ($(laggingType) == "featuresAndLabels") {      
       /* 
-       * Build labeled point and remove all null values; null indicates
-       * that the length of the feature vector is smaller than 'lag'
+       * Specify a window with lag + 1 values as we want to take
+       * feature vector (lag) and target value (1) into account
        */
-      .withColumn("_lp", buildLabelPoint(col("_vector"))).filter(col("_lp").isNotNull)
+      val spec = Window.partitionBy().rowsBetween(-k, 0)
       /*
-       * Split labeled point column int features & label column
+       * User defined function to transform lag window into
+       * a labeled point
        */
-      .withColumn($(featuresCol), col("_lp").getItem("features"))
-      .withColumn($(labelCol), col("_lp").getItem("label"))
-      /*
-       * Remove internal columns
-       */
-      .drop("_lp").drop("_vector")
-      
-    result
+      val buildLabelPoint = buildLabelFeatures_udf(k)
 
+      val result = timeset
+        /* Transform into (lag + 1) vectors */ 
+        .withColumn("_vector", collect_list(col($(valueCol))).over(spec))
+        /* 
+         * Build labeled point and remove all null values; null indicates
+         * that the length of the feature vector is smaller than 'lag'
+         */
+        .withColumn("_lp", buildLabelPoint(col("_vector"))).filter(col("_lp").isNotNull)
+        /*
+         * Split labeled point column int features & label column
+         */
+        .withColumn($(featuresCol), col("_lp").getItem("features"))
+        .withColumn($(labelCol), col("_lp").getItem("label"))
+        /*
+         * Remove internal columns
+         */
+        .drop("_lp").drop("_vector")
+        
+      result
+    
+    } else {
+      /* 
+       * Specify a window with lag values as we only want to
+       * take feature vector (lag) into account
+       */
+      val spec = Window.partitionBy().rowsBetween(-k, -1)
+      /*
+       * User defined function to transform lag window into
+       * a feature vector
+       */
+      val buildFeatures = buildFeatures_udf(k)
+      
+      val result = timeset
+        /* Transform into (lag) vectors */ 
+        .withColumn("_vector", collect_list(col($(valueCol))).over(spec))
+        /* 
+         * Build features and remove all null values; null indicates
+         * that the length of the feature vector is smaller than 'lag'
+         */
+        .withColumn($(featuresCol), buildFeatures(col("_vector"))).filter(col($(featuresCol)).isNotNull)
+        /*
+         * Remove internal column
+         */
+        .drop("_vector")
+        
+      result
+      
+    }
   }
-  
-  private def buildLabelPoint_udf(k:Int) = udf {
+    
+  private def buildFeatures_udf(k:Int) = udf {
+      vector:WrappedArray[Double] => {
+        if (vector.size == k) Vectors.dense(vector.toArray) else null
+      }
+  }
+
+  private def buildLabelFeatures_udf(k:Int) = udf {
       vector:WrappedArray[Double] => {
         
         if (vector.size == k + 1)
-          LabeledPoint(features = vector.init.toArray, label = vector.last)
+          LabeledPoint(features = Vectors.dense(vector.init.toArray), label = vector.last)
         else
           null
  
