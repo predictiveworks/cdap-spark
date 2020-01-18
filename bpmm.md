@@ -1,7 +1,7 @@
 # Business Predictions Maturity Model (BPMM)
 
 ## Objective
-The *BPMM* was defined to offer a practical guide to **Unified Visual Analytics** for enterprises at any scale, with actionable recommendations based on (existing) open-source solutions.
+The *BPMM* is a practical guide to **Unified Visual Analytics** for enterprises at any scale with actionable recommendations based on (existing) open-source solutions. Its focus is on the corporate adoption of **predictive analytics**.
 
 ## Visual Analytics
 
@@ -22,6 +22,10 @@ We want to share this business maturity model to help companies gain sustainable
 * unification, 
 * standardization, and, 
 * visual analytics. 
+
+The *BPMM* takes a 360° view on corporate analytics: predictive applications always come with a business context that defines the root cause of a certain data solution. Solving a certain business problem & answering predictive questions often requires a set of data solutions that implements the different aspects or tasks originating from the business problem.
+
+All this is tremendous treasure of business knowledge *what enterprise do with their data* and has to be persisted and has to be made 
 
 ## Implementaion
 
