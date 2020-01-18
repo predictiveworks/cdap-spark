@@ -34,7 +34,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseTimeCompute;
-import de.kp.works.core.BaseTimeConfig;
+import de.kp.works.core.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsResample")
@@ -94,7 +94,7 @@ public class TsResample extends BaseTimeCompute {
 
 	}
 
-	public static class TsResampleConfig extends BaseTimeConfig {
+	public static class TsResampleConfig extends TimeConfig {
 
 		private static final long serialVersionUID = -833273325170246060L;
 

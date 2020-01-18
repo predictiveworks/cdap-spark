@@ -19,30 +19,18 @@ package de.kp.works.core;
  */
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Stream;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
 
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
+public class ClassifierConfig extends BaseConfig {
 
-public class BaseRegressorConfig extends PluginConfig {
+	private static final long serialVersionUID = -8367528839538247694L;
 
-	private static final long serialVersionUID = -840366122609747351L;
-
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
-
-	@Description("The unique name of the regressor model.")
+	@Description("The unique name of the classifier model.")
 	@Macro
 	public String modelName;
 
@@ -57,27 +45,9 @@ public class BaseRegressorConfig extends PluginConfig {
 	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
 	@Macro
 	public String dataSplit;
-    
-	public Map<String, Object> getParamsAsMap() {
-		
-		Map<String, Object> params = new HashMap<>();
-		return params;
-
-	}
-	
-	public String getParamsAsJSON() {
-
-		Gson gson = new Gson();			
-		return gson.toJson(getParamsAsMap());
-		
-	}
 	
 	public void validate() {
-		
-		if (!Strings.isNullOrEmpty(referenceName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
+		super.validate();
 
 		/** MODEL & COLUMNS **/
 		if (!Strings.isNullOrEmpty(modelName)) {
@@ -111,5 +81,4 @@ public class BaseRegressorConfig extends PluginConfig {
 		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 	}
-
 }

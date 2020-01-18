@@ -18,50 +18,20 @@ package de.kp.works.core;
  * 
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
 
-public class BaseRecommenderConfig extends PluginConfig {
+public class RecommenderConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -6035538311204588505L;
-
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
 
 	@Description("The unique name of the recommendation model.")
 	@Macro
 	public String modelName;
-    
-	public Map<String, Object> getParamsAsMap() {
-		
-		Map<String, Object> params = new HashMap<>();
-		return params;
-
-	}
-	
-	public String getParamsAsJSON() {
-
-		Gson gson = new Gson();			
-		return gson.toJson(getParamsAsMap());
-		
-	}
 
 	public void validate() {
-		
-		if (!Strings.isNullOrEmpty(referenceName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
+		super.validate();
 
 		/** MODEL & COLUMNS **/
 		if (!Strings.isNullOrEmpty(modelName)) {

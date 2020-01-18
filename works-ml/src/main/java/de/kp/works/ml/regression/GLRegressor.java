@@ -35,13 +35,13 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("GLRegressor")
 @Description("A building stage for an Apache Spark based Generalized Linear regressor model.")
-public class GLRegressor extends BaseRegressorSink {
+public class GLRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -3133087003110797539L;
 
@@ -135,7 +135,7 @@ public class GLRegressor extends BaseRegressorSink {
 
 	}
 
-	public static class GLRegressorConfig extends BaseRegressorConfig {
+	public static class GLRegressorConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = -17449766299180019L;
 
@@ -191,6 +191,7 @@ public class GLRegressor extends BaseRegressorSink {
 			params.put("family", family);
 			params.put("link", link);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 
 		}

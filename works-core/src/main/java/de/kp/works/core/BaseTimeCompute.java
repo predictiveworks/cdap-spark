@@ -32,10 +32,10 @@ public class BaseTimeCompute extends BaseCompute {
 	protected Schema inputSchema;
 	protected Schema outputSchema;
 	
-	protected BaseTimeConfig config;
+	protected TimeConfig config;
 	protected String className;
 
-	protected void validateSchema(Schema inputSchema, BaseTimeConfig config) {
+	protected void validateSchema(Schema inputSchema, TimeConfig config) {
 
 		/** TIME COLUMN **/
 

@@ -35,13 +35,13 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("GBTRegressor")
 @Description("A building stage for an Apache Spark based Gradient-Boosted Trees regressor model.")
-public class GBTRegressor extends BaseRegressorSink {
+public class GBTRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -8027323270352311072L;
 	
@@ -135,7 +135,7 @@ public class GBTRegressor extends BaseRegressorSink {
 
 	}
 
-	public static class GBTRegressorConfig extends BaseRegressorConfig {
+	public static class GBTRegressorConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = 8655177932723069092L;
 
@@ -199,6 +199,7 @@ public class GBTRegressor extends BaseRegressorSink {
 			params.put("maxIter", maxIter);
 			params.put("stepSize", stepSize);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 		
 		}

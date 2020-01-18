@@ -32,7 +32,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClassifierConfig;
+import de.kp.works.core.ClassifierConfig;
 import de.kp.works.core.BaseClassifierSink;
 
 @Plugin(type = "sparksink")
@@ -88,7 +88,7 @@ public class OVRClassifier extends BaseClassifierSink {
 
 	}
 
-	public static class OVRClassifierConfig extends BaseClassifierConfig {
+	public static class OVRClassifierConfig extends ClassifierConfig {
 
 		private static final long serialVersionUID = 1504291913928740352L;
 		

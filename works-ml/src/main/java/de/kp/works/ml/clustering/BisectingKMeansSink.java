@@ -34,7 +34,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClusterConfig;
+import de.kp.works.core.ClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -140,7 +140,7 @@ public class BisectingKMeansSink extends BaseClusterSink {
 
 	}
 	
-	public static class BisectingKMeansConfig extends BaseClusterConfig {
+	public static class BisectingKMeansConfig extends ClusterConfig {
 
 		private static final long serialVersionUID = -1120652583264276007L;
 		

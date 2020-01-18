@@ -32,10 +32,10 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.ml.RFRegressorManager;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.RFClassifierManager;
-import de.kp.works.ml.regression.RFRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RFPredictor")

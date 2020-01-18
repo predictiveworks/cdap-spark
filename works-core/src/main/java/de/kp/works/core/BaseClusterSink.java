@@ -41,10 +41,10 @@ public class BaseClusterSink extends BaseSink {
 	protected FileSet modelFs;
 	protected Table modelMeta;
 
-	protected BaseClusterConfig config;
+	protected ClusterConfig config;
 	protected String className;
 	
-	protected void validateSchema(Schema inputSchema, BaseClusterConfig config) {
+	protected void validateSchema(Schema inputSchema, ClusterConfig config) {
 
 		/** FEATURES COLUMN **/
 

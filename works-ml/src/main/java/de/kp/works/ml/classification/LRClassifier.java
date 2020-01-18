@@ -35,7 +35,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClassifierConfig;
+import de.kp.works.core.ClassifierConfig;
 import de.kp.works.core.BaseClassifierSink;
 
 @Plugin(type = "sparksink")
@@ -137,7 +137,7 @@ public class LRClassifier extends BaseClassifierSink {
 
 	}
 
-	public static class LRClassifierConfig extends BaseClassifierConfig {
+	public static class LRClassifierConfig extends ClassifierConfig {
 
 		private static final long serialVersionUID = -4962647798125981464L;
 

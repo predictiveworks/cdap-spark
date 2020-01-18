@@ -25,26 +25,17 @@ import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.hydrator.common.Constants;
 
-public class BaseClusterConfig extends PluginConfig {
+public class BaseConfig extends PluginConfig {
 
-	private static final long serialVersionUID = -1688551189042078478L;
+	private static final long serialVersionUID = 1290979476413023858L;
 
 	@Name(Constants.Reference.REFERENCE_NAME)
 	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
 	public String referenceName;
-
-	@Description("The unique name of the classifier model.")
-	@Macro
-	public String modelName;
-
-	@Description("The name of the field in the input schema that contains the feature vector.")
-	@Macro
-	public String featuresCol;
     
 	public Map<String, Object> getParamsAsMap() {
 		
@@ -59,22 +50,12 @@ public class BaseClusterConfig extends PluginConfig {
 		return gson.toJson(getParamsAsMap());
 		
 	}
-	
+
 	public void validate() {
 		
 		if (!Strings.isNullOrEmpty(referenceName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
-
-		if (!Strings.isNullOrEmpty(modelName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-		}
-		if (!Strings.isNullOrEmpty(featuresCol)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-							this.getClass().getName()));
 		}
 
 	}

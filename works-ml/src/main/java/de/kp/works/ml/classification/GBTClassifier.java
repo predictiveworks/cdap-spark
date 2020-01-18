@@ -35,7 +35,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClassifierConfig;
+import de.kp.works.core.ClassifierConfig;
 import de.kp.works.core.BaseClassifierSink;
 
 @Plugin(type = "sparksink")
@@ -136,7 +136,7 @@ public class GBTClassifier extends BaseClassifierSink {
 
 	}
 
-	public static class GBTClassifierConfig extends BaseClassifierConfig {
+	public static class GBTClassifierConfig extends ClassifierConfig {
 
 		private static final long serialVersionUID = 7335333448330182611L;
 

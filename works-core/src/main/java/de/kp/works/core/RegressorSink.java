@@ -35,14 +35,14 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseRegressorSink extends BaseSink {
+public class RegressorSink extends BaseSink {
 
 	private static final long serialVersionUID = 8807040807659351717L;
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
 	
-	protected BaseRegressorConfig config;
+	protected RegressorConfig config;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
@@ -92,7 +92,7 @@ public class BaseRegressorSink extends BaseSink {
 
 	}
 
-	public void validateSchema(Schema inputSchema, BaseRegressorConfig config) {
+	public void validateSchema(Schema inputSchema, RegressorConfig config) {
 
 		/** FEATURES COLUMN **/
 

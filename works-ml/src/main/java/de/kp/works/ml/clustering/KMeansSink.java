@@ -36,7 +36,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClusterConfig;
+import de.kp.works.core.ClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -134,7 +134,7 @@ public class KMeansSink extends BaseClusterSink {
 
 	}
 
-	public static class KMeansConfig extends BaseClusterConfig {
+	public static class KMeansConfig extends ClusterConfig {
 
 		private static final long serialVersionUID = -1071711175500255534L;
 

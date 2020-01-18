@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression;
+package de.kp.works.core.ml;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -28,8 +28,6 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.core.ml.AbstractModelManager;
-import de.kp.works.core.ml.SparkMLManager;
 
 public class RFRegressorManager extends AbstractModelManager {
 

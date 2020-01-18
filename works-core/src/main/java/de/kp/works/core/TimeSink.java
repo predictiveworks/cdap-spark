@@ -27,37 +27,24 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseClassifierSink extends BaseSink {
+public class TimeSink extends BaseSink {
 
-	private static final long serialVersionUID = -5552264323513756802L;
+	private static final long serialVersionUID = 629771603199297288L;
 
 	protected FileSet modelFs;
 	protected Table modelMeta;
 	
-	protected ClassifierConfig config;
+	protected TimeConfig config;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Classification model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createClassificationIfNotExists(context);
-		/*
-		 * Retrieve classification specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
-
+		throw new Exception("[TimeSink] method not implemented.");
 	}
 
 	@Override
@@ -92,33 +79,37 @@ public class BaseClassifierSink extends BaseSink {
 
 	}
 
-	protected void validateSchema(Schema inputSchema, ClassifierConfig config) {
+	public void validateSchema(Schema inputSchema, TimeConfig config) {
 
-		/** FEATURES COLUMN **/
+		/** TIME COLUMN **/
 
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
+		Schema.Field timeCol = inputSchema.getField(config.timeCol);
+		if (timeCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
+					"[%s] The input schema must contain the field that defines the time value.", className));
 		}
 
-		isArrayOfNumeric(config.featuresCol);
+		Schema.Type timeType = timeCol.getSchema().getType();
+		if (isTimeType(timeType) == false) {
+			throw new IllegalArgumentException("The data type of the time value field must be LONG.");
+		}
 
-		/** LABEL COLUMN **/
+		/** VALUE COLUMN **/
 
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
+		Schema.Field valueCol = inputSchema.getField(config.valueCol);
+		if (valueCol == null) {
 			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", className));
+					.format("[%s] The input schema must contain the field that defines the value.", className));
 		}
 
-		Schema.Type labelType = labelCol.getSchema().getType();
+		Schema.Type valueType = valueCol.getSchema().getType();
 		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
+		 * The value must be a numeric data type (double, float, int, long), which then
 		 * is casted to Double (see classification trainer)
 		 */
-		if (isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
+		if (isNumericType(valueType) == false) {
+			throw new IllegalArgumentException("The data type of the value field must be MUMERIC.");
 		}
 	}
+
 }

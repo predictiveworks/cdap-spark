@@ -35,13 +35,13 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("IsotonicRegressor")
 @Description("A building stage for an Apache Spark based Isotonic regressor model.")
-public class IsotonicRegressor extends BaseRegressorSink {
+public class IsotonicRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = 185956615279200366L;
 	
@@ -135,7 +135,7 @@ public class IsotonicRegressor extends BaseRegressorSink {
 
 	}
 
-	public static class IsotonicConfig extends BaseRegressorConfig {
+	public static class IsotonicConfig extends RegressorConfig {
 		  
 		private static final long serialVersionUID = -4928234679795163044L;
 		
@@ -164,6 +164,7 @@ public class IsotonicRegressor extends BaseRegressorSink {
 			params.put("isotonic", isotonic);
 			params.put("featureIndex", featureIndex);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 		
 		}

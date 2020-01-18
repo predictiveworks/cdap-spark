@@ -19,20 +19,12 @@ package de.kp.works.core;
  */
 
 import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
 
-public class BaseTimeConfig extends PluginConfig {
+public class TimeConfig extends BaseConfig {
 
 	private static final long serialVersionUID = 3721883166765717447L;
-
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
 
 	@Description("The name of the field in the input schema that contains the time value.")
 	@Macro
@@ -43,11 +35,7 @@ public class BaseTimeConfig extends PluginConfig {
 	public String valueCol;
 
 	public void validate() {
-		
-		if (!Strings.isNullOrEmpty(referenceName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
+		super.validate();
 
 		if (!Strings.isNullOrEmpty(timeCol)) {
 			throw new IllegalArgumentException(

@@ -35,13 +35,14 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
+import de.kp.works.core.ml.RFRegressorManager;
 
 @Plugin(type = "sparksink")
 @Name("RFRegressor")
 @Description("A building stage for an Apache Spark based Random Forest Trees regressor model.")
-public class RFRegressor extends BaseRegressorSink {
+public class RFRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = 1969655374719118217L;
 	
@@ -134,17 +135,15 @@ public class RFRegressor extends BaseRegressorSink {
 		new RFRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
-	/*
-	 * The configuration for Random Forest classification & regression
-	 * models are identical
-	 */
-	public static class RFRegressorConfig extends BaseRegressorConfig {
+
+	public static class RFRegressorConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = 7150058657685557952L;
 
 		/*
-		 * Impurity is set to 'variance' and cannot be changed; therefore no
-		 * external parameter is provided
+		 * Impurity is set to 'variance' and cannot be changed; therefore no external 
+		 * parameter is provided. This is the difference to the Random Forest classifier
+		 * configuration
 		 */
 
 		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
@@ -188,6 +187,7 @@ public class RFRegressor extends BaseRegressorSink {
 			params.put("minInfoGain", minInfoGain);
 			params.put("numTrees", numTrees);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 
 		}
@@ -213,6 +213,6 @@ public class RFRegressor extends BaseRegressorSink {
 						String.format("[%s] The number of trees must be at least 1.", this.getClass().getName()));
 
 		}
-		
+
 	}
 }

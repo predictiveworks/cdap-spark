@@ -37,7 +37,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClusterConfig;
+import de.kp.works.core.ClusterConfig;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -130,7 +130,7 @@ public class LDASink extends BaseClusterSink {
 
 	}
 	
-	public static class LDAConfig extends BaseClusterConfig {
+	public static class LDAConfig extends ClusterConfig {
 		  
 		private static final long serialVersionUID = 7925435496096417998L;
 

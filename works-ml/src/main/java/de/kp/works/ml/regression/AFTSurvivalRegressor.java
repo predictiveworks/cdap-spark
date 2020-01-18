@@ -37,13 +37,13 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("AFTSurvivalRegressor")
 @Description("A building stage for an Apache Spark based AFT survival regressor model.")
-public class AFTSurvivalRegressor extends BaseRegressorSink {
+public class AFTSurvivalRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -2096945742865221471L;
 	
@@ -140,7 +140,7 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 	}
 
 	@Override 
-	public void validateSchema(Schema inputSchema, BaseRegressorConfig config) {
+	public void validateSchema(Schema inputSchema, RegressorConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** CENSOR COL **/
@@ -164,7 +164,7 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 		
 	}
 	
-	public static class AFTSurvivalConfig extends BaseRegressorConfig {
+	public static class AFTSurvivalConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = 8618207399826721560L;
 
@@ -204,6 +204,7 @@ public class AFTSurvivalRegressor extends BaseRegressorSink {
 			params.put("maxIter", maxIter);
 			params.put("tol", tol);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 		
 		}

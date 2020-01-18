@@ -41,7 +41,7 @@ public class BaseRecommenderSink extends BaseSink {
 	protected FileSet modelFs;
 	protected Table modelMeta;
 
-	protected BaseRecommenderConfig config;
+	protected RecommenderConfig config;
 	
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
@@ -91,7 +91,7 @@ public class BaseRecommenderSink extends BaseSink {
 		
 	}
 
-	protected void validateSchema(Schema inputSchema, BaseRecommenderConfig config) {
+	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
 		// TODO
 	}
 

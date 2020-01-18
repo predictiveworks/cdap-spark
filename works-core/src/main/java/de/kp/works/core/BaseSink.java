@@ -59,6 +59,30 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 		}
 
 	}
+	
+	protected Boolean isTimeType(Schema.Type dataType) {
+		switch (dataType) {
+		case ARRAY:
+		case BOOLEAN:
+		case BYTES:
+		case MAP:
+		case NULL:
+		case RECORD:
+		case ENUM:
+		case STRING:
+		case UNION:
+		case DOUBLE:
+		case FLOAT:
+		case INT:
+			return false;
+		case LONG:
+			return true;
+
+		default:
+			return false;
+		}
+
+	}
 
 	protected void isArrayOfDouble(String fieldName) {
 

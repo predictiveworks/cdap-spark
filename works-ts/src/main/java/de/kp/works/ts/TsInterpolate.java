@@ -34,7 +34,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseTimeCompute;
-import de.kp.works.core.BaseTimeConfig;
+import de.kp.works.core.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsInterpolate")
@@ -91,7 +91,7 @@ public class TsInterpolate extends BaseTimeCompute {
 
 	}
 
-	public static class TsInterpolateConfig extends BaseTimeConfig {
+	public static class TsInterpolateConfig extends TimeConfig {
 
 		private static final long serialVersionUID = -833273325170246060L;
 

@@ -35,13 +35,13 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseRegressorConfig;
-import de.kp.works.core.BaseRegressorSink;
+import de.kp.works.core.RegressorConfig;
+import de.kp.works.core.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("DTRegressor")
 @Description("A building stage for an Apache Spark based Decision Tree regressor model.")
-public class DTRegressor extends BaseRegressorSink {
+public class DTRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -6358575044891859770L;
 	
@@ -135,7 +135,7 @@ public class DTRegressor extends BaseRegressorSink {
 
 	}
 
-	public static class DTRegressorConfig extends BaseRegressorConfig {
+	public static class DTRegressorConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = 40342346796142785L;
 
@@ -177,6 +177,7 @@ public class DTRegressor extends BaseRegressorSink {
 			params.put("maxBins", maxBins);
 			params.put("maxDepth", maxDepth);
 
+			params.put("dataSplit", dataSplit);
 			return params;
 		
 		}

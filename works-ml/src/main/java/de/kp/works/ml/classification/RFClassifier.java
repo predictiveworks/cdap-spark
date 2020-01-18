@@ -35,7 +35,7 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseClassifierConfig;
+import de.kp.works.core.ClassifierConfig;
 import de.kp.works.core.BaseClassifierSink;
 
 @Plugin(type = "sparksink")
@@ -140,7 +140,7 @@ public class RFClassifier extends BaseClassifierSink {
 	 * The configuration for Random Forest classification & regression
 	 * models are identical
 	 */
-	public static class RFClassifierConfig extends BaseClassifierConfig {
+	public static class RFClassifierConfig extends ClassifierConfig {
 
 		private static final long serialVersionUID = -6477522356251530089L;
 
