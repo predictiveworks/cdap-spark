@@ -1,7 +1,6 @@
 <p align="center">
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="360" alt="Works DL"> 
 </p>
-
 # 
 This project aims to implement the vision of **Visual DL** - Code-free orchestration of data pipelines (or workflow) to respond to deep learning use cases.
 
