@@ -1,17 +1,35 @@
 # Business Predictions Maturity Model (BPMM)
 
-[**Predictive Works.**](https://predictiveworks.eu) has been designed to facilitate the corporate adoption of Predictive Analytics for enterprises at any scale.
+## Objective
+The *BPMM* was defined to offer a practical guide to **Unified Visual Analytics** for enterprises at any scale, with actionable recommendations based on (existing) open-source solutions.
+
+## Visual Analytics
+
+Visual Analytics is a technical concept that aims to offer the spectrum of modern analytics, 
+* business rules, 
+* deep learning ,
+* machine learning,
+* natural language processing, 
+* query analysis, and, 
+* time series analysis 
+
+as code-free, visual components that can be used to gain hindsight, insights and foresights for users without programming skills.
 
 ## Why BPMM?
 The landscape of modern big data and scalable analytics solutions is complex and often opaque for many enterprises. The approch to give value to the continously increasing amout of data typically ends in a plethora of different technologies and solutions with little interoperability.
 
-We want to share a business maturity model that supports companies to gain sustainable value from their data with a strong focus on *unification* & *standardization*. This model also builds the foundation for **Predictive Works.**
+We want to share this business maturity model to help companies gain sustainable value from their data with a strong focus on 
+* unification, 
+* standardization, and, 
+* visual analytics. 
 
-The BPMM is a practical guide with actionable recommendations based on (existing) open source solutions.
+## Implementaion
+
+The BPMM builds the foundation for [**Predictive Works.**](https://predictiveworks.eu)
 
 ## Maturity Levels
 
-The BPMM is the result of a long standing experience how many companies approach predictive analytics and defines 5 maturity levels:
+The *BPMM* is the result of a long standing experience defines 5 maturity levels how companies can approach predictive analytics with ease.
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/maturity-levels.png" width="800" alt="Maturity Levels">
 
