@@ -38,5 +38,7 @@ A frequent requirement for many time series analysis methods is that the data ne
 
 Demand prediction is a complex time series analysis problem, but in many use cases it can be satisfactorily transformed into a regression problem.
 
-For these use case **Works TS** supports model building of *Random Forest* regression models. 
+For these use cases **Works TS** supports model building of *Random Forest* regression models. 
 
+
+*to be continued*
