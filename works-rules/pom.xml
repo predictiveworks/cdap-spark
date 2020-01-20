@@ -96,7 +96,7 @@
               <Embed-Transitive>true</Embed-Transitive>
               <Embed-Directory>lib</Embed-Directory>
               <!--Only @Plugin classes in the export packages will be included as plugin-->
-              <_exportcontents>de.kp.works.rules.*</_exportcontents>
+              <_exportcontents>de.kp.works.*</_exportcontents>
             </instructions>
           </configuration>
           <executions>
