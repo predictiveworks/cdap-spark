@@ -47,8 +47,8 @@ trait AutoCorrelationParams extends Params {
   final val maxLag = new Param[Int](AutoCorrelationParams.this, "maxLag",
       "The maximum lag value. Default is 1.", (value:Int) => true)
 
-  final val lagValues = new Param[Seq[Int]](AutoCorrelationParams.this, "lagValues",
-      "The sequence of lag value. This sequence is empty by default.", (value:Seq[Int]) => true)
+  final val lagValues = new Param[Array[Int]](AutoCorrelationParams.this, "lagValues",
+      "The sequence of lag value. This sequence is empty by default.", (value:Array[Int]) => true)
 
   final val threshold = new Param[Double](AutoCorrelationParams.this, "threshold",
       "The threshold used to determine the lag value with the highest correlation score. "
@@ -61,7 +61,7 @@ trait AutoCorrelationParams extends Params {
   def setMaxLag(value:Int): AutoCorrelationParams.this.type = set(maxLag, value)
 
   /** @group setParam */
-  def setLagValues(value:Seq[Int]): AutoCorrelationParams.this.type = set(lagValues, value)
+  def setLagValues(value:Array[Int]): AutoCorrelationParams.this.type = set(lagValues, value)
 
   /** @group setParam */
   def setThreshold(value:Double): AutoCorrelationParams.this.type = set(threshold, value)
@@ -82,7 +82,7 @@ trait AutoCorrelationParams extends Params {
 
   }
   
-  setDefault(maxLag -> -1, lagValues -> Seq.empty[Int], threshold -> 0.95)
+  setDefault(maxLag -> -1, lagValues -> Array.empty[Int], threshold -> 0.95)
   
 }
 /**
@@ -124,7 +124,7 @@ class AutoCorrelation(override val uid: String)
       throw new IllegalArgumentException("[AutoCorrelation] No lag values specified.")
 
     val values = if ($(maxLag) > 0) {      
-      (1 to $(maxLag)).map(k => compute(dataset, average, denom, k))
+      (1 to $(maxLag)).map(k => compute(dataset, average, denom, k)).toArray
     
     } else
       $(lagValues).map(k => compute(dataset, average, denom, k))
@@ -141,7 +141,7 @@ class AutoCorrelation(override val uid: String)
     
     /* Specify a window with k + 1 values */
     val spec = Window.partitionBy().rowsBetween(0, k)
-    val windowed = dataset.withColumn("_vector", collect_list(col($(valueCol))).over(spec))
+    val windowed = dataset.withColumn("_vector", collect_list(col($(valueCol)).cast(DoubleType)).over(spec))
     
     /* Instance of the correlation function with 
      * a specific k and average value
