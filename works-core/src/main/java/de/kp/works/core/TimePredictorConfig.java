@@ -38,12 +38,12 @@ public class TimePredictorConfig extends TimeConfig {
 	public void validate() {
 		super.validate();
 
-		if (!Strings.isNullOrEmpty(modelName)) {
+		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
 
-		if (!Strings.isNullOrEmpty(predictionCol)) {
+		if (Strings.isNullOrEmpty(predictionCol)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The name of the field that contains the predicted time value must not be empty.",
 					this.getClass().getName()));

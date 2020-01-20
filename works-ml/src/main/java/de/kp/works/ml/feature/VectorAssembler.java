@@ -233,7 +233,7 @@ public class VectorAssembler extends BaseFeatureCompute {
 		public void validate() {
 			super.validate();
 			
-			if (!Strings.isNullOrEmpty(inputCols)) {
+			if (Strings.isNullOrEmpty(inputCols)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The fields must not be empty.", this.getClass().getName()));
 			}

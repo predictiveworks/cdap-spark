@@ -224,7 +224,7 @@ public class MLPClassifier extends BaseClassifierSink {
 				throw new IllegalArgumentException(
 						String.format("[%s] The iteration tolerance must be positive.", this.getClass().getName()));
 			
-			if (!Strings.isNullOrEmpty(layers))
+			if (Strings.isNullOrEmpty(layers))
 				throw new IllegalArgumentException(
 						String.format("[%s] The layers of the neural net must be specified.",
 								this.getClass().getName()));

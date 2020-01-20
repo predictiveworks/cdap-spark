@@ -114,10 +114,10 @@ public class OVRClassifier extends BaseClassifierSink {
 		public void validate() {
 
 			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(modelName)) {
+			if (Strings.isNullOrEmpty(modelName)) {
 				throw new IllegalArgumentException("[OVRClassifierConfig] The model name must not be empty.");
 			}
-			if (!Strings.isNullOrEmpty(featuresCol)) {
+			if (Strings.isNullOrEmpty(featuresCol)) {
 				throw new IllegalArgumentException("[OVRClassifierConfig] The name of the field that contains the feature vector must not be empty.");
 			}
 			

@@ -34,6 +34,7 @@ import co.cask.cdap.etl.api.batch.SparkPluginContext;
  * - clustering
  * - recommendation
  * - regression
+ * - timeseries
  *
  */
 public class SparkMLManager {
@@ -115,6 +116,22 @@ public class SparkMLManager {
 	 * this would be interpreted as an absolute path in the file system
 	 */
 	public static String REGRESSION_FS_BASE = "models/regression/";
+	/*
+	 * The model of the internal dataset that is used to 
+	 * persist metadata with respect to time series models.
+	 */
+	public static String TIMESERIES_META = "timeseriesMeta";
+	/*
+	 * The fileset name of the internal fileset that is
+	 * used to store time series models
+	 */
+	public static String TIMESERIES_FS = "timeseriesFs";
+	/*
+	 * Note, we do NOT specify an absolute base path (begins with /) as 
+	 * this would be interpreted as an absolute path in the file system
+	 */
+	public static String TIMESERIES_FS_BASE = "models/timeseries/";
+	
 
 	/***** CLASSIFICATION *****/
 	
@@ -450,6 +467,74 @@ public class SparkMLManager {
 			builder.setSchema(metaSchema);
 			
 			context.createDataset(REGRESSION_META, Table.class.getName(), builder.build());
+			
+		};
+		
+	}
+
+	/***** TIMESERIES *****/
+
+	public static FileSet getTimeseriesFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+		
+		if (context.datasetExists(TIMESERIES_FS) == false)
+			throw new Exception("Fileset to store timeseries model components does not exist.");
+		
+		FileSet fs = context.getDataset(TIMESERIES_FS);
+		return fs;
+		
+	}
+
+	public static FileSet getTimeseriesFS(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		FileSet fs = context.getDataset(TIMESERIES_FS);
+		return fs;
+		
+	}
+
+	public static Table getTimeseriesMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+		
+		if (context.datasetExists(TIMESERIES_META) == false)
+			throw new Exception("Table to store timeseries model metadata does not exist.");
+		
+		Table table = context.getDataset(TIMESERIES_META);
+		return table;
+		
+	}
+
+	public static Table getTimeseriesMeta(SparkExecutionPluginContext context) throws DatasetManagementException, Exception {
+		
+		Table table = context.getDataset(TIMESERIES_META);
+		return table;
+		
+	}
+
+	public static void createTimeseriesIfNotExists(SparkPluginContext context) throws DatasetManagementException {
+		
+		if (context.datasetExists(TIMESERIES_FS) == false) {
+			/*
+			 * The timeseries fileset does not exist yet; this path is relative to the
+			 * data directory of the CDAP namespace in which the FileSet is created. 
+			 * 
+			 * Note, we do NOT specify an absolute base path (begins with /) as this
+			 * would be interpreted as an absolute path in the file system
+			 */
+			context.createDataset(TIMESERIES_FS, FileSet.class.getName(), FileSetProperties.builder().setBasePath(TIMESERIES_FS_BASE).build());			
+		}
+		
+		if (context.datasetExists(TIMESERIES_META) == false) {
+			/*
+			 * This is the first time, that we train a timeseries model;
+			 * therefore, the associated metadata dataset has to be created
+			 */
+			Schema metaSchema = createMetaSchema("timeseriesSchema");
+			/*
+			 * Create a CDAP table with the schema provided
+			 */
+			TableProperties.Builder builder = TableProperties.builder();
+			builder.setDescription("This table contains a timeseries of metadata information about Predictive Works timeseries models.");
+			builder.setSchema(metaSchema);
+			
+			context.createDataset(TIMESERIES_META, Table.class.getName(), builder.build());
 			
 		};
 		

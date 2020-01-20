@@ -153,7 +153,7 @@ public class GaussianMixturePredictor extends BasePredictorCompute {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(probabilityCol)) {
+			if (Strings.isNullOrEmpty(probabilityCol)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the probability vector must not be empty.", this.getClass().getName()));
 			}

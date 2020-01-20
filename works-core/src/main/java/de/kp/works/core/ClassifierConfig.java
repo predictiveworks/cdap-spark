@@ -50,21 +50,21 @@ public class ClassifierConfig extends BaseConfig {
 		super.validate();
 
 		/** MODEL & COLUMNS **/
-		if (!Strings.isNullOrEmpty(modelName)) {
+		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(featuresCol)) {
+		if (Strings.isNullOrEmpty(featuresCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
 							this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(labelCol)) {
+		if (Strings.isNullOrEmpty(labelCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the label value must not be empty.",
 							this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(dataSplit)) {
+		if (Strings.isNullOrEmpty(dataSplit)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The data split must not be empty.",
 							this.getClass().getName()));

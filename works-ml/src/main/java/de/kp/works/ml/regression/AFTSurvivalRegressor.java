@@ -213,7 +213,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 			super.validate();
 
 			/** MODEL & COLUMNS **/
-			if (!Strings.isNullOrEmpty(censorCol)) {
+			if (Strings.isNullOrEmpty(censorCol)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the censor value must not be empty.",
 								this.getClass().getName()));

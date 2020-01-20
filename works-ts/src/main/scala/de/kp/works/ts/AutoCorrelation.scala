@@ -17,9 +17,9 @@ package de.kp.works.ts
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import org.apache.spark.SparkException
+import org.apache.hadoop.fs.Path
 
-import org.apache.spark.ml.{Estimator,Model}
+import org.apache.spark.ml.{Estimator,Model, ParamsIO}
 
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
@@ -45,10 +45,26 @@ trait AutoCorrelationParams extends Params {
    * or, by a discrete list of lag values
    */
   final val maxLag = new Param[Int](AutoCorrelationParams.this, "maxLag",
-      "The maximum lag value", (value:Int) => true)
+      "The maximum lag value. Default is 1.", (value:Int) => true)
 
   final val lagValues = new Param[Seq[Int]](AutoCorrelationParams.this, "lagValues",
-      "The sequence of lag value", (value:Seq[Int]) => true)
+      "The sequence of lag value. This sequence is empty by default.", (value:Seq[Int]) => true)
+
+  final val threshold = new Param[Double](AutoCorrelationParams.this, "threshold",
+      "The threshold used to determine the lag value with the highest correlation score. "
+      + "Default is 0.95.", (value:Double) => true)    
+      
+  /** @group setParam */
+  def setValueCol(value:String): AutoCorrelationParams.this.type = set(valueCol, value)
+
+  /** @group setParam */
+  def setMaxLag(value:Int): AutoCorrelationParams.this.type = set(maxLag, value)
+
+  /** @group setParam */
+  def setLagValues(value:Seq[Int]): AutoCorrelationParams.this.type = set(lagValues, value)
+
+  /** @group setParam */
+  def setThreshold(value:Double): AutoCorrelationParams.this.type = set(threshold, value)
       
   def validateSchema(schema:StructType):Unit = {
     
@@ -66,7 +82,7 @@ trait AutoCorrelationParams extends Params {
 
   }
   
-  setDefault(maxLag -> -1, lagValues -> Seq.empty[Int])
+  setDefault(maxLag -> -1, lagValues -> Seq.empty[Int], threshold -> 0.95)
   
 }
 /**
@@ -78,22 +94,13 @@ trait AutoCorrelationParams extends Params {
  * that is specified by its maximum value, or, by a sequence of discrete
  * lag values.
  * 
- * Lags that result in high correlation will have values colse to 1 or -1, 
+ * Lags that result in high correlation will have values close to 1 or -1, 
  * for positive and negative correlations. 
  */
 class AutoCorrelation(override val uid: String)
   extends Estimator[AutoCorrelationModel] with AutoCorrelationParams with DefaultParamsWritable {
 
   def this() = this(Identifiable.randomUID("autoCorrelation"))
-
-  /** @group setParam */
-  def setValueCol(value:String): AutoCorrelation.this.type = set(valueCol, value)
-
-  /** @group setParam */
-  def setMaxLag(value:Int): AutoCorrelation.this.type = set(maxLag, value)
-
-  /** @group setParam */
-  def setLagValues(value:Seq[Int]): AutoCorrelation.this.type = set(lagValues, value)
 
   override def fit(dataset:Dataset[_]):AutoCorrelationModel = {
 
@@ -112,69 +119,25 @@ class AutoCorrelation(override val uid: String)
     val variances = dataset.withColumn("_variance", variance(col($(valueCol))))
      
     val denom = variances.agg({"_variance" -> "sum"}).collect.head(0).asInstanceOf[Double]
-    
-    /* Build AutoCorrelationModel */
-    copyValues(new AutoCorrelationModel(uid,average, denom).setParent(this))
-    
-  }
-  /*
-   * This method is a helper function to compute the denominator
-   * for the auto correlation function
-   */
-  private def variance_udf(average:Double) = udf {
-    (value: Double) => {
-      (value - average) * (value - average)
-    }
-  }
-
-  override def transformSchema(schema:StructType):StructType = {
-    schema
-  }
-
-  override def copy(extra:ParamMap):AutoCorrelation = defaultCopy(extra)
-  
-}
-
-
-class AutoCorrelationModel(override val uid:String, val average:Double, val denom: Double)
-  extends Model[AutoCorrelationModel] with AutoCorrelationParams with MLWritable {
-
-  import AutoCorrelationModel._
-
-  def this(average:Double, denom:Double) = {
-    this(Identifiable.randomUID("autoCorrelationModel"),average, denom)
-  }
-
-  /** @group setParam */
-  def setValueCol(value: String): this.type = set(valueCol, value)
-
-  /**
-   * This method computes the auto correlation function for a 
-   * univariate dataset (timeseries)
-   */
-  override def transform(dataset:Dataset[_]):DataFrame = {
 
     if ($(maxLag) == -1 && $(lagValues).isEmpty)
       throw new IllegalArgumentException("[AutoCorrelation] No lag values specified.")
 
     val values = if ($(maxLag) > 0) {      
-      (1 to $(maxLag)).map(k => compute(dataset, k))
+      (1 to $(maxLag)).map(k => compute(dataset, average, denom, k))
     
     } else
-      $(lagValues).map(k => compute(dataset, k))
-
-
-    import dataset.sparkSession.implicits._
-    val result = dataset.sparkSession.createDataset[Double](values).toDF("values")
+      $(lagValues).map(k => compute(dataset, average, denom, k))
     
-    result
-
+    /* Build AutoCorrelationModel */
+    copyValues(new AutoCorrelationModel(uid, average, denom, values).setParent(this))
+    
   }
   /*
    * This method computes the auto correlation value for 
    * a certain lag value k
    */
-  private def compute(dataset:Dataset[_], k:Int):Double = {
+  private def compute(dataset:Dataset[_], average:Double, denom: Double, k:Int):Double = {
     
     /* Specify a window with k + 1 values */
     val spec = Window.partitionBy().rowsBetween(0, k)
@@ -209,13 +172,64 @@ class AutoCorrelationModel(override val uid:String, val average:Double, val deno
 
     }
   }
+  
+  /*
+   * This method is a helper function to compute the denominator
+   * for the auto correlation function
+   */
+  private def variance_udf(average:Double) = udf {
+    (value: Double) => {
+      (value - average) * (value - average)
+    }
+  }
+
+  override def transformSchema(schema:StructType):StructType = {
+    schema
+  }
+
+  override def copy(extra:ParamMap):AutoCorrelation = defaultCopy(extra)
+  
+}
+
+
+class AutoCorrelationModel(override val uid:String, val average:Double, val denom: Double, val values:Seq[Double])
+  extends Model[AutoCorrelationModel] with AutoCorrelationParams with MLWritable {
+
+  import AutoCorrelationModel._
+
+  def this(average:Double, denom:Double, values: Seq[Double]) = {
+    this(Identifiable.randomUID("autoCorrelationModel"),average, denom, values)
+  }
+  /**
+   * This method returns the lag values with the highest 
+   * correlation factor if above threshold; otherwise -1 
+   */
+  def getSeasonalPeriod():Int = {
+    
+    /* 
+     * Zip withing index, sort and determine 
+     * highest correlation factor and its index
+     */
+    val max = values.zipWithIndex.sortBy(-_._1).head
+    /*
+     * Note, the respective index = lag - 1
+     */
+    if (max._1 >= $(threshold)) (max._2 + 1) else -1
+    
+  }
+  /*
+   * The model does not transform any dataset
+   */
+  override def transform(dataset:Dataset[_]):DataFrame = {
+    dataset.toDF
+  }
 
   override def transformSchema(schema:StructType):StructType = {
     schema
   }
 
   override def copy(extra:ParamMap):AutoCorrelationModel = {
-    val copied = new AutoCorrelationModel(uid,average,denom).setParent(parent)
+    val copied = new AutoCorrelationModel(uid, average, denom, values).setParent(parent)
     copyValues(copied, extra)
   }
 
@@ -225,10 +239,26 @@ class AutoCorrelationModel(override val uid:String, val average:Double, val deno
 
 object AutoCorrelationModel extends MLReadable[AutoCorrelationModel] {
 
+  /** Helper class for storing model data */
+  private case class Data(average: Double, denom: Double, values: Array[Double])
+  
   class AutoCorrelationModelWriter(instance: AutoCorrelationModel) extends MLWriter {
 
-    override protected def saveImpl(path: String): Unit = {
-      throw new SparkException("Method 'saveImpl' is not implemented")
+    override def save(path:String): Unit = {
+      super.save(path)
+    }
+    
+    override def saveImpl(path: String): Unit = {
+
+      /* Save metadata and params */
+      ParamsIO.saveMetadata(instance, path, sc)
+      
+      /* Save model data: average, denom, values */
+      val data:Array[Data] = Array(Data(instance.average, instance.denom, instance.values.toArray))
+     
+      val dataPath = new Path(path, "data").toString
+      sparkSession.createDataFrame(data).repartition(1).write.parquet(dataPath)
+      
     }
     
   }
@@ -238,7 +268,20 @@ object AutoCorrelationModel extends MLReadable[AutoCorrelationModel] {
     private val className = classOf[AutoCorrelationModel].getName
 
     override def load(path: String):AutoCorrelationModel = {
-      throw new SparkException("Method 'load' is not supported")
+
+      val sparkSession = super.sparkSession
+      import sparkSession.implicits._
+
+      val metadata = ParamsIO.loadMetadata(path, sc, className)
+      val dataPath = new Path(path, "data").toString
+
+      val data: Data =  sparkSession.read.parquet(dataPath).as[Data].collect.head
+      
+      val model = new AutoCorrelationModel(metadata.uid, data.average, data.denom, data.values)
+      ParamsIO.getAndSetParams(model, metadata)
+
+      model
+      
     }
   }
 

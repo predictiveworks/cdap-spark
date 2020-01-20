@@ -37,12 +37,12 @@ public class TimeConfig extends BaseConfig {
 	public void validate() {
 		super.validate();
 
-		if (!Strings.isNullOrEmpty(timeCol)) {
+		if (Strings.isNullOrEmpty(timeCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the time value must not be empty.",
 							this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(valueCol)) {
+		if (Strings.isNullOrEmpty(valueCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the value must not be empty.",
 							this.getClass().getName()));

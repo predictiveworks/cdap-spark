@@ -34,7 +34,7 @@ public class RecommenderConfig extends BaseConfig {
 		super.validate();
 
 		/** MODEL & COLUMNS **/
-		if (!Strings.isNullOrEmpty(modelName)) {
+		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}

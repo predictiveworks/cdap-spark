@@ -52,22 +52,22 @@ public class BasePredictorConfig extends PluginConfig {
 	
 	public void validate() {
 		
-		if (!Strings.isNullOrEmpty(referenceName)) {
+		if (Strings.isNullOrEmpty(referenceName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
 		}
 
 		/** MODEL & COLUMNS **/
-		if (!Strings.isNullOrEmpty(modelName)) {
+		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(featuresCol)) {
+		if (Strings.isNullOrEmpty(featuresCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
 							this.getClass().getName()));
 		}
-		if (!Strings.isNullOrEmpty(predictionCol)) {
+		if (Strings.isNullOrEmpty(predictionCol)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The name of the field that contains the predicted label value must not be empty.",
 					this.getClass().getName()));

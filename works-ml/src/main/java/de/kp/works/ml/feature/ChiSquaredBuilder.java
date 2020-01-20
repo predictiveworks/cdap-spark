@@ -170,7 +170,7 @@ public class ChiSquaredBuilder extends BaseFeatureSink {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(labelCol)) {
+			if (Strings.isNullOrEmpty(labelCol)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the label value must not be empty.",
 								this.getClass().getName()));

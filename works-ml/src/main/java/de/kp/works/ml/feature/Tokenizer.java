@@ -148,7 +148,7 @@ public class Tokenizer extends BaseFeatureCompute {
 		
 		public void validate() {
 			super.validate();
-			if (!Strings.isNullOrEmpty(pattern)) {
+			if (Strings.isNullOrEmpty(pattern)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The regex pattern must not be empty.",
 								this.getClass().getName()));

@@ -176,7 +176,7 @@ public class TsDecompose extends TimeCompute {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(groupCol))
+			if (Strings.isNullOrEmpty(groupCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that is used for grouping must not be empty.", this.getClass().getName()));
 			

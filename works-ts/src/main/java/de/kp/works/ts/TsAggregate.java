@@ -118,7 +118,7 @@ public class TsAggregate extends TimeCompute {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(windowDuration)) {
+			if (Strings.isNullOrEmpty(windowDuration)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The window duration must not be empty.", this.getClass().getName()));
 			}

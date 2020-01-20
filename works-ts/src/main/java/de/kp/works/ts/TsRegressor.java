@@ -260,12 +260,12 @@ public class TsRegressor extends TimeSink {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(modelName)) {
+			if (Strings.isNullOrEmpty(modelName)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 			}
 
-			if (!Strings.isNullOrEmpty(timeSplit)) {
+			if (Strings.isNullOrEmpty(timeSplit)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The time split must not be empty.", this.getClass().getName()));
 			}

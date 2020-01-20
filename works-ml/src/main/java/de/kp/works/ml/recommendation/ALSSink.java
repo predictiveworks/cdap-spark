@@ -305,7 +305,7 @@ public class ALSSink extends RecommenderSink {
 		public void validate() {
 			super.validate();
 
-			if (!Strings.isNullOrEmpty(dataSplit)) {
+			if (Strings.isNullOrEmpty(dataSplit)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The data split must not be empty.",
 								this.getClass().getName()));

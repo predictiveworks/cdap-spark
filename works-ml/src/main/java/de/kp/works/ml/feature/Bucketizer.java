@@ -176,7 +176,7 @@ public class Bucketizer extends BaseFeatureCompute {
 		public void validate() {
 			super.validate();
 			
-			if (!Strings.isNullOrEmpty(splits)) {
+			if (Strings.isNullOrEmpty(splits)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The split points must not be empty.", this.getClass().getName()));
 			}
