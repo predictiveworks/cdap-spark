@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseTimeCompute;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.core.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsResample")
-@Description("A timeseries resampling stage that turns a sparse time series into equidistant time grid. Resampling may lead to missing values for intermediate "
+@Description("A time series resampling stage that turns a sparse time series into equidistant time grid. Resampling may lead to missing values for intermediate "
 		+ "points in time. ")
 
-public class TsResample extends BaseTimeCompute {
+public class TsResample extends TimeCompute {
 
 	private static final long serialVersionUID = 2602057748184161616L;
 
@@ -67,7 +67,7 @@ public class TsResample extends BaseTimeCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.valueCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}

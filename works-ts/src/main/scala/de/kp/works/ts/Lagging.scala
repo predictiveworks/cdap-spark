@@ -49,8 +49,8 @@ trait TimeLaggingParams extends TimeParams {
       "The number of past points of time to take into account for vectorization.", (value:Int) => true)
 
   final val laggingType = new Param[String](this, "laggingType",
-    "The selector type of the lagging algorithm. Supported values are: 'featuresOnly' and 'featuresAndLabels'.",
-    ParamValidators.inArray[String](Array("featuresOnly", "featuresAndLabels")))
+    "The selector type of the lagging algorithm. Supported values are: 'features', 'pastFeatures' and 'featuresAndLabels'.",
+    ParamValidators.inArray[String](Array("features", "pastFeatures", "featuresAndLabels")))
       
   /** @group setParam */
   def setFeaturesCol(value:String): this.type = set(featuresCol, value)
@@ -139,7 +139,22 @@ class Lagging(override val uid: String) extends Transformer with TimeLaggingPara
        * Specify a window with lag values as we only want to
        * take feature vector (lag) into account
        */
-      val spec = Window.partitionBy().rowsBetween(-k, -1)
+      val spec = if ($(laggingType) == "pastFeatures")
+        /*
+         * In this case, we exclude the current point in time;
+         * this is implemented to build testsets for model
+         * evaluation without data leakage
+         */
+        Window.partitionBy().rowsBetween(-k, -1)
+      
+      else
+        /*
+         * This case is for predicting purposes to retrieve
+         * the next point in time that follows the current
+         * one
+         */
+        Window.partitionBy().rowsBetween(-(k-1), 0)
+        
       /*
        * User defined function to transform lag window into
        * a feature vector

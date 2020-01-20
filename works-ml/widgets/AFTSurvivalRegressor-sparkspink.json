@@ -34,7 +34,7 @@
         {
           "widget-type": "textbox",
           "label": "Data Split",
-          "name": "datasSplit",
+          "name": "dataSplit",
           "widget-attributes": {
             "default": "70:30"
           }

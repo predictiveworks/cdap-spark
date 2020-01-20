@@ -137,7 +137,7 @@ public class TsRegressor extends TimeSink {
 	     * Features are built from the past k values;
 	     * the current value is excluded from lagging
 	     */
-		lagging.setLaggingType("featuresOnly");		
+		lagging.setLaggingType("pastFeatures");		
 	    Dataset<Row> testset = lagging.transform(splitted[1]);
 	    
 	    /* STEP #3: Train Random Forest regression model */
@@ -186,7 +186,7 @@ public class TsRegressor extends TimeSink {
 
 		private static final long serialVersionUID = -2466365568045974575L;
 
-		@Description("The unique name of the regressor model.")
+		@Description("The unique name of the time prediction (regression) model.")
 		@Macro
 		public String modelName;
 

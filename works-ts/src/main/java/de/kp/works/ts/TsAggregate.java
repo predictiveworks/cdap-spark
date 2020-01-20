@@ -33,13 +33,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseTimeCompute;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.core.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAggregate")
-@Description("A timeseries aggregation stage that leverages a tumbling window.")
-public class TsAggregate extends BaseTimeCompute {
+@Description("A time series aggregation stage that leverages a tumbling window.")
+public class TsAggregate extends TimeCompute {
 
 	private static final long serialVersionUID = 404643815476832744L;
 
@@ -65,7 +65,7 @@ public class TsAggregate extends BaseTimeCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.valueCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}

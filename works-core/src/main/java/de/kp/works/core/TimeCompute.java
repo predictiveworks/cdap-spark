@@ -23,7 +23,7 @@ import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
 
-public class BaseTimeCompute extends BaseCompute {
+public class TimeCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -1433147745214918467L;
 	/*
@@ -59,21 +59,20 @@ public class BaseTimeCompute extends BaseCompute {
 					.format("[%s] The input schema must contain the field that defines the value.", className));
 		}
 
-		Schema.Type labelType = valueCol.getSchema().getType();
+		Schema.Type valueType = valueCol.getSchema().getType();
 		/*
 		 * The value field must be a numeric data type (double, float, int, long), which then
 		 * is casted to Double (see classification trainer)
 		 */
-		if (isNumericType(labelType) == false) {
+		if (isNumericType(valueType) == false) {
 			throw new IllegalArgumentException("The data type of the value field must be numeric.");
 		}
 	}
 
 	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
+	 * The value data type is changed to DOUBLE
 	 */
-	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
+	protected Schema getOutputSchema(Schema inputSchema) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
 		for (Schema.Field field: inputSchema.getFields()) {

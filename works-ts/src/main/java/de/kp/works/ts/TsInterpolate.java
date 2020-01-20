@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseTimeCompute;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.core.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsInterpolate")
-@Description("A timeseries interpolation stage that adds missing values. This stage interpolates missing values "
+@Description("A time series interpolation stage that adds missing values. This stage interpolates missing values "
 		+ "from the last non-null value before and the first on-null value after the respective null value.")
-public class TsInterpolate extends BaseTimeCompute {
+public class TsInterpolate extends TimeCompute {
 
 	private static final long serialVersionUID = -25164752921823527L;
 
@@ -66,7 +66,7 @@ public class TsInterpolate extends BaseTimeCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.valueCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}

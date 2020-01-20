@@ -199,7 +199,8 @@ class STL(override val uid: String) extends Transformer with STLParams {
 
           }
           
-          /* Apply LOESS smoothing */
+          /* Apply LOESS smoothing to each subseries of the original time series */
+          
           var subSeriesAsArray = subSeries.toArray
           var subRobustnesssAsArray = subRobustness.toArray
 
