@@ -20,6 +20,7 @@ package de.kp.works.text;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -70,34 +71,27 @@ public class DocumentAssembler extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		
-		com.johnsnowlabs.nlp.DocumentAssembler assembler = new com.johnsnowlabs.nlp.DocumentAssembler();
-		assembler.setInputCol(config.textCol);
-		assembler.setOutputCol(config.annotationCol);
-		
-		Dataset<Row> transformed = assembler.transform(source);
-		/*
-		 * The Document Assembler enriches the source with a column
-		 * that contains initial annotations specified in an Annotation
-		 * data type; as this data type is not compliant wht CDAP data
-		 * pipelines, the annotations are serialized before returning
-		 * the result
-		 */
-		return AnnotationUtils.serializeAnnotations(transformed, config.annotationCol);
+
+		Properties props = new Properties();
+		props.setProperty("intput.col", config.inputCol);
+		props.setProperty("output.col", config.outputCol);
+
+		return NLP.assembleDocument(source, props);
+
 	}
 	
 	@Override
 	public void validateSchema() {
 		
-		/** TEXT COLUMN **/
+		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.textCol);
+		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
 		}
 
-		isString(config.textCol);
+		isString(config.inputCol);
 		
 	}
 	
@@ -105,7 +99,7 @@ public class DocumentAssembler extends BaseCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(config.annotationCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
@@ -120,21 +114,21 @@ public class DocumentAssembler extends BaseCompute {
 
 		@Description("The name of the field in the input schema that contains the text to annotate.")
 		@Macro
-		public String textCol;
+		public String inputCol;
 
 		@Description("The name of the field in the output schema that contains the text annotations.")
 		@Macro
-		public String annotationCol;
+		public String outputCol;
 		
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(textCol))
+			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the text must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(textCol))
+			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the annotations must not be empty.",
 								this.getClass().getName()));
