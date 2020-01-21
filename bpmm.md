@@ -87,6 +87,8 @@ Companies at this maturity level benefit from [Predictive Works.](https://predic
 * SQL Queries, and
 * Text Analysis.
 
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/visual-analytics.png" width="800" alt="Visual Analytics">
+
 Companies can use these pre-built analytics plugins to visually orchestrate their data workflows based on either CDAP's visual pipeline studio or, as an alternative, Predictive Works. template studio (editor).
 
 At maturity level 3, companies understand that data pipelines specify *what they do with their data* and manifest a huge treasure of business knowledge.

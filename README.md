@@ -36,6 +36,9 @@ CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The pictur
 
 **CDAP Spark** is an open-source analytics extension to Google [CDAP](https://cdap.io) and built with the aim to support code-free visual analytics with a comprehensive set of plugins.
 
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/visual-analytics.png" width="800" alt="Visual Analytics">
+
+
 ### Why not use Seahorse Visual Spark?
 
 [Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
