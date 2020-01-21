@@ -36,13 +36,21 @@ object AnnotationUtils extends Serializable {
 
   private val gson = new Gson()
   private	val jsonType = new TypeToken[JMap[String, Object]](){}.getType()
+
+  private val outputAnnotatorType = "document"
   
   def serializeAnnotations(dataset:Dataset[Row], annotationCol:String):Dataset[Row] = {
      dataset.withColumn(annotationCol, toGson(col(annotationCol)))
   }
   
   def deserializeAnnotations(dataset:Dataset[Row], annotationCol:String):Dataset[Row] = {
-     dataset.withColumn(annotationCol, fromGson(col(annotationCol)))
+    
+    val metadataBuilder = new MetadataBuilder()
+    metadataBuilder.putString("annotatorType", outputAnnotatorType)
+    
+    val metadata = metadataBuilder.build()    
+    dataset.withColumn(annotationCol, fromGson(col(annotationCol)).as("_", metadata))
+  
   }
   
   /*
@@ -90,7 +98,17 @@ object AnnotationUtils extends Serializable {
     }).toArray
     
   }
-
+/*
+ *   /** requirement for pipeline transformation validation. It is called on fit() */
+  override final def transformSchema(schema: StructType): StructType = {
+    val metadataBuilder: MetadataBuilder = new MetadataBuilder()
+    metadataBuilder.putString("annotatorType", outputAnnotatorType)
+    val outputFields = schema.fields :+
+      StructField(getOutputCol, ArrayType(Annotation.dataType), nullable = false, metadataBuilder.build)
+    StructType(outputFields)
+  }
+ * 
+ */
   def fromGson = udf(gson2Row _, DataTypes.createArrayType(com.johnsnowlabs.nlp.Annotation.dataType))
    
 }

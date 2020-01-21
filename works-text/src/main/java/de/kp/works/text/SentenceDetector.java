@@ -40,19 +40,20 @@ import de.kp.works.core.BaseCompute;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("DocumentAssembler")
-@Description("A transformation stage that leverages the Spark NLP Document Assembler to map an input "
-		+ "text field into a document field, preparing it for further NLP annotations.")
-public class DocumentAssembler extends BaseCompute {
+@Name("SentenceAssembler")
+@Description("A transformation stage that leverages the Spark NLP Sentence Detector to map an input "
+		+ "text field with document annotations into an output field that contains detected sentences.")
+public class SentenceDetector extends BaseCompute {
 
-	private static final long serialVersionUID = 5882041999274662218L;
+	private static final long serialVersionUID = 3247150334409546416L;
 
-	private DocumentAssemblerConfig config;
-
-	public DocumentAssembler(DocumentAssemblerConfig config) {
+	private SentenceDetectorConfig config;
+	
+	public SentenceDetector(SentenceDetectorConfig config) {
 		this.config = config;
 	}
 	
+
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
@@ -80,7 +81,7 @@ public class DocumentAssembler extends BaseCompute {
 		props.setProperty("intput.col", config.inputCol);
 		props.setProperty("output.col", config.outputCol);
 
-		return NLP.assembleDocument(source, props);
+		return NLP.detectSentence(source, props);
 
 	}
 	
@@ -92,7 +93,7 @@ public class DocumentAssembler extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the document annotations.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -108,19 +109,15 @@ public class DocumentAssembler extends BaseCompute {
 
 	}	
 	
-	public static class DocumentAssemblerConfig extends BaseConfig {
-		/*
-		 * The DocumentAssembler operate with cleanUp mode 'disabled' to keep 
-		 * the original text as we expect that the user needs to head back to 
-		 * source
-		 */
-		private static final long serialVersionUID = 6075596749044302438L;
+	public static class SentenceDetectorConfig extends BaseConfig {
 
-		@Description("The name of the field in the input schema that contains the text to annotate.")
+		private static final long serialVersionUID = -5774189361422297178L;
+
+		@Description("The name of the field in the input schema that contains the document annotations.")
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the text annotations.")
+		@Description("The name of the field in the output schema that contains the sentence annotations.")
 		@Macro
 		public String outputCol;
 		
@@ -129,7 +126,7 @@ public class DocumentAssembler extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the text must not be empty.",
+						String.format("[%s] The name of the field that contains the document annotations must not be empty.",
 								this.getClass().getName()));
 			
 			if (Strings.isNullOrEmpty(inputCol))
