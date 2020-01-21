@@ -77,7 +77,7 @@ public class DocumentAssembler extends BaseCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Properties props = new Properties();
-		props.setProperty("intput.col", config.inputCol);
+		props.setProperty("input.col", config.inputCol);
 		props.setProperty("output.col", config.outputCol);
 
 		return NLP.assembleDocument(source, props);
@@ -120,7 +120,7 @@ public class DocumentAssembler extends BaseCompute {
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the text annotations.")
+		@Description("The name of the field in the output schema that contains the document annotations.")
 		@Macro
 		public String outputCol;
 		
@@ -134,7 +134,7 @@ public class DocumentAssembler extends BaseCompute {
 			
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the document annotations must not be empty.",
 								this.getClass().getName()));
 			
 		}

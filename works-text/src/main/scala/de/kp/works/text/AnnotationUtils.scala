@@ -36,20 +36,18 @@ object AnnotationUtils extends Serializable {
 
   private val gson = new Gson()
   private	val jsonType = new TypeToken[JMap[String, Object]](){}.getType()
-
-  private val outputAnnotatorType = "document"
   
   def serializeAnnotations(dataset:Dataset[Row], annotationCol:String):Dataset[Row] = {
      dataset.withColumn(annotationCol, toGson(col(annotationCol)))
   }
   
-  def deserializeAnnotations(dataset:Dataset[Row], annotationCol:String):Dataset[Row] = {
+  def deserializeAnnotations(dataset:Dataset[Row], annotationCol:String, tempCol:String, annotatorType:String="document"):Dataset[Row] = {
     
     val metadataBuilder = new MetadataBuilder()
-    metadataBuilder.putString("annotatorType", outputAnnotatorType)
+    metadataBuilder.putString("annotatorType", annotatorType)
     
     val metadata = metadataBuilder.build()    
-    dataset.withColumn(annotationCol, fromGson(col(annotationCol)).as("_", metadata))
+    dataset.withColumn(tempCol, fromGson(col(annotationCol)).as("_", metadata))
   
   }
   

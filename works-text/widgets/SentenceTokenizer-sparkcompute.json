@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Document Assembler",
+"display-name": "Sentence Tokenizer",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -13,12 +13,12 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
+          "label": "Sentence Field",
           "name": "inputCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Document Field",
+          "label": "Token Field",
           "name": "outputCol"
         }
       ]

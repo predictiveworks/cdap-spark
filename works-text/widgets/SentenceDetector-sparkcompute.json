@@ -13,12 +13,12 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
+          "label": "Document Field",
           "name": "inputCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Annotation Field",
+          "label": "Sentence Field",
           "name": "outputCol"
         }
       ]
