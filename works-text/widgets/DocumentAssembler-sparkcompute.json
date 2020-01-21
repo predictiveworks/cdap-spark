@@ -1,0 +1,27 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Document Assembler",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Annotation Field",
+          "name": "annotationCol"
+        }
+      ]
+    }
+  ]
+}
