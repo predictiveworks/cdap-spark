@@ -21,13 +21,11 @@ package de.kp.works.ml.regression;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -80,6 +78,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		String censorCol = regressorConfig.censorCol;
 		
 		Map<String, Object> params = regressorConfig.getParamsAsMap();
+		String paramsJson = regressorConfig.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -103,37 +102,18 @@ public class AFTSurvivalRegressor extends RegressorSink {
 
 	    AFTSurvivalRegressionModel model = trainer.train(trainset, vectorCol, labelCol, censorCol, params);
 		/*
-		 * STEP #2: Compute accuracy of the trained regression
-		 * model
+		 * STEP #2: Evaluate regression model and compute
+		 * approved list of metrics
 		 */
 	    String predictionCol = "_prediction";
 	    model.setPredictionCol(predictionCol);
 
-	    Dataset<Row> predictions = model.transform(testset);
-
-	    RegressionEvaluator evaluator = new RegressionEvaluator();
-	    evaluator.setLabelCol(labelCol);
-	    evaluator.setPredictionCol(predictionCol);
-	    
-	    String metricName = "rmse";
-	    evaluator.setMetricName(metricName);
-	    
-	    double accuracy = evaluator.evaluate(predictions);
+	    Dataset<Row> predictions = model.transform(testset);	    
+	    String metricsJson = Evaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
-		 * The accuracy coefficent is specified as JSON metrics for
-		 * this regression model and stored by the AFTSurvivalRegressorManager
-		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
-		metrics.put("name", metricName);
-		metrics.put("coefficient", accuracy);
-		/*
-		 * STEP #3: Store trained regression model including its associated
-		 * parameters and metrics
-		 */
-		String paramsJson = regressorConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
-		
+		 * STEP #3: Store trained regression model including
+		 * its associated parameters and metrics
+		 */		
 		String modelName = regressorConfig.modelName;
 		new AFTSurvivalRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 

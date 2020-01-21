@@ -52,7 +52,7 @@ To put it on a more conceptual level (see Gartner's Analytics Continuum): The BP
 * What will happen?
 * How can we make it happen?
 
-At the heart of each process that transforms data into valuable business insights and foresights is a single conceptual kernel:  a data workflow or pipeline. This concept is supported by almost all existing data solutions & engines. 
+At the heart of each process that transforms data into valuable business insights and foresights is a single conceptual kernel: a data workflow or pipeline. This concept is supported by almost all existing data solutions & engines. 
 
 Solutions for complex event processing of real-time events, machine learning, deep learning and more all support the (programmatic) implementation of data pipelines, **but individually**.  
 
