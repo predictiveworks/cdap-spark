@@ -1,0 +1,38 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "ALS Predictor",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "User Field",
+          "name": "userCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Item Field",
+          "name": "itemCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Prediction Field",
+          "name": "predictionCol"
+        }
+      ]
+    }
+  ]
+}
+

@@ -195,17 +195,9 @@ public class ALSSink extends RecommenderSink {
 
 	}
 	
-	public static class ALSSinkConfig extends RecommenderConfig {
+	public static class ALSSinkConfig extends ALSConfig {
 
 		private static final long serialVersionUID = 1963471261850453801L;
-
-		@Description("The name of the input field that defines the user identifiers. The values must be within the integer value range.")
-		@Macro
-		public String userCol;
-
-		@Description("The name of the input field that defines the item identifiers. The values must be within the integer value range.")
-		@Macro
-		public String itemCol;
 
 		@Description("The name of the input field that defines the item ratings. The values must be within the integer value range.")
 		@Macro
@@ -304,6 +296,11 @@ public class ALSSink extends RecommenderSink {
 		
 		public void validate() {
 			super.validate();
+			
+			if (Strings.isNullOrEmpty(ratingCol))
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the item ratings must not be empty.",
+								this.getClass().getName()));
 
 			if (Strings.isNullOrEmpty(dataSplit)) {
 				throw new IllegalArgumentException(
