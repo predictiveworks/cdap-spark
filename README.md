@@ -78,4 +78,5 @@ Drools business rules can be used with batch and stream pipelines, and, in the c
 
 ### Works Text
 
-**Works Text** complements Apache Spark with text analysis algorithms and also externalizes them as plugins for Google CDAP data pipelines.
+**Works Text** integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines.
+
