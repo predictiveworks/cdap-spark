@@ -40,15 +40,18 @@ import de.kp.works.core.BaseCompute;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("SentenceTokenizer")
-@Description("A transformation stage that leverages the Spark NLP Tokenizer to map an input "
-		+ "text field with sentence annotations into an output field that contains detected sentence tokens.")
-public class SentenceTokenizer extends BaseCompute {
+@Name("TokenNormalizer")
+@Description("A transformation stage that leverages the Spark NLP Normalizer to map an input "
+		+ "text field with token annotations into an output field that contains normalized "
+		+ "tokens. The Normalizer will clean up each token, taking as input column token out "
+		+ "from the Tokenizer, and putting normalized tokens in the normal column. Cleaning up"
+		+ "includes removing any non-character strings.")
+public class TokenNormalizer extends BaseCompute {
 
-	private static final long serialVersionUID = 1439261525993214062L;
-	private SentenceTokenizerConfig config;
+	private static final long serialVersionUID = 7292639821710358852L;
+	private TokenNormalizerConfig config;
 	
-	public SentenceTokenizer(SentenceTokenizerConfig config) {
+	public TokenNormalizer(TokenNormalizerConfig config) {
 		this.config = config;
 	}
 	
@@ -80,7 +83,7 @@ public class SentenceTokenizer extends BaseCompute {
 		props.setProperty("input.col", config.inputCol);
 		props.setProperty("output.col", config.outputCol);
 
-		return NLP.tokenize(source, props, true);
+		return NLP.normalizeToken(source, props, true);
 
 	}
 	
@@ -92,7 +95,7 @@ public class SentenceTokenizer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentence annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the token annotations.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -108,15 +111,18 @@ public class SentenceTokenizer extends BaseCompute {
 
 	}	
 	
-	public static class SentenceTokenizerConfig extends BaseConfig {
+	public static class TokenNormalizerConfig extends BaseConfig {
 
-		private static final long serialVersionUID = 1L;
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -2180450887445343238L;
 
-		@Description("The name of the field in the input schema that contains the sentence annotations.")
+		@Description("The name of the field in the input schema that contains the token annotations.")
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the token annotations.")
+		@Description("The name of the field in the output schema that contains the normalized token annotations.")
 		@Macro
 		public String outputCol;
 		
@@ -125,12 +131,12 @@ public class SentenceTokenizer extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the sentence annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
 								this.getClass().getName()));
 			
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the normalized token annotations must not be empty.",
 								this.getClass().getName()));
 			
 		}
