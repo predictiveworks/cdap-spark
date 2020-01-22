@@ -25,8 +25,6 @@ import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.gson.Gson;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -35,6 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
+import de.kp.works.ml.regression.Evaluator;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -83,7 +82,9 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		 * STEP #1: Extract parameters and train Bisecting KMeans model
 		 */
 		String featuresCol = clusterConfig.featuresCol;
+
 		Map<String, Object> params = clusterConfig.getParamsAsMap();
+		String paramsJson = clusterConfig.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -110,31 +111,11 @@ public class BisectingKMeansSink extends BaseClusterSink {
 		 * The Clustering evaluator computes the silhouette coefficent of the computed
 		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
-		ClusteringEvaluator evaluator = new ClusteringEvaluator();
-
-		evaluator.setPredictionCol(predictionCol);
-		evaluator.setVectorCol(vectorCol);
-
-		evaluator.setMetricName("silhouette");
-		evaluator.setDistanceMeasure("squaredEuclidean");
-
-		Double coefficent = evaluator.evaluate(predictions);
-		/*
-		 * The silhouette coefficent is specified as JSON metrics for this Bisecting 
-		 * KMeans model and stored by the Bisecting KMeans manager
-		 */
-		Map<String, Object> metrics = new HashMap<>();
-
-		metrics.put("name", "silhouette");
-		metrics.put("measure", "squaredEuclidean");
-		metrics.put("coefficient", coefficent);
+	    String metricsJson = Evaluator.evaluate(predictions, vectorCol, predictionCol);
 		/*
 		 * STEP #3: Store trained Bisecting KMeans model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = clusterConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
-
 		String modelName = clusterConfig.modelName;
 		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 

@@ -25,8 +25,6 @@ import org.apache.spark.ml.clustering.GaussianMixtureModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.gson.Gson;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -35,6 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
+import de.kp.works.ml.regression.Evaluator;
 import de.kp.works.core.BaseClusterSink;
 
 @Plugin(type = "sparksink")
@@ -75,7 +74,9 @@ public class GaussianMixtureSink extends BaseClusterSink {
 		 * STEP #1: Extract parameters and train Gaussian Mixture model
 		 */
 		String featuresCol = clusterConfig.featuresCol;
+
 		Map<String, Object> params = clusterConfig.getParamsAsMap();
+		String paramsJson = clusterConfig.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -102,31 +103,11 @@ public class GaussianMixtureSink extends BaseClusterSink {
 		 * The Clustering evaluator computes the silhouette coefficent of the computed
 		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
-		ClusteringEvaluator evaluator = new ClusteringEvaluator();
-
-		evaluator.setPredictionCol(predictionCol);
-		evaluator.setVectorCol(vectorCol);
-
-		evaluator.setMetricName("silhouette");
-		evaluator.setDistanceMeasure("squaredEuclidean");
-
-		Double coefficent = evaluator.evaluate(predictions);
-		/*
-		 * The silhouette coefficent is specified as JSON metrics for this Gaussian
-		 * Mixture model and stored by the Gaussian Mixture manager
-		 */
-		Map<String, Object> metrics = new HashMap<>();
-
-		metrics.put("name", "silhouette");
-		metrics.put("measure", "squaredEuclidean");
-		metrics.put("coefficient", coefficent);
+	    String metricsJson = Evaluator.evaluate(predictions, vectorCol, predictionCol);
 		/*
 		 * STEP #3: Store trained Gaussian Mixture model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = clusterConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
-
 		String modelName = clusterConfig.modelName;
 		new GaussianMixtureManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
