@@ -26,7 +26,6 @@ import org.apache.spark.ml.Transformer
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
-import org.apache.spark.sql.expressions.UserDefinedFunction
 
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._

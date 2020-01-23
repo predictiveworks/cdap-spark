@@ -29,7 +29,12 @@ import co.cask.cdap.etl.api.batch.SparkPluginContext;
  * [SparkMLManager] defines the entry point for Apache Spark based model
  * management; the current version supports the following Spark native models:
  * 
- * - classification - clustering - recommendation - regression - timeseries
+ * - classification 
+ * - clustering 
+ * - recommendation 
+ * - regression 
+ * - textanalysis
+ * - timeseries
  *
  */
 public class SparkMLManager {
@@ -110,6 +115,22 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String REGRESSION_FS_BASE = "models/regression/";
+	
+	/*
+	 * The model of the internal dataset that is used to persist metadata with
+	 * respect to text analysis models.
+	 */
+	public static String TEXTANALYSIS_META = "textanalysisMeta";
+	/*
+	 * The fileset name of the internal fileset that is used to store text analysis
+	 * models
+	 */
+	public static String TEXTANALYSIS_FS = "textanalysisFs";
+	/*
+	 * Note, we do NOT specify an absolute base path (begins with /) as this would
+	 * be interpreted as an absolute path in the file system
+	 */
+	public static String TEXTANALYSIS_FS_BASE = "models/textanalysis/";
 	/*
 	 * The model of the internal dataset that is used to persist metadata with
 	 * respect to time series models.
@@ -491,6 +512,79 @@ public class SparkMLManager {
 
 	}
 
+	/***** TEXT ANALYSIS *****/
+
+	public static FileSet getTextanalysisFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+
+		if (context.datasetExists(TEXTANALYSIS_FS) == false)
+			throw new Exception("Fileset to store text analysis model components does not exist.");
+
+		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
+		return fs;
+
+	}
+
+	public static FileSet getTextanalysisFS(SparkExecutionPluginContext context)
+			throws DatasetManagementException, Exception {
+
+		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
+		return fs;
+
+	}
+
+	public static Table getTextanalysisMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+
+		if (context.datasetExists(TEXTANALYSIS_META) == false)
+			throw new Exception("Table to store text analysis model metadata does not exist.");
+
+		Table table = context.getDataset(TEXTANALYSIS_META);
+		return table;
+
+	}
+
+	public static Table getTextanalysisMeta(SparkExecutionPluginContext context)
+			throws DatasetManagementException, Exception {
+
+		Table table = context.getDataset(TEXTANALYSIS_META);
+		return table;
+
+	}
+
+	public static void createTextanalysisIfNotExists(SparkPluginContext context) throws DatasetManagementException {
+
+		if (context.datasetExists(TEXTANALYSIS_FS) == false) {
+			/*
+			 * The text analysis fileset does not exist yet; this path is relative to the data
+			 * directory of the CDAP namespace in which the FileSet is created.
+			 * 
+			 * Note, we do NOT specify an absolute base path (begins with /) as this would
+			 * be interpreted as an absolute path in the file system
+			 */
+			context.createDataset(TEXTANALYSIS_FS, FileSet.class.getName(),
+					FileSetProperties.builder().setBasePath(TEXTANALYSIS_FS_BASE).build());
+		}
+
+		if (context.datasetExists(TEXTANALYSIS_META) == false) {
+			/*
+			 * This is the first time, that we train a text analysis model; therefore, the
+			 * associated metadata dataset has to be created
+			 */
+			Schema metaSchema = createMetaSchema("textanalysisSchema");
+			/*
+			 * Create a CDAP table with the schema provided
+			 */
+			TableProperties.Builder builder = TableProperties.builder();
+			builder.setDescription(
+					"This table contains a timeseries of metadata information about Predictive Works text analysis models.");
+			builder.setSchema(metaSchema);
+
+			context.createDataset(TEXTANALYSIS_META, Table.class.getName(), builder.build());
+
+		}
+		;
+
+	}
+	
 	/***** TIMESERIES *****/
 
 	public static FileSet getTimeseriesFS(SparkPluginContext context) throws DatasetManagementException, Exception {
