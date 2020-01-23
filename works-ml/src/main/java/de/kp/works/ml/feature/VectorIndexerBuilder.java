@@ -34,13 +34,13 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = "sparksink")
 @Name("VectorIndexerBuilder")
 @Description("A building stage for an Apache Spark based Vector Indexer model.")
-public class VectorIndexerBuilder extends BaseFeatureSink {
+public class VectorIndexerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -2349583466809428065L;
 

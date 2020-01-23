@@ -43,13 +43,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = "sparksink")
 @Name("ScalerBuilder")
 @Description("A building stage for an Apache Spark based feature scaling model. Supported models are Min-Max, Max-Abs and Standard Scaler.")
-public class ScalerBuilder extends BaseFeatureSink {
+public class ScalerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -7301919602186472418L;
 

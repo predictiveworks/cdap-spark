@@ -39,12 +39,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("CountVecBuilder")
 @Description("A building stage for an Apache Spark based CountVectorizer model.")
-public class CountVecBuilder extends BaseFeatureSink {
+public class CountVecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 2389361295065144103L;
 

@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("GBTClassifer")
 @Description("A building stage for an Apache Spark based Gradient-Boosted Trees classifier model.")
-public class GBTClassifier extends BaseClassifierSink {
+public class GBTClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = 2970318408059323693L;
 

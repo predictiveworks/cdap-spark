@@ -46,7 +46,7 @@ object SAEvaluator {
    * - mean absolute error (mae)
    * - r^2 metric (r2)
    */
-  def evaluate(predictions: Dataset[Row], sentimentCol: String, predictionCol: String): String = {
+  def evaluate(predictions: Dataset[_], sentimentCol: String, predictionCol: String): String = {
     
     /*
      * Transform sentiment into indices
@@ -77,7 +77,7 @@ object SAEvaluator {
     metricNames.foreach(metricName => {
 
       evaluator.setMetricName(metricName)
-      val value = evaluator.evaluate(predictions)
+      val value = evaluator.evaluate(indexed)
 
       metrics.put(metricName, value.asInstanceOf[AnyRef])
 

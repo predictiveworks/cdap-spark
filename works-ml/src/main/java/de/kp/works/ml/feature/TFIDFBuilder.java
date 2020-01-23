@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("TFIDFBuilder")
 @Description("A building stage for an Apache Spark based TF-IDF feature model.")
-public class TFIDFBuilder extends BaseFeatureSink {
+public class TFIDFBuilder extends FeatureSink {
 	/*
 	 * This model builder trains a text model that is used to transform
 	 * a sequence of words (sentence) into its feature vector.

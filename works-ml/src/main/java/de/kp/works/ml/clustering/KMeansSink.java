@@ -37,12 +37,12 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
 import de.kp.works.ml.regression.Evaluator;
-import de.kp.works.core.BaseClusterSink;
+import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("KMeansSink")
 @Description("A building stage for an Apache Spark based KMeans clustering model.")
-public class KMeansSink extends BaseClusterSink {
+public class KMeansSink extends ClusterSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;
 

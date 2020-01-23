@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("BucketedLSHBuilder")
 @Description("A building stage for an Apache Spark based Bucketed Random Projection LSH model.")
-public class BucketedLSHBuilder extends BaseFeatureSink {
+public class BucketedLSHBuilder extends FeatureSink {
 	/*
 	 * Bucketed Random Projection is an LSH family for Euclidean distance. 
 	 * Its LSH family projects feature vectors x onto a random unit vector v 

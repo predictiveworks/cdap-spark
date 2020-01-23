@@ -37,13 +37,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = "sparksink")
 @Name("ChiSquaredBuilder")
 @Description("A building stage for an Apache Spark based Chi-Squared Selector model.")
-public class ChiSquaredBuilder extends BaseFeatureSink {
+public class ChiSquaredBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -5551497359106054161L;
 

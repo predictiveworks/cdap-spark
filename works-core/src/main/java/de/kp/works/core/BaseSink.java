@@ -22,12 +22,20 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkSink;
 
 public abstract class BaseSink extends SparkSink<StructuredRecord> {
 
 	private static final long serialVersionUID = -4938491756852655492L;
+	/*
+	 * Reference to fileset & table for model specific 
+	 * information
+	 */
+	protected FileSet modelFs;
+	protected Table modelMeta;
 
 	protected String className;
 	/*

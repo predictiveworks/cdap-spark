@@ -1,4 +1,11 @@
-package de.kp.works.core;
+package de.kp.works.text.sentiment;
+
+import com.google.common.base.Strings;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.BaseConfig;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,42 +25,31 @@ package de.kp.works.core;
  * 
  */
 
-import com.google.common.base.Strings;
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.hydrator.common.Constants;
+public class BaseSentimentConfig extends BaseConfig {
 
-public class BaseFeatureModelConfig extends BaseConfig {
+	private static final long serialVersionUID = -5971941200750995084L;
 
-	private static final long serialVersionUID = 4822101162876650081L;
-
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
-
-	@Description("The unique name of the feature model.")
+	@Description("The unique name of the sentiment analysis model.")
 	@Macro
 	public String modelName;
 
-	@Description("The name of the field in the input schema that contains the features to build the model from.")
+	@Description("The name of the field in the input schema that contains the document.")
 	@Macro
-	public String inputCol;
+	public String textCol;
 
 	public void validate() {
 		super.validate();
 
-		/** MODEL & COLUMNS **/
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
-		if (Strings.isNullOrEmpty(inputCol)) {
+
+		if (Strings.isNullOrEmpty(textCol)) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the features must not be empty.",
+					String.format("[%s] The name of the field that contains the document must not be empty.",
 							this.getClass().getName()));
 		}
-
+		
 	}
-
 }

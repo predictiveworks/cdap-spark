@@ -38,12 +38,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
-import de.kp.works.core.BaseClusterSink;
+import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("LDASink")
 @Description("A building stage for an Apache Spark based Latent Dirichlet Allocation clustering model.")
-public class LDASink extends BaseClusterSink {
+public class LDASink extends ClusterSink {
 
 	private static final long serialVersionUID = 7607102103139502481L;
 

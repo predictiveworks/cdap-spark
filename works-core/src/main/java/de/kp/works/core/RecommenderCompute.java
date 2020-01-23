@@ -22,15 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 
 public class RecommenderCompute extends BaseCompute {
 
 	private static final long serialVersionUID = 1944699231227314308L;
-
-	protected FileSet modelFs;
-	protected Table modelMeta;
 
 	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
 	}

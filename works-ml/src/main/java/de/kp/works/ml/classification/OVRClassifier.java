@@ -33,12 +33,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("OVRClassifer")
 @Description("A building stage for an Apache Spark based OneVsRest classifier model.")
-public class OVRClassifier extends BaseClassifierSink {
+public class OVRClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = 3428241323322243511L;
 	

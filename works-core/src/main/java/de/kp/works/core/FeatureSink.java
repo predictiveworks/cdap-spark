@@ -30,17 +30,13 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.ml.SparkMLManager;
 
-public class TimeSink extends BaseSink {
+public class FeatureSink extends BaseSink {
 
-	private static final long serialVersionUID = 629771603199297288L;
-	
-	protected TimeConfig config;
+	private static final long serialVersionUID = 3329726642087575850L;
 
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		throw new Exception("[TimeSink] method not implemented.");
-	}
+	protected BaseFeatureModelConfig config;
 
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
@@ -74,37 +70,30 @@ public class TimeSink extends BaseSink {
 
 	}
 
-	public void validateSchema(Schema inputSchema, TimeConfig config) {
-
-		/** TIME COLUMN **/
-
-		Schema.Field timeCol = inputSchema.getField(config.timeCol);
-		if (timeCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the time value.", className));
-		}
-
-		Schema.Type timeType = timeCol.getSchema().getType();
-		if (isTimeType(timeType) == false) {
-			throw new IllegalArgumentException("The data type of the time value field must be LONG.");
-		}
-
-		/** VALUE COLUMN **/
-
-		Schema.Field valueCol = inputSchema.getField(config.valueCol);
-		if (valueCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the value.", className));
-		}
-
-		Schema.Type valueType = valueCol.getSchema().getType();
+	@Override
+	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * The value must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
+		 * Feature model components and metadata are persisted in a CDAP FileSet
+		 * as well as a Table; at this stage, we have to make sure that these internal
+		 * metadata structures are present
 		 */
-		if (isNumericType(valueType) == false) {
-			throw new IllegalArgumentException("The data type of the value field must be MUMERIC.");
-		}
+		SparkMLManager.createFeatureIfNotExists(context);
+		/*
+		 * Retrieve feature specified dataset for later use incompute
+		 */
+		modelFs = SparkMLManager.getFeatureFS(context);
+		modelMeta = SparkMLManager.getFeatureMeta(context);
 	}
 
+	protected void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+
+		/** INPUT COLUMN **/
+
+		Schema.Field inputCol = inputSchema.getField(config.inputCol);
+		if (inputCol == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the features.", className));
+		}
+	}
+	
 }

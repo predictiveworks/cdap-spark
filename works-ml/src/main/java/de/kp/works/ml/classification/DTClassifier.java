@@ -36,13 +36,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("DTClassifer")
 @Description("A building stage for an Apache Spark based Decision Tree classifier model. This stages expects a dataset that contains at least 2 fields to train the classifier model: "
 		+ "A field that contains the features formatted as an array of double values, and, another field that class or label value also specified as a double value.")
-public class DTClassifier extends BaseClassifierSink {
+public class DTClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
 

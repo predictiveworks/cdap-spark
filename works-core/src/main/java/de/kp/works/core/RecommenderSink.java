@@ -27,8 +27,6 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
@@ -37,9 +35,6 @@ import de.kp.works.core.ml.SparkMLManager;
 public class RecommenderSink extends BaseSink {
 
 	private static final long serialVersionUID = 1446304577663186523L;
-
-	protected FileSet modelFs;
-	protected Table modelMeta;
 
 	protected RecommenderConfig config;
 	

@@ -27,37 +27,45 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseClassifierSink extends BaseSink {
+public class ClusterSink extends BaseSink {
 
-	private static final long serialVersionUID = -5552264323513756802L;
+	private static final long serialVersionUID = 3246011960545074346L;
 
-	protected FileSet modelFs;
-	protected Table modelMeta;
+	protected ClusterConfig config;
+	protected String className;
 	
-	protected ClassifierConfig config;
+	protected void validateSchema(Schema inputSchema, ClusterConfig config) {
+
+		/** FEATURES COLUMN **/
+
+		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
+		if (featuresCol == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the feature vector.", className));
+		}
+
+		isArrayOfNumeric(config.featuresCol);
+
+	}
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * Classification model components and metadata are persisted in a CDAP FileSet
+		 * Clstering model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
-		SparkMLManager.createClassificationIfNotExists(context);
+		SparkMLManager.createClusteringIfNotExists(context);
 		/*
-		 * Retrieve classification specified dataset for later use incompute
+		 * Retrieve clustering specified dataset for later use incompute
 		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
-
+		modelFs = SparkMLManager.getClusteringFS(context);
+		modelMeta = SparkMLManager.getClusteringMeta(context);
 	}
 
 	@Override
@@ -72,9 +80,10 @@ public class BaseClassifierSink extends BaseSink {
 			return;
 
 		if (inputSchema == null) {
-			
+
 			inputSchema = input.first().getSchema();
 			validateSchema(inputSchema, config);
+
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -92,33 +101,4 @@ public class BaseClassifierSink extends BaseSink {
 
 	}
 
-	protected void validateSchema(Schema inputSchema, ClassifierConfig config) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-
-		/** LABEL COLUMN **/
-
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", className));
-		}
-
-		Schema.Type labelType = labelCol.getSchema().getType();
-		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
-		}
-	}
 }

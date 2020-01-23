@@ -34,12 +34,12 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
 import de.kp.works.ml.regression.Evaluator;
-import de.kp.works.core.BaseClusterSink;
+import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("BisectingKMeansSink")
 @Description("A building stage for an Apache Spark based Bisecting KMeans clustering model.")
-public class BisectingKMeansSink extends BaseClusterSink {
+public class BisectingKMeansSink extends ClusterSink {
 	/*
 	 * Bisecting k-means is a kind of hierarchical clustering using
 	 * a divisive (or “top-down”) approach: all observations start in

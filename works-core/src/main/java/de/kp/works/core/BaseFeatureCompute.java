@@ -27,17 +27,12 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 public class BaseFeatureCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -852876404206487204L;
-	
-	protected FileSet modelFs;
-	protected Table modelMeta;
 
 	protected BaseFeatureConfig config;
 	

@@ -35,12 +35,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("StringIndexerBuilder")
 @Description("A building stage for an Apache Spark based String Indexer model.")
-public class StringIndexerBuilder extends BaseFeatureSink {
+public class StringIndexerBuilder extends FeatureSink {
 	/*
 	 * A label indexer that maps a string column of labels to an ML column of label indices.
 	 * If the input column is numeric, we cast it to string and index the string values.

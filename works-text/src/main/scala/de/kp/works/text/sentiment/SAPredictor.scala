@@ -28,7 +28,7 @@ import scala.collection.mutable.WrappedArray
 
 class SAPredictor(model:nlp.annotators.sda.vivekn.ViveknSentimentModel) {
   
-  def predict(dataset:Dataset[_], textCol:String, predictionCol:String):Dataset[_] = {
+  def predict(dataset:Dataset[Row], textCol:String, predictionCol:String):Dataset[Row] = {
     
     /**** PREPARATION STEPS ****/
     

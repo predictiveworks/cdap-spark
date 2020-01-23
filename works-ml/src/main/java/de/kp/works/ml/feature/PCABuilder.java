@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("PCABuilder")
 @Description("A building stage for an Apache Spark based Principal Component Analysis feature model.")
-public class PCABuilder extends BaseFeatureSink {
+public class PCABuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -698695950116408878L;
 

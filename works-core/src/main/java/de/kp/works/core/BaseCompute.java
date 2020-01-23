@@ -27,6 +27,8 @@ import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -34,6 +36,12 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 public abstract class BaseCompute extends SparkCompute<StructuredRecord, StructuredRecord> {
 
 	private static final long serialVersionUID = 6855738584152026479L;
+	/*
+	 * Reference to fileset & table for model specific 
+	 * information
+	 */
+	protected FileSet modelFs;
+	protected Table modelMeta;
 
 	/*
 	 * Reference to input & output schema

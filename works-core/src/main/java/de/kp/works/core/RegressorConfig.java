@@ -18,10 +18,6 @@ package de.kp.works.core;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -73,19 +69,7 @@ public class RegressorConfig extends BaseConfig {
 	}
 	
 	public double[] getSplits() {
-		
-		String[] tokens = dataSplit.split(":");
-		
-		Double x = Double.parseDouble(tokens[0]) / 100D;
-		Double y = Double.parseDouble(tokens[1]) / 100D;
-		
-		List<Double> splits = new ArrayList<>();
-		splits.add(x);
-		splits.add(y);
-
-		Double[] array = splits.toArray(new Double[splits.size()]);
-		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
-
+		return getDataSplits(dataSplit);
 	}
 
 }

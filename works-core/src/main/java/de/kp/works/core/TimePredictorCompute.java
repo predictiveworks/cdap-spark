@@ -18,15 +18,9 @@ package de.kp.works.core;
  * 
  */
 
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
-
 public class TimePredictorCompute extends TimeCompute {
 
 	private static final long serialVersionUID = -7791075841700593718L;
-	
-	protected FileSet modelFs;
-	protected Table modelMeta;
 
 	protected TimePredictorConfig config;
 	

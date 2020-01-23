@@ -34,12 +34,12 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
 import de.kp.works.ml.regression.Evaluator;
-import de.kp.works.core.BaseClusterSink;
+import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("GaussianMixtureSink")
 @Description("A building stage for an Apache Spark based Gaussian Mixture clustering model.")
-public class GaussianMixtureSink extends BaseClusterSink {
+public class GaussianMixtureSink extends ClusterSink {
 
 	private static final long serialVersionUID = -8171201794590284739L;
 

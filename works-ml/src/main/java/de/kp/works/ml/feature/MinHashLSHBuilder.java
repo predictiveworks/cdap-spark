@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("MinHashLSHBuilder")
 @Description("A building stage for an Apache Spark based MinHash LSH model.")
-public class MinHashLSHBuilder extends BaseFeatureSink {
+public class MinHashLSHBuilder extends FeatureSink {
 	/*
 	 * MinHash is an LSH family for Jaccard distance where input features are sets of natural numbers. 
 	 * This algorithm applies a random hash function g to each element in the set and take the minimum 

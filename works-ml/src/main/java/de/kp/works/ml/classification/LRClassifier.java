@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("LRClassifer")
 @Description("A building stage for an Apache Spark based Logistic Regression classifier model.")
-public class LRClassifier extends BaseClassifierSink {
+public class LRClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = 8968908020294101566L;
 

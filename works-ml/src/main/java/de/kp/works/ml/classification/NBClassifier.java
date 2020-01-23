@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("NBClassifer")
 @Description("A building stage for an Apache Spark based Naive Bayes classifier model.")
-public class NBClassifier extends BaseClassifierSink {
+public class NBClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -3067097831994994477L;
 	

@@ -37,12 +37,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.BaseClassifierSink;
+import de.kp.works.core.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("MLPClassifer")
 @Description("A building stage for an Apache Spark based Multilayer Perceptron classifier model.")
-public class MLPClassifier extends BaseClassifierSink {
+public class MLPClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -7445401286046769822L;
 	

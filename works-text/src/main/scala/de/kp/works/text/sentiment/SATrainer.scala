@@ -124,6 +124,12 @@ object SentimentTrainer {
     val trainer = new SATrainer()
     val model = trainer.train(ds, "text", "sentiment")
 
-    val loaded = nlp.annotators.sda.vivekn.ViveknSentimentModel.load("")    
+    val predictor = new SAPredictor(model)
+    val predictions = predictor.predict(ds, "text", "prediction")
+    
+    val metrics = SAEvaluator.evaluate(predictions, "sentiment", "prediction")    
+    predictions.show
+    println(metrics)
+    
   }
 }

@@ -36,12 +36,12 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.BaseFeatureSink;
+import de.kp.works.core.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("W2VecBuilder")
 @Description("A building stage for an Apache Spark based Word-to-Vector feature model.")
-public class W2VecBuilder extends BaseFeatureSink {
+public class W2VecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 3885087751281049601L;
 
