@@ -204,7 +204,7 @@ public class SparkMLManager {
 			 * This is the first time, that we train a classification model; therefore, the
 			 * associated metadata dataset has to be created
 			 */
-			Schema metaSchema = createMetaSchema("classificationSchema");
+			Schema metaSchema = createClassificationSchema();
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
@@ -695,6 +695,65 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
 
 		Schema schema = Schema.recordOf(name, fields);
+		return schema;
+
+	}
+
+	private static Schema createClassificationSchema() {
+
+		String schemaName = "classificationSchema";
+		List<Schema.Field> fields = new ArrayList<>();
+		/*
+		 * The timestamp this classification model has been created
+		 */
+		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
+		/*
+		 * The name of this classification model
+		 */
+		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The version of this classification model
+		 */
+		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The algorithm of this classification model
+		 */
+		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The parameters of this classification model; this is a JSON object 
+		 * that contains the parameter set that has been used to train a certain 
+		 * model instance
+		 */
+		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The calculcated metric values for this classification model; 
+		 * currently the following metrics are supported:
+		 * 
+	     * - accuracy
+		 * - f1
+		 * - hammingLoss
+		 * - weightedFMeasure
+		 * - weightedPrecision
+		 * - weightedRecall
+		 * - weightedFalsePositiveRate
+		 * - weightedTruePositiveRate
+ 		 */
+		fields.add(Schema.Field.of("accuracy", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("f1", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("hammingLoss", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("weightedFMeasure", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("weightedPrecision", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("weightedRecall", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("weightedFalsePositiveRate", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("weightedTruePositiveRate", Schema.of(Schema.Type.DOUBLE)));		
+		/*
+		 * The fileset name of this classification model; the model itself is persisted
+		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
+		 */
+		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
+		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
+
+		Schema schema = Schema.recordOf(schemaName, fields);
 		return schema;
 
 	}

@@ -24,14 +24,11 @@ import java.util.Date;
 
 import org.apache.spark.ml.classification.*;
 
-import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.core.ml.AbstractModelManager;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.ml.AbstractClassificationManager;
 
-public class GBTClassifierManager extends AbstractModelManager {
+public class GBTClassifierManager extends AbstractClassificationManager {
 
 	private String ALGORITHM_NAME = "GBTClassifier";
 
@@ -67,17 +64,7 @@ public class GBTClassifierManager extends AbstractModelManager {
 
 		/***** MODEL METADATA *****/
 
-		/*
-		 * Append model metadata to the metadata table associated with the
-		 * classification fileset
-		 */
-		String fsName = SparkMLManager.CLASSIFICATION_FS;
-		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
-
-		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
+		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
 
 	}
 
