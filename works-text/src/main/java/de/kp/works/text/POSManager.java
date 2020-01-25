@@ -1,4 +1,4 @@
-package de.kp.works.core.ml;
+package de.kp.works.text;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,42 +21,46 @@ package de.kp.works.core.ml;
 import java.io.IOException;
 import java.util.Date;
 
-import org.apache.spark.ml.regression.RandomForestRegressionModel;
+import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
+import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.SparkMLManager;
 
-public class RFRegressorManager extends AbstractRegressionManager {
+public class POSManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "RandomForestRegressor";
+	private String ALGORITHM_NAME = "PartOfSpeech";
 
-	public RandomForestRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public PerceptronModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the RandomForestRegression model
+		 * Leverage Apache Spark mechanism to read the PerceptronModel model
 		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return RandomForestRegressionModel.load(modelPath);
+		return (PerceptronModel)PerceptronModel.load(modelPath);
 		
 	}
 
 	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			RandomForestRegressionModel model) throws IOException {
+			PerceptronModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
 		/*
-		 * Define the path of this model on CDAP's internal regression fileset;
+		 * Define the path of this model on CDAP's internal textanalysis fileset;
 		 * not, the timestamp within the path ensures that each model of the 
 		 * same name but different version has its own path
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the RandomForestRegressor model
+		 * Leverage Apache Spark mechanism to write the Perceptron model
 		 * to a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
@@ -64,7 +68,17 @@ public class RFRegressorManager extends AbstractRegressionManager {
 
 		/***** MODEL METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		/*
+		 * Append model metadata to the metadata table associated with the
+		 * textanalysis fileset
+		 */
+		String fsName = SparkMLManager.TEXTANALYSIS_FS;
+		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
+
+		byte[] key = Bytes.toBytes(ts);
+		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
+				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
+				.add("fsName", fsName).add("fsPath", fsPath));
 
 	}
 

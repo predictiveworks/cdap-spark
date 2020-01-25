@@ -138,7 +138,7 @@ class POSParser(override val uid: String) extends Transformer with POSParams {
       .withColumn(document, 
           wrapColumnMetadata(col("document"), AnnotatorType.DOCUMENT, document))
       .withColumn(pos,
-          wrapColumnMetadata(dataset("pos"), AnnotatorType.POS, pos))
+          wrapColumnMetadata(col("pos"), AnnotatorType.POS, pos))
           
     trainset.select(text, document, pos)
 

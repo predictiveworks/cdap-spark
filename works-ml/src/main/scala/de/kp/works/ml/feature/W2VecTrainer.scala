@@ -26,28 +26,28 @@ class W2VecTrainer {
       
   def train(dataset:Dataset[Row], inputCol:String, params:JMap[String,Object]):Word2VecModel = {
     
-    val model = new Word2Vec()
-    
+    val words2vec = new Word2Vec()
+
     val maxIter = params.get("maxIter").asInstanceOf[Int]
-    model.setMaxIter(maxIter)
+    words2vec.setMaxIter(maxIter)
     
     val stepSize = params.get("stepSize").asInstanceOf[Double]
-    model.setStepSize(stepSize)
+    words2vec.setStepSize(stepSize)
     
     val vectorSize = params.get("vectorSize").asInstanceOf[Int]
-    model.setVectorSize(vectorSize)
+    words2vec.setVectorSize(vectorSize)
     
     val windowSize = params.get("windowSize").asInstanceOf[Int]
-    model.setWindowSize(windowSize)
+    words2vec.setWindowSize(windowSize)
     
     val minCount = params.get("minCount").asInstanceOf[Int]
-    model.setMinCount(minCount)
+    words2vec.setMinCount(minCount)
     
     val maxSentenceLength = params.get("maxSentenceLength").asInstanceOf[Int]
-    model.setMaxSentenceLength(maxSentenceLength)
+    words2vec.setMaxSentenceLength(maxSentenceLength)
     
-    model.setInputCol(inputCol)
-    model.fit(dataset)
+    words2vec.setInputCol(inputCol)
+    words2vec.fit(dataset)
 
   }
     
