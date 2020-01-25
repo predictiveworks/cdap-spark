@@ -24,61 +24,22 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
+import de.kp.works.text.AnnotationBase
 import scala.collection.mutable.WrappedArray
 
-class SAPredictor(model:nlp.annotators.sda.vivekn.ViveknSentimentModel) {
+class SAPredictor(model:nlp.annotators.sda.vivekn.ViveknSentimentModel) extends AnnotationBase {
   
   def predict(dataset:Dataset[Row], textCol:String, predictionCol:String):Dataset[Row] = {
     
-    /**** PREPARATION STEPS ****/
-    
+    val document = prepare(dataset, textCol)
     /*
-     * The initial step is defined by the DocumentAssembler which generates
-     * an initial annotation; note, as we leverage an internal pipeline to
-     * predict the sentiment, we do not have to serialize / deserialize
-     * the respective annotations
-     */
-    val documentAssembler = new nlp.DocumentAssembler()
-    documentAssembler.setInputCol(textCol)
-    documentAssembler.setOutputCol("_document")
-    
-    val document = documentAssembler.transform(dataset)
-    /*
-     * We expect that the provided text can define multiple sentences;
-     * therefore an additional sentence detection stage is used.
-     */
-		val sentenceDetector = new nlp.annotators.sbd.pragmatic.SentenceDetector()
-    sentenceDetector.setInputCols("_document")
-    sentenceDetector.setOutputCol("_sentence")   
-    
-    val sentence = sentenceDetector.transform(document)
-    /*
-     * Next the tokenizer is applied to transform each detected
-     * sentence into a set of tokens
-     */
-    val tokenizer = new nlp.annotators.Tokenizer()
-    tokenizer.setInputCols("_sentence")
-    tokenizer.setOutputCol("_token")
-    
-    val tokenized = tokenizer.fit(sentence).transform(sentence)
-    /*
-     * Before applying the sentiment approach of Vivek Narayanan,
-     * we normalize the extracted tokens
-     */
-    val normalizer = new nlp.annotators.Normalizer()
-    normalizer.setInputCols("_token")
-    normalizer.setOutputCol("_normal")
-    
-    val normalized = normalizer.fit(tokenized).transform(tokenized)
-    
-    /**** PREDICTION ****/
-    
-   /*
      * The columns returned by the model are annotation
      * columns with a Spark-NLP specific format
      */
+    model.setInputCols(Array("document", "token"))
     model.setOutputCol("_sentiment")
-    val predicted = model.transform(normalized)
+
+    val predicted = model.transform(document)
     /*
      * As a final step, we leverage the Spark-NLP finisher
      * to remove all the respective internal annotations

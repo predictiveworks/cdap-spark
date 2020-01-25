@@ -19,10 +19,13 @@ package de.kp.works.text.sentiment
  */
 
 import com.johnsnowlabs.nlp
+
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
 
-class SATrainer {
+import de.kp.works.text.AnnotationBase
+
+class SATrainer extends AnnotationBase {
   /*
    * This training phase is based on the Vivekn sentiment analysis approach:
    * 
@@ -42,54 +45,18 @@ class SATrainer {
    * Original accuracy: 88.80% on the popular IMDB movie reviews dataset.
    * 
    */
-  def train(trainset:Dataset[_], textCol:String, sentimentCol:String): nlp.annotators.sda.vivekn.ViveknSentimentModel = {
+  def train(trainset:Dataset[Row], textCol:String, sentimentCol:String): nlp.annotators.sda.vivekn.ViveknSentimentModel = {
     /*
      * The dataset contains at least two columns, one that contains a certain
      * sample document, and another which holds the assigned sentiment.
-     * 
-     * The initial step is defined by the DocumentAssembler which generates
-     * an initial annotation; note, as we leverage an internal pipeline to
-     * train the sentiment model, we do not have to serialize / deserialize
-     * the respective annotations
      */
-    val documentAssembler = new nlp.DocumentAssembler()
-    documentAssembler.setInputCol(textCol)
-    documentAssembler.setOutputCol("_document")
-    
-    val document = documentAssembler.transform(trainset)
-    /*
-     * We expect that the provided text can define multiple sentences;
-     * therefore an additional sentence detection stage is used.
-     */
-		val sentenceDetector = new nlp.annotators.sbd.pragmatic.SentenceDetector()
-    sentenceDetector.setInputCols("_document")
-    sentenceDetector.setOutputCol("_sentence")   
-    
-    val sentence = sentenceDetector.transform(document)
-    /*
-     * Next the tokenizer is applied to transform each detected
-     * sentence into a set of tokens
-     */
-    val tokenizer = new nlp.annotators.Tokenizer()
-    tokenizer.setInputCols("_sentence")
-    tokenizer.setOutputCol("_token")
-    
-    val tokenized = tokenizer.fit(sentence).transform(sentence)
-    /*
-     * Before applying the sentiment approach of Vivek Narayanan,
-     * we normalize the extracted tokens
-     */
-    val normalizer = new nlp.annotators.Normalizer()
-    normalizer.setInputCols("_token")
-    normalizer.setOutputCol("_normal")
-    
-    val normalized = normalizer.fit(tokenized).transform(tokenized)
+    val document = prepare(trainset, textCol)
     
     val algorithm = new nlp.annotators.sda.vivekn.ViveknSentimentApproach()
-    .setInputCols("_document", "_normal")
+    .setInputCols("document", "token")
     .setSentimentCol(sentimentCol)
     
-    val model = algorithm.fit(normalized)
+    val model = algorithm.fit(document)
     model
 
   }

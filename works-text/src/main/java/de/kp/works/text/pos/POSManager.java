@@ -1,4 +1,4 @@
-package de.kp.works.text;
+package de.kp.works.text.pos;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
