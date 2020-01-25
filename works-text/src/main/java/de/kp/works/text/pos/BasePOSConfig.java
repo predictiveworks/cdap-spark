@@ -1,4 +1,4 @@
-package de.kp.works.text.sentiment;
+package de.kp.works.text.pos;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,17 +24,13 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
-public class BaseSentimentConfig extends BaseConfig {
+public class BasePOSConfig extends BaseConfig {
 
-	private static final long serialVersionUID = -5971941200750995084L;
+	private static final long serialVersionUID = 3813838401209577158L;
 
-	@Description("The unique name of the sentiment analysis model.")
+	@Description("The unique name of the Part-of-Speech model.")
 	@Macro
 	public String modelName;
-
-	@Description("The name of the field in the input schema that contains the document.")
-	@Macro
-	public String textCol;
 
 	public void validate() {
 		super.validate();
@@ -43,12 +39,7 @@ public class BaseSentimentConfig extends BaseConfig {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
-
-		if (Strings.isNullOrEmpty(textCol)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the document must not be empty.",
-							this.getClass().getName()));
-		}
 		
 	}
+
 }
