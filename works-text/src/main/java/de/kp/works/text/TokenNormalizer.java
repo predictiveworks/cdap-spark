@@ -47,7 +47,9 @@ import de.kp.works.core.BaseConfig;
 		+ "from the Tokenizer, and putting normalized tokens in the normal column. Cleaning up"
 		+ "includes removing any non-character strings.")
 public class TokenNormalizer extends BaseCompute {
-
+	/*
+	 * The current version is restricted to the EnglishStemmer
+	 */
 	private static final long serialVersionUID = 7292639821710358852L;
 	private TokenNormalizerConfig config;
 	
