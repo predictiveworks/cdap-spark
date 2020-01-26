@@ -346,7 +346,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 			 */
 			if (schema.getType().equals(Schema.Type.RECORD) == false)
 				throw new IllegalArgumentException(
-						"[ApplyRukes] The data format of the provided data records is not appropriate "
+						"[ApplyRules] The data format of the provided data records is not appropriate "
 								+ "to be computed by this data machine. Please check your blueprint configuration and re-build this application.");
 
 			/*

@@ -1,0 +1,36 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Date Matcher",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Date Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Date Format",
+          "name": "dateFormat",
+          "widget-attributes": {
+            "default": "yyyy/MM/dd"
+          }
+        }
+
+      ]
+    }
+  ]
+}

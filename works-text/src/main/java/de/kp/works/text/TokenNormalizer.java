@@ -57,7 +57,6 @@ public class TokenNormalizer extends BaseCompute {
 		this.config = config;
 	}
 	
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
@@ -115,9 +114,6 @@ public class TokenNormalizer extends BaseCompute {
 	
 	public static class TokenNormalizerConfig extends BaseConfig {
 
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = -2180450887445343238L;
 
 		@Description("The name of the field in the input schema that contains the token annotations.")
@@ -136,7 +132,7 @@ public class TokenNormalizer extends BaseCompute {
 						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the normalized token annotations must not be empty.",
 								this.getClass().getName()));

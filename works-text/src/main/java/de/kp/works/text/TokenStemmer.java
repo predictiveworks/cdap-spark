@@ -128,7 +128,7 @@ public class TokenStemmer extends BaseCompute {
 						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the stemmed token annotations must not be empty.",
 								this.getClass().getName()));

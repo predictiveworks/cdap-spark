@@ -116,7 +116,7 @@ public class DocumentAssembler extends BaseCompute {
 		 */
 		private static final long serialVersionUID = 6075596749044302438L;
 
-		@Description("The name of the field in the input schema that contains the text to annotate.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String inputCol;
 
@@ -129,10 +129,10 @@ public class DocumentAssembler extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the text must not be empty.",
+						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the document annotations must not be empty.",
 								this.getClass().getName()));

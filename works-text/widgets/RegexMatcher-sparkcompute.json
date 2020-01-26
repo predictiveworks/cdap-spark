@@ -1,0 +1,44 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Regex Matcher",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "inputCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Date Field",
+          "name": "outputCol"
+        },
+        {
+          "widget-type": "textarea",
+          "label": "Regex Rules",
+          "name": "rules",
+          "widget-attributes": {
+            "rows": "10"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Rule Delimiter",
+          "name": "delimiter",
+          "widget-attributes": {
+            "default": ","
+          }
+        }
+
+      ]
+    }
+  ]
+}

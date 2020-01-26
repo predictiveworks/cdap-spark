@@ -1,4 +1,4 @@
-package de.kp.works.text;
+package de.kp.works.text.matching;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -37,22 +37,22 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-import de.kp.works.core.BaseConfig;
+import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("SentenceTokenizer")
-@Description("A transformation stage that leverages the Spark NLP Tokenizer to map an input "
-		+ "text field with sentence annotations into an output field that contains detected sentence tokens.")
-public class SentenceTokenizer extends BaseCompute {
+@Name("RegexMatcher")
+@Description("A transformation stage that leverages the Spark NLP Date Matcher to detected provided ."
+		+ "Regex rules in the input text document.")
+public class RegexMatcher extends BaseCompute {
 
-	private static final long serialVersionUID = 1439261525993214062L;
-	private SentenceTokenizerConfig config;
+	private static final long serialVersionUID = -5699840126647930210L;
+
+	private RegexMatcherConfig config;
 	
-	public SentenceTokenizer(SentenceTokenizerConfig config) {
+	public RegexMatcher(RegexMatcherConfig config) {
 		this.config = config;
 	}
 	
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
@@ -79,8 +79,11 @@ public class SentenceTokenizer extends BaseCompute {
 		Properties props = new Properties();
 		props.setProperty("input.col", config.inputCol);
 		props.setProperty("output.col", config.outputCol);
+		
+		props.setProperty("rules", config.getRules());		
+		props.setProperty("delimiter", config.delimiter);
 
-		return NLP.tokenize(source, props, true);
+		return NLP.matchRegex(source, props);
 
 	}
 	
@@ -92,7 +95,7 @@ public class SentenceTokenizer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentence annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -108,31 +111,42 @@ public class SentenceTokenizer extends BaseCompute {
 
 	}	
 	
-	public static class SentenceTokenizerConfig extends BaseConfig {
+	public static class RegexMatcherConfig extends BaseMatcherConfig {
 
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 1461469959716413112L;
 
-		@Description("The name of the field in the input schema that contains the sentence annotations.")
+		@Description("A delimiter separated list of Regex rules.")
 		@Macro
-		public String inputCol;
+		private String rules;
 
-		@Description("The name of the field in the output schema that contains the token annotations.")
+		@Description("The delimiter used to separate the different Regex rules.")
 		@Macro
-		public String outputCol;
+		private String delimiter;
+		
+		public RegexMatcherConfig() {
+			delimiter = ",";
+		}
+
+		public String getRules() {
+			
+			String cleaned = rules.replaceAll("\\r\\n|\\r|\\n", " ");
+			return cleaned;
+		}
 		
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(rules)) {
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the sentence annotations must not be empty.",
-								this.getClass().getName()));
-			
-			if (Strings.isNullOrEmpty(outputCol))
+						String.format("[%s] The Regex rules must not be empty.", this.getClass().getName()));
+			}
+
+			if (Strings.isNullOrEmpty(delimiter)) {
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
-								this.getClass().getName()));
-			
+						String.format("[%s] The rule delimiter must not be empty.", this.getClass().getName()));
+			}
+
 		}
+		
 	}
 }

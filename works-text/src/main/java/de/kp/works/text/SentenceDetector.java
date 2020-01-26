@@ -129,7 +129,7 @@ public class SentenceDetector extends BaseCompute {
 						String.format("[%s] The name of the field that contains the document annotations must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the annotations must not be empty.",
 								this.getClass().getName()));

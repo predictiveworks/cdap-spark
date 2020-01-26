@@ -1,4 +1,4 @@
-package de.kp.works.text;
+package de.kp.works.text.matching;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,8 +25,6 @@ import java.util.Properties;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -37,22 +35,22 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-import de.kp.works.core.BaseConfig;
+import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("SentenceTokenizer")
-@Description("A transformation stage that leverages the Spark NLP Tokenizer to map an input "
-		+ "text field with sentence annotations into an output field that contains detected sentence tokens.")
-public class SentenceTokenizer extends BaseCompute {
-
-	private static final long serialVersionUID = 1439261525993214062L;
-	private SentenceTokenizerConfig config;
+@Name("DateMatcher")
+@Description("A transformation stage that leverages the Spark NLP Date Matcher to read from "
+		+ "different forms of date and time expressions and converts them to a provided date format.")
+public class DateMatcher extends BaseCompute {
 	
-	public SentenceTokenizer(SentenceTokenizerConfig config) {
+	private static final long serialVersionUID = 3922979028456465845L;
+
+	private DateMatcherConfig config;
+	
+	public DateMatcher(DateMatcherConfig config) {
 		this.config = config;
 	}
 	
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
@@ -79,8 +77,9 @@ public class SentenceTokenizer extends BaseCompute {
 		Properties props = new Properties();
 		props.setProperty("input.col", config.inputCol);
 		props.setProperty("output.col", config.outputCol);
+		props.setProperty("date.format", config.dateFormat);
 
-		return NLP.tokenize(source, props, true);
+		return NLP.matchDate(source, props);
 
 	}
 	
@@ -92,7 +91,7 @@ public class SentenceTokenizer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentence annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -107,32 +106,18 @@ public class SentenceTokenizer extends BaseCompute {
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
-	
-	public static class SentenceTokenizerConfig extends BaseConfig {
 
-		private static final long serialVersionUID = 1L;
+	public static class DateMatcherConfig extends BaseMatcherConfig {
 
-		@Description("The name of the field in the input schema that contains the sentence annotations.")
+		private static final long serialVersionUID = -6574070461241759553L;
+
+		@Description("The expected output date format. Default is 'yyyy/MM/dd'.")
 		@Macro
-		public String inputCol;
-
-		@Description("The name of the field in the output schema that contains the token annotations.")
-		@Macro
-		public String outputCol;
+		public String dateFormat;
 		
-		public void validate() {
-			super.validate();
-
-			if (Strings.isNullOrEmpty(inputCol))
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the sentence annotations must not be empty.",
-								this.getClass().getName()));
-			
-			if (Strings.isNullOrEmpty(outputCol))
-				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
-								this.getClass().getName()));
-			
+		public DateMatcherConfig() {
+			dateFormat = "yyyy/MM/dd";
 		}
+		
 	}
 }
