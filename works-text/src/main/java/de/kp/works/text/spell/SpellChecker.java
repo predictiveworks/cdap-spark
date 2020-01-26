@@ -1,4 +1,4 @@
-package de.kp.works.text.lemma;
+package de.kp.works.text.spell;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,7 +25,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.LemmatizerModel;
+import com.johnsnowlabs.nlp.annotators.spell.norvig.NorvigSweetingModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -39,16 +39,16 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("Lemmatizer")
-@Description("A linguistic processing stage that leverages a trained Spark-NLP based Lemmatization model.")
-public class Lemmatizer extends BaseCompute {
+@Name("SpellChecker")
+@Description("A linguistic spell checker stage that leverages a trained Spark-NLP based Norvig Sweeting model.")
+public class SpellChecker extends BaseCompute {
 
-	private static final long serialVersionUID = 1494670903195615242L;
+	private static final long serialVersionUID = 2369095136053899600L;
 
-	private LemmatizerConfig config;
-	private LemmatizerModel model;
+	private SpellCheckerConfig config;
+	private NorvigSweetingModel model;
 
-	public Lemmatizer(LemmatizerConfig config) {
+	public SpellChecker(SpellCheckerConfig config) {
 		this.config = config;
 	}
 
@@ -56,10 +56,10 @@ public class Lemmatizer extends BaseCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LemmaManager().read(modelFs, modelMeta, config.modelName);
+		model = new SpellManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A Lemmatization model with name '%s' does not exist.",
+					String.format("[%s] A Norvig Sweeting model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -88,21 +88,21 @@ public class Lemmatizer extends BaseCompute {
 
 	}
 	/**
-	 * This method computes predictions either by applying a trained Lemmatization
+	 * This method computes predictions either by applying a trained Norvig Sweeting
 	 * model; as a result, the source dataset is enriched by two extra columns of
 	 * data type Array[String]
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		LemmaPredictor predictor = new LemmaPredictor(model);
+		NorvigPredictor predictor = new NorvigPredictor(model);
 		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
 
 		return predictions;
 		
 	}
 
-	public void validateSchema(Schema inputSchema, LemmatizerConfig config) {
+	public void validateSchema(Schema inputSchema, SpellCheckerConfig config) {
 
 		/** TEXT COLUMN **/
 
@@ -132,9 +132,9 @@ public class Lemmatizer extends BaseCompute {
 
 	}
 
-	public static class LemmatizerConfig extends BaseLemmaConfig {
+	public static class SpellCheckerConfig extends BaseSpellConfig {
 
-		private static final long serialVersionUID = 2764272986545420558L;
+		private static final long serialVersionUID = 2295039730979859235L;
 
 		@Description("The name of the field in the input schema that contains the document.")
 		@Macro
@@ -144,7 +144,7 @@ public class Lemmatizer extends BaseCompute {
 		@Macro
 		public String tokenCol;
 
-		@Description("The name of the field in the output schema that contains the assigned lemmas.")
+		@Description("The name of the field in the output schema that contains the corrected tokens.")
 		@Macro
 		public String predictionCol;
 
@@ -165,11 +165,12 @@ public class Lemmatizer extends BaseCompute {
 			
 			if (Strings.isNullOrEmpty(predictionCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the assigned lemmas must not be empty.",
+						"[%s] The name of the field that contains the corrected tokens must not be empty.",
 						this.getClass().getName()));
 			}
 			
 		}
 		
 	}
+
 }

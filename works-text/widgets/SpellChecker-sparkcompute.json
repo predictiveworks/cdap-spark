@@ -1,0 +1,37 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Spell Checker",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token Field",
+          "name": "tokenCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Lemma Field",
+          "name": "predictionCol"
+        }
+      ]
+    }
+  ]
+}
