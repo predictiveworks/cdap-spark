@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "POS Tagger",
+"display-name": "Lemma Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -18,18 +18,24 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
+          "label": "Corpus Field",
+          "name": "lineCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
+          "label": "Lemma Delimiter",
+          "name": "keyDelimiter",
+          "widget-attributes": {
+            "default": "->"
+          }
         },
         {
           "widget-type": "textbox",
-          "label": "POS Field",
-          "name": "predictionCol"
+          "label": "Token Delimiter",
+          "name": "valueDelimiter",
+          "widget-attributes": {
+            "default": "\\S+"
+          }
         }
       ]
     }

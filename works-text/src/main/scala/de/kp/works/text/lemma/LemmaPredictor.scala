@@ -1,4 +1,4 @@
-package de.kp.works.text.pos
+package de.kp.works.text.lemma
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -17,28 +17,27 @@ package de.kp.works.text.pos
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel
+import com.johnsnowlabs.nlp.annotators.LemmatizerModel
 
 import org.apache.spark.sql._
 import de.kp.works.text.AnnotationBase
 
-class POSPredictor(model:PerceptronModel) extends AnnotationBase {
+class LemmaPredictor(model:LemmatizerModel) extends AnnotationBase {
   
   def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
     
     val document = prepare(dataset, textCol)
+
+    model.setInputCols("token")
+    model.setOutputCol("lemma")
     
-    model.setInputCols(Array("document", "token"))
-    model.setOutputCol("tags")
-    
-    val tagged = model.transform(dataset)
+    val lemmatized = model.transform(dataset)
     
     val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token", "tags"))
-    .setOutputCols(Array(tokenCol, predictionCol))
+    .setInputCols(Array("token", "lemma"))
+    .setOutputCols(Array(tokenCol,predictionCol))
 
-    finisher.transform(tagged)
-    
+    finisher.transform(lemmatized)
+
   }
-  
 }

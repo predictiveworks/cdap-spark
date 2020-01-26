@@ -48,7 +48,7 @@ class LemmatizerApproach(override val uid: String) extends AnnotatorApproach[Lem
       "Name of the input text field that contains lemma and associated tokens.", (value:String) => true)
    
   final val keyDelimiter = new Param[String](this, "keyDelimiter",
-      "The delimiter to separate 'lemma' and associated tokens in the dictionary.", (value:String) => true)
+      "The delimiter to separate 'lemma' and associated tokens in the corpus.", (value:String) => true)
    
   final val valueDelimiter = new Param[String](this, "valueDelimiter",
       "The delimiter to separate the tokens in the dictionary.", (value:String) => true)

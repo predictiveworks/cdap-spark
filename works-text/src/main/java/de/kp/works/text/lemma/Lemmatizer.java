@@ -1,4 +1,4 @@
-package de.kp.works.text.pos;
+package de.kp.works.text.lemma;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,7 +25,7 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
+import com.johnsnowlabs.nlp.annotators.LemmatizerModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -39,29 +39,17 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("POSTagger")
-@Description("A tagging stage that leverages a trained Part-of-Speech model.")
-public class POSTagger extends BaseCompute {
+@Name("Lemmatizer")
+@Description("A linguistic processing stage that leverages a trained Spark-NLP based Lemmatization model.")
+public class Lemmatizer extends BaseCompute {
 
-	private static final long serialVersionUID = 8592003792127757573L;
+	private static final long serialVersionUID = 1494670903195615242L;
 
-	private POSTaggerConfig config;
-	private PerceptronModel model;
+	private LemmatizerConfig config;
+	private LemmatizerModel model;
 
-	public POSTagger(POSTaggerConfig config) {
+	public Lemmatizer(LemmatizerConfig config) {
 		this.config = config;
-	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
-
-		model = new POSManager().read(modelFs, modelMeta, config.modelName);
-		if (model == null)
-			throw new IllegalArgumentException(
-					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
-							this.getClass().getName(), config.modelName));
-
 	}
 
 	@Override
@@ -88,21 +76,21 @@ public class POSTagger extends BaseCompute {
 
 	}
 	/**
-	 * This method computes predictions either by applying a trained Part-of-Speech
-	 * model; as a result,  the source dataset is enriched by two extra columns of
+	 * This method computes predictions either by applying a trained Lemmatization
+	 * model; as a result, the source dataset is enriched by two extra columns of
 	 * data type Array[String]
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		POSPredictor predictor = new POSPredictor(model);
+		LemmaPredictor predictor = new LemmaPredictor(model);
 		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
 
 		return predictions;
 		
 	}
 
-	public void validateSchema(Schema inputSchema, POSTaggerConfig config) {
+	public void validateSchema(Schema inputSchema, LemmatizerConfig config) {
 
 		/** TEXT COLUMN **/
 
@@ -132,9 +120,21 @@ public class POSTagger extends BaseCompute {
 
 	}
 
-	public static class POSTaggerConfig extends BasePOSConfig {
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		config.validate();
 
-		private static final long serialVersionUID = 6046559336809356607L;
+		model = new LemmaManager().read(modelFs, modelMeta, config.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] A Lemmatization model with name '%s' does not exist.",
+							this.getClass().getName(), config.modelName));
+
+	}
+
+	public static class LemmatizerConfig extends BaseLemmaConfig {
+
+		private static final long serialVersionUID = 2764272986545420558L;
 
 		@Description("The name of the field in the input schema that contains the document.")
 		@Macro
@@ -144,7 +144,7 @@ public class POSTagger extends BaseCompute {
 		@Macro
 		public String tokenCol;
 
-		@Description("The name of the field in the output schema that contains the predicted POS tags.")
+		@Description("The name of the field in the output schema that contains the assigned lemmas.")
 		@Macro
 		public String predictionCol;
 
@@ -165,7 +165,7 @@ public class POSTagger extends BaseCompute {
 			
 			if (Strings.isNullOrEmpty(predictionCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted POS tags must not be empty.",
+						"[%s] The name of the field that contains the assigned lemmas must not be empty.",
 						this.getClass().getName()));
 			}
 			

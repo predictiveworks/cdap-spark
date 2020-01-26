@@ -23,7 +23,7 @@ import java.util.{Map => JMap}
 import com.johnsnowlabs.nlp.annotators.LemmatizerModel
 import org.apache.spark.sql._
 
-class LemmatizerTrainer {
+class LemmaTrainer {
    
   def train(corpus:Dataset[Row], lineCol:String, params:JMap[String,Object]):LemmatizerModel = {
   
