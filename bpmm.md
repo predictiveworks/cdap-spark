@@ -29,7 +29,7 @@ All this is tremendous treasure of business knowledge *what enterprise do with t
 
 ## Implementaion
 
-The BPMM builds the foundation for [**Predictive Works.**](https://predictiveworks.eu)
+The BPMM builds the foundation for [**PredictiveWorks.**](https://predictiveworks.eu)
 
 ## Maturity Levels
 
@@ -70,15 +70,15 @@ Complex event event processing is supported by pluggable business rule & query e
 
 The BPMM recommends to leverage the comprehensive pipeline solution CDAP of former Cask Inc. Recently, this open source solution has been acquired by Google and put at the heart of their Cloud Data Fusion service. 
 
-CDAP is also at the heart of [Predictive Works.](https://predictiveworks.eu)
+CDAP is also at the heart of [PredictiveWorks.](https://predictiveworks.eu)
 
 Companies who are willing to follow the CDAP approach immediately benefit from a variety of pre-built data connectors that boost data integration use cases without the need to write code. In addition, companies gain a standardized technical environment to build their own reusable pipeline plugins. 
 
 ### Level 3
 
-Companies at this maturity level benefit from [Predictive Works.](https://predictiveworks.eu) and build their data pipelines for complex event processing, machine learning & deep learning with a wide variety of pre-built pipeline plugins that go far beyond CDAP's data integration plugins.
+Companies at this maturity level benefit from [PredictiveWorks.](https://predictiveworks.eu) and build their data pipelines for complex event processing, machine learning & deep learning with a wide variety of pre-built pipeline plugins that go far beyond CDAP's data integration plugins.
 
-[**CDAP-Spark**](https://github.com/predictiveworks/cdap-spark/blob/master/README.md) is one of the building blocks of Predictive Works. and offers [Apache Spark](https://spark.apache.org) based data analytics in form of CDAP compliant pipeline stages. This projects offers an all-in-one solution for
+[**CDAP-Spark**](https://github.com/predictiveworks/cdap-spark/blob/master/README.md) is one of the building blocks of PredictiveWorks. and offers [Apache Spark](https://spark.apache.org) based data analytics in form of CDAP compliant pipeline stages. This projects offers an all-in-one solution for
 
 * Deep Learning,
 * Machine Learning,
@@ -87,28 +87,34 @@ Companies at this maturity level benefit from [Predictive Works.](https://predic
 * SQL Queries, and
 * Text Analysis.
 
-Companies can use these pre-built analytics plugins to visually orchestrate their data workflows based on either CDAP's visual pipeline studio or, as an alternative, Predictive Works. template studio (editor).
+Companies can use these pre-built analytics plugins to visually orchestrate their data workflows based on either CDAP's visual pipeline studio or, as an alternative, PredictiveWorks. template studio (editor).
 
 At maturity level 3, companies understand that data pipelines specify *what they do with their data* and manifest a huge treasure of business knowledge.
 This persisted knowledge base can be used to ease onboarding of employees or put as a configurable templates to respond to similar uses cases in the future.  
 
-### Level 4
+### Level 4: Pipeline (Knowledge) Management
 
-Data pipelines define templated business knowledge on a *technical* level. However, there still is a gap to fully benefit from this approach: Pipelines are not related to the business cases and tasks that define their context and root cause.
+Data pipelines are at the heart of each data-driven company. Each business question that can be answered by analyzing data and each data-driven business decision generates new or updates existing data pipelines.
 
-At maturity level 4 [Predictive Works.](https://predictiveworks.eu) closes this gap and introduces the concept of **business templates** that cover the complete range from specifying a business case, its decomposition into business tasks and the implementation of tasks as data pipelines.
+>In most cases the amount of business data pipelines is going to increase (often very) fast and requires an appropriate **pipeline management**.
 
-Data pipelines **and** its business context are persisted and made available through a **Template Market**, accompanied by a recommendation system.
+As data pipelines define **templated knowledge** on a *technical* level, there is an increasing demand to relate them to the orginating business and tasks that specify their context and root cause.
+
+At maturity level 4 the concept of **business (knowledge) templates** is introduced to that cover the complete range from specifying a business case, its decomposition into business tasks and the implementation of tasks as (technical) data pipelines.
+
+Data pipelines **and** its business context are persisted and made available through a **Template Market** approach, accompanied by a recommendation system.
 
 Companies at this level benefit from a knowledge base that makes building predictive data applications as easy as purchasing a certain product.
 
+[PredictiveWorks.](https://predictiveworks.eu) implements a mature pipeline knowledge management as one its major building blocks.
+
 ### Level 5
 
-Companies at the previous level (still) work on their own to answer predictive business questions. Predictive Works. offers a tremendous simplification and reduction of one of the most important KPIs: **Time-to-Value**.
+Companies at the previous level (still) work on their own to answer predictive business questions. PredictiveWorks. offers a tremendous simplification and reduction of one of the most important KPIs: **Time-to-Value**.
 
 At level 5, companies understand that sharing their business templates with others and taking advantage of shared templates boosts their business a second time.
 
-[Predictive Works.](https://predictiveworks.eu) is also designed as a template sharing solution. For companies, who want to experience the advantages of this top materity model, Predictive Works. offers pre-built business prediction templates for the following use cases:
+[PredictiveWorks.](https://predictiveworks.eu) is also designed as a template sharing solution. For companies, who want to experience the advantages of this top materity model, PredictiveWorks. offers pre-built business prediction templates for the following use cases:
 
 * Cyber Defense,
 * Internet-of-Things,
