@@ -1,0 +1,43 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Lemma Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Corpus Field",
+          "name": "lineCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Lemma Delimiter",
+          "name": "keyDelimiter",
+          "widget-attributes": {
+            "default": "->"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token Delimiter",
+          "name": "valueDelimiter",
+          "widget-attributes": {
+            "default": "\\S+"
+          }
+        }
+      ]
+    }
+  ]
+}
