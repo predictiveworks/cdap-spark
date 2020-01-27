@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "NGram",
+"display-name": "N-gram Generator",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -13,12 +13,12 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Input Field",
+          "label": "Text Field",
           "name": "inputCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Output Field",
+          "label": "N-gram Field",
           "name": "outputCol"
         },
         {
