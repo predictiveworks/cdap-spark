@@ -18,8 +18,6 @@ package de.kp.works.text.ner
  * 
  */
 
-import org.apache.spark.sql.expressions.{Window, WindowSpec}
-
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
 
