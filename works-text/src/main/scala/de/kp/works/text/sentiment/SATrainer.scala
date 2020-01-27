@@ -50,7 +50,7 @@ class SATrainer extends AnnotationBase {
      * The dataset contains at least two columns, one that contains a certain
      * sample document, and another which holds the assigned sentiment.
      */
-    val document = prepare(trainset, textCol)
+    val document = normalizedTokens(trainset, textCol)
     
     val algorithm = new nlp.annotators.sda.vivekn.ViveknSentimentApproach()
     .setInputCols("document", "token")

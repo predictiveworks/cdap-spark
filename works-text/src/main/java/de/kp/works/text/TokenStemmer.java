@@ -20,7 +20,6 @@ package de.kp.works.text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -42,7 +41,7 @@ import de.kp.works.core.BaseConfig;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TokenStemmer")
 @Description("A transformation stage that leverages the Spark NLP Stemmer to map an input "
-		+ "text field with token annotations into an output field that contains stemmed tokens.")
+		+ "text field onto an output fields that contain extracted & stemmed tokens.")
 public class TokenStemmer extends BaseCompute {
 
 	private static final long serialVersionUID = -9175482610644361111L;
@@ -75,13 +74,7 @@ public class TokenStemmer extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
-		props.setProperty("output.col", config.outputCol);
-
-		return NLP.stemToken(source, props, true);
-
+		return NLP.stemToken(source, config.inputCol, config.tokenCol, config.outputCol);
 	}
 	
 	@Override
@@ -92,7 +85,7 @@ public class TokenStemmer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the token annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -103,7 +96,9 @@ public class TokenStemmer extends BaseCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
+		fields.add(Schema.Field.of(config.tokenCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
@@ -116,7 +111,11 @@ public class TokenStemmer extends BaseCompute {
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the stemmed token annotations.")
+		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Macro
+		public String tokenCol;
+
+		@Description("The name of the field in the output schema that contains the stemmed tokens.")
 		@Macro
 		public String outputCol;
 		
@@ -125,12 +124,18 @@ public class TokenStemmer extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
+			if (Strings.isNullOrEmpty(tokenCol)) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The name of the field that contains the extracted tokens must not be empty.",
+						this.getClass().getName()));
+			}
+						
 			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the stemmed token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the stemmed tokens must not be empty.",
 								this.getClass().getName()));
 			
 		}

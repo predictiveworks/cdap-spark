@@ -31,7 +31,7 @@ class SAPredictor(model:nlp.annotators.sda.vivekn.ViveknSentimentModel) extends 
   
   def predict(dataset:Dataset[Row], textCol:String, predictionCol:String):Dataset[Row] = {
     
-    val document = prepare(dataset, textCol)
+    val document = normalizedTokens(dataset, textCol)
     /*
      * The columns returned by the model are annotation
      * columns with a Spark-NLP specific format

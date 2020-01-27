@@ -26,7 +26,7 @@ class LemmaPredictor(model:LemmatizerModel) extends AnnotationBase {
   
   def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
     
-    val document = prepare(dataset, textCol)
+    val document = normalizedTokens(dataset, textCol)
 
     model.setInputCols("token")
     model.setOutputCol("lemma")

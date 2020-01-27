@@ -18,6 +18,11 @@
         },
         {
           "widget-type": "textbox",
+          "label": "Token Field",
+          "name": "tokenCol"
+        },
+        {
+          "widget-type": "textbox",
           "label": "Token-Stem Field",
           "name": "outputCol"
         }

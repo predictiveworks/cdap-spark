@@ -26,9 +26,9 @@ class POSPredictor(model:PerceptronModel) extends AnnotationBase {
   
   def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
     
-    val document = prepare(dataset, textCol)
+    val document = normalizedTokens(dataset, textCol)
     
-    model.setInputCols(Array("document", "token"))
+    model.setInputCols(Array("sentence", "token"))
     model.setOutputCol("tags")
     
     val tagged = model.transform(dataset)

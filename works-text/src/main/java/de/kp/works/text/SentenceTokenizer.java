@@ -20,7 +20,6 @@ package de.kp.works.text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -42,7 +41,7 @@ import de.kp.works.core.BaseConfig;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SentenceTokenizer")
 @Description("A transformation stage that leverages the Spark NLP Tokenizer to map an input "
-		+ "text field with sentence annotations into an output field that contains detected sentence tokens.")
+		+ "text field into an output field that contains detected sentence tokens.")
 public class SentenceTokenizer extends BaseCompute {
 
 	private static final long serialVersionUID = 1439261525993214062L;
@@ -75,13 +74,7 @@ public class SentenceTokenizer extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
-		props.setProperty("output.col", config.outputCol);
-
-		return NLP.tokenize(source, props, true);
-
+		return NLP.tokenizeSentences(source, config.inputCol, config.outputCol);
 	}
 	
 	@Override
@@ -92,7 +85,7 @@ public class SentenceTokenizer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentence annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -112,11 +105,11 @@ public class SentenceTokenizer extends BaseCompute {
 
 		private static final long serialVersionUID = 1L;
 
-		@Description("The name of the field in the input schema that contains the sentence annotations.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the token annotations.")
+		@Description("The name of the field in the output schema that contains the extracted tokens.")
 		@Macro
 		public String outputCol;
 		
@@ -125,12 +118,12 @@ public class SentenceTokenizer extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the sentence annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
 			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the extracted tokens must not be empty.",
 								this.getClass().getName()));
 			
 		}

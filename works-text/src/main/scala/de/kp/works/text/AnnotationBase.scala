@@ -23,7 +23,88 @@ import org.apache.spark.sql._
 
 trait AnnotationBase {
   
-  def prepare(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
+  def detectedSentences(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
+    
+    var document = dataset
+    /*
+     * DocumentAssembler is the annotator taking the target text column, 
+     * making it ready for further NLP annotations, into a column called 
+     * document.
+     */
+		val assembler = new nlp.DocumentAssembler()
+		assembler.setInputCol(textCol)
+		assembler.setOutputCol("document")
+		
+		document = assembler.transform(document);
+    /*
+     * SentenceDetector will identify sentence boundaries in paragraphs. 
+     * Since we are reading entire file contents on each row, we want to 
+     * make sure our sentences are properly bounded. 
+     * 
+     * This annotators correctly handles page breaks, paragraph breaks, 
+     * lists, enumerations, and other common formatting features that 
+     * distort the regular flow of the text. 
+     * 
+     * This help the accuracy of the rest of the pipeline. The output 
+     * column for this is the sentence column.
+     */
+		val detector = new nlp.annotators.sbd.pragmatic.SentenceDetector()
+    detector.setInputCols("document")
+    detector.setOutputCol("sentences")   
+    
+    document = detector.transform(document)
+    document
+    
+  }
+  
+  def tokenizedSentences(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
+    
+    var document = dataset
+    /*
+     * DocumentAssembler is the annotator taking the target text column, 
+     * making it ready for further NLP annotations, into a column called 
+     * document.
+     */
+		val assembler = new nlp.DocumentAssembler()
+		assembler.setInputCol(textCol)
+		assembler.setOutputCol("document")
+		
+		document = assembler.transform(document);
+    /*
+     * SentenceDetector will identify sentence boundaries in paragraphs. 
+     * Since we are reading entire file contents on each row, we want to 
+     * make sure our sentences are properly bounded. 
+     * 
+     * This annotators correctly handles page breaks, paragraph breaks, 
+     * lists, enumerations, and other common formatting features that 
+     * distort the regular flow of the text. 
+     * 
+     * This help the accuracy of the rest of the pipeline. The output 
+     * column for this is the sentence column.
+     */
+		val detector = new nlp.annotators.sbd.pragmatic.SentenceDetector()
+    detector.setInputCols("document")
+    detector.setOutputCol("sentences")   
+    
+    document = detector.transform(document)
+    /*
+     * Tokenizer will separate each meaningful word, within each 
+     * sentence. This is very important on NLP since it will identify 
+     * a token boundary.
+     */
+    val tokenizer = new nlp.annotators.Tokenizer()
+    tokenizer.setInputCols("sentences")
+    tokenizer.setOutputCol("token")
+    
+    document = tokenizer.fit(document).transform(document)
+    document
+    
+  }
+  
+  /**
+   * A helper method to annotate a raw text document up to normalized tokens
+   */
+  def normalizedTokens(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
     
     var document = dataset
     /*

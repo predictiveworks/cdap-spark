@@ -20,7 +20,6 @@ package de.kp.works.text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -42,10 +41,10 @@ import de.kp.works.core.BaseConfig;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TokenNormalizer")
 @Description("A transformation stage that leverages the Spark NLP Normalizer to map an input "
-		+ "text field with token annotations into an output field that contains normalized "
-		+ "tokens. The Normalizer will clean up each token, taking as input column token out "
-		+ "from the Tokenizer, and putting normalized tokens in the normal column. Cleaning up"
-		+ "includes removing any non-character strings.")
+		+ "text field onto an output field that contains normalized tokens. The Normalizer "
+		+ "will clean up each token, taking as input column token out from the Tokenizer, "
+		+ "and putting normalized tokens in the normal column. Cleaning up includes removing "
+		+ "any non-character strings.")
 public class TokenNormalizer extends BaseCompute {
 	/*
 	 * The current version is restricted to the EnglishStemmer
@@ -79,13 +78,7 @@ public class TokenNormalizer extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
-		props.setProperty("output.col", config.outputCol);
-
-		return NLP.normalizeToken(source, props, true);
-
+		return NLP.normalizeToken(source, config.inputCol, config.outputCol);
 	}
 	
 	@Override
@@ -96,7 +89,7 @@ public class TokenNormalizer extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the token annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -116,11 +109,11 @@ public class TokenNormalizer extends BaseCompute {
 
 		private static final long serialVersionUID = -2180450887445343238L;
 
-		@Description("The name of the field in the input schema that contains the token annotations.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the normalized token annotations.")
+		@Description("The name of the field in the output schema that contains the normalized tokens.")
 		@Macro
 		public String outputCol;
 		
@@ -129,12 +122,12 @@ public class TokenNormalizer extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
 			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the normalized token annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the normalized tokens must not be empty.",
 								this.getClass().getName()));
 			
 		}

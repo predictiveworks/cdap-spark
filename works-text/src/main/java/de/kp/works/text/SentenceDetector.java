@@ -20,7 +20,6 @@ package de.kp.works.text;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -42,7 +41,7 @@ import de.kp.works.core.BaseConfig;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SentenceAssembler")
 @Description("A transformation stage that leverages the Spark NLP Sentence Detector to map an input "
-		+ "text field with document annotations into an output field that contains detected sentences.")
+		+ "text field onto an output field that contains detected sentences.")
 public class SentenceDetector extends BaseCompute {
 
 	private static final long serialVersionUID = 3247150334409546416L;
@@ -76,13 +75,7 @@ public class SentenceDetector extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
-		props.setProperty("output.col", config.outputCol);
-
-		return NLP.detectSentence(source, props, true);
-
+		return NLP.detectSentence(source, config.inputCol, config.outputCol);
 	}
 	
 	@Override
@@ -93,7 +86,7 @@ public class SentenceDetector extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the document annotations.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -113,11 +106,11 @@ public class SentenceDetector extends BaseCompute {
 
 		private static final long serialVersionUID = -5774189361422297178L;
 
-		@Description("The name of the field in the input schema that contains the document annotations.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String inputCol;
 
-		@Description("The name of the field in the output schema that contains the sentence annotations.")
+		@Description("The name of the field in the output schema that contains the extracted sentences.")
 		@Macro
 		public String outputCol;
 		
@@ -126,12 +119,12 @@ public class SentenceDetector extends BaseCompute {
 
 			if (Strings.isNullOrEmpty(inputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the document annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
 			if (Strings.isNullOrEmpty(outputCol))
 				throw new IllegalArgumentException(
-						String.format("[%s] The name of the field that contains the annotations must not be empty.",
+						String.format("[%s] The name of the field that contains the extracted sentences must not be empty.",
 								this.getClass().getName()));
 			
 		}
