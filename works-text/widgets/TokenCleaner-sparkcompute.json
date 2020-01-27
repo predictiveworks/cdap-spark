@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Token Stemmer",
+"display-name": "Token Cleaner",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -14,7 +14,7 @@
         {
           "widget-type": "textbox",
           "label": "Text Field",
-          "name": "inputCol"
+          "name": "textCol"
         },
         {
           "widget-type": "textbox",
@@ -23,8 +23,24 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token-Stem Field",
-          "name": "outputCol"
+          "label": "Cleaned Field",
+          "name": "cleanedCol"
+        },
+        {
+          "widget-type": "textarea",
+          "label": "Stop Words",
+          "name": "words",
+          "widget-attributes": {
+            "rows": "10"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Word Delimiter",
+          "name": "delimiter",
+          "widget-attributes": {
+            "default": ","
+          }
         }
       ]
     }

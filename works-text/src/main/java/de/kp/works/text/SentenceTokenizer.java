@@ -51,7 +51,6 @@ public class SentenceTokenizer extends BaseCompute {
 		this.config = config;
 	}
 	
-
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 

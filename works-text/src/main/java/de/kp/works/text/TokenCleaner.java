@@ -1,4 +1,4 @@
-package de.kp.works.text.chunking;
+package de.kp.works.text;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,7 +25,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -37,37 +36,22 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-
-import de.kp.works.text.chunk.Chunker;
 import de.kp.works.text.pos.BasePOSConfig;
-import de.kp.works.text.pos.POSManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("POSChunker")
-@Description("A chunking stage that leverages a trained Part-of-Speech model.")
-public class POSChunker extends BaseCompute {
+@Name("TokenCleaner")
+@Description("A transformation stage that leverages the Spark NLP Stopword Cleaner to map an input "
+		+ "text field onto an output token & cleaned token field.")
+public class TokenCleaner extends BaseCompute {
+	
+	private static final long serialVersionUID = 4659252932384061356L;
 
-	private static final long serialVersionUID = 4211653733506144147L;
-
-	private POSChunkerConfig config;
-	private PerceptronModel model;
-
-	public POSChunker(POSChunkerConfig config) {
+	private TokenCleanerConfig config;
+	
+	public TokenCleaner(TokenCleanerConfig config) {
 		this.config = config;
 	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
-
-		model = new POSManager().read(modelFs, modelMeta, config.modelName);
-		if (model == null)
-			throw new IllegalArgumentException(
-					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
-							this.getClass().getName(), config.modelName));
-
-	}
-
+	
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
@@ -80,62 +64,52 @@ public class POSChunker extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
-			/*
-			 * In cases where the input schema is explicitly provided, we determine the
-			 * output schema by explicitly adding the token & chunk columns
-			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.chunkCol);
+
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	/**
-	 * This method computes chunks by applying a trained Part-of-Speech model; as a result,
-	 * the source dataset is enriched by two extra columns of data type Array[String]
-	 */
+
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		Chunker chunker = new Chunker(model);
-		return chunker.chunk(source, config.getRules(), config.textCol, config.tokenCol, config.chunkCol);
-		
+		return NLP.cleanStopwords(source, config.getWords(), config.textCol, config.tokenCol, config.cleanedCol);
 	}
-
-	public void validateSchema(Schema inputSchema, POSChunkerConfig config) {
-
-		/** TEXT COLUMN **/
+	
+	@Override
+	public void validateSchema() {
+		
+		/** INPUT COLUMN **/
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The input schema must contain the field that defines the text document.",
-							this.getClass().getName()));
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.textCol);
-
+		
 	}
 
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	protected Schema getOutputSchema(Schema inputSchema, String tokenField, String chunkField) {
+	protected Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(chunkField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.tokenCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.cleanedCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}
 
-	public static class POSChunkerConfig extends BasePOSConfig {
+	public static class TokenCleanerConfig extends BasePOSConfig {
 
-		private static final long serialVersionUID = -7335693906960966678L;
+		private static final long serialVersionUID = 268522139824357779L;
 
 		@Description("The name of the field in the input schema that contains the document.")
 		@Macro
@@ -145,25 +119,25 @@ public class POSChunker extends BaseCompute {
 		@Macro
 		public String tokenCol;
 
-		@Description("The name of the field in the output schema that contains the extracted chunks.")
+		@Description("The name of the field in the output schema that contains the cleaned tokens.")
 		@Macro
-		public String chunkCol;
+		public String cleanedCol;
 
 		@Description("A delimiter separated list of chunking rules.")
 		@Macro
-		private String rules;
+		private String words;
 
 		@Description("The delimiter used to separate the different chunking rules.")
 		@Macro
 		private String delimiter;
 		
-		public POSChunkerConfig() {
+		public TokenCleanerConfig() {
 			delimiter = ",";
 		}
 
-		public List<String> getRules() {
+		public List<String> getWords() {
 			
-			String cleaned = rules.replaceAll("\\r\\n|\\r|\\n", " ");
+			String cleaned = words.replaceAll("\\r\\n|\\r|\\n", " ");
 			List<String> parsers = new ArrayList<>();
 			
 			for (String token: cleaned.split(delimiter)) {
@@ -189,20 +163,20 @@ public class POSChunker extends BaseCompute {
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(chunkCol)) {
+			if (Strings.isNullOrEmpty(cleanedCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted chunks must not be empty.",
+						"[%s] The name of the field that contains the cleaned tokens must not be empty.",
 						this.getClass().getName()));
 			}
 
-			if (Strings.isNullOrEmpty(rules)) {
+			if (Strings.isNullOrEmpty(words)) {
 				throw new IllegalArgumentException(
-						String.format("[%s] The chunking rules must not be empty.", this.getClass().getName()));
+						String.format("[%s] The stop words must not be empty.", this.getClass().getName()));
 			}
 
 			if (Strings.isNullOrEmpty(delimiter)) {
 				throw new IllegalArgumentException(
-						String.format("[%s] The rule delimiter must not be empty.", this.getClass().getName()));
+						String.format("[%s] The word delimiter must not be empty.", this.getClass().getName()));
 			}
 			
 		}

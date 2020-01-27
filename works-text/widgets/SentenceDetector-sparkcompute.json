@@ -13,7 +13,7 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Document Field",
+          "label": "Text Field",
           "name": "inputCol"
         },
         {
