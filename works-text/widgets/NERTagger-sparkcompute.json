@@ -1,0 +1,42 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "NER Tagger",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+       {
+          "widget-type": "textbox",
+          "label": "Embedding Name",
+          "name": "embeddingName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token Field",
+          "name": "tokenCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Entities Field",
+          "name": "nerCol"
+        }
+      ]
+    }
+  ]
+}

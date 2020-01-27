@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Lemma Builder",
+"display-name": "Word2Vec Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -18,23 +18,60 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Corpus Field",
-          "name": "lineCol"
-        },
+          "label": "Text Field",
+          "name": "textCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
-          "label": "Lemma Delimiter",
-          "name": "keyDelimiter",
+          "label": "Maximum Iterations",
+          "name": "maxIter",
           "widget-attributes": {
-            "default": "->"
+            "default": "1"
           }
         },
         {
           "widget-type": "textbox",
-          "label": "Token Delimiter",
-          "name": "valueDelimiter",
+          "label": "Learning Rate",
+          "name": "stepSize",
           "widget-attributes": {
-            "default": "\\S+"
+            "default": "0.025"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Vector Size",
+          "name": "vectorSize",
+          "widget-attributes": {
+            "default": "100"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Window Size",
+          "name": "windowSize",
+          "widget-attributes": {
+            "default": "5"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Word Frequency",
+          "name": "minCount",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Sentence Length",
+          "name": "maxSentenceLength",
+          "widget-attributes": {
+            "default": "1000"
           }
         }
       ]

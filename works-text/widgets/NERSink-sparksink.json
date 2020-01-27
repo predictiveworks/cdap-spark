@@ -1,0 +1,48 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "NER Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+       {
+          "widget-type": "textbox",
+          "label": "Embedding Name",
+          "name": "embeddingName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimum Epochs",
+          "name": "minEpochs",
+          "widget-attributes": {
+            "default": "10"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Epochs",
+          "name": "maxEpochs",
+          "widget-attributes": {
+            "default": "1000"
+          }
+        }
+      ]
+    }
+  ]
+}
