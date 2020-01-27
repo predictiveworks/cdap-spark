@@ -1,4 +1,4 @@
-package de.kp.works.text.pos;
+package de.kp.works.text.embeddings;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,7 +25,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -37,29 +36,27 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
+import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("POSTagger")
-@Description("A tagging stage that leverages a trained Part-of-Speech model.")
-public class POSTagger extends BaseCompute {
+@Name("Sent2Vec")
+@Description("An embedding stage that leverages a trained Word2Vec model to map an input "
+		+ "text field onto an output sentence & sentence embedding field with a user-specific pooling strategy.")
+public class Sent2Vec extends BaseCompute {
 
-	private static final long serialVersionUID = 8592003792127757573L;
+	private static final long serialVersionUID = 2454938187092703188L;
 
-	private POSTaggerConfig config;
-	private PerceptronModel model;
-
-	public POSTagger(POSTaggerConfig config) {
-		this.config = config;
-	}
+	private Sent2VecConfig config;
+	private Word2VecModel model;
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new POSManager().read(modelFs, modelMeta, config.modelName);
+		model = new Word2VecManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
+					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -81,28 +78,22 @@ public class POSTagger extends BaseCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema,config.sentenceCol, config.embeddingCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	/**
-	 * This method computes predictions either by applying a trained Part-of-Speech
-	 * model; as a result,  the source dataset is enriched by two extra columns of
-	 * data type Array[String]
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		POSPredictor predictor = new POSPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
-
-		return predictions;
+		Sent2VecEmbedder embedder = new Sent2VecEmbedder(model);
+		return embedder.embed(source, config.getStrategy(), config.textCol, config.sentenceCol, config.embeddingCol);
 		
 	}
 
-	public void validateSchema(Schema inputSchema, POSTaggerConfig config) {
+	public void validateSchema(Schema inputSchema, Sent2VecConfig config) {
 
 		/** TEXT COLUMN **/
 
@@ -121,55 +112,62 @@ public class POSTagger extends BaseCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	public Schema getOutputSchema(Schema inputSchema, String tokenField, String predictionField) {
+	public Schema getOutputSchema(Schema inputSchema, String sentenceField, String embeddingField) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(sentenceField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(embeddingField, Schema.arrayOf(Schema.arrayOf(Schema.of(Schema.Type.FLOAT)))));
 		
-		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
+		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}
+	
+	public static class Sent2VecConfig extends BaseWord2VecConfig {
 
-	public static class POSTaggerConfig extends BasePOSConfig {
+		private static final long serialVersionUID = 5849792304953202359L;
 
-		private static final long serialVersionUID = 6046559336809356607L;
-
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description("The name of the field in the output schema that contains the extracted sentences.")
 		@Macro
-		public String textCol;
+		public String sentenceCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description("The name of the field in the output schema that contains the sentence embeddings.")
 		@Macro
-		public String tokenCol;
+		public String embeddingCol;
 
-		@Description("The name of the field in the output schema that contains the predicted POS tags.")
+		@Description("The pooling strategy how to merge word embedings into sentence embeddings. Supported values "
+				+ "are 'average' and 'sum'. Default is 'average'")
 		@Macro
-		public String predictionCol;
+		public String poolingStrategy;
+		
+		public Sent2VecConfig() {
+			poolingStrategy = "average";
+		}
+		public String getStrategy() {
+			return (poolingStrategy.equals("average")) ? "AVERAGE" : "SUM";
+		}
 
 		public void validate() {
 			super.validate();
 			
-			if (Strings.isNullOrEmpty(textCol)) {
+			if (Strings.isNullOrEmpty(sentenceCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the text document must not be empty.",
+						"[%s] The name of the field that contains the extracted sentences must not be empty.",
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(tokenCol)) {
+			if (Strings.isNullOrEmpty(embeddingCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
+						"[%s] The name of the field that contains the sentence embeddings must not be empty.",
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(predictionCol)) {
+			if (Strings.isNullOrEmpty(poolingStrategy)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted POS tags must not be empty.",
+						"[%s] The name of the field that contains the pooling strategy must not be empty.",
 						this.getClass().getName()));
 			}
 			
 		}
-		
 	}
 }

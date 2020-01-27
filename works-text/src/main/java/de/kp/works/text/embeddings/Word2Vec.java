@@ -1,4 +1,4 @@
-package de.kp.works.text.pos;
+package de.kp.works.text.embeddings;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -25,7 +25,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -39,27 +38,24 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("POSTagger")
-@Description("A tagging stage that leverages a trained Part-of-Speech model.")
-public class POSTagger extends BaseCompute {
+@Name("Word2Vec")
+@Description("An embedding stage that leverages a trained Word2Vec model to map an input "
+		+ "text field onto an output token & word embedding field.")
+public class Word2Vec extends BaseCompute {
 
-	private static final long serialVersionUID = 8592003792127757573L;
+	private static final long serialVersionUID = 1849637381439375304L;
 
-	private POSTaggerConfig config;
-	private PerceptronModel model;
-
-	public POSTagger(POSTaggerConfig config) {
-		this.config = config;
-	}
+	private Word2VecConfig config;
+	private Word2VecModel model;
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new POSManager().read(modelFs, modelMeta, config.modelName);
+		model = new Word2VecManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
+					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -81,28 +77,37 @@ public class POSTagger extends BaseCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.embeddingCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	/**
-	 * This method computes predictions either by applying a trained Part-of-Speech
-	 * model; as a result,  the source dataset is enriched by two extra columns of
-	 * data type Array[String]
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		POSPredictor predictor = new POSPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
-
-		return predictions;
+		Word2VecEmbedder embedder = new Word2VecEmbedder(model);
+		return embedder.embed(source, config.textCol, config.tokenCol, config.embeddingCol);
 		
 	}
 
-	public void validateSchema(Schema inputSchema, POSTaggerConfig config) {
+	/**
+	 * A helper method to compute the output schema in that use cases where an input
+	 * schema is explicitly given
+	 */
+	public Schema getOutputSchema(Schema inputSchema, String tokenField, String embeddingField) {
+
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
+		
+		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(embeddingField, Schema.arrayOf(Schema.arrayOf(Schema.of(Schema.Type.FLOAT)))));
+		
+		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
+
+	}
+
+	public void validateSchema(Schema inputSchema, Word2VecConfig config) {
 
 		/** TEXT COLUMN **/
 
@@ -116,46 +121,21 @@ public class POSTagger extends BaseCompute {
 		isString(config.textCol);
 
 	}
+	
+	public static class Word2VecConfig extends BaseWord2VecConfig {
 
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	public Schema getOutputSchema(Schema inputSchema, String tokenField, String predictionField) {
-
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		
-		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
-
-	}
-
-	public static class POSTaggerConfig extends BasePOSConfig {
-
-		private static final long serialVersionUID = 6046559336809356607L;
-
-		@Description("The name of the field in the input schema that contains the document.")
-		@Macro
-		public String textCol;
+		private static final long serialVersionUID = 1874465715678995387L;
 
 		@Description("The name of the field in the output schema that contains the extracted tokens.")
 		@Macro
 		public String tokenCol;
 
-		@Description("The name of the field in the output schema that contains the predicted POS tags.")
+		@Description("The name of the field in the output schema that contains the word embeddings.")
 		@Macro
-		public String predictionCol;
+		public String embeddingCol;
 
 		public void validate() {
 			super.validate();
-			
-			if (Strings.isNullOrEmpty(textCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the text document must not be empty.",
-						this.getClass().getName()));
-			}
 			
 			if (Strings.isNullOrEmpty(tokenCol)) {
 				throw new IllegalArgumentException(String.format(
@@ -163,13 +143,12 @@ public class POSTagger extends BaseCompute {
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(predictionCol)) {
+			if (Strings.isNullOrEmpty(embeddingCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted POS tags must not be empty.",
+						"[%s] The name of the field that contains the word embeddings must not be empty.",
 						this.getClass().getName()));
 			}
 			
 		}
-		
 	}
 }

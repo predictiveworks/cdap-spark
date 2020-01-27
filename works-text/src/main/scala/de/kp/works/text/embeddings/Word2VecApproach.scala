@@ -23,7 +23,7 @@ import com.johnsnowlabs.nlp._
 import com.johnsnowlabs.nlp.AnnotatorType.{DOCUMENT, TOKEN, WORD_EMBEDDINGS}
 
 import org.apache.spark.ml.PipelineModel
-import org.apache.spark.ml.feature.Word2Vec
+import org.apache.spark.ml.feature.{Word2Vec => SparkWord2Vec}
 import org.apache.spark.ml.linalg.Vector
 
 import org.apache.spark.ml.param._
@@ -85,7 +85,7 @@ class Word2VecApproach(override val uid: String) extends AnnotatorApproach[Word2
      * STEP #2: Train Apache Spark Word2VecModel and
      * extract the respective vocabulary
      */
-    val words2vec = new Word2Vec()
+    val words2vec = new SparkWord2Vec()
     words2vec.setMaxIter($(maxIter))
     words2vec.setStepSize($(stepSize))
     

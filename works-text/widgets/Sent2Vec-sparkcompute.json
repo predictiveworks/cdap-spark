@@ -1,0 +1,49 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Sent2Vec Embedding",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Sentence Field",
+          "name": "sentenceCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Embedding Field",
+          "name": "embeddingCol"
+        },
+        {
+          "widget-type": "select",
+          "label": "Pooling Strategy",
+          "name": "poolingStrategy",
+          "widget-attributes": {
+            "values": [
+              "average",
+              "sum"
+            ],
+            "default": "average"
+          }
+        }        
+      ]
+    }
+  ]
+}
