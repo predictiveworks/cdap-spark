@@ -27,7 +27,6 @@ The following NLP features are externalized as pipeline plugins:
 * Spell Checking
 * Stemmer
 * Stop Words Removal
-* Text Matching
 * Tokenization
 * Word Embedding (GloVe and Word2Vec)
 
@@ -35,5 +34,6 @@ The following NLP features are externalized as pipeline plugins:
 
 | Plugin | Description | Plugin Type
 | --- | --- | --- |
-| DateMatcher | This plugin detects a variety of different forms of date and time expressions and converts them into a provided date format. | SparkCompute
-| RegexMatcher | This plugin applies a set of regular expression rules and detects a list of chunks that match these rules.| SparkCompute 
+| DateMatcher | Plugin to detect a variety of different forms of date and time expressions and converts them into a provided date format. | SparkCompute
+| PhraseMatcher | Plugin that applies a set of text phrases and identifies document and sentences where these phrases occur. | SparkCompute 
+| RegexMatcher | Plugin that applies a set of regular expression rules and detects a list of chunks that match these rules.| SparkCompute 

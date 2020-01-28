@@ -41,7 +41,7 @@ import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("PhraseMatcher")
-@Description("A transformation stage that leverages the Spark NLP Date Matcher to detected provided ."
+@Description("A transformation stage that leverages the Spark NLP Text Matcher to detected provided ."
 		+ "phrases in the input text document.")
 public class PhraseMatcher extends BaseCompute {
 
