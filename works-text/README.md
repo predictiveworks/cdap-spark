@@ -16,14 +16,12 @@ The following NLP features are externalized as pipeline plugins:
 * Bert Embeddings
 * Chunk Embedding
 * Chunking
-* Date Matching
 * Dependency Parsing
 * Lemmatizer
 * NGrams
 * Named Entity Recognition
 * Normalizer
 * Part of Speech Tagging
-* Regex Matching
 * Sentence Detection
 * Sentiment Detection
 * Spell Checking
@@ -32,3 +30,10 @@ The following NLP features are externalized as pipeline plugins:
 * Text Matching
 * Tokenization
 * Word Embedding (GloVe and Word2Vec)
+
+## Matching
+
+| Plugin | Description | Plugin Type
+| --- | --- | --- |
+| DateMatcher | This plugin detects a variety of different forms of date and time expressions and converts them into a provided date format. | SparkCompute
+| RegexMatcher | This plugin applies a set of regular expression rules and detects a list of chunks that match these rules.| SparkCompute 
