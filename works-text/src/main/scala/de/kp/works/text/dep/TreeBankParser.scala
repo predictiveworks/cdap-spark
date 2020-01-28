@@ -33,6 +33,9 @@ trait TreeBankParams extends Params {
    
   final val lineCol = new Param[String](TreeBankParams.this, "lineCol",
       "Name of the input text field that contains the annotated sentences for training purpose.", (value:String) => true)
+
+  def setLineCol(value:String): this.type = set(lineCol, value)
+  setDefault(lineCol -> "line")
   
   def validateSchema(schema:StructType):Unit = {
     
@@ -66,13 +69,11 @@ class TreeBankParser(override val uid: String) extends Transformer with TreeBank
      * seperated by an empty line
      */
     val buffer = StringBuilder.newBuilder
-    lines.foreach(line => {
-      if (line.isEmpty) buffer.append("##") else buffer.append(line + "#")
-    })
+    lines.foreach(line => buffer.append(line + "#"))
 
     val text = buffer.toString()
     val sections = text.split("##").toList
-
+    
     val sentences = sections.map(
       s => {
         val lines = s.split("#").toList

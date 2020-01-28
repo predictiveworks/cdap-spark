@@ -1,0 +1,52 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Word Dependency Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Iterations",
+          "name": "numIter",
+          "widget-attributes": {
+            "default": "10"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Corpus Format",
+          "name": "format",
+          "widget-attributes": {
+            "values": [
+              "conll-u",
+              "treebank"
+            ],
+            "default": "conll-u"
+          }
+        }        
+      ]
+    }
+  ]
+}

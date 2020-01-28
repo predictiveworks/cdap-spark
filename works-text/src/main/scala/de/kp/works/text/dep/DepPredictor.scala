@@ -1,4 +1,4 @@
-package de.kp.works.text.ner
+package de.kp.works.text.dep
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -17,38 +17,33 @@ package de.kp.works.text.ner
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-
-import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel
-
-import de.kp.works.text.AnnotationBase
-import de.kp.works.text.embeddings.Word2VecModel
+import com.johnsnowlabs.nlp.annotators.parser.dep.DependencyParserModel
+import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel
 
 import org.apache.spark.sql._
+import de.kp.works.text.AnnotationBase
 
-class NERPredictor(model:NerCrfModel, word2vec:Word2VecModel) extends AnnotationBase {
-  
-  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, nerCol:String):Dataset[Row] = {
+class DepPredictor(model:DependencyParserModel, perceptron:PerceptronModel) extends AnnotationBase {
+   
+  def predict(dataset:Dataset[Row], textCol:String, sentenceCol:String, dependencyCol:String):Dataset[Row] = {
     
     var document = normalizedTokens(dataset, textCol)
-    /*
-     * 'sentences' is the column build by the 'normalizedTokens'
-     * method is named slightly different from the CoNLL Parser
-     */
-    word2vec.setInputCols(Array("sentences", "token"))
-    word2vec.setOutputCol("embeddings")
     
-    document = word2vec.transform(document)
+    perceptron.setInputCols(Array("sentences", "token"))
+    perceptron.setOutputCol("pos")
     
-    model.setInputCols("sentences", "token", "pos", "embeddings")
-    model.setOutputCol("ner")
-
+    document = perceptron.transform(document)
+    
+    model.setInputCols(Array("sentences", "token", "pos"))
+    model.setOutputCol("dependency")
+    
     document = model.transform(document)
-
+    
     val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token","ner"))
-    .setOutputCols(Array(tokenCol, nerCol))
+    .setInputCols(Array("sentences", "dependency"))
+    .setOutputCols(Array(sentenceCol, dependencyCol))
     
     finisher.transform(document)
-
   }
+
 }

@@ -35,6 +35,9 @@ trait CoNLLUParams extends Params {
    
   final val lineCol = new Param[String](CoNLLUParams.this, "lineCol",
       "Name of the input text field that contains the annotated sentences for training purpose.", (value:String) => true)
+
+  def setLineCol(value:String): this.type = set(lineCol, value)
+  setDefault(lineCol -> "line")
   
   def validateSchema(schema:StructType):Unit = {
     
