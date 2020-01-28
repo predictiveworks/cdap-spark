@@ -34,6 +34,6 @@ The following NLP features are externalized as pipeline plugins:
 
 | Plugin | Description | Plugin Type
 | --- | --- | --- |
-| DateMatcher | Plugin to detect a variety of different forms of date and time expressions and converts them into a provided date format. | SparkCompute
-| PhraseMatcher | Plugin that applies a set of text phrases and identifies document and sentences where these phrases occur. | SparkCompute 
-| RegexMatcher | Plugin that applies a set of regular expression rules and detects a list of chunks that match these rules.| SparkCompute 
+| DateMatcher | Detects a variety of different forms of date and time expressions and converts them into a provided date format. | SparkCompute
+| PhraseMatcher | Applies a set of text phrases and identifies document and sentences where these phrases occur. | SparkCompute 
+| RegexMatcher | Applies a set of regular expression rules and detects a list of chunks that match these rules.| SparkCompute 
