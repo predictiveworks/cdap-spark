@@ -37,25 +37,47 @@ A frequent requirement for many time series analysis methods is that the data ne
 
 ## Time Models
 
-### ARIMA
+Supported criteria for parameter tuning:
+
+| Criterion | Description |
+| --- | --- |
+| AIC | Akaike information criterion |
+| AICC | Akaike information criterion with corrections for finite sample sizes |
+| BIC | Bayesian information criterion |
+
+
+### ARIMA 
 
 ### ARMA
 
-### ARYuleWalker
+Autoregressive moving average (ARMA) regression: The ARMA model plays an important role in understanding & predicting future values in the time series. 
+The model combines both AR model and MA model. 
 
-### AutoAR
+The AR part fits the values of the series on its own lagged values and the MA part linearly models the error term with the past errors.
 
-### AutoARIMA
+### AR YuleWalker
 
-### AutoARMA
+### AR
 
-### AutoMA
+### Auto-AR
 
-### AutoRegression
+### Auto-ARIMA
+
+### Auto-ARMA
+
+The Auto-ARMA model finds best parameters for an ARMA model (p: order of the autoregressive part, q: order of the moving average part) according to the different information criteria:
+
+* AIC
+* AICC
+* BIC
+
+### Auto-MA
+
+### Auto Regression
 
 ### DiffAutoRegression
 
-### MovingAverage
+### Moving Average
 
 ## Demand Prediction
 
