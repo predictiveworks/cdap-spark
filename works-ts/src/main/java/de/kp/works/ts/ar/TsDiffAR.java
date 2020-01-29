@@ -20,4 +20,14 @@ package de.kp.works.ts.ar;
 
 public class TsDiffAR {
 
+	public static class TsDiffARConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = -8352931460177951709L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
+
 }

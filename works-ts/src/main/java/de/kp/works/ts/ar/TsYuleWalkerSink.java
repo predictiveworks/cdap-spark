@@ -20,4 +20,14 @@ package de.kp.works.ts.ar;
 
 public class TsYuleWalkerSink {
 
+	public static class TsYuleWalkerSinkConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = 8806382396675615715L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
+
 }

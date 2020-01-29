@@ -20,4 +20,14 @@ package de.kp.works.ts.ar;
 
 public class TsDiffARSink {
 
+	public static class TsDiffARSinkConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = 1752119868942406870L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
+
 }

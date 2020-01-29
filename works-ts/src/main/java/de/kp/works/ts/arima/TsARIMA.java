@@ -20,4 +20,9 @@ package de.kp.works.ts.arima;
 
 public class TsARIMA {
 
+	public static class TsARIMAConfig extends BaseARIMAConfig {
+
+		private static final long serialVersionUID = -4483518955647431101L;
+		
+	}
 }

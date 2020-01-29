@@ -20,4 +20,13 @@ package de.kp.works.ts.arma;
 
 public class TsARMA {
 
+	public static class TsARMAConfig extends BaseARMAConfig {
+
+		private static final long serialVersionUID = -2565279706592741956L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
 }

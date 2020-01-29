@@ -30,4 +30,8 @@ public class BaseARConfig extends TimeConfig {
 	@Macro
 	public String modelName;
 
+	public void validate() {
+		super.validate();
+	}
+
 }

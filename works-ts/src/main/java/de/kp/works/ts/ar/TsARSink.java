@@ -20,4 +20,13 @@ package de.kp.works.ts.ar;
 
 public class TsARSink {
 
+	public static class TsARSinkConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = -2765469493994086880L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
 }

@@ -20,4 +20,14 @@ package de.kp.works.ts.ar;
 
 public class TsYuleWalker {
 
+	public static class TsYuleWalkerConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = -864185065637543716L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
+
 }

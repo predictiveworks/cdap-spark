@@ -18,6 +18,18 @@ package de.kp.works.ts.ma;
  * 
  */
 
+import de.kp.works.ts.arma.BaseARMAConfig;
+
 public class TsMASink {
+
+	public static class TsMASinkConfig extends BaseARMAConfig {
+
+		private static final long serialVersionUID = -617701648322006627L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
 
 }

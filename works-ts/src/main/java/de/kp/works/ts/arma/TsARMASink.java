@@ -20,4 +20,14 @@ package de.kp.works.ts.arma;
 
 public class TsARMASink {
 
+	public static class TsARMASinkConfig extends BaseARMAConfig {
+
+		private static final long serialVersionUID = 4387793214862986873L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
+
 }

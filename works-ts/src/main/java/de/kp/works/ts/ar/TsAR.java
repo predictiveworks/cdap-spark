@@ -20,4 +20,13 @@ package de.kp.works.ts.ar;
 
 public class TsAR {
 
+	public static class TsARConfig extends BaseARConfig {
+
+		private static final long serialVersionUID = 7633572327423290491L;
+
+		public void validate() {
+			super.validate();
+		}
+		
+	}
 }
