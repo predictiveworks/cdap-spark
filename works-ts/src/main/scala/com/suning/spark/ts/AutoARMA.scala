@@ -46,19 +46,20 @@ class AutoARMA(override val uid: String, inputCol: String, timeCol: String, p_Ma
   private var q_Best: Int = _
   var best: ((Int, Int), Double) = _
 
+  def getPBest:Int = p_Best
+  
+  def getQBest:Int = q_Best
 
   override def fitImpl(df: DataFrame): this.type = {
     val n = df.count().toInt
     criterionValue = criterionCalcul(df, n, criterion)
-
-    println(criterionValue)
 
     p_Best = (criterionValue.minBy(_._2)._1)._1
 
     q_Best = (criterionValue.minBy(_._2)._1)._2
 
     println(s"Best criterion value is ${criterionValue.valuesIterator.min} by p: ${p_Best} and q: ${q_Best}")
-    //
+
     df.persist()
     lr_Autoarma = ARMA(inputCol, timeCol, p_Best, q_Best,
       regParam, standardization, elasticNetParam, withIntercept)
@@ -72,28 +73,32 @@ class AutoARMA(override val uid: String, inputCol: String, timeCol: String, p_Ma
 
   def criterionCalcul(df: DataFrame, n: Int, criterion: String): Map[(Int, Int), Double] = {
 
-    (1 to q_Max).map(i => {
-      val lr_Autoarma = ARMA(inputCol, timeCol, 0, i,
-        regParam, standardization, elasticNetParam, withIntercept)
-      val model = lr_Autoarma.fit(df)
-      val pred = model.transform(df)
-      val residuals = pred.withColumn("residual", -col("prediction") + col("label")).select("residual")
+//    (1 to q_Max).map(i => {
+//      val lr_Autoarma = ARMA(inputCol, timeCol, 0, i,
+//        regParam, standardization, elasticNetParam, withIntercept)
+//      val model = lr_Autoarma.fit(df)
+//      val pred = model.transform(df)
+//      val residuals = pred.withColumn("residual", -col("prediction") + col("label")).select("residual")
+//
+//      var criterionIte = TimeSeriesUtil.AIC(residuals, 1, n)
+//
+//      if (criterion == "aic") {
+//        criterionIte = TimeSeriesUtil.AIC(residuals, i, n)
+//        println(s"AIC value for p: 0 and q: ${i} is ${criterionIte}")
+//      } else if (criterion == "bic") {
+//        criterionIte = TimeSeriesUtil.BIC(residuals, i, n)
+//        println(s"BIC value for p: 0 and q: ${i} is ${criterionIte}")
+//      } else {
+//        criterionIte = TimeSeriesUtil.AICc(residuals, i, n)
+//        println(s"AICC value for p: 0 and q: ${i} is ${criterionIte}")
+//      }
+//      criterionValue += (0, i) -> criterionIte
+//    })
 
-      var criterionIte = TimeSeriesUtil.AIC(residuals, 1, n)
-
-      if (criterion == "aic") {
-        criterionIte = TimeSeriesUtil.AIC(residuals, i, n)
-        println(s"AIC value for p: 0 and q: ${i} is ${criterionIte}")
-      } else if (criterion == "bic") {
-        criterionIte = TimeSeriesUtil.BIC(residuals, i, n)
-        println(s"BIC value for p: 0 and q: ${i} is ${criterionIte}")
-      } else {
-        criterionIte = TimeSeriesUtil.AICc(residuals, i, n)
-        println(s"AICC value for p: 0 and q: ${i} is ${criterionIte}")
-      }
-      criterionValue += (0, i) -> criterionIte
-    })
-
+    /*
+     * We restrict to genuine ARMA models, i.e. p, q > 0; note, this
+     * is different from the Suning's original implementation
+     */
     (1 to p_Max).map(i => {
       (0 to q_Max).map(j => {
         val lr_Autoarma = ARMA(inputCol, timeCol, i, j,

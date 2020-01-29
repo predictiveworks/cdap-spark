@@ -65,23 +65,34 @@ class ARYuleWalker(override val uid: String, inputCol: String, timeCol: String, 
     })
 
     val denseMat: RowMatrix = new RowMatrix(df.sqlContext.sparkContext.parallelize(denseData, 2))
-    //               denseMat.rows.collect.foreach(println)
-    //        println(denseMat.numRows, denseMat.numCols)
-
     val InversedenseMat = TimeSeriesUtil.computeInverse(denseMat)
 
     weights = Vectors.dense(InversedenseMat.multiply(corrslist0).values)
     this
   }
 
-  override def transformImpl(df: DataFrame): DataFrame = {
+  def getFeatureCols:Array[String] = features
+  
+  def prepareARYuleWalker(df:DataFrame): DataFrame = {
+    
     require(p > 0, s"p can not be 0")
     var newDF = df.select(inputCol, timeCol)
+
     newDF = f2v.transform(TimeSeriesUtil.LagCombination(newDF, inputCol, timeCol, p)
       .filter(col(inputCol + "_lag_" + p).isNotNull))
+   
+    newDF
+    
+  }
+  override def transformImpl(df: DataFrame): DataFrame = {
+    
+    val newDF = prepareARYuleWalker(df)
     newDF.withColumn("prediction", predict(newDF("features")))
+
   }
 
+  
+  
   override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
     require(p > 0, s"p can not be 0")
     val newDF = transform(df)
@@ -101,6 +112,10 @@ class ARYuleWalker(override val uid: String, inputCol: String, timeCol: String, 
 
     val prediction = listPrediction.slice(0, numAhead).reverse
     prediction
+  }
+
+  def setCoefficients(weights:Vector) {
+    this.weights = weights
   }
 
   def getCoefficients(): Vector = {

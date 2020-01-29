@@ -42,12 +42,19 @@ class AutoARIMA(override val uid: String, inputCol: String, timeCol: String, p_M
 
   private var lr_Autoarima: ARIMA = _
   var criterionValue = Map[(Int, Int, Int), Double]()
+  
   private var p_Best: Int = _
   private var d_Best: Int = _
   private var q_Best: Int = _
+  
   var best: ((Int, Int, Int), Double) = _
 
+  def getPBest:Int = p_Best
 
+  def getDBest:Int = d_Best
+
+  def getQBest:Int = q_Best
+  
   override def fitImpl(df: DataFrame): this.type = {
     val n = df.count().toInt
     criterionValue = criterionCalcul(df, n, criterion)
@@ -76,33 +83,38 @@ class AutoARIMA(override val uid: String, inputCol: String, timeCol: String, p_M
   def criterionCalcul(df: DataFrame, n: Int, criterion: String): Map[(Int, Int, Int), Double] = {
     //    does not allow p=q=0
 
-    (0 to d_Max).map(k => {
-      (1 to q_Max).map(j => {
-        val lr_Autoarima = ARIMA(inputCol, timeCol, 0, k, j,
-          regParam, standardization, elasticNetParam, withIntercept, meanOut)
-        val model = lr_Autoarima.fit(df)
-        val pred = model.transform(df)
-        val residuals = pred.withColumn("residual", -col("prediction") + col("label")).select("residual")
+//    (0 to d_Max).map(k => {
+//      (1 to q_Max).map(j => {
+//        val lr_Autoarima = ARIMA(inputCol, timeCol, 0, k, j,
+//          regParam, standardization, elasticNetParam, withIntercept, meanOut)
+//        val model = lr_Autoarima.fit(df)
+//        val pred = model.transform(df)
+//        val residuals = pred.withColumn("residual", -col("prediction") + col("label")).select("residual")
+//
+//        var criterionIte = TimeSeriesUtil.AIC(residuals, 1, n)
+//
+//        if (criterion == "aic") {
+//          criterionIte = TimeSeriesUtil.AIC(residuals, (k+0+j), n)
+//          println(s"AIC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
+//        } else if (criterion == "bic") {
+//          criterionIte = TimeSeriesUtil.BIC(residuals, (k+0+j), n)
+//          println(s"BIC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
+//        } else {
+//          criterionIte = TimeSeriesUtil.AICc(residuals, (k+0+j), n)
+//          println(s"AICC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
+//        }
+//        criterionValue += (0, k, j) -> criterionIte
+//      })
+//    })
 
-        var criterionIte = TimeSeriesUtil.AIC(residuals, 1, n)
-
-        if (criterion == "aic") {
-          criterionIte = TimeSeriesUtil.AIC(residuals, (k+0+j), n)
-          println(s"AIC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
-        } else if (criterion == "bic") {
-          criterionIte = TimeSeriesUtil.BIC(residuals, (k+0+j), n)
-          println(s"BIC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
-        } else {
-          criterionIte = TimeSeriesUtil.AICc(residuals, (k+0+j), n)
-          println(s"AICC value for p: ${0}, d: ${k}, and q: ${j} is ${criterionIte}")
-        }
-        criterionValue += (0, k, j) -> criterionIte
-      })
-    })
-
-    (0 to d_Max).map(k => {
+    /*
+     * We restrict to genuine ARIMA models, i.e. p, d, q > 0; note, this
+     * is different from the Suning's original implementation
+     */
+    
+    (1 to d_Max).map(k => {
       (1 to p_Max).map(i => {
-        (0 to q_Max).map(j => {
+        (1 to q_Max).map(j => {
           val lr_Autoarima = ARIMA(inputCol, timeCol, i, k, j,
             regParam, standardization, elasticNetParam, withIntercept, meanOut)
           val model = lr_Autoarima.fit(df)

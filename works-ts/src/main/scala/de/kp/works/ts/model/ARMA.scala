@@ -49,28 +49,20 @@ class ARMA(override val uid: String)
   def this() = this(Identifiable.randomUID("ARMA"))
 
   override def fit(dataset:Dataset[_]):ARMAModel = {
-    /*
-     * We restrict to an ARMA model
-     */
+
     require($(p) > 0 && $(q) > 0, s"Parameters p, q must be positive")
  
-    /* Delegate to Suning ARIMA */
     val suning = SuningARMA(
       $(valueCol), $(timeCol), $(p), $(q),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
       
-    /*
-     * The Suning ARMA model is an instance of [SuningARMA]
-     */
     val model = suning.fit(dataset.toDF)
 
     val intercept = model.getIntercept
     val weights = model.getWeights
 
-    /* Build ARMAModel */
     copyValues(new ARMAModel(uid, intercept, weights).setParent(this))
     
-    null
   }
 
   override def transformSchema(schema:StructType):StructType = {

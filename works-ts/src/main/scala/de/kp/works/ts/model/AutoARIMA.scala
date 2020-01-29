@@ -17,9 +17,9 @@ package de.kp.works.ts.model
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import com.suning.spark.ts.{AutoMA => SuningAutoMA}
-import com.suning.spark.ts.{MovingAverage => SuningMovingAverage}
 
+import com.suning.spark.ts.{AutoARIMA => SuningAutoARIMA}
+import com.suning.spark.ts.{ARIMA => SuningARIMA}
 import com.suning.spark.regression.{LinearRegression => SuningRegression}
 
 import org.apache.spark.ml.{Estimator,Model}
@@ -37,70 +37,80 @@ import org.apache.spark.ml.util._
 import org.apache.spark.sql._
 import org.apache.spark.sql.types._
 
-trait AutoMAParams extends ModelParams with HasQMaxParam 
+trait AutoARIMAParams extends ModelParams 
+      with HasPMaxParam with HasDMaxParam with HasQMaxParam 
       with HasRegParam with HasElasticNetParam 
-      with HasStandardizationParam with HasFitInterceptParam 
-      with HasMeanOutParam with HasEarlyStopParam with HasCriterionParam {
+      with HasStandardizationParam with HasFitInterceptParam
+      with HasMeanOutParam with HasCriterionParam {
   
 }
 
-class AutoMA(override val uid: String)
-  extends Estimator[AutoMAModel] with AutoMAParams with DefaultParamsWritable {
+class AutoARIMA(override val uid: String)
+  extends Estimator[AutoARIMAModel] with AutoARIMAParams with DefaultParamsWritable {
 
-  def this() = this(Identifiable.randomUID("AutoMA"))
+  def this() = this(Identifiable.randomUID("AutoARIMA"))
 
-  override def fit(dataset:Dataset[_]):AutoMAModel = {
+  override def fit(dataset:Dataset[_]):AutoARIMAModel = {
 
-    require($(qmax) > 0, s"Parameter qmax  must be positive")
+    require($(pmax) > 0 && $(dmax) > 0 && $(qmax) > 0, s"Parameter pmax, dmax, qmax  must be positive")
  
-    val suning = SuningAutoMA($(valueCol), $(timeCol), $(qmax),
-      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut), $(criterion), $(earlyStop))
+    val suning = SuningAutoARIMA($(valueCol), $(timeCol), $(pmax), $(dmax), $(qmax),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut), $(criterion))
       
     val model = suning.fit(dataset.toDF)
 
+    val p = model.getPBest
+    val d = model.getDBest
     val q = model.getQBest
+
     val intercept = model.getIntercept
     val weights = model.getWeights
 
-    copyValues(new AutoMAModel(uid, q, intercept, weights).setParent(this))
-
+    copyValues(new AutoARIMAModel(uid, p, d, q, intercept, weights).setParent(this))
+    
   }
 
   override def transformSchema(schema:StructType):StructType = {
     schema
   }
 
-  override def copy(extra:ParamMap):AutoMA = defaultCopy(extra)
+  override def copy(extra:ParamMap):AutoARIMA = defaultCopy(extra)
   
 }
 
-class AutoMAModel(override val uid:String, q:Int, intercept:Double, weights:Vector)
-  extends Model[AutoMAModel] with AutoMAParams with MLWritable {
+class AutoARIMAModel(override val uid:String, p:Int, d:Int, q:Int, intercept:Double, weights:Vector)
+  extends Model[AutoARIMAModel] with AutoARIMAParams with MLWritable {
 
-  import AutoMAModel._
+  import AutoARIMAModel._
 
-  def this(q:Int, intercept:Double, weights:Vector) = {
-    this(Identifiable.randomUID("AutoMAModel"), q, intercept, weights)
+  def this(p:Int, d:Int, q:Int, intercept:Double, weights:Vector) = {
+    this(Identifiable.randomUID("AutoARIMAModel"), p, d, q, intercept, weights)
   }
+  
+  def getPBest:Int = p
+  
+  def getDBest:Int = d
 
   def getQBest:Int = q
-  
+
   def getIntercept:Double = intercept
   
   def getWeights:Vector = weights
   
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
     /*
-     * Reminder: AutoMA is an MovingAverage model with
-     * the best q parameter
+     * Reminder: AutoARIMA is an ARIMA model with
+     * the best p, d & q parameters
      */
+    val p = getPBest
     val q = getQBest
     
-    val ma = SuningMovingAverage($(valueCol), $(timeCol), q,
+    val arima = SuningARIMA($(valueCol), $(timeCol), p, d, q,
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
-    
-    val prepared = ma.prepareMA(dataset.toDF)
-    val featureCols = ma.getFeatureCols
+      
+    val prepared = arima.prepareARIMA(dataset.toDF)
+    val featureCols = arima.getFeatureCols
     
     val intercept = getIntercept
     val weights = getWeights
@@ -118,20 +128,20 @@ class AutoMAModel(override val uid:String, q:Int, intercept:Double, weights:Vect
     schema
   }
 
-  override def copy(extra:ParamMap):AutoMAModel = {
-    val copied = new AutoMAModel(uid, q, intercept, weights).setParent(parent)
+  override def copy(extra:ParamMap):AutoARIMAModel = {
+    val copied = new AutoARIMAModel(uid, p, d, q, intercept, weights).setParent(parent)
     copyValues(copied, extra)
   }
 
-  override def write: MLWriter = new AutoMAModelWriter(this)
+  override def write: MLWriter = new AutoARIMAModelWriter(this)
 
 }
 
-object AutoMAModel extends MLReadable[AutoMAModel] {
+object AutoARIMAModel extends MLReadable[AutoARIMAModel] {
 
-  private case class Data(q:Int, intercept: Double, coefficients: Vector)
+  private case class Data(p:Int, d:Int, q:Int, intercept: Double, coefficients: Vector)
   
-  class AutoMAModelWriter(instance: AutoMAModel) extends MLWriter {
+  class AutoARIMAModelWriter(instance: AutoARIMAModel) extends MLWriter {
 
     override def save(path:String): Unit = {
       super.save(path)
@@ -142,6 +152,8 @@ object AutoMAModel extends MLReadable[AutoMAModel] {
       /* Save metadata & params */
       SparkParamsWriter.saveMetadata(instance, path, sc)
       
+      val p = instance.getPBest
+      val d = instance.getDBest
       val q = instance.getQBest
       /* 
        * Save intercept & weight of the underlying 
@@ -150,20 +162,20 @@ object AutoMAModel extends MLReadable[AutoMAModel] {
       val intercept = instance.getIntercept
       val coefficients = instance.getWeights
       
-      val data = Data(q, intercept, coefficients)
+      val data = Data(p, d, q, intercept, coefficients)
       val dataPath = new Path(path, "data").toString
       
-      sparkSession.createDataFrame(Seq(data)).repartition(1).write.parquet(dataPath)      
+      sparkSession.createDataFrame(Seq(data)).repartition(1).write.parquet(dataPath)                  
       
     }
     
   }
 
-  private class AutoMAModelReader extends MLReader[AutoMAModel] {
+  private class AutoARIMAModelReader extends MLReader[AutoARIMAModel] {
 
-    private val className = classOf[AutoMAModel].getName
+    private val className = classOf[AutoARIMAModel].getName
 
-    override def load(path: String):AutoMAModel = {
+    override def load(path: String):AutoARIMAModel = {
       
       /* Read metadata & params */
       val metadata = SparkParamsReader.loadMetadata(path, sc, className)
@@ -179,7 +191,7 @@ object AutoMAModel extends MLReadable[AutoMAModel] {
       /*
        * Reconstruct trained model instance
        */
-      val model = new AutoMAModel(metadata.uid, data.q, data.intercept, data.coefficients)
+      val model = new AutoARIMAModel(metadata.uid, data.p, data.d, data.q, data.intercept, data.coefficients)
       SparkParamsReader.getAndSetParams(model, metadata)
       
       model
@@ -187,8 +199,8 @@ object AutoMAModel extends MLReadable[AutoMAModel] {
     }
   }
 
-  override def read: MLReader[AutoMAModel] = new AutoMAModelReader
+  override def read: MLReader[AutoARIMAModel] = new AutoARIMAModelReader
 
-  override def load(path: String): AutoMAModel = super.load(path)
+  override def load(path: String): AutoARIMAModel = super.load(path)
   
 }

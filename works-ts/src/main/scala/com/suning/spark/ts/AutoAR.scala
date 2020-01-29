@@ -171,6 +171,8 @@ class AutoAR(override val uid: String, inputCol: String, timeCol: String, p_Max:
     lr_Autoar.forecast(df, numAhead)
   }
 
+  def getPBest():Int = p_Best
+  
   def getIntercept(): Double = {
     lr_Autoar.getIntercept()
   }

@@ -70,13 +70,35 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
     this
   }
 
-  override def transformImpl(df: DataFrame): DataFrame = {
-    require(p > 0, s"p can not be 0")
+  def getFeatureCols:Array[String] = {
+
     val prefix = if (meanOut) "_meanOut" else ""
     val lag = "_lag_"
+
+    val features = (1 to p).map(inputCol + prefix + lag + _).toArray
+    features
+    
+  }
+  
+  def prepareAR(df:DataFrame):DataFrame = {
+    
+    require(p > 0, s"p can not be 0")
+    
+    val prefix = if (meanOut) "_meanOut" else ""
+    val lag = "_lag_"
+    
     val newDF = TimeSeriesUtil.LagCombination(df, inputCol, timeCol, p, lagsOnly = false, meanOut)
       .filter(col(inputCol + prefix + lag + p).isNotNull)
+    
+      newDF
+      
+  }
+  
+  override def transformImpl(df: DataFrame): DataFrame = {
+
+    val newDF = prepareAR(df)
     lr_ar.transform(newDF)
+
   }
 
   override def forecast(df: DataFrame, numAhead: Int): List[Double] = {

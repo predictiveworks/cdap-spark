@@ -38,14 +38,6 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
 
   private var lr_ar: LinearRegression = _
 
-  //  private val lr_ar = new SparkLR().setRegParam(0.0)
-  //    .setFitIntercept(false)
-  //    .setStandardization(withIntercept)
-  //    .setElasticNetParam(0.0)
-  //    .setMaxIter(100)
-  //    .setTol(1E-6)
-
-
   override def fitImpl(df: DataFrame): this.type = {
 
     require(p > 0 && d > 0, s"p and d can not be 0")

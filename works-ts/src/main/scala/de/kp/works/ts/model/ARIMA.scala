@@ -50,25 +50,18 @@ class ARIMA(override val uid: String)
   def this() = this(Identifiable.randomUID("arima"))
 
   override def fit(dataset: Dataset[_]): ARIMAModel = {
-    /*
-     * We restrict to an ARIMA model
-     */
+
     require($(p) > 0 && $(d) > 0 && $(q) > 0, s"Parameters p, d, q must be positive")
  
-    /* Delegate to Suning ARIMA */
     val suning = SuningARIMA(
       $(valueCol), $(timeCol), $(p), $(d), $(q),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
     
-    /*
-     * The Suning ARIMA model is an instance of [SuningARIMA]
-     */
     val model = suning.fit(dataset.toDF)
 
     val intercept = model.getIntercept
     val weights = model.getWeights
 
-    /* Build ARIMAModel */
     copyValues(new ARIMAModel(uid, intercept, weights).setParent(this))
 
   }

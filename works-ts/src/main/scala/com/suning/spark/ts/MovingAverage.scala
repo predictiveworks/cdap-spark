@@ -54,19 +54,12 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
     val residualDF = arModel.transform(df)
       .withColumn(residual, -col(prediction) + col(label))
       .drop(prediction)
-    //    residualDF.show()
-
-    //    val newDF = TimeSeriesUtil.LagCombinationMA(residualDF, residual, timeCol, label, q)
-    //      .filter(col(residual + lag + q).isNotNull)
-    //      .withColumnRenamed(label, maLabel)
 
     val newDF = TimeSeriesUtil.LagCombinationMA(residualDF, inputCol, residual, timeCol, label, q)
       .filter(col(residual + lag + q).isNotNull)
       .withColumnRenamed(inputCol + lag + "0", maLabel)
-    //    newDF.show()
 
-    val features = (1 to q toArray).map(
-      residual + lag + _)
+    val features = (1 to q toArray).map(residual + lag + _)
 
     val maxIter = 1000
     val tol = 1E-6
@@ -84,22 +77,38 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
 
   }
 
-  override def transformImpl(df: DataFrame): DataFrame = {
+  def getFeatureCols:Array[String] = {
+
+    val features = (1 to q toArray).map(residual + lag + _)
+    features
+    
+  }
+
+  def prepareMA(df:DataFrame): DataFrame = {
+    
     require(q > 0, s"q can not be 0")
 
     val arModel = AutoRegression(inputCol, timeCol, q, regParam, standardization, elasticNetParam,
       withIntercept)
-    val features = "features"
+
     arModel.fit(df)
+    
+    val features = "features"
     val residualDF = arModel.transform(df)
       .withColumn(residual, -col(prediction) + col(label))
       .drop(features).drop(prediction)
 
     val newDF = TimeSeriesUtil.LagCombination(residualDF, residual, timeCol, q, lagsOnly = false)
       .filter(col(residual + lag + q).isNotNull)
-    //      .drop(label)
 
+    newDF
+    
+  }
+  override def transformImpl(df: DataFrame): DataFrame = {
+
+    val newDF = prepareMA(df)
     lr_ma.transform(newDF)
+
   }
 
   override def forecast(df: DataFrame, numAhead: Int): List[Double] = {

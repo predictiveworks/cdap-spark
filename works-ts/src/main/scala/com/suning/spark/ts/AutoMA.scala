@@ -171,6 +171,8 @@ class AutoMA(override val uid: String, inputCol: String, timeCol: String, q_Max:
     lr_Automa.forecast(df, numAhead)
   }
 
+  def getQBest:Int = q_Best
+  
   def getIntercept(): Double = {
     lr_Automa.getIntercept()
   }
