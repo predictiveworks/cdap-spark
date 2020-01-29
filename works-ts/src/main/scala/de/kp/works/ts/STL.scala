@@ -98,7 +98,7 @@ trait STLParams extends TimeParams {
  */
 class STL(override val uid: String) extends Transformer with STLParams {
 
-  def this() = this(Identifiable.randomUID("aggregate"))
+  def this() = this(Identifiable.randomUID("STLDecompose"))
 
   /*
    * This is the main method to perform STL decomposition
