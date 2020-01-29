@@ -27,8 +27,35 @@ A frequent requirement for many time series analysis methods is that the data ne
 
 **Works TS** ACF plugin computes the values of the auto correlation function aand also determines the time lag with the highest (positive) correlation coefficient above a certain threshold (to skip irrelevant maxima). This time lag can then be intepreted as the seasonality pattern or period of the time series under consideration.
 
+## Random Forest Regression
 
 ## Seasonal and Trend decomposition using Loess (STL)
+
+### STL
+
+### AutoSTL
+
+## Time Models
+
+### ARIMA
+
+### ARMA
+
+### ARYuleWalker
+
+### AutoAR
+
+### AutoARIMA
+
+### AutoARMA
+
+### AutoMA
+
+### AutoRegression
+
+### DiffAutoRegression
+
+### MovingAverage
 
 ## Demand Prediction
 
