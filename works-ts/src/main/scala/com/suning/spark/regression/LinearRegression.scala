@@ -32,7 +32,7 @@ class LinearRegression(override val uid: String, features: Array[String], label:
                        tol: Double)
   extends Regression(uid, features, label) {
 
-  def this(features: Array[String], label: String,
+  def this(features: Array[String], label: String = "",
            regParam: Double = 0.0,
            fitIntercept: Boolean = true,
            standardization: Boolean = true,
@@ -51,6 +51,20 @@ class LinearRegression(override val uid: String, features: Array[String], label:
     .setMaxIter(maxIter)
     .setTol(tol)
 
+  /*
+   * __KUP__
+   * 
+   * This method sets a trained Apache Spark LinearRegression
+   * model; this supports use case where the respective model
+   * is rebuilt from stored parameters
+   */
+  def setModel(model:SparkLRModel) {
+    this.model = model;
+  }
+    
+  /*
+   * LinearRegression 'fit' method is defined in Regression
+   */
   protected def fitImpl(df: DataFrame): this.type = {
     model = lr.fit(df)
     this

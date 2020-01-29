@@ -191,7 +191,6 @@ class AutoCorrelation(override val uid: String)
   
 }
 
-
 class AutoCorrelationModel(override val uid:String, val average:Double, val denom: Double, val values:Seq[Double])
   extends Model[AutoCorrelationModel] with AutoCorrelationParams with MLWritable {
 

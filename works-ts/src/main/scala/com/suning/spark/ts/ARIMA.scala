@@ -58,19 +58,18 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     // calculate residual
     val maxPQ = math.max(p, q)
 
-    //For MA model.
-
+    /*
+     * STEP #1: Train autoregression model for MA and predict moving average
+     */
     val arModel = AutoRegression(inputCol, timeCol, maxPQ,
       regParam, standardization, elasticNetParam, withIntercept, meanOut)
 
     arModel.fit(df)
-
     val pred_ma = arModel.transform(df)
-    //    pred_ma.show(10)
-
-    // get the residuals as (-truth + predicted)
+    /*
+     * STEP #2: Retrieve the residuals as (-truth + predicted)
+     */
     val residualDF = pred_ma.withColumn(residual, -col(prediction) + col(label))
-    //    residualDF.show(10)
 
     var newDF_dee = TimeSeriesUtil.DiffCombination(residualDF, inputCol, timeCol, p, d, lagsOnly = false)
     //    newDF_dee.show(10)
@@ -107,12 +106,15 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     newDF_arima.persist()
 
     lr_arima = LinearRegression(features, arimaLabel, regParam, withIntercept, standardization, elasticNetParam, maxIter, tol)
-
     lr_arima.fit(newDF_arima)
-
+    
     newDF_arima.unpersist()
-  }
 
+  }
+  /*
+   * This method combines 3 different models with a 
+   * single method 'fitImpl'
+   */
   override def fitImpl(df: DataFrame): this.type = {
     //    require(p > q, "For ARIMA(p,d,q), p should be large than q.")
     //Here is to introduce differencing, d for diff.
@@ -130,13 +132,20 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
         darModel.fit(df)
       }
       else {
+        /*
+         * This ARIM channel finally trains a LinearRegression model
+         */
         fitARIMA(df)
       }
     }
     this
   }
-
-  def transformARIMA(df: DataFrame): DataFrame = {
+  /*
+   * __KUP__ We externalize the prepration steps
+   * to enable model prediction from reloaded model
+   */
+  def prepareARIMA(df: DataFrame): DataFrame = {
+    
     val prefix = if (meanOut) "_meanOut" else ""
     val lag = "_lag_"
     val label = "label"
@@ -148,16 +157,18 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
 
     val newDF = TimeSeriesUtil.LagCombination(df, inputCol,
       timeCol, maxPQ, lagsOnly = false, meanOut).filter(col(inputCol + prefix + lag + maxPQ).isNotNull)
-    //For MA model.
+
+    /*
+     * STEP #1: Moving Average  
+     */
     val lr_ar = AutoRegression(inputCol, timeCol, maxPQ,
       regParam, standardization, elasticNetParam, withIntercept, meanOut = false)
 
     lr_ar.fit(newDF)
-
     val pred_ma = lr_ar.transform(newDF)
-    //    pred_ma.show()
-
-    // get the residuals as (-truth + predicted)
+    /*
+     * STEP #2: Get the residuals as (-truth + predicted)
+     */
     val residualDF = pred_ma.withColumn(residual, -col(prediction) + col(label))
 
     var newDF_dee = TimeSeriesUtil.DiffCombination(residualDF, inputCol, timeCol, p, d, false)
@@ -168,10 +179,32 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
       .drop(prediction)
       .drop(label)
       .drop(feature)
-    //        .withColumnRenamed("prediction", "predicitonResiduals")
-    lr_arima.transform(newDF_arima)
+
+    newDF_arima
+
   }
 
+  def transformARIMA(df: DataFrame): DataFrame = {
+
+    val newDF_arima = prepareARIMA(df)
+    lr_arima.transform(newDF_arima)
+
+  }
+  
+  def getFeatureCols:Array[String] = {
+
+    val lag = "_lag_"
+    val residual = "residual"
+
+    val diff = "_diff_" + d
+
+    val features_ar = (1 to p).map(inputCol + diff + lag + _).toArray
+    val features_ma = (1 to q).map(residual + lag + _).toArray
+ 
+    features_ar ++ features_ma
+    
+  }
+  
   override def transformImpl(df: DataFrame): DataFrame = {
 
     require(p > 0 || q > 0, s"p or q can not be 0 at the same time")

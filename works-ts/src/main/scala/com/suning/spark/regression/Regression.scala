@@ -22,67 +22,48 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.DataFrame
 import org.apache.spark.sql.types.{DataType, StringType}
 
-abstract class Regression(override val uid: String, features: Array[String], label: String)
+abstract class Regression(override val uid: String, featureCols: Array[String], labelCol: String)
   extends Model {
   def this(features: Array[String], label: String) =
     this(Identifiable.randomUID("Regression"), features, label)
-
-  protected var f2v: Feature2Vector = _
-
-  protected var mt: MultiTransformer = _
-
-  var indexedFeatures = List[String]()
-
+  
   override def fit(df: DataFrame): this.type = {
+    /*
+     * __KUP__ String value support is removed from this class as Suning's original 
+     * implementation is limited to Apache Spark's StringIndxer and this is too
+     * restrictive here 
+     */
     val schema = df.schema
-    var transformers = List[String2Index]()
-    val convertedFeatures = features.map( f => {
-          schema(f).dataType match {
-            case _: StringType => {
-              val indexed = f + "_index"
-              indexedFeatures ::= indexed
-              transformers ::= String2Index(f, indexed)
-              indexed
-            }
-            case _: DataType  => {
-              f
-            }
-          }
-    })
+    /*
+     * Suning's FeatureVector is backed by Apache Spark's VectorAssembler
+     */
+    val assembler = Feature2Vector(featureCols, labelCol)
+    fitImpl(assembler.transform(df))
 
-    mt = MultiTransformer(transformers.toArray)
-    mt.fit(df)
-
-    f2v = Feature2Vector(convertedFeatures, label)
-
-    fitImpl(f2v.transform(mt.transform(df)))
   }
 
   protected def fitImpl(df: DataFrame): this.type
 
   override def transform(df: DataFrame): DataFrame = {
-    require(mt != null, "Model is not trained!")
+    /*
+     * __KUP__ String value support is removed from this class as Suning's original 
+     * implementation is limited to Apache Spark's StringIndxer and this is too
+     * restrictive here 
+     */
     val schema = df.schema
-    val convertedFeatures = features.map( f => {
-      schema(f).dataType match {
-        case _: StringType => {
-          f + "_index"
-        }
-        case _: DataType  => {
-          f
-        }
-      }
-    })
-    if (schema.fieldNames.contains(label)) {
-      f2v = Feature2Vector(convertedFeatures, label)
+    /*
+     * Suning's FeatureVector is backed by Apache Spark's VectorAssembler
+     */
+    val assembler = if (!labelCol.isEmpty && schema.fieldNames.contains(labelCol)) {
+      Feature2Vector(featureCols, labelCol)
     }
     else {
-      f2v = Feature2Vector(convertedFeatures)
+      Feature2Vector(featureCols)
     }
-    val rawDf = f2v.transform(mt.transform(df))
-    transformImpl(indexedFeatures.foldLeft(rawDf)((d, f) => {
-      d.drop(f)
-    }))
+
+    val rawDF = assembler.transform(df)
+    transformImpl(rawDF)
+
   }
 
   protected def transformImpl(df: DataFrame): DataFrame

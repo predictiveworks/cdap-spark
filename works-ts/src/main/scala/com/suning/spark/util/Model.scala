@@ -26,12 +26,20 @@ abstract class Model(override val uid: String)
     this(Identifiable.randomUID("Model"))
 
 
+  /*
+   * This is the external interface method compliant
+   * to an Apache Spark Estimator
+   */
   def fit(df: DataFrame): this.type = {
     fitImpl(df)
   }
 
   protected def fitImpl(df: DataFrame): this.type
 
+  /*
+   * This is the external interface method compliant
+   * to an Apache Spark Estimator
+   */
   def transform(df: DataFrame): DataFrame = {
     transformImpl(df)
   }

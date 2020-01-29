@@ -74,12 +74,26 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
     this
   }
 
-  override def transformImpl(df: DataFrame): DataFrame = {
+  def getFeatureCols:Array[String] = {
+
+    val features = (1 to p).map(inputCol + "_diff_" + d + "_lag_" + _).toArray
+    features
+    
+  }
+  /*
+   * __KUP__ We externalize the prepration steps
+   * to enable model prediction from reloaded model
+   */  
+  def prepareDiffAR(df: DataFrame): DataFrame = {
     require(p > 0 && d > 0, s"p and d can not be 0")
+    TimeSeriesUtil.DiffCombination(df, inputCol, timeCol, p, d, false)
+  }
+  
+  override def transformImpl(df: DataFrame): DataFrame = {
 
-    val newDF = TimeSeriesUtil.DiffCombination(df, inputCol, timeCol, p, d, false)
-
+    val newDF = prepareDiffAR(df)
     lr_ar.transform(newDF)
+
   }
 
   override def forecast(df: DataFrame, numAhead: Int): List[Double] = {

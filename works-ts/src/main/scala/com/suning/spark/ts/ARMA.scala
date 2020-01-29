@@ -114,7 +114,23 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
     this
   }
 
-  def transformARMA(df: DataFrame): DataFrame = {
+  def getFeatureCols:Array[String] = {
+
+    val lag = "_lag_"
+    val residual = "residual"
+
+    val features_ar = (1 to p).map(inputCol + lag + _).toArray
+    val features_ma = (1 to q).map(residual + lag + _).toArray
+
+    features_ar ++ features_ma
+    
+  }
+  /*
+   * __KUP__ We externalize the prepration steps
+   * to enable model prediction from reloaded model
+   */  
+  def prepareARMA(df: DataFrame): DataFrame = {
+    
     val lag = "_lag_"
     val residual = "residual"
     val label = "label"
@@ -124,19 +140,29 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
     val maxPQ = math.max(p, q)
     val newDF = TimeSeriesUtil.LagCombination(df, inputCol, timeCol, maxPQ).
       filter(col(inputCol + lag + maxPQ).isNotNull)
+    
     //For MA model.
     val lr_ar = AutoRegression(inputCol, timeCol, maxPQ, regParam, standardization, elasticNetParam, withIntercept = false, meanOut = false)
 
     val model_ma = lr_ar.fit(newDF)
     val pred_ma = model_ma.transform(newDF)
+    
     // get the residuals as (-truth + predicted)
     val residualDF = pred_ma.withColumn(residual, -col(prediction) + col(label))
     val newDF_arma = TimeSeriesUtil.LagCombinationARMA(residualDF, inputCol, residual, timeCol,
       prediction, p = p, q = q)
       .filter(col(residual + lag + q).isNotNull)
       .drop(prediction)
-
+    
+    newDF_arma
+    
+  }
+  
+  def transformARMA(df: DataFrame): DataFrame = {
+    
+    val newDF_arma = prepareARMA(df)
     lr_arma.transform(newDF_arma)
+
   }
 
   override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
