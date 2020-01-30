@@ -18,10 +18,17 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.AutoRegressionModel;
 
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("TsAR")
+@Description("A prediction stage that leverages a trained Apache Spark based AutoRegression time series model.")
 public class TsAR extends TimeCompute {
 
 	private static final long serialVersionUID = -4388615366081416402L;

@@ -46,7 +46,7 @@ public class ARMAManager extends AbstractTimeSeriesManager {
 		
 	}
 
-	public AutoARMAModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
+	public AutoARMAModel readAutoARMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoARMA";
 		

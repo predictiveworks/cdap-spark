@@ -1,7 +1,4 @@
 package de.kp.works.ts.arma;
-
-import de.kp.works.ts.model.ARMAModel;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,13 +18,39 @@ import de.kp.works.ts.model.ARMAModel;
  * 
  */
 
-public class TsARMA {
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
+import de.kp.works.ts.model.ARMAModel;
 
-	private TsARMAConfig config;
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("TsARMA")
+@Description("A prediction stage that leverages a trained Apache Spark based ARMA time series model.")
+public class TsARMA extends TimeCompute {
+
+	private static final long serialVersionUID = -9081199792437286215L;
+
 	private ARMAModel model;
 	
 	public TsARMA(TsARMAConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsARMAConfig computeConfig = (TsARMAConfig) config;
+		computeConfig.validate();
+
+		model = new ARMAManager().readARMA(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] An ARMA model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsARMAConfig extends ARMAConfig {

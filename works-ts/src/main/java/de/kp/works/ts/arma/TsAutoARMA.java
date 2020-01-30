@@ -18,15 +18,39 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.AutoARMAModel;
 
-public class TsAutoARMA {
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("TsAutoARMA")
+@Description("A prediction stage that leverages a trained Apache Spark based Auto ARMA time series model.")
+public class TsAutoARMA extends TimeCompute {
 
-	private TsAutoARMAConfig config;
+	private static final long serialVersionUID = -4782182822373835162L;
+
 	private AutoARMAModel model;
 	
 	public TsAutoARMA(TsAutoARMAConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsAutoARMAConfig computeConfig = (TsAutoARMAConfig) config;
+		computeConfig.validate();
+
+		model = new ARMAManager().readAutoARMA(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] An Auto ARMA model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsAutoARMAConfig extends ARMAConfig {

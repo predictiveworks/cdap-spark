@@ -18,15 +18,39 @@ package de.kp.works.ts.arima;
  * 
  */
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.ARIMAModel;
 
-public class TsARIMA {
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("TsARIMA")
+@Description("A prediction stage that leverages a trained Apache Spark based ARIMA time series model.")
+public class TsARIMA extends TimeCompute {
 
-	private TsARIMAConfig config;
+	private static final long serialVersionUID = 5020395409516031250L;
+
 	private ARIMAModel model;
 	
 	public TsARIMA(TsARIMAConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsARIMAConfig computeConfig = (TsARIMAConfig) config;
+		computeConfig.validate();
+
+		model = new ARIMAManager().readARIMA(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] An ARIMA model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsARIMAConfig extends ARIMAConfig {

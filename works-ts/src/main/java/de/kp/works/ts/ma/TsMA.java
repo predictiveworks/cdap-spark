@@ -18,16 +18,40 @@ package de.kp.works.ts.ma;
  * 
  */
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.batch.SparkCompute;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.arma.ARMAConfig;
 import de.kp.works.ts.model.MovingAverageModel;
 
-public class TsMA {
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("TsMA")
+@Description("A prediction stage that leverages a trained Apache Spark based Moving Average time series model.")
+public class TsMA extends TimeCompute {
 	
-	private TsMAConfig config;
+	private static final long serialVersionUID = -1261080177077886834L;
+
 	private MovingAverageModel model;
 	
 	public TsMA(TsMAConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsMAConfig computeConfig = (TsMAConfig) config;
+		computeConfig.validate();
+
+		model = new MAManager().readMA(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] A Moving Average model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsMAConfig extends ARMAConfig {

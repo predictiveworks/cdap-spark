@@ -46,7 +46,7 @@ public class MAManager extends AbstractTimeSeriesManager {
 		
 	}
 
-	public AutoMAModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
+	public AutoMAModel readAutoMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoMA";
 		
