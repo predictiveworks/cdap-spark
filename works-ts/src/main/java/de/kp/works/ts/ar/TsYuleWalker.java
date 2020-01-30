@@ -1,7 +1,4 @@
 package de.kp.works.ts.ar;
-
-import de.kp.works.ts.model.ARYuleWalkerModel;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,13 +18,32 @@ import de.kp.works.ts.model.ARYuleWalkerModel;
  * 
  */
 
-public class TsYuleWalker {
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
+import de.kp.works.ts.model.ARYuleWalkerModel;
 
-	private TsYuleWalkerConfig config;
+public class TsYuleWalker extends TimeCompute {
+
+	private static final long serialVersionUID = -3512433728877952854L;
+
 	private ARYuleWalkerModel model;
 	
 	public TsYuleWalker(TsYuleWalkerConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsYuleWalkerConfig computeConfig = (TsYuleWalkerConfig) config;
+		computeConfig.validate();
+
+		model = new ARManager().readYuleWalker(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] A Yule Walker AutoRegression model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsYuleWalkerConfig extends ARConfig {

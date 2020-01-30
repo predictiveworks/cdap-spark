@@ -18,15 +18,32 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.AutoARModel;
 
-public class TsAutoAR {
+public class TsAutoAR extends TimeCompute {
 
-	private TsAutoARConfig config;	
+	private static final long serialVersionUID = -7913672856118044739L;
+
 	private AutoARModel model;
 	
 	public TsAutoAR(TsAutoARConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsAutoARConfig computeConfig = (TsAutoARConfig) config;
+		computeConfig.validate();
+
+		model = new ARManager().readAutoAR(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] An Auto AutoRegression model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsAutoARConfig extends ARConfig {

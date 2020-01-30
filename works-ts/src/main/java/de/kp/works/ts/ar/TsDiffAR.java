@@ -18,15 +18,32 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.DiffAutoRegressionModel;
 
-public class TsDiffAR {
+public class TsDiffAR extends TimeCompute {
 
-	private TsDiffARConfig config;
+	private static final long serialVersionUID = 5008850620168692633L;
+
 	private DiffAutoRegressionModel model;
 	
 	public TsDiffAR(TsDiffARConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
+		TsDiffARConfig computeConfig = (TsDiffARConfig) config;
+		computeConfig.validate();
+
+		model = new ARManager().readDiffAR(modelFs, modelMeta, computeConfig.modelName);
+		if (model == null)
+			throw new IllegalArgumentException(
+					String.format("[%s] A Differencing AutoRegression model with name '%s' does not exist.",
+							this.getClass().getName(), computeConfig.modelName));
+
 	}
 
 	public static class TsDiffARConfig extends ARConfig {
