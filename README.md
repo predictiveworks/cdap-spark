@@ -1,4 +1,4 @@
-# CDAP-Spark
+# CDAP Spark
 
 **CDAP Spark** is an all-in-one library for unified **Visual Analytics**. CDAP Spark is sitting on the shoulders of [Apache Spark](https://spark.apache.org), which now is the big data platform of choice for enterprises.
 
@@ -8,6 +8,18 @@ It *externalizes* modern data analytics in form of plugins for [Google CDAP](htt
 to build data driven applications without coding.
 
 >CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
+
+## What is unified Visual Analytics?
+
+Nowadays many excellent open source big data analytics & computing libraries exist, but each with a certain focus or lens on the data universe. Answering predictive business questions most often requires to operate many of them, with human data and software experts in the loop to stick pieces individually together.
+
+An integrated data analytics platform that seamlessly covers all flavors of modern data analytics seems to be a utopia for data-driven enterprises.
+
+>This project aims to prove that nowadays all technical building blocks exist to build a unified corporate data analytics environment, *based on approved libraries*, and, with a visual interface to build data pipelines without any coding experience.
+
+The image below illustrates a 3-phase approach how existing distributed analytics libraries can be transformed into pluggable components for flexible pipeline orchestration. 
+
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/steps-to-visual-analytics.png" width="800" alt="Visual Analytics">
 
 ## Modules
 
