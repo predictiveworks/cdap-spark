@@ -21,10 +21,18 @@ package de.kp.works.ts.arma;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.ar.ARManager;
+import de.kp.works.ts.ar.TsAutoARSink.TsAutoARSinkConfig;
+import de.kp.works.ts.model.AutoAR;
+import de.kp.works.ts.model.AutoARModel;
 import de.kp.works.ts.params.ModelParams;
 
 public class TsAutoARMASink extends BaseARMASink {
@@ -47,6 +55,50 @@ public class TsAutoARMASink extends BaseARMASink {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
 			validateSchema(inputSchema, config);
+
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsAutoARSinkConfig sinkConfig = (TsAutoARSinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+		/*
+		 * STEP #2: Train AutoAR Model
+		 */
+		AutoAR trainer = new AutoAR();
+		trainer.setValueCol(sinkConfig.valueCol); 
+		trainer.setTimeCol(sinkConfig.timeCol);
+		
+		trainer.setPMax(sinkConfig.pmax); 
+
+		trainer.setRegParam(sinkConfig.regParam);
+		trainer.setElasticNetParam(sinkConfig.elasticNetParam);		
+		
+		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
+		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+
+		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
+		trainer.setCriterion(sinkConfig.criterion);
+
+		AutoARModel model = trainer.fit(splitted[0]);
+		/*
+		 * STEP #3: Leverage testset to retrieve predictions
+		 * and evaluate accuracy of the trained model
+		 */
+	    Dataset<Row> predictions = model.transform(splitted[1]);
+	    String metricsJson = model.evaluate(predictions);
+
+	    String paramsJson = sinkConfig.getParamsAsJSON();
+		/*
+		 * STEP #3: Store trained regression model including
+		 * its associated parameters and metrics
+		 */		
+		String modelName = sinkConfig.modelName;
+		new ARManager().saveAutoAR(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 

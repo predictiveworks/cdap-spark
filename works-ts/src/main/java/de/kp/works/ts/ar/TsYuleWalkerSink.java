@@ -26,6 +26,8 @@ import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -34,6 +36,9 @@ import de.kp.works.ts.model.ARYuleWalker;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.params.ModelParams;
 
+@Plugin(type = "sparksink")
+@Name("TsYuleWalkerSink")
+@Description("A building stage for an Apache Spark based Yule Walker model for time series datasets.")
 public class TsYuleWalkerSink extends BaseARSink {
 
 	private static final long serialVersionUID = 2998150184535380725L;

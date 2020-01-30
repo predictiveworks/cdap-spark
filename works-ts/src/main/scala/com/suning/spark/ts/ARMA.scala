@@ -43,12 +43,25 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
   private var arModel: AutoRegression = _
   private var maModel: MovingAverage = _
 
+  private val lag = "_lag_"
+  private val label = "label"
+  private val residual = "residual"
 
+  def getLabelCol:String = inputCol + lag + 0
+  
+  def getFeatureCols:Array[String] = {
+
+    val features_ar = (1 to p).map(inputCol + lag + _).toArray
+    val features_ma = (1 to q).map(residual + lag + _).toArray
+
+    features_ar ++ features_ma
+    
+  }
+
+  def getPredictionCol:String = "prediction"
+  
   def fitARMA(df: DataFrame): Unit = {
 
-    val lag = "_lag_"
-    val residual = "residual"
-    val label = "label"
     val prediction = "prediction"
     val feature = "features"
     val maxPQ = math.max(p, q)
@@ -60,7 +73,6 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
     val lr_ar = AutoRegression(inputCol, timeCol, maxPQ, regParam, standardization, elasticNetParam, false, false)
 
     val model_ma = lr_ar.fit(newDF)
-
     val pred_ma = model_ma.transform(newDF)
 
     // get the residuals as (-truth + predicted)
@@ -72,14 +84,8 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
       .drop(prediction)
       .drop(feature)
 
-    val features_ar = (1 to p).map(inputCol + lag + _).toArray
-
-    val features_ma = (1 to q).map(residual + lag + _).toArray
-
-
-    val features = features_ar ++ features_ma
-
-    val armaLabel = inputCol + lag + 0
+    val features = getFeatureCols
+    val armaLabel = getLabelCol
 
     val maxIter = 1000
     val tol = 1E-6
@@ -112,18 +118,6 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
       fitARMA(df)
     }
     this
-  }
-
-  def getFeatureCols:Array[String] = {
-
-    val lag = "_lag_"
-    val residual = "residual"
-
-    val features_ar = (1 to p).map(inputCol + lag + _).toArray
-    val features_ma = (1 to q).map(residual + lag + _).toArray
-
-    features_ar ++ features_ma
-    
   }
   /*
    * __KUP__ We externalize the prepration steps

@@ -21,12 +21,23 @@ package de.kp.works.ts.arima;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.model.ARIMA;
+import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.params.ModelParams;
 
+@Plugin(type = "sparksink")
+@Name("TsARIMA")
+@Description("A building stage for an Apache Spark based ARIMA model for time series datasets.")
 public class TsARIMASink extends BaseARIMASink {
 
 	private static final long serialVersionUID = 8910121582274962981L;
@@ -50,7 +61,50 @@ public class TsARIMASink extends BaseARIMASink {
 
 	}
 	
-	/* OK */
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsARIMASinkConfig sinkConfig = (TsARIMASinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+		/*
+		 * STEP #2: Train ARIMA Model
+		 */
+		ARIMA trainer = new ARIMA();
+		trainer.setValueCol(sinkConfig.valueCol); 
+		trainer.setTimeCol(sinkConfig.timeCol);
+		
+		trainer.setP(sinkConfig.p); 
+		trainer.setD(sinkConfig.d); 
+		trainer.setQ(sinkConfig.q); 
+
+		trainer.setRegParam(sinkConfig.regParam);
+		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		
+		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
+		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
+
+		ARIMAModel model = trainer.fit(splitted[0]);
+		/*
+		 * STEP #3: Leverage testset to retrieve predictions
+		 * and evaluate accuracy of the trained model
+		 */
+	    Dataset<Row> predictions = model.transform(splitted[1]);
+	    String metricsJson = model.evaluate(predictions);
+
+	    String paramsJson = sinkConfig.getParamsAsJSON();
+		/*
+		 * STEP #3: Store trained regression model including
+		 * its associated parameters and metrics
+		 */		
+		String modelName = sinkConfig.modelName;
+		new ARIMAManager().saveARIMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+	    
+	}
+	
 	public static class TsARIMASinkConfig extends ARIMASinkConfig {
 
 		private static final long serialVersionUID = -4780210026820266699L;

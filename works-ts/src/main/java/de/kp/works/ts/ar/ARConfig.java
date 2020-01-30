@@ -41,9 +41,5 @@ public class ARConfig extends TimeConfig {
 		}
 
 	}
-	
-	public Boolean toBoolean(String value) {
-		return value.equals("true") ? true : false;
-	}
 
 }

@@ -85,7 +85,19 @@ class ARMAModel(override val uid:String, intercept:Double, weights:Vector)
   def getIntercept:Double = intercept
   
   def getWeights:Vector = weights
-  
+   
+  def evaluate(predictions:Dataset[Row]):String = {
+
+    val arma = SuningARMA($(valueCol), $(timeCol), $(p), $(q),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
+ 
+		val labelCol = arma.getLabelCol
+		val predictionCol = arma.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
+ 
   override def transform(dataset:Dataset[_]):DataFrame = {
 
     val arma = SuningARMA($(valueCol), $(timeCol), $(p), $(q),

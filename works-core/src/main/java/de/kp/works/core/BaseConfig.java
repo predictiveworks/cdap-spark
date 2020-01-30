@@ -69,6 +69,10 @@ public class BaseConfig extends PluginConfig {
 		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 	}
+	
+	public Boolean toBoolean(String value) {
+		return value.equals("true") ? true : false;
+	}
 
 	public void validate() {
 		

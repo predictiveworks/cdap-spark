@@ -46,14 +46,35 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
   private var armaModel: ARMA = _
   private var darModel: DiffAutoRegression = _
 
+  private val lag = "_lag_"
+  private val label = "label"
+  private val prediction = "prediction"
+  private val residual = "residual"
+  private val feature = "features"
 
-  def fitARIMA(df: DataFrame): Unit = {
+  /*
+   * Columns restricted to ARIMA processing with 
+   * positive model parameters
+   */
+  def getLabelCol:String = inputCol + "_diff_" + d + "_lag_" + 0
+  
+  def getFeatureCols:Array[String] = {
 
     val lag = "_lag_"
-    val label = "label"
-    val prediction = "prediction"
     val residual = "residual"
-    val feature = "features"
+
+    val diff = "_diff_" + d
+
+    val features_ar = (1 to p).map(inputCol + diff + lag + _).toArray
+    val features_ma = (1 to q).map(residual + lag + _).toArray
+ 
+    features_ar ++ features_ma
+    
+  }
+  
+  def getPredictionCol:String = "prediction"
+  
+  def fitARIMA(df: DataFrame): Unit = {
 
     // calculate residual
     val maxPQ = math.max(p, q)
@@ -72,33 +93,15 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     val residualDF = pred_ma.withColumn(residual, -col(prediction) + col(label))
 
     var newDF_dee = TimeSeriesUtil.DiffCombination(residualDF, inputCol, timeCol, p, d, lagsOnly = false)
-    //    newDF_dee.show(10)
 
     val newDF_arima = TimeSeriesUtil.LagCombinationARMA(newDF_dee,
       inputCol, residual, timeCol, prediction, p = p, q = q, d = d, arimaFeature = true)
       .filter(col(residual + lag + q).isNotNull)
       .drop(prediction)
       .drop(feature)
-    //.withColumnRenamed(prediction, "predicitonResiduals")
 
-    //    newDF_arima.show(10)
-
-    val r = 1 to q
-    val features_ma = r.map(residual + lag + _).toArray
-
-    val diff = "_diff_" + d
-    val r_ar = 1 to p
-    val features_ar = r_ar.map(inputCol + diff + lag + _).toArray
-
-    //    val features_ma = lagcol_ma.slice(1, count.toInt)
-
-    val features = features_ar ++ features_ma
-
-    //    features.foreach(println)
-
-
-
-    val arimaLabel = inputCol + diff + "_lag_" + 0
+    val features = getFeatureCols
+    val arimaLabel = getLabelCol
 
     val maxIter = 1000
     val tol = 1E-6
@@ -133,7 +136,7 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
       }
       else {
         /*
-         * This ARIM channel finally trains a LinearRegression model
+         * This ARIMA channel finally trains a LinearRegression model
          */
         fitARIMA(df)
       }
@@ -189,20 +192,6 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     val newDF_arima = prepareARIMA(df)
     lr_arima.transform(newDF_arima)
 
-  }
-  
-  def getFeatureCols:Array[String] = {
-
-    val lag = "_lag_"
-    val residual = "residual"
-
-    val diff = "_diff_" + d
-
-    val features_ar = (1 to p).map(inputCol + diff + lag + _).toArray
-    val features_ma = (1 to q).map(residual + lag + _).toArray
- 
-    features_ar ++ features_ma
-    
   }
   
   override def transformImpl(df: DataFrame): DataFrame = {

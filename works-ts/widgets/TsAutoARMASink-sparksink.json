@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "TS Auto ARIMA Builder",
+"display-name": "TS Auto ARMA Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
