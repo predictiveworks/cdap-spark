@@ -43,14 +43,9 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
     require(p > 0 && d > 0, s"p and d can not be 0")
 
     val newDF = TimeSeriesUtil.DiffCombination(df, inputCol, timeCol, p, d)
-    newDF.show(10)
 
-    val r = 1 to p toArray
-
-    val features = r.map(inputCol + "_diff_" + d + "_lag_" + _)
-
-    val label = inputCol + "_diff_" + d + "_lag_0"
-
+    val features = getFeatureCols
+    val label = getLabelCol
 
     val maxIter = 1000
     val tol = 1E-6
@@ -66,12 +61,17 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
     this
   }
 
+  def getLabelCol: String = inputCol + "_diff_" + d + "_lag_0"
+  
   def getFeatureCols:Array[String] = {
 
     val features = (1 to p).map(inputCol + "_diff_" + d + "_lag_" + _).toArray
     features
     
   }
+  
+  def getPredictionCol:String = "prediction"
+
   /*
    * __KUP__ We externalize the prepration steps
    * to enable model prediction from reloaded model

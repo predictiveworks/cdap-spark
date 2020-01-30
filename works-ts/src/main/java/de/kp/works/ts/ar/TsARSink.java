@@ -106,13 +106,13 @@ public class TsARSink extends BaseARSink {
 
 		private static final long serialVersionUID = -2765469493994086880L;
 
-		@Description(ModelParams.P_PARAM_DESC)
-		@Macro
-		public Integer p;
-
 		@Description(ModelParams.MEAN_OUT_DESC)
 		@Macro
 		public String meanOut;
+
+		@Description(ModelParams.P_PARAM_DESC)
+		@Macro
+		public Integer p;
 
 		public TsARSinkConfig() {
 

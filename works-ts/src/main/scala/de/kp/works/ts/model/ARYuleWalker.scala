@@ -76,6 +76,17 @@ class ARYuleWalkerModel(override val uid:String, weights:Vector)
   
   def getWeights:Vector = weights
 
+  def evaluate(predictions:Dataset[Row]):String = {
+
+    val yuleWalker = SuningARYuleWalker($(valueCol), $(timeCol), $(p))
+ 
+		val labelCol = yuleWalker.getLabelCol
+		val predictionCol = yuleWalker.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
 
     val yuleWalker = SuningARYuleWalker($(valueCol), $(timeCol), $(p))

@@ -44,8 +44,7 @@ class AutoAR(override val uid: String, inputCol: String, timeCol: String, p_Max:
   private var lr_Autoar: AutoRegression = _
   private var criterionValue: Array[Double] = _
   private var p_Best: Int = _
-
-
+  
   override def fitImpl(df: DataFrame): this.type = {
     val n = df.count().toInt
 

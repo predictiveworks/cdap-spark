@@ -82,6 +82,19 @@ class DiffAutoRegressionModel(override val uid:String, intercept:Double, weights
   def this(intercept:Double, weights:Vector) = {
     this(Identifiable.randomUID("DiffAutoRegressionModel"), intercept, weights)
   }
+  
+  def evaluate(predictions:Dataset[Row]):String = {
+ 
+    val diffAR = SuningDiffAutoRegression($(valueCol), $(timeCol), $(p), $(d),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
+ 
+		val labelCol = diffAR.getLabelCol
+		val predictionCol = diffAR.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+   
+  }
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
 
     val diffAR = SuningDiffAutoRegression($(valueCol), $(timeCol), $(p), $(d),

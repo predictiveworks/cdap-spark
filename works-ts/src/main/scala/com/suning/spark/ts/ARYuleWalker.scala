@@ -50,6 +50,12 @@ class ARYuleWalker(override val uid: String, inputCol: String, timeCol: String, 
     res
   })
 
+  def getLabelCol:String = label
+
+  def getFeatureCols:Array[String] = features
+  
+  def getPredictionCol:String = "prediction"
+  
   override def fitImpl(df: DataFrame): this.type = {
     require(p > 0, s"p can not be 0")
 
@@ -70,8 +76,6 @@ class ARYuleWalker(override val uid: String, inputCol: String, timeCol: String, 
     weights = Vectors.dense(InversedenseMat.multiply(corrslist0).values)
     this
   }
-
-  def getFeatureCols:Array[String] = features
   
   def prepareARYuleWalker(df:DataFrame): DataFrame = {
     

@@ -88,10 +88,10 @@ class AutoRegressionModel(override val uid:String, intercept:Double, weights:Vec
     val ar = SuningAutoRegression($(valueCol), $(timeCol), $(p),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
  
-		val labelCol = ar.getLabelCol;
-		val predictionCol = ar.getPredictionCol;
+		val labelCol = ar.getLabelCol
+		val predictionCol = ar.getPredictionCol
 				
-	  Evaluator.evaluate(predictions, labelCol, predictionCol);
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
   

@@ -89,6 +89,17 @@ class AutoARModel(override val uid:String, p:Int, intercept:Double, weights:Vect
   
   def getWeights:Vector = weights
   
+  def evaluate(predictions:Dataset[Row]):String = {
+    
+    val ar = SuningAutoRegression($(valueCol), $(timeCol), p,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+ 
+		val labelCol = ar.getLabelCol
+		val predictionCol = ar.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
   override def transform(dataset:Dataset[_]):DataFrame = {
     /*
      * Reminder: AutoAR is an AutoRegression model with
