@@ -1,0 +1,73 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "TS AutoSTL",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time Field",
+          "name": "timeCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Value Field",
+          "name": "valueCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Group Field",
+          "name": "groupCol"
+        }
+      ]
+    },
+    {
+      "label": "Algorithm Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Outer Iterations",
+          "name": "outerIter",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Inner Iterations",
+          "name": "innerIter",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Periodicity",
+          "name": "periodicity"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Seasonal Smoother",
+          "name": "seasonalLoessSize"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Trend Smoother",
+          "name": "trendLoessSize"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Level Smoother",
+          "name": "levelLoessSize"
+        }
+      ]
+    }
+  ]
+}

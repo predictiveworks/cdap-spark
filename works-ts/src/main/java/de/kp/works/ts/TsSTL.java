@@ -43,7 +43,7 @@ import de.kp.works.core.TimeConfig;
 @Description("A time series transformation stage to decompose each time signal into seasonality, "
 		+ "trend and remainder component leveraging an STL algorithm (Seasonal and Trend decomposition using Loess). "
 		+ "This transformation stage adds 'seasonal', 'trend' and 'remainder' fields to the each time record.")
-public class TsDecompose extends TimeCompute {
+public class TsSTL extends TimeCompute {
 
 	private static final long serialVersionUID = -8650664753408204785L;
 	/*
@@ -53,7 +53,7 @@ public class TsDecompose extends TimeCompute {
 	 */
 	private TsDecomposeConfig config;
 
-	public TsDecompose(TsDecomposeConfig config) {
+	public TsSTL(TsDecomposeConfig config) {
 		this.config = config;
 	}
 	
