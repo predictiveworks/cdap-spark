@@ -43,7 +43,17 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
   private val lag = "_lag_"
   private val maLabel = "maLabel"
 
+  def getLabelCol:String = maLabel
+  
+  def getFeatureCols:Array[String] = {
 
+    val features = (1 to q toArray).map(residual + lag + _)
+    features
+    
+  }
+
+  def getPredictionCol:String = "prediction"
+  
   override def fitImpl(df: DataFrame): this.type = {
     require(q > 0, s"q can not be 0")
     val arModel = AutoRegression(inputCol, timeCol, q,
@@ -59,7 +69,7 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
       .filter(col(residual + lag + q).isNotNull)
       .withColumnRenamed(inputCol + lag + "0", maLabel)
 
-    val features = (1 to q toArray).map(residual + lag + _)
+    val features = getFeatureCols
 
     val maxIter = 1000
     val tol = 1E-6
@@ -75,13 +85,6 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
 
     this
 
-  }
-
-  def getFeatureCols:Array[String] = {
-
-    val features = (1 to q toArray).map(residual + lag + _)
-    features
-    
   }
 
   def prepareMA(df:DataFrame): DataFrame = {

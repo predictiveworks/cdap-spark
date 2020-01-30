@@ -21,12 +21,23 @@ package de.kp.works.ts.ma;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.model.MovingAverage;
+import de.kp.works.ts.model.MovingAverageModel;
 import de.kp.works.ts.params.ModelParams;
 
+@Plugin(type = "sparksink")
+@Name("TsMASink")
+@Description("A building stage for an Apache Spark based Moving Average model for time series datasets.")
 public class TsMASink extends BaseMASink {
 
 	private static final long serialVersionUID = 1611776727115974422L;
@@ -48,6 +59,47 @@ public class TsMASink extends BaseMASink {
 		if (inputSchema != null)
 			validateSchema(inputSchema, config);
 
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsMASinkConfig sinkConfig = (TsMASinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+		/*
+		 * STEP #2: Train Moving Average Model
+		 */
+		MovingAverage trainer = new MovingAverage();
+		trainer.setValueCol(sinkConfig.valueCol); 
+		trainer.setTimeCol(sinkConfig.timeCol);
+		
+		trainer.setQ(sinkConfig.q); 
+		trainer.setRegParam(sinkConfig.regParam);
+		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		
+		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
+		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
+
+		MovingAverageModel model = trainer.fit(splitted[0]);
+		/*
+		 * STEP #3: Leverage testset to retrieve predictions
+		 * and evaluate accuracy of the trained model
+		 */
+	    Dataset<Row> predictions = model.transform(splitted[1]);
+	    String metricsJson = model.evaluate(predictions);
+
+	    String paramsJson = sinkConfig.getParamsAsJSON();
+		/*
+		 * STEP #3: Store trained regression model including
+		 * its associated parameters and metrics
+		 */		
+		String modelName = sinkConfig.modelName;
+		new MAManager().saveMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+	    
 	}
 
 	/* OK */

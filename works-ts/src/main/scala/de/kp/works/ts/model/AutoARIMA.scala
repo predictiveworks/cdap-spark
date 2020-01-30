@@ -98,6 +98,13 @@ class AutoARIMAModel(override val uid:String, p:Int, d:Int, q:Int, intercept:Dou
   def getWeights:Vector = weights
       
   def evaluate(predictions:Dataset[Row]):String = {
+    /*
+     * Reminder: AutoARIMA is an ARIMA model with
+     * the best p, d & q parameters
+     */
+    val p = getPBest
+    val d = getDBest
+    val q = getQBest
     
     val arima = SuningARIMA($(valueCol), $(timeCol), p, d, q,
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
@@ -115,6 +122,7 @@ class AutoARIMAModel(override val uid:String, p:Int, d:Int, q:Int, intercept:Dou
      * the best p, d & q parameters
      */
     val p = getPBest
+    val d = getDBest
     val q = getQBest
     
     val arima = SuningARIMA($(valueCol), $(timeCol), p, d, q,

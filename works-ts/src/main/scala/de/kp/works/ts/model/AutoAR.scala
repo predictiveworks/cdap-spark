@@ -90,6 +90,11 @@ class AutoARModel(override val uid:String, p:Int, intercept:Double, weights:Vect
   def getWeights:Vector = weights
   
   def evaluate(predictions:Dataset[Row]):String = {
+    /*
+     * Reminder: AutoAR is an AutoRegression model with
+     * the best p parameter
+     */
+    val p = getP
     
     val ar = SuningAutoRegression($(valueCol), $(timeCol), p,
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))

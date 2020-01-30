@@ -84,6 +84,19 @@ class MovingAverageModel(override val uid:String, intercept:Double, weights:Vect
   
   def getWeights:Vector = weights
   
+  def evaluate(predictions:Dataset[Row]):String = {
+ 
+    val ma = SuningMovingAverage(
+      $(valueCol), $(timeCol), $(q),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+ 
+		val labelCol = ma.getLabelCol
+		val predictionCol = ma.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
  
     val ma = SuningMovingAverage(

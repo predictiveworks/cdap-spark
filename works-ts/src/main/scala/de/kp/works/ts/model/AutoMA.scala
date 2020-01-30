@@ -89,6 +89,23 @@ class AutoMAModel(override val uid:String, q:Int, intercept:Double, weights:Vect
   
   def getWeights:Vector = weights
   
+  def evaluate(predictions:Dataset[Row]):String = {
+    /*
+     * Reminder: AutoMA is an MovingAverage model with
+     * the best q parameter
+     */
+    val q = getQBest
+    
+    val ma = SuningMovingAverage($(valueCol), $(timeCol), q,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+ 
+		val labelCol = ma.getLabelCol
+		val predictionCol = ma.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
     /*
      * Reminder: AutoMA is an MovingAverage model with
