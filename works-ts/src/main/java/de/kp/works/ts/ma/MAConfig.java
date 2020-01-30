@@ -1,4 +1,4 @@
-package de.kp.works.ts.ar;
+package de.kp.works.ts.ma;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,20 +18,27 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.TimeConfig;
 
-public class BaseARConfig extends TimeConfig {
+public class MAConfig extends TimeConfig {
 
-	private static final long serialVersionUID = -2081104520718533381L;
+	private static final long serialVersionUID = -2699543701365558287L;
 
-	@Description("The unique name of the AR model.")
+	@Description("The unique name of the MA model.")
 	@Macro
 	public String modelName;
 
 	public void validate() {
 		super.validate();
+
+		if (Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
 	}
 
 }

@@ -18,16 +18,78 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
+
 public class TsARMASink {
 
-	public static class TsARMASinkConfig extends BaseARMAConfig {
+	private TsARMASinkConfig config;
+	
+	public TsARMASink(TsARMASinkConfig config) {
+		this.config = config;
+	}
+
+	/* OK */
+	public static class TsARMASinkConfig extends ARMASinkConfig {
 
 		private static final long serialVersionUID = 4387793214862986873L;
 
+		@Description(ModelParams.P_PARAM_DESC)
+		@Macro
+		public Integer p;
+
+		@Description(ModelParams.Q_PARAM_DESC)
+		@Macro
+		public Integer q;
+
+		public TsARMASinkConfig() {
+
+			dataSplit = "70:30";
+
+			elasticNetParam = 0.0;
+			regParam = 0.0;
+			
+			fitIntercept = "true";
+			standardization = "true";
+			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();			
+			params.put("dataSplit", dataSplit);
+			
+			params.put("p", p);
+			params.put("q", q);
+
+			params.put("elasticNetParam", elasticNetParam);
+			params.put("regParam", regParam);
+			
+			params.put("fitIntercept", fitIntercept);
+			params.put("standardization", standardization);
+
+			return params;
+		
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (p < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of lag observations must be positive.", this.getClass().getName()));
+
+			if (q < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The order of the moving average must be positive.", this.getClass().getName()));
+
+			
 		}
 		
 	}
-
 }

@@ -18,9 +18,18 @@ package de.kp.works.ts.arima;
  * 
  */
 
+import de.kp.works.ts.model.AutoARIMAModel;
+
 public class TsAutoARIMA {
 
-	public static class TsAAutoARIMAConfig extends BaseARIMAConfig {
+	private TsAutoARIMAConfig config;
+	private AutoARIMAModel model;
+	
+	public TsAutoARIMA(TsAutoARIMAConfig config) {
+		this.config = config;
+	}
+
+	public static class TsAutoARIMAConfig extends ARIMAConfig {
 
 		private static final long serialVersionUID = -1122459750687688824L;
 		

@@ -122,7 +122,7 @@ public class LinearRegressor extends RegressorSink {
 		@Macro
 		public Integer maxIter;
 
-		@Description("The ElasticNet mxing parameter. For value = 0.0, the penalty is an L2 penalty."
+		@Description("The ElasticNet mxing parameter. For value = 0.0, the penalty is an L2 penalty. "
 				+ "For value = 1.0, it is an L1 penalty. For 0.0 < value < 1.0, the penalty is a combination of "
 				+ "L1 and L2. Default is 0.0.")
 

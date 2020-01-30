@@ -18,9 +18,18 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import de.kp.works.ts.model.DiffAutoRegressionModel;
+
 public class TsDiffAR {
 
-	public static class TsDiffARConfig extends BaseARConfig {
+	private TsDiffARConfig config;
+	private DiffAutoRegressionModel model;
+	
+	public TsDiffAR(TsDiffARConfig config) {
+		this.config = config;
+	}
+
+	public static class TsDiffARConfig extends ARConfig {
 
 		private static final long serialVersionUID = -8352931460177951709L;
 

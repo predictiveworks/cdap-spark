@@ -18,16 +18,77 @@ package de.kp.works.ts.ma;
  * 
  */
 
-import de.kp.works.ts.arma.BaseARMAConfig;
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
 
 public class TsAutoMASink {
 
-	public static class TsAutoMASinkConfig extends BaseARMAConfig {
+	private TsAutoMASinkConfig config;
+	
+	public TsAutoMASink(TsAutoMASinkConfig config) {
+		this.config = config;
+	}
+
+	/* OK */
+	public static class TsAutoMASinkConfig extends MASinkConfig {
 
 		private static final long serialVersionUID = -5576870373916014257L;
 
+		@Description(ModelParams.Q_MAX_PARAM_DESC)
+		@Macro
+		public Integer qmax;
+
+		@Description(ModelParams.CRITERION_PARAM_DESC)
+		@Macro
+		public String criterion;
+
+		public TsAutoMASinkConfig() {
+
+			dataSplit = "70:30";
+			
+			elasticNetParam = 0.0;
+			regParam = 0.0;
+			
+			fitIntercept = "true";
+			standardization = "true";
+			
+			meanOut = "false";
+			criterion = "aic";
+			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();			
+			params.put("dataSplit", dataSplit);
+			
+			params.put("qmax", qmax);
+
+			params.put("elasticNetParam", elasticNetParam);
+			params.put("regParam", regParam);
+			
+			params.put("fitIntercept", fitIntercept);
+			params.put("standardization", standardization);
+
+			params.put("criterion", criterion);
+			params.put("meanOut", meanOut);
+
+			return params;
+		
+		}
+		
 		public void validate() {
 			super.validate();
+
+			if (qmax < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The upper limit of the order of the moving average must be positive.", this.getClass().getName()));
+			
 		}
 		
 	}

@@ -1,4 +1,7 @@
 package de.kp.works.ts.ar;
+
+import de.kp.works.ts.model.ARYuleWalkerModel;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -20,7 +23,14 @@ package de.kp.works.ts.ar;
 
 public class TsYuleWalker {
 
-	public static class TsYuleWalkerConfig extends BaseARConfig {
+	private TsYuleWalkerConfig config;
+	private ARYuleWalkerModel model;
+	
+	public TsYuleWalker(TsYuleWalkerConfig config) {
+		this.config = config;
+	}
+
+	public static class TsYuleWalkerConfig extends ARConfig {
 
 		private static final long serialVersionUID = -864185065637543716L;
 

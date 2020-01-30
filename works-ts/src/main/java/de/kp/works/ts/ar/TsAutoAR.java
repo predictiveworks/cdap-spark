@@ -18,9 +18,18 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import de.kp.works.ts.model.AutoARModel;
+
 public class TsAutoAR {
 
-	public static class TsAAutoARConfig extends BaseARConfig {
+	private TsAutoARConfig config;	
+	private AutoARModel model;
+	
+	public TsAutoAR(TsAutoARConfig config) {
+		this.config = config;
+	}
+
+	public static class TsAutoARConfig extends ARConfig {
 
 		private static final long serialVersionUID = 4648547380010541153L;
 

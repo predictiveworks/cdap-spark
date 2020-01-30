@@ -18,14 +18,76 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
+
 public class TsDiffARSink {
 
-	public static class TsDiffARSinkConfig extends BaseARConfig {
+	private TsDiffARSinkConfig config;
+	
+	public TsDiffARSink(TsDiffARSinkConfig config) {
+		this.config = config;
+	}
+
+	/* OK */
+	public static class TsDiffARSinkConfig extends ARSinkConfig {
 
 		private static final long serialVersionUID = 1752119868942406870L;
 
+		@Description(ModelParams.P_PARAM_DESC)
+		@Macro
+		public Integer p;
+
+		@Description(ModelParams.D_PARAM_DESC)
+		@Macro
+		public Integer d;
+
+		public TsDiffARSinkConfig() {
+
+			dataSplit = "70:30";
+
+			elasticNetParam = 0.0;
+			regParam = 0.0;
+			
+			fitIntercept = "true";
+			standardization = "true";
+			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			
+			params.put("dataSplit", dataSplit);
+			params.put("p", p);
+			params.put("d", d);
+
+			params.put("elasticNetParam", elasticNetParam);
+			params.put("regParam", regParam);
+			
+			params.put("fitIntercept", fitIntercept);
+			params.put("standardization", standardization);
+
+			return params;
+		
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (p < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of lag observations must be positive.", this.getClass().getName()));
+			
+			if (d < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The degree of differencing must be positive.", this.getClass().getName()));
+			
 		}
 		
 	}

@@ -1,4 +1,7 @@
 package de.kp.works.ts.arma;
+
+import de.kp.works.ts.model.ARMAModel;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -20,7 +23,14 @@ package de.kp.works.ts.arma;
 
 public class TsARMA {
 
-	public static class TsARMAConfig extends BaseARMAConfig {
+	private TsARMAConfig config;
+	private ARMAModel model;
+	
+	public TsARMA(TsARMAConfig config) {
+		this.config = config;
+	}
+
+	public static class TsARMAConfig extends ARMAConfig {
 
 		private static final long serialVersionUID = -2565279706592741956L;
 

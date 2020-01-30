@@ -18,9 +18,18 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import de.kp.works.ts.model.AutoARMAModel;
+
 public class TsAutoARMA {
 
-	public static class TsAutoARMAConfig extends BaseARMAConfig {
+	private TsAutoARMAConfig config;
+	private AutoARMAModel model;
+	
+	public TsAutoARMA(TsAutoARMAConfig config) {
+		this.config = config;
+	}
+
+	public static class TsAutoARMAConfig extends ARMAConfig {
 
 		private static final long serialVersionUID = -3952093227734706917L;
 

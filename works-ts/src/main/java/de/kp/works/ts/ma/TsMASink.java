@@ -18,16 +18,70 @@ package de.kp.works.ts.ma;
  * 
  */
 
-import de.kp.works.ts.arma.BaseARMAConfig;
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
 
 public class TsMASink {
 
-	public static class TsMASinkConfig extends BaseARMAConfig {
+	private TsMASinkConfig config;
+	
+	public TsMASink(TsMASinkConfig config) {
+		this.config = config;
+	}
+
+	/* OK */
+	public static class TsMASinkConfig extends MASinkConfig {
 
 		private static final long serialVersionUID = -617701648322006627L;
 
+		@Description(ModelParams.Q_PARAM_DESC)
+		@Macro
+		public Integer q;
+
+		public TsMASinkConfig() {
+
+			dataSplit = "70:30";
+			
+			elasticNetParam = 0.0;
+			regParam = 0.0;
+			
+			fitIntercept = "true";
+			standardization = "true";
+
+			meanOut = "false";
+			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();			
+			params.put("dataSplit", dataSplit);
+			
+			params.put("q", q);
+
+			params.put("elasticNetParam", elasticNetParam);
+			params.put("regParam", regParam);
+			
+			params.put("fitIntercept", fitIntercept);
+			params.put("standardization", standardization);
+
+			params.put("meanOut", meanOut);
+			return params;
+		
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (q < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The order of the moving average must be positive.", this.getClass().getName()));
+
 		}
 		
 	}

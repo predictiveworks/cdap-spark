@@ -18,14 +18,74 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
+
 public class TsARSink {
 
-	public static class TsARSinkConfig extends BaseARConfig {
+	private TsARSinkConfig config;
+	
+	public TsARSink(TsARSinkConfig config) {
+		this.config = config;
+	}
+	
+	/* OK */
+	public static class TsARSinkConfig extends ARSinkConfig {
 
 		private static final long serialVersionUID = -2765469493994086880L;
 
+		@Description(ModelParams.P_PARAM_DESC)
+		@Macro
+		public Integer p;
+
+		@Description(ModelParams.MEAN_OUT_DESC)
+		@Macro
+		public String meanOut;
+
+		public TsARSinkConfig() {
+
+			dataSplit = "70:30";
+
+			elasticNetParam = 0.0;
+			regParam = 0.0;
+
+			meanOut = "false";
+			
+			fitIntercept = "true";
+			standardization = "true";
+			
+		}
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			
+			params.put("dataSplit", dataSplit);
+			params.put("p", p);
+
+			params.put("elasticNetParam", elasticNetParam);
+			params.put("regParam", regParam);
+			
+			params.put("fitIntercept", fitIntercept);
+			params.put("standardization", standardization);
+
+			params.put("meanOut", meanOut);
+			return params;
+		
+		}
+		
 		public void validate() {
 			super.validate();
+
+			if (p < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of lag observations must be positive.", this.getClass().getName()));
+			
 		}
 		
 	}

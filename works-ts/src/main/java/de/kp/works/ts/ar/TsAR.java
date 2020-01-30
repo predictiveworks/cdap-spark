@@ -1,4 +1,7 @@
 package de.kp.works.ts.ar;
+
+import de.kp.works.ts.model.AutoRegressionModel;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -20,7 +23,14 @@ package de.kp.works.ts.ar;
 
 public class TsAR {
 
-	public static class TsARConfig extends BaseARConfig {
+	private TsARConfig config;
+	private AutoRegressionModel model;
+	
+	public TsAR(TsARConfig config) {
+		this.config = config;
+	}
+
+	public static class TsARConfig extends ARConfig {
 
 		private static final long serialVersionUID = 7633572327423290491L;
 

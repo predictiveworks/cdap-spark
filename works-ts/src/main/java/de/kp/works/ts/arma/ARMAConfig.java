@@ -18,11 +18,13 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.TimeConfig;
 
-public class BaseARMAConfig extends TimeConfig {
+public class ARMAConfig extends TimeConfig {
 
 	private static final long serialVersionUID = -2587670696595372714L;
 
@@ -32,6 +34,11 @@ public class BaseARMAConfig extends TimeConfig {
 
 	public void validate() {
 		super.validate();
+
+		if (Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
 	}
 
 }

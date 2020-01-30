@@ -18,11 +18,19 @@ package de.kp.works.ts.ma;
  * 
  */
 
-import de.kp.works.ts.arma.BaseARMAConfig;
+import de.kp.works.ts.arma.ARMAConfig;
+import de.kp.works.ts.model.MovingAverageModel;
 
 public class TsMA {
 	
-	public static class TsMAConfig extends BaseARMAConfig {
+	private TsMAConfig config;
+	private MovingAverageModel model;
+	
+	public TsMA(TsMAConfig config) {
+		this.config = config;
+	}
+
+	public static class TsMAConfig extends ARMAConfig {
 
 		private static final long serialVersionUID = -4883049931173631393L;
 

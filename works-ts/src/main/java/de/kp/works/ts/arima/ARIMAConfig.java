@@ -18,11 +18,13 @@ package de.kp.works.ts.arima;
  * 
  */
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.TimeConfig;
 
-public class BaseARIMAConfig extends TimeConfig {
+public class ARIMAConfig extends TimeConfig {
 
 	private static final long serialVersionUID = 7519400982759188866L;
 
@@ -32,6 +34,12 @@ public class BaseARIMAConfig extends TimeConfig {
 
 	public void validate() {
 		super.validate();
+
+		if (Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+
 	}
 
 }

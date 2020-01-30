@@ -18,14 +18,47 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.params.ModelParams;
+
 public class TsYuleWalkerSink {
 
-	public static class TsYuleWalkerSinkConfig extends BaseARConfig {
+	private TsYuleWalkerSinkConfig config;
+	
+	public TsYuleWalkerSink(TsYuleWalkerSinkConfig config) {
+		this.config = config;
+	}
+
+	/* OK */
+	public static class TsYuleWalkerSinkConfig extends ARConfig {
 
 		private static final long serialVersionUID = 8806382396675615715L;
 
+		@Description(ModelParams.P_PARAM_DESC)
+		@Macro
+		public Integer p;
+	    
+		@Override
+		public Map<String, Object> getParamsAsMap() {
+			
+			Map<String, Object> params = new HashMap<>();
+			params.put("p", p);
+
+			return params;
+		
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (p < 1)
+				throw new IllegalArgumentException(String
+						.format("[%s] The number of lag observations must be positive.", this.getClass().getName()));
+			
 		}
 		
 	}

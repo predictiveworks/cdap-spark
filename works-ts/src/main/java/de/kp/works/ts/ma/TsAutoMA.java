@@ -18,11 +18,19 @@ package de.kp.works.ts.ma;
  * 
  */
 
-import de.kp.works.ts.arma.BaseARMAConfig;
+import de.kp.works.ts.arma.ARMAConfig;
+import de.kp.works.ts.model.AutoMAModel;
 
 public class TsAutoMA {
 
-	public static class TsAutoMAConfig extends BaseARMAConfig {
+	private TsAutoMAConfig config;
+	private AutoMAModel model;
+	
+	public TsAutoMA(TsAutoMAConfig config) {
+		this.config = config;
+	}
+
+	public static class TsAutoMAConfig extends ARMAConfig {
 
 		private static final long serialVersionUID = 2817976143588383896L;
 

@@ -48,6 +48,24 @@ Supported criteria for parameter tuning:
 
 ### ARIMA 
 
+A popular and widely used statistical method for time series forecasting is the ARIMA model. ARIMA is short for *AutoRegressive Integrated Moving Average*. 
+It is a class of model that captures a suite of different standard temporal structures in time series data.
+
+An ARIMA model is a class of statistical models for analyzing and forecasting time series data. It explicitly caters to a suite of standard structures in 
+time series data, and as such provides a simple yet powerful method for making skillful time series forecasts.
+ARIMA is a generalization of the simpler AutoRegressive Moving Average (ARMA) model and adds the notion of integration.
+
+The key aspects of the model are:
+
+**AR**: *Autoregression*. A model that uses the dependent relationship between an observation and some number of lagged observations.
+
+**I**: *Integrated*. The use of differencing of raw observations (subtracting an observation from an observation at the previous time step) in order 
+to make the time series stationary (see STL decomposition for an alternative approach).
+
+**MA**: *Moving Average*. A model that uses the dependency between an observation and a residual error from a moving average model applied to lagged observations.
+
+Each of these components are explicitly specified in the ARIMA model as parameters.
+
 ### ARMA
 
 Autoregressive moving average (ARMA) regression: The ARMA model plays an important role in understanding & predicting future values in the time series. 
