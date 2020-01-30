@@ -18,8 +18,189 @@ package de.kp.works.ts.ar;
  * 
  */
 
-import de.kp.works.core.ml.AbstractModelManager;
+import java.io.IOException;
+import java.util.Date;
 
-public class ARManager extends AbstractModelManager {
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.ts.model.ARYuleWalkerModel;
+import de.kp.works.ts.model.AutoARModel;
+import de.kp.works.ts.model.AutoRegressionModel;
+import de.kp.works.ts.model.DiffAutoRegressionModel;
+
+public class ARManager extends AbstractTimeSeriesManager {
+
+	/** READ **/
+	
+	public AutoRegressionModel readAR(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "AR";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the AutoRegression model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return AutoRegressionModel.load(modelPath);
+		
+	}
+
+	public AutoARModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "AutoAR";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the AutoAR model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return AutoARModel.load(modelPath);
+		
+	}
+
+	public DiffAutoRegressionModel readDiffAR(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "DiffAR";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the DiffAutoRegression model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return DiffAutoRegressionModel.load(modelPath);
+		
+	}
+
+	public ARYuleWalkerModel readYuleWalker(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "YuleWalker";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the ARYuleWalker model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return ARYuleWalkerModel.load(modelPath);
+		
+	}
+
+	/** WRITE **/
+	
+	public void saveAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			AutoRegressionModel model) throws IOException {
+		
+		String algorithmName = "AR";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the AutoRegression model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
+	
+	public void saveAutoAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			AutoARModel model) throws IOException {
+		
+		String algorithmName = "AutoAR";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the AutoAR model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
+	
+	public void saveDiffAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			DiffAutoRegressionModel model) throws IOException {
+		
+		String algorithmName = "DiffAR";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the DiffAutoRegression model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
+	
+	public void saveYuleWalker(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			ARYuleWalkerModel model) throws IOException {
+		
+		String algorithmName = "YuleWalker";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the ARYuleWalker model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
 
 }

@@ -18,8 +18,103 @@ package de.kp.works.ts.arma;
  * 
  */
 
-import de.kp.works.core.ml.AbstractModelManager;
+import java.io.IOException;
+import java.util.Date;
 
-public class ARMAManager extends AbstractModelManager {
+import co.cask.cdap.api.dataset.lib.FileSet;
+import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.ts.model.ARMAModel;
+import de.kp.works.ts.model.AutoARMAModel;
+
+public class ARMAManager extends AbstractTimeSeriesManager {
+
+	/** READ **/
+	
+	public ARMAModel readARMA(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "ARMA";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the ARMA model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return ARMAModel.load(modelPath);
+		
+	}
+
+	public AutoARMAModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
+		
+		String algorithmName = "AutoARMA";
+		
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the AutoARMA model
+		 * from a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		return AutoARMAModel.load(modelPath);
+		
+	}
+
+	/** WRITE **/
+	
+	public void saveARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			ARMAModel model) throws IOException {
+		
+		String algorithmName = "ARMA";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the ARMA model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
+	
+	public void saveAutoARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+			AutoARMAModel model) throws IOException {
+		
+		String algorithmName = "AutoARMA";
+
+		/***** MODEL COMPONENTS *****/
+
+		/*
+		 * Define the path of this model on CDAP's internal timeseries fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
+		 */
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/*
+		 * Leverage Apache Spark mechanism to write the AutoARMA model
+		 * to a model specific file set
+		 */
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		model.save(modelPath);
+
+		/***** MODEL METADATA *****/
+
+		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+
+	}
 
 }
