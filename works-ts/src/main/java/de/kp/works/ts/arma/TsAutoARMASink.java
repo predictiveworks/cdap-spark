@@ -26,15 +26,18 @@ import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.ts.ar.ARManager;
-import de.kp.works.ts.ar.TsAutoARSink.TsAutoARSinkConfig;
-import de.kp.works.ts.model.AutoAR;
-import de.kp.works.ts.model.AutoARModel;
+import de.kp.works.ts.model.AutoARMA;
+import de.kp.works.ts.model.AutoARMAModel;
 import de.kp.works.ts.params.ModelParams;
 
+@Plugin(type = "sparksink")
+@Name("TsAutoARMASink")
+@Description("A building stage for an Apache Spark based Auto ARMA model for time series datasets.")
 public class TsAutoARMASink extends BaseARMASink {
 
 	private static final long serialVersionUID = -3858467738067952796L;
@@ -61,19 +64,20 @@ public class TsAutoARMASink extends BaseARMASink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsAutoARSinkConfig sinkConfig = (TsAutoARSinkConfig)config;
+		TsAutoARMASinkConfig sinkConfig = (TsAutoARMASinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
 		Dataset<Row>[] splitted = sinkConfig.split(source);
 		/*
-		 * STEP #2: Train AutoAR Model
+		 * STEP #2: Train AutoARMA Model
 		 */
-		AutoAR trainer = new AutoAR();
+		AutoARMA trainer = new AutoARMA();
 		trainer.setValueCol(sinkConfig.valueCol); 
 		trainer.setTimeCol(sinkConfig.timeCol);
 		
 		trainer.setPMax(sinkConfig.pmax); 
+		trainer.setQMax(sinkConfig.qmax); 
 
 		trainer.setRegParam(sinkConfig.regParam);
 		trainer.setElasticNetParam(sinkConfig.elasticNetParam);		
@@ -81,10 +85,9 @@ public class TsAutoARMASink extends BaseARMASink {
 		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
 		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
 
-		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
 		trainer.setCriterion(sinkConfig.criterion);
 
-		AutoARModel model = trainer.fit(splitted[0]);
+		AutoARMAModel model = trainer.fit(splitted[0]);
 		/*
 		 * STEP #3: Leverage testset to retrieve predictions
 		 * and evaluate accuracy of the trained model
@@ -98,7 +101,7 @@ public class TsAutoARMASink extends BaseARMASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = sinkConfig.modelName;
-		new ARManager().saveAutoAR(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ARMAManager().saveAutoARMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 

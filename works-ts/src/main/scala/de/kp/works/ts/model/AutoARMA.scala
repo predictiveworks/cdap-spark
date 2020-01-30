@@ -93,6 +93,24 @@ class AutoARMAModel(override val uid:String, p:Int, q:Int, intercept:Double, wei
   def getIntercept:Double = intercept
   
   def getWeights:Vector = weights
+      
+  def evaluate(predictions:Dataset[Row]):String = {
+    /*
+     * Reminder: AutoARMA is an ARMA model with
+     * the best p & q parameters
+     */
+    val p = getPBest
+    val q = getQBest
+    
+    val arma = SuningARMA($(valueCol), $(timeCol), p, q,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
+ 
+		val labelCol = arma.getLabelCol
+		val predictionCol = arma.getPredictionCol
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
     /*

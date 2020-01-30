@@ -96,8 +96,7 @@ class AutoARIMAModel(override val uid:String, p:Int, d:Int, q:Int, intercept:Dou
   def getIntercept:Double = intercept
   
   def getWeights:Vector = weights
-  
-    
+      
   def evaluate(predictions:Dataset[Row]):String = {
     
     val arima = SuningARIMA($(valueCol), $(timeCol), p, d, q,

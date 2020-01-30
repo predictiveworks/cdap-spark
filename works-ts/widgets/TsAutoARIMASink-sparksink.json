@@ -39,7 +39,7 @@
     {
       "label": "Model Configuration",
       "properties": [
-          {
+        {
           "widget-type": "textbox",
           "label": "Maximum Lag Order",
           "name": "pmax"

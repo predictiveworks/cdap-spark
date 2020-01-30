@@ -21,12 +21,23 @@ package de.kp.works.ts.arma;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.model.ARMA;
+import de.kp.works.ts.model.ARMAModel;
 import de.kp.works.ts.params.ModelParams;
 
+@Plugin(type = "sparksink")
+@Name("TsARMASink")
+@Description("A building stage for an Apache Spark based ARMA model for time series datasets.")
 public class TsARMASink extends BaseARMASink {
 
 	private static final long serialVersionUID = 1166162703581222031L;
@@ -48,6 +59,48 @@ public class TsARMASink extends BaseARMASink {
 		if (inputSchema != null)
 			validateSchema(inputSchema, config);
 
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsARMASinkConfig sinkConfig = (TsARMASinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+		/*
+		 * STEP #2: Train ARMA Model
+		 */
+		ARMA trainer = new ARMA();
+		trainer.setValueCol(sinkConfig.valueCol); 
+		trainer.setTimeCol(sinkConfig.timeCol);
+		
+		trainer.setP(sinkConfig.p); 
+		trainer.setQ(sinkConfig.q); 
+
+		trainer.setRegParam(sinkConfig.regParam);
+		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		
+		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
+		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+
+		ARMAModel model = trainer.fit(splitted[0]);
+		/*
+		 * STEP #3: Leverage testset to retrieve predictions
+		 * and evaluate accuracy of the trained model
+		 */
+	    Dataset<Row> predictions = model.transform(splitted[1]);
+	    String metricsJson = model.evaluate(predictions);
+
+	    String paramsJson = sinkConfig.getParamsAsJSON();
+		/*
+		 * STEP #3: Store trained regression model including
+		 * its associated parameters and metrics
+		 */		
+		String modelName = sinkConfig.modelName;
+		new ARMAManager().saveARMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+	    
 	}
 
 	/* OK */
