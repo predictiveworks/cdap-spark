@@ -23,13 +23,31 @@ import java.util.Map;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import de.kp.works.ts.params.ModelParams;
-public class TsARIMASink {
 
-	private TsARIMASinkConfig config;
+public class TsARIMASink extends BaseARIMASink {
+
+	private static final long serialVersionUID = 8910121582274962981L;
 
 	public TsARIMASink(TsARIMASinkConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		((TsARIMASinkConfig)config).validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
+
 	}
 	
 	/* OK */
@@ -51,7 +69,7 @@ public class TsARIMASink {
 		
 		public TsARIMASinkConfig() {
 
-			dataSplit = "70:30";
+			timeSplit = "70:30";
 
 			elasticNetParam = 0.0;
 			regParam = 0.0;
@@ -67,7 +85,7 @@ public class TsARIMASink {
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();			
-			params.put("dataSplit", dataSplit);
+			params.put("timeSplit", timeSplit);
 			
 			params.put("p", p);
 			params.put("d", d);

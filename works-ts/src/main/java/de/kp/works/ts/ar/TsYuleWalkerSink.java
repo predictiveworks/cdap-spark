@@ -21,16 +21,49 @@ package de.kp.works.ts.ar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.TimeSplit;
 import de.kp.works.ts.params.ModelParams;
 
-public class TsYuleWalkerSink {
+public class TsYuleWalkerSink extends BaseARSink {
 
-	private TsYuleWalkerSinkConfig config;
+	private static final long serialVersionUID = 2998150184535380725L;
 	
 	public TsYuleWalkerSink(TsYuleWalkerSinkConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		((TsYuleWalkerSinkConfig)config).validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
+
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsYuleWalkerSinkConfig sinkConfig = (TsYuleWalkerSinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+
 	}
 
 	/* OK */
@@ -41,11 +74,18 @@ public class TsYuleWalkerSink {
 		@Description(ModelParams.P_PARAM_DESC)
 		@Macro
 		public Integer p;
+
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Note, this is a split time "
+				+ "and is computed from the total time span (min, max) of the time series. Default is 70:30")
+		@Macro
+		public String timeSplit;
 	    
 		@Override
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();
+
+			params.put("timeSplit", timeSplit);
 			params.put("p", p);
 
 			return params;
@@ -59,6 +99,19 @@ public class TsYuleWalkerSink {
 				throw new IllegalArgumentException(String
 						.format("[%s] The number of lag observations must be positive.", this.getClass().getName()));
 			
+		}
+		
+		public Dataset<Row>[] split(Dataset<Row> source) {
+			/*
+			 * STEP #1: Split dataset into training & test timeseries
+			 */
+			TimeSplit splitter = new TimeSplit();
+			splitter.setTimeCol(timeCol);
+			splitter.setTimeSplit(timeSplit);
+		
+			Dataset<Row>[] splitted = splitter.timeSplit(source);
+			return splitted;
+		
 		}
 		
 	}

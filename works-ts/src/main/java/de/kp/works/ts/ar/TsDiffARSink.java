@@ -21,16 +21,48 @@ package de.kp.works.ts.ar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.ts.params.ModelParams;
 
-public class TsDiffARSink {
+public class TsDiffARSink extends BaseARSink {
 
-	private TsDiffARSinkConfig config;
+	private static final long serialVersionUID = 539646198032768805L;
 	
 	public TsDiffARSink(TsDiffARSinkConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		((TsDiffARSinkConfig)config).validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
+
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsDiffARSinkConfig sinkConfig = (TsDiffARSinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+
 	}
 
 	/* OK */
@@ -48,7 +80,7 @@ public class TsDiffARSink {
 
 		public TsDiffARSinkConfig() {
 
-			dataSplit = "70:30";
+			timeSplit = "70:30";
 
 			elasticNetParam = 0.0;
 			regParam = 0.0;
@@ -63,7 +95,7 @@ public class TsDiffARSink {
 			
 			Map<String, Object> params = new HashMap<>();
 			
-			params.put("dataSplit", dataSplit);
+			params.put("timeSplit", timeSplit);
 			params.put("p", p);
 			params.put("d", d);
 

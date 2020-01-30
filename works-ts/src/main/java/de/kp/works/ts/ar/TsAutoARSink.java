@@ -21,16 +21,48 @@ package de.kp.works.ts.ar;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.ts.params.ModelParams;
 
-public class TsAutoARSink {
+public class TsAutoARSink extends BaseARSink {
 
-	private TsAutoARSinkConfig config;
+	private static final long serialVersionUID = -2595856794547551651L;
 	
 	public TsAutoARSink(TsAutoARSinkConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		((TsAutoARSinkConfig)config).validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
+
+	}
+	
+	@Override
+	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+
+		TsAutoARSinkConfig sinkConfig = (TsAutoARSinkConfig)config;
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		Dataset<Row>[] splitted = sinkConfig.split(source);
+
 	}
 
 	/* OK */
@@ -52,7 +84,7 @@ public class TsAutoARSink {
 
 		public TsAutoARSinkConfig() {
 
-			dataSplit = "70:30";
+			timeSplit = "70:30";
 
 			elasticNetParam = 0.0;
 			regParam = 0.0;
@@ -70,7 +102,7 @@ public class TsAutoARSink {
 			
 			Map<String, Object> params = new HashMap<>();
 			
-			params.put("dataSplit", dataSplit);
+			params.put("timeSplit", timeSplit);
 			params.put("pmax", pmax);
 
 			params.put("elasticNetParam", elasticNetParam);

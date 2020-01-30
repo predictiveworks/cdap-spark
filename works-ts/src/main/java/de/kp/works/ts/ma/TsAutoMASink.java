@@ -23,14 +23,31 @@ import java.util.Map;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import de.kp.works.ts.params.ModelParams;
 
-public class TsAutoMASink {
+public class TsAutoMASink extends BaseMASink {
 
-	private TsAutoMASinkConfig config;
+	private static final long serialVersionUID = -2078063701847845205L;
 	
 	public TsAutoMASink(TsAutoMASinkConfig config) {
 		this.config = config;
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
+
+		/* Validate configuration */
+		((TsAutoMASinkConfig)config).validate();
+		
+		/* Validate schema */
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema, config);
+
 	}
 
 	/* OK */
@@ -48,7 +65,7 @@ public class TsAutoMASink {
 
 		public TsAutoMASinkConfig() {
 
-			dataSplit = "70:30";
+			timeSplit = "70:30";
 			
 			elasticNetParam = 0.0;
 			regParam = 0.0;
@@ -65,7 +82,7 @@ public class TsAutoMASink {
 		public Map<String, Object> getParamsAsMap() {
 			
 			Map<String, Object> params = new HashMap<>();			
-			params.put("dataSplit", dataSplit);
+			params.put("timeSplit", timeSplit);
 			
 			params.put("qmax", qmax);
 

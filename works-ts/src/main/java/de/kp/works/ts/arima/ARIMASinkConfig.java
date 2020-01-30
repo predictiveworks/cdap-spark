@@ -18,8 +18,12 @@ package de.kp.works.ts.arima;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.ts.TimeSplit;
 import de.kp.works.ts.params.ModelParams;
 
 public class ARIMASinkConfig extends ARIMAConfig {
@@ -46,9 +50,10 @@ public class ARIMASinkConfig extends ARIMAConfig {
 	@Macro
 	public String meanOut;
 
-	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+	@Description("The split of the dataset into train & test data, e.g. 80:20. Note, this is a split time "
+			+ "and is computed from the total time span (min, max) of the time series. Default is 70:30")
 	@Macro
-	public String dataSplit;
+	public String timeSplit;
 
 	public void validate() {
 		super.validate();
@@ -63,8 +68,17 @@ public class ARIMASinkConfig extends ARIMAConfig {
 		
 	}
 	
-	public double[] getSplits() {
-		return getDataSplits(dataSplit);
+	public Dataset<Row>[] split(Dataset<Row> source) {
+		/*
+		 * STEP #1: Split dataset into training & test timeseries
+		 */
+		TimeSplit splitter = new TimeSplit();
+		splitter.setTimeCol(timeCol);
+		splitter.setTimeSplit(timeSplit);
+	
+		Dataset<Row>[] splitted = splitter.timeSplit(source);
+		return splitted;
+	
 	}
 	
 }

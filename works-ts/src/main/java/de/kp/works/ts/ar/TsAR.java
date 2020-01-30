@@ -1,7 +1,4 @@
 package de.kp.works.ts.ar;
-
-import de.kp.works.ts.model.AutoRegressionModel;
-
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -20,6 +17,8 @@ import de.kp.works.ts.model.AutoRegressionModel;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import de.kp.works.ts.model.AutoRegressionModel;
 
 public class TsAR {
 

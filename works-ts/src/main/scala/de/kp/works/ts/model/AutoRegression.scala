@@ -83,6 +83,18 @@ class AutoRegressionModel(override val uid:String, intercept:Double, weights:Vec
   
   def getWeights:Vector = weights
 
+  def evaluate(predictions:Dataset[Row]):String = {
+
+    val ar = SuningAutoRegression($(valueCol), $(timeCol), $(p),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+ 
+		val labelCol = ar.getLabelCol;
+		val predictionCol = ar.getPredictionCol;
+				
+	  Evaluator.evaluate(predictions, labelCol, predictionCol);
+    
+  }
+  
   override def transform(dataset:Dataset[_]):DataFrame = {
 
     val ar = SuningAutoRegression($(valueCol), $(timeCol), $(p),

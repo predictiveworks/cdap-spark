@@ -29,7 +29,7 @@
         {
           "widget-type": "select",
           "label": "Aggregation Method",
-          "name": "modelType",
+          "name": "aggregationMethod",
           "widget-attributes": {
             "values": [
               "avg",

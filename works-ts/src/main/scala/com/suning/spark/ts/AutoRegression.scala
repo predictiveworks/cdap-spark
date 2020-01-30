@@ -43,12 +43,13 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
 
   private var lr_ar: LinearRegression = _
 
+  private val prefix = if (meanOut) "_meanOut" else ""
+  private val lag = "_lag_"
+
   override def fitImpl(df: DataFrame): this.type = {
 
     require(p > 0, s"p can not be 0")
 
-    val prefix = if (meanOut) "_meanOut" else ""
-    val lag = "_lag_"
     val label = inputCol + prefix + lag + (0)
     val r = 1 to p
     val features = r.map(inputCol + prefix + lag + _).toArray
@@ -70,6 +71,10 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
     this
   }
 
+  def getLabelCol:String = inputCol + prefix + lag + (0)
+
+  def getPredictionCol:String = "prediction"
+  
   def getFeatureCols:Array[String] = {
 
     val prefix = if (meanOut) "_meanOut" else ""
@@ -89,7 +94,7 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
     
     val newDF = TimeSeriesUtil.LagCombination(df, inputCol, timeCol, p, lagsOnly = false, meanOut)
       .filter(col(inputCol + prefix + lag + p).isNotNull)
-    
+   
       newDF
       
   }
