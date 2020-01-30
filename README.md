@@ -17,9 +17,11 @@ An integrated data analytics platform that seamlessly covers all flavors of mode
 
 >This project aims to prove that nowadays all technical building blocks exist to build a unified corporate data analytics environment, *based on approved libraries*, and, with a visual interface to build data pipelines without any coding experience.
 
-The image below illustrates a 3-phase approach how existing distributed analytics libraries can be transformed into pluggable components for flexible pipeline orchestration. 
+The image below illustrates a 3-phase approach how existing distributed analytics libraries can be transformed into pluggable components to support flexible pipeline orchestration. 
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/steps-to-visual-analytics.png" width="800" alt="Visual Analytics">
+
+**CDAP Spark** is an implementation of this approach and covers the modules for comprehensive unified analytics:
 
 ## Modules
 
