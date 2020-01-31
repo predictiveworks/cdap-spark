@@ -4,10 +4,16 @@
 
 CDAP Spark covers all flavors of modern data analytics from deep learning, machine learning to busines rule and query analysis up to comprehensive text & time series processing.
 
-It *externalizes* modern data analytics in form of plugins for [Google CDAP](https:cdap.io) data pipelines, and boosts the work of data analysts and scientists 
+It *externalizes* modern data analytics in form of plugins for [Google CDAP](https://cdap.io) data pipelines, and boosts the work of data analysts and scientists 
 to build data driven applications without coding.
 
+We decided to select [**Google's CDAP**](https://cdap.io) as this unified environment was designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
+
 >CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
+
+CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
+
+![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
 
 ## What is unified Visual Analytics?
 
@@ -35,7 +41,7 @@ The image below illustrates a 3-phase approach how existing distributed analytic
 
 > Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
 
-## Why CDAP Spark?
+## Model Management
 
 Corporate adoption of machine learning or deep learning often runs into the same problem. A variety of existing (open source) solutions & engines enable data scientists to develop data models very fast. However, integrating trained models into business processes is a completely different story:
 
@@ -46,26 +52,15 @@ building, or completely prevent the usage of trained models in application proce
 
 This project focuses on the immediate corporate usability of machine learning & deep learning results and supports model building & usage within the **same unified** technical environment.
 
-We decided to select [**Google's CDAP**](https://cdap.io). This unified environment has been designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/model-management.png" width="800" alt="Model Management">
 
-This project externalizes [**Apache Spark**](https://spark.apache.org) machine learning as CDAP data pipeline stages, adds missing time series analytics to Apache Spark and also makes [**Intel's BigDL**](https://bigdl-project.github.io/) library accessible as CDAP pipeline stages.   
-
-CDAP Spark is part of [Predictive Works](https://predictiveworks.eu). The picture below shows its main building blocks of and their relations to this project. 
-
-![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
-
-## Visual Analytics
-
-**CDAP Spark** is an open-source analytics extension to Google [CDAP](https://cdap.io) and built with the aim to support code-free visual analytics with a comprehensive set of plugins.
-
-
-### Why not use Seahorse Visual Spark?
+## Why not use Seahorse Visual Spark?
 
 [Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
 
 CDAP Spark is also based on Apache Spark as its foundation for distributed in-memory processing. But it is not restricted to Apache Spark's machine learning channel. CDAP Spark complements this channel with deep learning, timeseries and als business rule support.
 
-And, of course, CDAP Spark is just one building block of [Predictive Works.](https:predictiveworks.eu)  
+And, of course, CDAP Spark is just one building block of [PredictiveWorks.](https:predictiveworks.eu)  
 
 ## Overview
 
