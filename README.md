@@ -4,20 +4,22 @@
 
 CDAP Spark covers all flavors of modern data analytics from deep learning, machine learning to busines rule and query analysis up to comprehensive text & time series processing.
 
-It *externalizes* modern data analytics in form of plugins for [Google CDAP](https://cdap.io) data pipelines, and boosts the work of data analysts and scientists 
-to build data driven applications without coding.
-
-We decided to select [**Google's CDAP**](https://cdap.io) as this unified environment was designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
-
->CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
-
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="800" alt="Works DL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="800" alt="Works ML"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ts.svg" width="800" alt="Works TS"> 
  :---: | :---: | :---: |
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-rules.svg" width="800" alt="Works Rules"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.svg" width="800" alt="Works SQL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-text.svg" width="800" alt="Works Text"> 
  :---: | :---: | :---: |
 
+CDAP Spark *externalizes* modern data analytics in form of plugins for [Google CDAP](https://cdap.io) data pipelines, and boosts the work of data analysts and scientists 
+to build data driven applications without coding.
+
 > Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
+
+We decided to select [**Google's CDAP**](https://cdap.io) as this unified environment was designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
+
+>CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
+
+##PredictiveWorks.
 
 CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
 
