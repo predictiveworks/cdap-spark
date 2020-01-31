@@ -38,7 +38,7 @@ import de.kp.works.ts.params.ModelParams;
 @Plugin(type = "sparksink")
 @Name("TsARSink")
 @Description("A building stage for an Apache Spark based AutoRegression model for time series datasets.")
-public class TsARSink extends BaseARSink {
+public class TsARSink extends ARSink {
 
 	private static final long serialVersionUID = -1532168373135598066L;
 	

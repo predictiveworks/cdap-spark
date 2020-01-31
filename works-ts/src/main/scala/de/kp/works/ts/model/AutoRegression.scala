@@ -98,7 +98,7 @@ class AutoRegressionModel(override val uid:String, intercept:Double, weights:Vec
     
   }
 
-  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+  def forecast(dataset:Dataset[Row], steps:Int):DataFrame = {
  
     validateSchema(dataset.schema)
 

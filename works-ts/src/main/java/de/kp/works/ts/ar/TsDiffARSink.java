@@ -38,7 +38,7 @@ import de.kp.works.ts.params.ModelParams;
 @Plugin(type = "sparksink")
 @Name("TsDiffARSink")
 @Description("A building stage for an Apache Spark based Differencing AutoRegression model for time series datasets.")
-public class TsDiffARSink extends BaseARSink {
+public class TsDiffARSink extends ARSink {
 
 	private static final long serialVersionUID = 539646198032768805L;
 	

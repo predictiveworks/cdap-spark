@@ -38,7 +38,7 @@ import de.kp.works.ts.params.ModelParams;
 @Plugin(type = "sparksink")
 @Name("TsARIMASink")
 @Description("A building stage for an Apache Spark based ARIMA model for time series datasets.")
-public class TsARIMASink extends BaseARIMASink {
+public class TsARIMASink extends ARIMASink {
 
 	private static final long serialVersionUID = 8910121582274962981L;
 

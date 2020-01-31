@@ -1,4 +1,4 @@
-package de.kp.works.ts.arima;
+package de.kp.works.ts.ar;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,12 +19,13 @@ package de.kp.works.ts.arima;
  */
 
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+
 import de.kp.works.core.TimeSink;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class BaseARIMASink extends TimeSink {
+public class ARSink extends TimeSink {
 
-	private static final long serialVersionUID = 9220729882343818594L;
+	private static final long serialVersionUID = -2627863312885407890L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
@@ -43,4 +44,3 @@ public class BaseARIMASink extends TimeSink {
 	}
 
 }
-

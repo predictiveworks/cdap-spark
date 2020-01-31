@@ -39,7 +39,7 @@ import de.kp.works.ts.params.ModelParams;
 @Plugin(type = "sparksink")
 @Name("TsYuleWalkerSink")
 @Description("A building stage for an Apache Spark based Yule Walker model for time series datasets.")
-public class TsYuleWalkerSink extends BaseARSink {
+public class TsYuleWalkerSink extends ARSink {
 
 	private static final long serialVersionUID = 2998150184535380725L;
 	

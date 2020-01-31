@@ -18,18 +18,20 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.ARMAModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsARMA")
 @Description("A prediction stage that leverages a trained Apache Spark based ARMA time series model.")
-public class TsARMA extends TimeCompute {
+public class TsARMA extends ARMACompute {
 
 	private static final long serialVersionUID = -9081199792437286215L;
 
@@ -52,11 +54,28 @@ public class TsARMA extends TimeCompute {
 							this.getClass().getName(), computeConfig.modelName));
 
 	}
+	
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		TsARMAConfig computeConfig = (TsARMAConfig)(config);
+		
+		/* Time & value column may have names different from traing phase */
+		model.setTimeCol(computeConfig.timeCol);
+		model.setValueCol(computeConfig.valueCol);
 
-	public static class TsARMAConfig extends ARMAConfig {
+		return model.forecast(source, computeConfig.steps);
+		
+	}
+
+	public static class TsARMAConfig extends ARMAComputeConfig {
 
 		private static final long serialVersionUID = -2565279706592741956L;
 
+		public TsARMAConfig() {
+			steps = 1;
+		}
+		
 		public void validate() {
 			super.validate();
 		}

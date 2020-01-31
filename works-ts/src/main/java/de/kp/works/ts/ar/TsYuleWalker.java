@@ -18,18 +18,20 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsYuleWalker")
 @Description("A prediction stage that leverages a trained Apache Spark based Yule Walker AutoRegression time series model.")
-public class TsYuleWalker extends TimeCompute {
+public class TsYuleWalker extends ARCompute {
 
 	private static final long serialVersionUID = -3512433728877952854L;
 
@@ -52,10 +54,27 @@ public class TsYuleWalker extends TimeCompute {
 							this.getClass().getName(), computeConfig.modelName));
 
 	}
+	
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		TsYuleWalkerConfig computeConfig = (TsYuleWalkerConfig)(config);
+		
+		/* Time & value column may have names different from traing phase */
+		model.setTimeCol(computeConfig.timeCol);
+		model.setValueCol(computeConfig.valueCol);
 
-	public static class TsYuleWalkerConfig extends ARConfig {
+		return model.forecast(source, computeConfig.steps);
+		
+	}
+
+	public static class TsYuleWalkerConfig extends ARComputeConfig {
 
 		private static final long serialVersionUID = -864185065637543716L;
+
+		public TsYuleWalkerConfig() {
+			steps = 1;
+		}
 
 		public void validate() {
 			super.validate();

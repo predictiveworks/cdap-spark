@@ -18,18 +18,20 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.DiffAutoRegressionModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsDiffAR")
 @Description("A prediction stage that leverages a trained Apache Spark based Differencing AutoRegression time series model.")
-public class TsDiffAR extends TimeCompute {
+public class TsDiffAR extends ARCompute {
 
 	private static final long serialVersionUID = 5008850620168692633L;
 
@@ -52,10 +54,27 @@ public class TsDiffAR extends TimeCompute {
 							this.getClass().getName(), computeConfig.modelName));
 
 	}
+	
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		TsDiffARConfig computeConfig = (TsDiffARConfig)(config);
+		
+		/* Time & value column may have names different from traing phase */
+		model.setTimeCol(computeConfig.timeCol);
+		model.setValueCol(computeConfig.valueCol);
 
-	public static class TsDiffARConfig extends ARConfig {
+		return model.forecast(source, computeConfig.steps);
+		
+	}
+
+	public static class TsDiffARConfig extends ARComputeConfig {
 
 		private static final long serialVersionUID = -8352931460177951709L;
+
+		public TsDiffARConfig() {
+			steps = 1;
+		}
 
 		public void validate() {
 			super.validate();

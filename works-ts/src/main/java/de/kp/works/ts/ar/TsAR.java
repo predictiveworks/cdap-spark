@@ -18,18 +18,20 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
 import de.kp.works.ts.model.AutoRegressionModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAR")
 @Description("A prediction stage that leverages a trained Apache Spark based AutoRegression time series model.")
-public class TsAR extends TimeCompute {
+public class TsAR extends ARCompute {
 
 	private static final long serialVersionUID = -4388615366081416402L;
 
@@ -52,10 +54,27 @@ public class TsAR extends TimeCompute {
 							this.getClass().getName(), computeConfig.modelName));
 
 	}
+	
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		TsARConfig computeConfig = (TsARConfig)(config);
+		
+		/* Time & value column may have names different from traing phase */
+		model.setTimeCol(computeConfig.timeCol);
+		model.setValueCol(computeConfig.valueCol);
 
-	public static class TsARConfig extends ARConfig {
+		return model.forecast(source, computeConfig.steps);
+		
+	}
+
+	public static class TsARConfig extends ARComputeConfig {
 
 		private static final long serialVersionUID = 7633572327423290491L;
+
+		public TsARConfig() {
+			steps = 1;
+		}
 
 		public void validate() {
 			super.validate();

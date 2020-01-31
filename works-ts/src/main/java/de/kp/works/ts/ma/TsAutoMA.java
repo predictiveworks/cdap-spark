@@ -18,19 +18,20 @@ package de.kp.works.ts.ma;
  * 
  */
 
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
-import de.kp.works.ts.arma.ARMAConfig;
 import de.kp.works.ts.model.AutoMAModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoMA")
 @Description("A prediction stage that leverages a trained Apache Spark based Auto Moving Average time series model.")
-public class TsAutoMA extends TimeCompute {
+public class TsAutoMA extends MACompute {
 
 	private static final long serialVersionUID = -3457589115912285863L;
 
@@ -53,11 +54,27 @@ public class TsAutoMA extends TimeCompute {
 							this.getClass().getName(), computeConfig.modelName));
 
 	}
+	
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		TsAutoMAConfig computeConfig = (TsAutoMAConfig)(config);
+		
+		/* Time & value column may have names different from traing phase */
+		model.setTimeCol(computeConfig.timeCol);
+		model.setValueCol(computeConfig.valueCol);
 
-	public static class TsAutoMAConfig extends ARMAConfig {
+		return model.forecast(source, computeConfig.steps);
+		
+	}
+
+	public static class TsAutoMAConfig extends MAComputeConfig {
 
 		private static final long serialVersionUID = 2817976143588383896L;
 
+		public TsAutoMAConfig() {
+			steps = 1;
+		}
 		public void validate() {
 			super.validate();
 		}

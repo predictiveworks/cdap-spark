@@ -25,6 +25,14 @@
           "widget-type": "textbox",
           "label": "Value Field",
           "name": "valueCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time Steps",
+          "name": "steps",
+          "widget-attributes": {
+            "default": "1"
+          }
         }
       ]
     }

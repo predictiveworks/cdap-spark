@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "TS ARMA Predictor",
+"display-name": "TS ARIMA Predictor",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -25,6 +25,14 @@
           "widget-type": "textbox",
           "label": "Value Field",
           "name": "valueCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time Steps",
+          "name": "steps",
+          "widget-attributes": {
+            "default": "1"
+          }
         }
       ]
     }
