@@ -10,8 +10,8 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="640"
-   height="320"
-   viewBox="0 0 640 320"
+   height="640"
+   viewBox="0 0 640 640"
    version="1.1"
    id="svg820"
    inkscape:version="0.92.2 5c3e80d, 2017-08-06"
@@ -24,7 +24,7 @@
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
        inkscape:vp_x="0 : 240 : 1"
-       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_y="0 : 999.99999 : 0"
        inkscape:vp_z="640 : 240 : 1"
        inkscape:persp3d-origin="320 : 160 : 1"
        id="perspective1415" />
@@ -36,9 +36,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4"
-     inkscape:cx="248.21429"
-     inkscape:cy="180.8751"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="84.091157"
+     inkscape:cy="239.985"
      inkscape:document-units="mm"
      inkscape:current-layer="svg820"
      showgrid="false"
@@ -59,64 +59,53 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <rect
+     id="rect843"
+     width="609.90668"
+     height="609.90668"
+     x="15.046665"
+     y="15.046659"
+     ry="9.068203"
+     style="fill:#1bacab;fill-opacity:0.25;stroke:#ffffff;stroke-width:22.23618126;stroke-opacity:1" />
   <g
-     id="g2599"
-     transform="translate(12.616417,18.209644)">
+     id="g1006"
+     transform="translate(61.631182)">
     <g
-       id="layer1-8"
-       inkscape:label="Ebene 1"
-       transform="matrix(0.35579107,0,0,0.35579107,236.22537,21.032187)">
-      <g
-         transform="matrix(1.1190578,0,0,1.1190578,-49.150243,-28.999072)"
-         id="g827">
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:341.33334351px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
-           x="32.85714"
-           y="323.93161"
-           id="text817-0"><tspan
-             sodipodi:role="line"
-             id="tspan815-2"
-             x="32.85714"
-             y="323.93161">P</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:304px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none"
-           x="-329.88361"
-           y="382.7326"
-           id="text821"
-           transform="rotate(-90)"><tspan
-             sodipodi:role="line"
-             id="tspan819"
-             x="-329.88361"
-             y="382.7326">w</tspan></text>
-      </g>
-    </g>
-    <g
-       transform="matrix(1.8988218,0,0,1.8988218,-210.19773,28.502079)"
-       id="g2509">
+       transform="translate(-3.6551324,59.275618)"
+       id="g853">
       <text
          xml:space="preserve"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.32252121px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.65574324"
-         x="156.60031"
-         y="110.11851"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:67.07117462px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:3.14396143"
+         x="68.611092"
+         y="255.80714"
          id="text2193"><tspan
            sodipodi:role="line"
            id="tspan2191"
-           x="156.60031"
-           y="110.11851"
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:1.65574324">Works</tspan></text>
+           x="68.611092"
+           y="255.80714"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:91.14344788px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:3.14396143">Works</tspan></text>
       <text
          id="text2197"
-         y="109.72007"
-         x="308.73206"
-         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:35.32252121px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none;stroke-width:1.65574324"
+         y="255.05058"
+         x="343.91071"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:67.07117462px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#1bacab;fill-opacity:1;stroke:none;stroke-width:3.14396143"
          xml:space="preserve"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:1.65574324"
-           y="109.72007"
-           x="308.73206"
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:91.14344788px;font-family:sans-serif;-inkscape-font-specification:sans-serif;stroke-width:3.14396143"
+           y="255.05058"
+           x="343.91071"
            id="tspan2195"
-           sodipodi:role="line">TS.</tspan></text>
+           sodipodi:role="line">TS</tspan></text>
     </g>
+    <text
+       id="text857"
+       y="383.07114"
+       x="112.4704"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:21.33333397px;line-height:1.25;font-family:'Exo 2';-inkscape-font-specification:'Exo 2, ';letter-spacing:0px;word-spacing:0px;fill:#777777;fill-opacity:1;stroke:none"
+       xml:space="preserve"><tspan
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:53.33333206px;font-family:sans-serif;-inkscape-font-specification:sans-serif"
+         y="383.07114"
+         x="112.4704"
+         id="tspan855"
+         sodipodi:role="line">TimeSeries</tspan></text>
   </g>
 </svg>
