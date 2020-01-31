@@ -17,7 +17,7 @@ to build data driven applications without coding.
 
 We decided to select [**Google's CDAP**](https://cdap.io) as this unified environment was designed to cover all aspects of corporate data processing, from data integration & ingestion to SQL & business rules up to machine learning & deep learning.
 
->CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
+>CDAP Spark offers more than **150 analytics plugins** for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
 
 ## PredictiveWorks.
 
