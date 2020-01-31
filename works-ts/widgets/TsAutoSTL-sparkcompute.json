@@ -49,11 +49,6 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Periodicity",
-          "name": "periodicity"
-        },
-        {
-          "widget-type": "textbox",
           "label": "Seasonal Smoother",
           "name": "seasonalLoessSize"
         },
@@ -66,6 +61,27 @@
           "widget-type": "textbox",
           "label": "Level Smoother",
           "name": "levelLoessSize"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Lag",
+          "name": "maxLag",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Discrete Lags",
+          "name": "lagValues"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Correlation Threshold",
+          "name": "threshold",
+          "widget-attributes": {
+            "default": "0.95"
+          }
         }
       ]
     }
