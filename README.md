@@ -11,6 +11,14 @@ We decided to select [**Google's CDAP**](https://cdap.io) as this unified enviro
 
 >CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
 
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="800" alt="Works DL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="800" alt="Works ML"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ts.svg" width="800" alt="Works TS"> 
+ :---: | :---: | :---: |
+
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-rules.svg" width="800" alt="Works Rules"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.svg" width="800" alt="Works SQL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-text.svg" width="800" alt="Works Text"> 
+ :---: | :---: | :---: |
+
+> Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
+
 CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
 
 ![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
@@ -26,18 +34,6 @@ An integrated data analytics platform that seamlessly covers all flavors of mode
 The image below illustrates a 3-phase approach how existing distributed analytics libraries can be transformed into pluggable components to support flexible pipeline orchestration. 
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/steps-to-visual-analytics.png" width="800" alt="Visual Analytics">
-
-**CDAP Spark** is an implementation of this approach and covers the modules for comprehensive unified analytics:
-
-## Modules
-
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="800" alt="Works DL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="800" alt="Works ML"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ts.svg" width="800" alt="Works TS"> 
- :---: | :---: | :---: |
-
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-rules.svg" width="800" alt="Works Rules"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.svg" width="800" alt="Works SQL"> | <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-text.svg" width="800" alt="Works Text"> 
- :---: | :---: | :---: |
-
-> Externalization is an appropriate means to make advanced analytics reusable, transparent and notably secures the knowledge how enterprise data are transformed into insights, foresights and knowledge.
 
 ## Model Management
 
