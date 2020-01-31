@@ -32,6 +32,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait DiffAutoRegressionParams extends ModelParams with HasPParam with HasDParam 
@@ -48,6 +49,8 @@ class DiffAutoRegression(override val uid: String)
   override def fit(dataset:Dataset[_]):DiffAutoRegressionModel = {
 
     require($(p) > 0 && $(d) > 0, s"Parameters p, d must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningDiffAutoRegression(
       $(valueCol), $(timeCol), $(p), $(d),
@@ -94,8 +97,33 @@ class DiffAutoRegressionModel(override val uid:String, intercept:Double, weights
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
    
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+
+    val diffAR = SuningDiffAutoRegression($(valueCol), $(timeCol), $(p), $(d),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
+    
+    val prepared = diffAR.prepareDiffAR(dataset.toDF)
+    val featureCols = diffAR.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+    
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))  
+    diffAR.forecast(predictions, intercept, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
 
     val diffAR = SuningDiffAutoRegression($(valueCol), $(timeCol), $(p), $(d),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))

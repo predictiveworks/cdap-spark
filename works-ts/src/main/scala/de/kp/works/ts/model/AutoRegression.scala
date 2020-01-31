@@ -31,6 +31,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait AutoRegressionParams extends ModelParams with HasPParam 
@@ -48,6 +49,8 @@ class AutoRegression(override val uid: String)
   override def fit(dataset:Dataset[_]):AutoRegressionModel = {
 
     require($(p) > 0, s"Parameter p  must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningAutoRegression(
       $(valueCol), $(timeCol), $(p),
@@ -94,8 +97,35 @@ class AutoRegressionModel(override val uid:String, intercept:Double, weights:Vec
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+
+    val ar = SuningAutoRegression($(valueCol), $(timeCol), $(p),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+    
+    val prepared = ar.prepareAR(dataset.toDF)
+    val featureCols = ar.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+
+    val meanValue = getDouble(dataset.select(mean($(valueCol))).collect()(0).get(0))    
+
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))    
+    ar.forecast(predictions, intercept, weights, meanValue, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
 
     val ar = SuningAutoRegression($(valueCol), $(timeCol), $(p),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))

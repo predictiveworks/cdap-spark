@@ -61,11 +61,11 @@ class TimeSeriesSMA(override val uid: String, keepOriginal: Boolean,
 
     require(numAhead > 0, s"number of future data instances can not small than 0")
 
-    val SMAdf = transform(df)
+    val SMAdf = transform(df).orderBy(desc(timeCol))
 
     val prefix = "_SMA_"
 
-    var listPrediction = SMAdf.orderBy(desc(timeCol)).select(inputCol + prefix + window)
+    var listPrediction = SMAdf.select(inputCol + prefix + window)
       .limit(window).collect().map(_.getDouble(0)).toList
 
     (0 until numAhead).foreach {
@@ -74,8 +74,9 @@ class TimeSeriesSMA(override val uid: String, keepOriginal: Boolean,
       }
     }
 
-    val prediction = listPrediction.slice(0, numAhead).reverse
-    prediction
+    val values = listPrediction.slice(0, numAhead).reverse
+    values
+    
   }
 
   override def removeOriginal(df: DataFrame): DataFrame = {

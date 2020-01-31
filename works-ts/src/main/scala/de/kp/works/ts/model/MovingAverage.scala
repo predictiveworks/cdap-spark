@@ -32,6 +32,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait MovingAverageParams extends ModelParams with HasQParam 
@@ -49,6 +50,8 @@ class MovingAverage(override val uid: String)
   override def fit(dataset:Dataset[_]):MovingAverageModel = {
 
     require($(q) > 0, s"Parameter q must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningMovingAverage(
       $(valueCol), $(timeCol), $(q),
@@ -96,8 +99,34 @@ class MovingAverageModel(override val uid:String, intercept:Double, weights:Vect
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+ 
+    val ma = SuningMovingAverage(
+      $(valueCol), $(timeCol), $(q),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+    
+    val prepared = ma.prepareMA(dataset.toDF)
+    val featureCols = ma.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+    
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))    
+    ma.forecast(predictions, intercept, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
  
     val ma = SuningMovingAverage(
       $(valueCol), $(timeCol), $(q),

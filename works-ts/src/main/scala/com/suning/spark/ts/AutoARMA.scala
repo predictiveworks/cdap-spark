@@ -201,7 +201,7 @@ class AutoARMA(override val uid: String, inputCol: String, timeCol: String, p_Ma
     lr_Autoarma.transform(df)
   }
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
     lr_Autoarma.forecast(df, numAhead)
   }
 

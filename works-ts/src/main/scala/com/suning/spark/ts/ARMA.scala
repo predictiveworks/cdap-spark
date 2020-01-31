@@ -158,29 +158,41 @@ class ARMA(override val uid: String, inputCol: String, timeCol: String, p: Int, 
     lr_arma.transform(newDF_arma)
 
   }
+  
+  def forecast(predictions: DataFrame, intercept:Double, weights:Vector, numAhead: Int): DataFrame = {
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+    val values = if (p == 0 || q == 0) {
+      if (q == 0) {        
+        TimeSeriesUtil.tsForecastAR(predictions, numAhead, inputCol, timeCol, p,
+          intercept, weights)
+
+      } else {
+        TimeSeriesUtil.tsForecastMA(predictions, numAhead, inputCol, timeCol, q,
+          intercept, weights)
+          
+      }
+      
+    } else {
+      TimeSeriesUtil.tsForecastARMAModel(predictions, numAhead, inputCol, timeCol, p, q,
+        intercept, weights)
+
+    }
+    
+    forecastResult(predictions, values, numAhead)
+    
+  }
+
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
 
     require(p > 0 || q > 0, s"p or q can not be 0 at the same time")
 
-    if (lr_arma == null || arModel == null || maModel == null) fit(df)
+    val predictions = transform(df)
+    
+    val intercept = getIntercept()
+    val weights = getWeights()
 
-    val newDF = transform(df)
-
-    if (p == 0 || q == 0) {
-      if (q == 0) {
-        TimeSeriesUtil.tsForecastAR(newDF, numAhead, inputCol, timeCol, p,
-          getIntercept(), getWeights())
-      }
-      else {
-        TimeSeriesUtil.tsForecastMA(newDF, numAhead, inputCol, timeCol, q,
-          getIntercept(), getWeights())
-      }
-    }
-    else {
-      TimeSeriesUtil.tsForecastARMAModel(newDF, numAhead, inputCol, timeCol, p, q,
-        getIntercept(), getWeights())
-    }
+    forecast(predictions, intercept, weights, numAhead)
+    
   }
 
   override def transformImpl(df: DataFrame): DataFrame = {

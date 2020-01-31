@@ -113,29 +113,40 @@ class MovingAverage(override val uid: String, inputCol: String, timeCol: String,
     lr_ma.transform(newDF)
 
   }
-
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
-    require(q > 0, s"q can not be 0")
-
-    if (lr_ma == null) fit(df)
-
-    val newDF = transform(df)
+  
+  def forecast(predictions: DataFrame, intercept: Double, weights: Vector, numAhead: Int): DataFrame = {
 
     val prefix = "residual"
     val lag = "_lag_"
-    val listDF = newDF.orderBy(desc(timeCol)).select(prefix + lag + 0)
+
+    val listDF = predictions.select(prefix + lag + 0)
       .limit(q).collect().map(_.getDouble(0)).toList
 
     var listPrediction = listDF
-    listPrediction = tsFitDotProduct(listDF, q + 1, q, 0.0, getWeights(), meanValue = 0.0)
+    listPrediction = tsFitDotProduct(listDF, q + 1, q, 0.0, weights, meanValue = 0.0)
 
-    var prediction = listPrediction.slice(0, q + 1).reverse
-    prediction = prediction.map(i => i + getIntercept())
+    var values = listPrediction.slice(0, q + 1).reverse
+    values = values.map(i => i + intercept)
 
     ((q + 2) to numAhead) foreach { _ =>
-      prediction = prediction :+ prediction(q)
+      values = values :+ values(q)
     }
-    prediction
+    
+    forecastResult(predictions, values, numAhead)
+    
+  }
+
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
+    
+    require(q > 0, s"q can not be 0")
+
+    val predictions = transform(df).orderBy(desc(timeCol))
+
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    forecast(predictions, intercept, weights, numAhead)
+    
   }
 
 

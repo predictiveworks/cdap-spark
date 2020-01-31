@@ -167,7 +167,7 @@ class AutoMA(override val uid: String, inputCol: String, timeCol: String, q_Max:
     lr_Automa.transform(df)
   }
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
     lr_Automa.forecast(df, numAhead)
   }
 

@@ -35,6 +35,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait AutoARMAParams extends ModelParams 
@@ -53,6 +54,8 @@ class AutoARMA(override val uid: String)
   override def fit(dataset:Dataset[_]):AutoARMAModel = {
 
     require($(pmax) > 0 && $(qmax) > 0, s"Parameter pmax, qmax  must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningAutoARMA($(valueCol), $(timeCol), $(pmax), $(qmax),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(criterion))
@@ -111,9 +114,40 @@ class AutoARMAModel(override val uid:String, p:Int, q:Int, intercept:Double, wei
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+    /*
+     * Reminder: AutoARMA is an ARMA model with
+     * the best p & q parameters
+     */
+    val p = getPBest
+    val q = getQBest
+    
+    val arma = SuningARMA($(valueCol), $(timeCol), p, q,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept))
+      
+    val prepared = arma.prepareARMA(dataset.toDF)
+    val featureCols = arma.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+    
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))
+    arma.forecast(predictions, intercept, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
-    /*
+  
+    validateSchema(dataset.schema)
+   /*
      * Reminder: AutoARMA is an ARMA model with
      * the best p & q parameters
      */

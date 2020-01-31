@@ -485,6 +485,7 @@ object TimeSeriesUtil {
       predictionMA = predictionMA :+ 0.0
     }
     (predictionAR, predictionMA).zipped.map(_ + _)
+
   }
 
   //  def LagCombinationARIMA(df: DataFrame, inputCol: String, residualCol: String,timeCol: String, predCol: String, p: Int, d: Int, q: Int):

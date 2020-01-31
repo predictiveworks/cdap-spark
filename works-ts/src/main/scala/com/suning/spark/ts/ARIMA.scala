@@ -21,7 +21,8 @@ import com.suning.spark.util.{Identifiable, Model, SaveLoad}
 
 import org.apache.spark.SparkContext
 import org.apache.spark.ml.linalg.{Vector, Vectors}
-import org.apache.spark.sql.DataFrame
+
+import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 
 /** For the ARIMA(p,d,q) parameters,
@@ -115,8 +116,10 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
 
   }
   /*
-   * This method combines 3 different models with a 
-   * single method 'fitImpl'
+   * Suning's original implementation of the method below covers an ARMA, a DiffAutoRegression
+   * and a genuine ARIMA model; the use of this method (see de.kp.works.ts.model) is restricted
+   * to the latter one 
+   * 
    */
   override def fitImpl(df: DataFrame): this.type = {
     //    require(p > q, "For ARIMA(p,d,q), p should be large than q.")
@@ -124,14 +127,13 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     require(p > 0 || q > 0, s"p or q can not be 0 at the same time")
     if (d == 0) {
 
-      armaModel =
-        ARMA(inputCol, timeCol, p, q, regParam, standardization, elasticNetParam, withIntercept)
+      armaModel = ARMA(inputCol, timeCol, p, q, regParam, standardization, elasticNetParam, withIntercept)
       armaModel.fit(df)
+
     }
     else {
       if (q == 0) {
-        darModel = DiffAutoRegression(inputCol, timeCol, p, d, regParam, standardization,
-          elasticNetParam, withIntercept)
+        darModel = DiffAutoRegression(inputCol, timeCol, p, d, regParam, standardization, elasticNetParam, withIntercept)
         darModel.fit(df)
       }
       else {
@@ -210,26 +212,35 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
     }
   }
 
-  def forecastARIMA(df: DataFrame, numAhead: Int): List[Double] = {
-    if (lr_arima == null) {
-      fitARIMA(df)
-    }
-    val newDF = transformARIMA(df).orderBy(desc(timeCol))
-
+  /*
+   * This is the genuine forecast implementation that is the (main) purpose 
+   * why we train an ARIMA model; note, the incoming dataset already contains 
+   * predictions (calculuated by a previous transform stage)
+   */
+  def forecastARIMA(predictions: DataFrame, intercept:Double, weights:Vector, numAhead: Int): DataFrame = {
+    
     val diff = "_diff_" + d
     val residual = "residual"
     val lag = "_lag_"
-    var listDiff = newDF.select(inputCol + diff + lag + 0)
+    
+    /*
+     * The the most recent (timeCol with descending order)
+     * values
+     * 
+     * - differenced (p)
+     * - residual (q)
+     * - value (1)
+     */
+    
+    var listDiff = predictions.select(inputCol + diff + lag + 0)
       .limit(p).collect().map(_.getDouble(0)).toList
-    var listResi = newDF.select(residual + lag + 0)
+
+      var listResi = predictions.select(residual + lag + 0)
       .limit(q).collect().map(_.getDouble(0)).toList
 
     var listPrev = List[Double](
-      getDouble(newDF.select(inputCol).limit(1).collect()(0).get(0))
+      getDouble(predictions.select(inputCol).limit(1).collect()(0).get(0))
     )
-
-    val weights = getWeights()
-    val intercept = getIntercept()
 
     val weightsDAR = Vectors.dense(weights.toArray.slice(0, p))
     val weightsMA = Vectors.dense(weights.toArray.slice(p, p + q))
@@ -257,10 +268,24 @@ class ARIMA(override val uid: String, inputCol: String, timeCol: String, p: Int,
         listPrev = (diff + listPrev(0)) :: listPrev
       }
     }
-    listPrev.reverse.tail
-  }
+    
+    val values = listPrev.reverse.tail
+    forecastResult(predictions, values, numAhead)
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+  }
+  
+  def forecastARIMA(df: DataFrame, numAhead: Int): DataFrame = {
+    
+    val predictions = transformARIMA(df).orderBy(desc(timeCol))
+
+    val weights = getWeights()
+    val intercept = getIntercept()
+ 
+    forecastARIMA(predictions, intercept, weights, numAhead)
+    
+  }
+  
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
     require(p > 0 || q > 0, s"p or q can not be 0 at the same time")
 
     if (armaModel == null || darModel == null || lr_arima == null) {

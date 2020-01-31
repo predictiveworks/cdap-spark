@@ -88,24 +88,17 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
 
   }
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
-    require(p > 0 && d > 0, s"p and d can not be 0")
-
-    if (lr_ar == null) fit(df)
-
-    val newDF = transform(df).orderBy(desc(timeCol))
+  def forecast(predictions: DataFrame, intercept: Double, weights: Vector, numAhead: Int): DataFrame = {
 
     val diff = "_diff_" + d
     val lag = "_lag_"
-    var listDiff = newDF.select(inputCol + diff + lag + 0)
+
+    var listDiff = predictions.select(inputCol + diff + lag + 0)
       .limit(p).collect().map(_.getDouble(0)).toList
 
     var listPrev = List[Double](
-      getDouble(newDF.select(inputCol).limit(1).collect()(0).get(0))
+      getDouble(predictions.select(inputCol).limit(1).collect()(0).get(0))
     )
-
-    val weights = getWeights()
-    val intercept = getIntercept()
 
     (0 until numAhead).foreach {
       j => {
@@ -122,7 +115,23 @@ class DiffAutoRegression(override val uid: String, inputCol: String, timeCol: St
         listPrev = (diff + listPrev(0)) :: listPrev
       }
     }
-    listPrev.reverse.tail
+    
+    val values = listPrev.reverse.tail
+    forecastResult(predictions, values, numAhead)
+    
+  }
+
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
+
+    require(p > 0 && d > 0, s"p and d can not be 0")
+
+    val predictions = transform(df).orderBy(desc(timeCol))
+
+    val weights = getWeights()
+    val intercept = getIntercept()
+    
+    forecast(predictions, intercept, weights, numAhead)
+    
   }
 
 

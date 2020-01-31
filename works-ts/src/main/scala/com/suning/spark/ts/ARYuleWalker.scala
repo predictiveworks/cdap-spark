@@ -95,27 +95,34 @@ class ARYuleWalker(override val uid: String, inputCol: String, timeCol: String, 
 
   }
 
-  
-  
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
-    require(p > 0, s"p can not be 0")
-    val newDF = transform(df)
-
-    val meanValue = getDouble(df.select(mean(inputCol)).collect()(0).get(0))
+  def forecast(predictions: DataFrame, meanValue:Double, weights: Vector, numAhead: Int): DataFrame = {
 
     val prefix = ""
     val lag = "_lag_"
-    var listDF = newDF.orderBy(desc(timeCol)).select(inputCol + prefix + lag + 0)
+    
+    var listDF = predictions.select(inputCol + prefix + lag + 0)
       .limit(p).collect().map(_.getDouble(0)).toList
 
     listDF = listDF.map(i => i - meanValue)
 
-    val listPrediction = tsFitDotProduct(listDF, numAhead, p, intercept = 0.0, getCoefficients(),
-      meanValue = meanValue)
+    val listPrediction = tsFitDotProduct(listDF, numAhead, p, intercept = 0.0, weights, meanValue = meanValue)
 
+    val values = listPrediction.slice(0, numAhead).reverse
+    forecastResult(predictions, values, numAhead)
 
-    val prediction = listPrediction.slice(0, numAhead).reverse
-    prediction
+  }
+
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
+
+    require(p > 0, s"p can not be 0")
+
+    val predictions = transform(df).orderBy(desc(timeCol))
+    
+    val meanValue = getDouble(df.select(mean(inputCol)).collect()(0).get(0))
+    val weights = getCoefficients
+    
+    forecast(predictions, meanValue, weights, numAhead)
+
   }
 
   def setCoefficients(weights:Vector) {

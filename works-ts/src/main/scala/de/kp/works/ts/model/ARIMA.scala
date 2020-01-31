@@ -32,6 +32,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait ARIMAParams extends ModelParams 
@@ -53,6 +54,8 @@ class ARIMA(override val uid: String)
 
     require($(p) > 0 && $(d) > 0 && $(q) > 0, s"Parameters p, d, q must be positive")
  
+    validateSchema(dataset.schema)
+    
     val suning = SuningARIMA(
       $(valueCol), $(timeCol), $(p), $(d), $(q),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
@@ -99,7 +102,32 @@ class ARIMAModel(override val uid:String, intercept:Double, weights:Vector)
     
   }
 
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+
+    val arima = SuningARIMA($(valueCol), $(timeCol), $(p), $(d), $(q),
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+    
+    val prepared = arima.prepareARIMA(dataset.toDF)
+    val featureCols = arima.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)    
+
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))    
+    arima.forecastARIMA(predictions, intercept, weights, steps)
+    
+  }
+
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
 
     val arima = SuningARIMA($(valueCol), $(timeCol), $(p), $(d), $(q),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))

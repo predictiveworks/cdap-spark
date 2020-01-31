@@ -35,6 +35,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait AutoARIMAParams extends ModelParams 
@@ -53,6 +54,8 @@ class AutoARIMA(override val uid: String)
   override def fit(dataset:Dataset[_]):AutoARIMAModel = {
 
     require($(pmax) > 0 && $(dmax) > 0 && $(qmax) > 0, s"Parameter pmax, dmax, qmax  must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningAutoARIMA($(valueCol), $(timeCol), $(pmax), $(dmax), $(qmax),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut), $(criterion))
@@ -115,8 +118,40 @@ class AutoARIMAModel(override val uid:String, p:Int, d:Int, q:Int, intercept:Dou
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+    /*
+     * Reminder: AutoARIMA is an ARIMA model with
+     * the best p, d & q parameters
+     */
+    val p = getPBest
+    val d = getDBest
+    val q = getQBest
+    
+    val arima = SuningARIMA($(valueCol), $(timeCol), p, d, q,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+      
+    val prepared = arima.prepareARIMA(dataset.toDF)
+    val featureCols = arima.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+     
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))
+    arima.forecastARIMA(predictions, intercept, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
     /*
      * Reminder: AutoARIMA is an ARIMA model with
      * the best p, d & q parameters

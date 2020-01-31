@@ -105,21 +105,14 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
     lr_ar.transform(newDF)
 
   }
-
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
-
-    require(p > 0, s"p can not be 0")
-
-    if (lr_ar == null) fit(df)
-
-    val newDF = transform(df)
+  
+  def forecast(predictions: DataFrame, intercept:Double, weights: Vector, meanValue:Double, numAhead: Int): DataFrame = {
 
     val prefix = if (meanOut) "_meanOut" else ""
     val lag = "_lag_"
-    var listPrediction = newDF.orderBy(desc(timeCol)).select(inputCol + prefix + lag + 0)
+    
+    var listPrediction = predictions.select(inputCol + prefix + lag + 0)
       .limit(p).collect().map(_.getDouble(0)).toList
-
-    val meanValue = getDouble(df.select(mean(inputCol)).collect()(0).get(0))
 
     if (meanOut) {
       listPrediction = tsFitDotProduct(listPrediction, numAhead, p, getIntercept(), getWeights(),
@@ -129,8 +122,23 @@ class AutoRegression(override val uid: String, inputCol: String, timeCol: String
         meanValue = 0.0)
     }
 
-    val prediction = listPrediction.slice(0, numAhead).reverse
-    prediction
+    val values = listPrediction.slice(0, numAhead).reverse
+    forecastResult(predictions, values, numAhead)
+    
+  }
+
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
+
+    require(p > 0, s"p can not be 0")
+
+    val predictions = transform(df).orderBy(desc(timeCol))
+    val meanValue = getDouble(df.select(mean(inputCol)).collect()(0).get(0))
+
+    val intercept = getIntercept
+    val weights = getWeights
+ 
+    forecast(predictions, intercept, weights, meanValue, numAhead)
+    
   }
 
   def getIntercept(): Double = {

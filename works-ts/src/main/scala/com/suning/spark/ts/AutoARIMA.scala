@@ -146,7 +146,7 @@ class AutoARIMA(override val uid: String, inputCol: String, timeCol: String, p_M
     lr_Autoarima.transform(df)
   }
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
     lr_Autoarima.forecast(df, numAhead)
   }
 

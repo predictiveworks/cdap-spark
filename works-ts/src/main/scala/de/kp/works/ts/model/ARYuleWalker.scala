@@ -31,6 +31,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait ARYuleWalkerParams extends ModelParams with HasPParam {
@@ -45,6 +46,8 @@ class ARYuleWalker(override val uid: String)
   override def fit(dataset:Dataset[_]):ARYuleWalkerModel = {
 
     require($(p) > 0 , s"Parameter p must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningARYuleWalker(
       $(valueCol), $(timeCol), $(p))
@@ -86,8 +89,26 @@ class ARYuleWalkerModel(override val uid:String, weights:Vector)
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+
+    val yuleWalker = SuningARYuleWalker($(valueCol), $(timeCol), $(p))
+
+    val weights = getWeights
+    yuleWalker.setCoefficients(weights)
+    
+    val meanValue = getDouble(dataset.select(mean($(valueCol))).collect()(0).get(0))
+    
+    val predictions = yuleWalker.transform(dataset.toDF).orderBy(desc($(timeCol)))    
+    yuleWalker.forecast(predictions, meanValue, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
 
     val yuleWalker = SuningARYuleWalker($(valueCol), $(timeCol), $(p))
 

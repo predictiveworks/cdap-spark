@@ -35,6 +35,7 @@ import org.apache.spark.ml.param.shared._
 import org.apache.spark.ml.util._
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 trait AutoMAParams extends ModelParams with HasQMaxParam 
@@ -52,6 +53,8 @@ class AutoMA(override val uid: String)
   override def fit(dataset:Dataset[_]):AutoMAModel = {
 
     require($(qmax) > 0, s"Parameter qmax  must be positive")
+ 
+    validateSchema(dataset.schema)
  
     val suning = SuningAutoMA($(valueCol), $(timeCol), $(qmax),
       $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut), $(criterion), $(earlyStop))
@@ -105,8 +108,38 @@ class AutoMAModel(override val uid:String, q:Int, intercept:Double, weights:Vect
 	  Evaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
+
+  def forecast(dataset:Dataset[_], steps:Int):DataFrame = {
+ 
+    validateSchema(dataset.schema)
+    /*
+     * Reminder: AutoMA is an MovingAverage model with
+     * the best q parameter
+     */
+    val q = getQBest
+    
+    val ma = SuningMovingAverage($(valueCol), $(timeCol), q,
+      $(regParam), $(standardization), $(elasticNetParam), $(fitIntercept), $(meanOut))
+    
+    val prepared = ma.prepareMA(dataset.toDF)
+    val featureCols = ma.getFeatureCols
+    
+    val intercept = getIntercept
+    val weights = getWeights
+    
+    val model = LinearRegressionModel.get(intercept,weights)    
+
+    val linearReg = new SuningRegression(featureCols)
+    linearReg.setModel(model)
+    
+    val predictions = linearReg.transform(prepared).orderBy(desc($(timeCol)))    
+    ma.forecast(predictions, intercept, weights, steps)
+    
+  }
   
   override def transform(dataset:Dataset[_]):DataFrame = {
+ 
+    validateSchema(dataset.schema)
     /*
      * Reminder: AutoMA is an MovingAverage model with
      * the best q parameter

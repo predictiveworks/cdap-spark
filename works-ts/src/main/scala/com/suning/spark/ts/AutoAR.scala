@@ -166,7 +166,7 @@ class AutoAR(override val uid: String, inputCol: String, timeCol: String, p_Max:
     lr_Autoar.transform(df)
   }
 
-  override def forecast(df: DataFrame, numAhead: Int): List[Double] = {
+  override def forecast(df: DataFrame, numAhead: Int): DataFrame = {
     lr_Autoar.forecast(df, numAhead)
   }
 

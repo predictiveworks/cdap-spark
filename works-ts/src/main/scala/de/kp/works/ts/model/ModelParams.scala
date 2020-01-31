@@ -17,6 +17,8 @@ package de.kp.works.ts.model
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+import java.math.{BigDecimal => JBigDecimal}
+
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
 
@@ -189,5 +191,48 @@ trait ModelParams extends Params {
  
   /** @group setParam */
   def setValueCol(value:String): this.type = set(valueCol, value)
+  
+  def validateSchema(schema:StructType):Unit = {
+    
+    /* TIME FIELD */
+    
+    val timeColName = $(timeCol)  
+    
+    if (schema.fieldNames.contains(timeColName) == false)
+      throw new IllegalArgumentException(s"Time column $timeColName does not exist.")
+    
+    val timeColType = schema(timeColName).dataType
+    if (!(timeColType == DateType || timeColType == LongType || timeColType == TimestampType)) {
+      throw new IllegalArgumentException(s"Data type of time column $timeColName must be DateType, LongType or TimestampType.")
+    }
+    
+    /* VALUE FIELD */
+    
+    val valueColName = $(valueCol)  
+    
+    if (schema.fieldNames.contains(valueColName) == false)
+      throw new IllegalArgumentException(s"Value column $valueColName does not exist.")
+    
+    val valueColType = schema(valueColName).dataType
+    valueColType match {
+      case DoubleType | FloatType | IntegerType | LongType | ShortType =>
+      case _ => throw new IllegalArgumentException(s"Data type of value column $valueColName must be a numeric type.")
+    }
+    
+  }
+
+  def getDouble(value: Any): Double = {
+    value match {
+      case s: Short         => s.toDouble
+      case i: Int           => i.toDouble
+      case l: Long          => l.toDouble
+      case f: Float         => f.toDouble
+      case d: Double        => d
+      case s: String        => s.toDouble
+      case jbd: JBigDecimal => jbd.doubleValue
+      case bd: BigDecimal   => bd.doubleValue
+      case _ => 0.0
+    }
+  }
   
 }
