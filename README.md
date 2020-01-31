@@ -19,7 +19,7 @@ We decided to select [**Google's CDAP**](https://cdap.io) as this unified enviro
 
 >CDAP Spark offers than 150 analytics plugins for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
 
-##PredictiveWorks.
+## PredictiveWorks.
 
 CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
 
