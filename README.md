@@ -19,12 +19,6 @@ We decided to select [**Google's CDAP**](https://cdap.io) as this unified enviro
 
 >CDAP Spark offers more than **150 analytics plugins** for [CDAP](https://cdap.io) based pipelines and provides the world's largest collection of visual analytics components.
 
-## PredictiveWorks.
-
-CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
-
-![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/cdap-spark.png)
-
 ## What is unified Visual Analytics?
 
 Nowadays many excellent open source big data analytics & computing libraries exist, but each with a certain focus or lens on the data universe. Answering predictive business questions most often requires to operate many of them, with human data and software experts in the loop to stick pieces individually together.
@@ -56,7 +50,11 @@ This project focuses on the immediate corporate usability of machine learning & 
 
 CDAP Spark is also based on Apache Spark as its foundation for distributed in-memory processing. But it is not restricted to Apache Spark's machine learning channel. CDAP Spark complements this channel with deep learning, timeseries and als business rule support.
 
-And, of course, CDAP Spark is just one building block of [PredictiveWorks.](https:predictiveworks.eu)  
+## PredictiveWorks.
+
+CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
+
+![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/predictiveworks.png)
 
 ## Overview
 
