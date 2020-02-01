@@ -52,7 +52,9 @@ CDAP Spark is also based on Apache Spark as its foundation for distributed in-me
 
 ## PredictiveWorks.
 
-CDAP Spark is part and main building block of [PredictiveWorks](https://predictiveworks.eu).
+**CDAP Spark** is part of a project family and an important building block of [PredictiveWorks.](https://predictiveworks.eu) The latter is an initiative to overcome all the barriers & stumbling blocks of predictive analytics and make it actionable for everyone.
+
+>The game is not to bring more and more sophisticated algorithms onto the market and fight a fight which neural network is better than others, while companies are still trouble to integrate their cloud data silos and preprare for analytics. Existing algorithms are good enough solve the overwhelming part of predictive business questions. The real game is to make them actionable for everyone.
 
 ![alt CDAP Spark](https://github.com/predictiveworks/cdap-spark/blob/master/images/predictiveworks.png)
 
