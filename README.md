@@ -41,7 +41,6 @@ building, or completely prevent the usage of trained models in application proce
 * Great machine learning or deep learning solutions with a wide range of sophisticated algorithms run the risk to produce small or no effect for corporate data processing.
 
 This project focuses on the immediate corporate usability of machine learning & deep learning results and supports model building & usage within the **same unified** technical environment.
-
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/model-management.png" width="800" alt="Model Management">
 
 ## Why not use Seahorse Visual Spark?
