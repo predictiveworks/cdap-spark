@@ -36,7 +36,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
-import de.kp.works.ml.regression.Evaluator;
+import de.kp.works.ml.clustering.Evaluator;
 import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")

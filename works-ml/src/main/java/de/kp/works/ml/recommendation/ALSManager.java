@@ -19,9 +19,14 @@ package de.kp.works.ml.recommendation;
  */
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.Map;
 
 import org.apache.spark.ml.recommendation.ALSModel;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
@@ -33,6 +38,9 @@ import de.kp.works.core.ml.SparkMLManager;
 public class ALSManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "ALS";
+
+	private Type metricsType = new TypeToken<Map<String, Object>>() {
+	}.getType();
 
 	public ALSModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
@@ -47,7 +55,7 @@ public class ALSManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
 			ALSModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -66,17 +74,29 @@ public class ALSManager extends AbstractModelManager {
 
 		/***** MODEL METADATA *****/
 
+		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+
+	}
+
+	private void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelParams,
+			String modelMetrics, String fsPath) {
 		/*
-		 * Append model metadata to the metadata table associated with the
-		 * recommendation fileset
+		 * Unpack regression metrics to build time series of metric values
 		 */
+		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
+
+		Double rsme = (Double) metrics.get("rsme");
+		Double mse = (Double) metrics.get("mse");
+		Double mae = (Double) metrics.get("mae");
+		Double r2 = (Double) metrics.get("r2");
+
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
+		String modelVersion = getModelVersion(table, algorithmName, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
-		modelMeta.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
+		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
+				.add("algorithm", algorithmName).add("params", modelParams).add("rsme", rsme).add("mse", mse)
+				.add("mae", mae).add("r2", r2).add("fsName", fsName).add("fsPath", fsPath));
 
 	}
 

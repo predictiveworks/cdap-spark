@@ -277,7 +277,7 @@ public class SparkMLManager {
 			 * This is the first time, that we train a clustering model; therefore, the
 			 * associated metadata dataset has to be created
 			 */
-			Schema metaSchema = createMetaSchema("clusteringSchema");
+			Schema metaSchema = createClusteringSchema();
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
@@ -421,9 +421,10 @@ public class SparkMLManager {
 		if (context.datasetExists(RECOMMENDATION_META) == false) {
 			/*
 			 * This is the first time, that we train a recommendation model; therefore, the
-			 * associated metadata dataset has to be created
+			 * associated metadata dataset has to be created: note, the (current) ALS model
+			 * is evaluated by leveraging regression evaluation
 			 */
-			Schema metaSchema = createMetaSchema("recommendationSchema");
+			Schema metaSchema = createRegressionSchema();
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
@@ -748,6 +749,57 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("weightedTruePositiveRate", Schema.of(Schema.Type.DOUBLE)));		
 		/*
 		 * The fileset name of this classification model; the model itself is persisted
+		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
+		 */
+		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
+		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
+
+		Schema schema = Schema.recordOf(schemaName, fields);
+		return schema;
+
+	}
+
+	private static Schema createClusteringSchema() {
+
+		String schemaName = "clusteringSchema";
+		List<Schema.Field> fields = new ArrayList<>();
+		/*
+		 * The timestamp this regression model has been created
+		 */
+		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
+		/*
+		 * The name of this regression model
+		 */
+		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The version of this regression model
+		 */
+		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The algorithm of this regression model
+		 */
+		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The parameters of this regression model; this is a JSON object that contains
+		 * the parameter set that has been used to train a certain model instance
+		 */
+		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
+		/*
+		 * The calculcated metric values for this clustering model; currently the
+		 * following metrics are supported:
+		 *  
+		 *  - silhouette_euclidean
+		 *  - silhouette_cosine
+		 *  - perplexity
+		 *  - likelihood
+		 * 
+		 */
+		fields.add(Schema.Field.of("silhouette_euclidean", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("silhouette_cosine", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("perplexity", Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of("likelihood", Schema.of(Schema.Type.DOUBLE)));
+		/*
+		 * The fileset name for this regression model; the model itself is persisted
 		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
 		 */
 		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));

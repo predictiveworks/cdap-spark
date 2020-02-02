@@ -118,6 +118,11 @@ public class LDASink extends ClusterSink {
 
 		metrics.put("perplexity", perplexity);
 		metrics.put("likelihood", likelihood);
+
+		/* Add unused metrics to be schema compliant */
+		metrics.put("silhouette_euclidean", 0.0);
+		metrics.put("silhouette_cosine", 0.0);
+		
 		/*
 		 * STEP #3: Store trained LDA model including its associated
 		 * parameters and metrics

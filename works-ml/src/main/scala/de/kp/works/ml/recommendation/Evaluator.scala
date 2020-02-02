@@ -1,4 +1,4 @@
-package de.kp.works.ml.clustering
+package de.kp.works.ml.recommendation
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,6 +21,7 @@ package de.kp.works.ml.clustering
 import java.util.{ HashMap => JHashMap }
 
 import com.google.gson.Gson
+import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.sql._
 
 object Evaluator {
@@ -28,42 +29,39 @@ object Evaluator {
    * Reference to Apache Spark regression evaluator
    * as this object is an access wrapper
    */
-  private val evaluator = new ClusteringEvaluator()
+  private val evaluator = new RegressionEvaluator()
   /*
-   * This evaluator calculates the silhouette coefficent of 
-   * the computed predictions as a means to evaluate the quality 
-   * of the chosen parameters.
-   * 
-   * It distinguished two computation methods:
-   * 
-   * - cosine
-   * - squaredEuclidean
-   * 
+   * This method calculates proven metric values from
+   * the provided prediction by comparing label value
+   * and its predicted value
+   *
+   * - root mean squared error (rsme)
+   * - mean squared error (mse)
+   * - mean absolute error (mae)
+   * - r^2 metric (r2)
    */
-  def evaluate(predictions: Dataset[Row], vectorCol: String, predictionCol: String): String = {
+  def evaluate(predictions: Dataset[Row], labelCol: String, predictionCol: String): String = {
 
     val metrics = new JHashMap[String, Object]()
 
-		evaluator.setPredictionCol(predictionCol);
-		evaluator.setVectorCol(vectorCol);
+    evaluator.setLabelCol(labelCol);
+    evaluator.setPredictionCol(predictionCol);
 
-		evaluator.setMetricName("silhouette");
-		
-		val measures = List("cosine", "squaredEuclidean")
-		measures.foreach(measure => {
-		  
-		  evaluator.setDistanceMeasure(measure);
-		  val value = evaluator.evaluate(predictions)
-		  
-		  val metricName = if (measure =="squaredEuclidean") s"silhouette_euclidean" else s"silhouette_${measure}"
+    val metricNames = List(
+      "rmse",
+      "mse",
+      "mae",
+      "r2")
+
+    metricNames.foreach(metricName => {
+
+      evaluator.setMetricName(metricName)
+      val value = evaluator.evaluate(predictions)
+
       metrics.put(metricName, value.asInstanceOf[AnyRef])
-      
-		})
-		
-		/* Add unused parameters to be schema compliant */
-    metrics.put("perplexity", 0D.asInstanceOf[AnyRef])
-    metrics.put("likelihood", 0D.asInstanceOf[AnyRef])
-		
+
+    })
+
     new Gson().toJson(metrics)
 
   }

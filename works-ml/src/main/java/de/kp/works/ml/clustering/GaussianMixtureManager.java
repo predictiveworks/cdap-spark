@@ -23,14 +23,11 @@ import java.util.Date;
 
 import org.apache.spark.ml.clustering.GaussianMixtureModel;
 
-import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.core.ml.AbstractModelManager;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.ml.AbstractClusteringManager;
 
-public class GaussianMixtureManager extends AbstractModelManager {
+public class GaussianMixtureManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "GaussianMixture";
 
@@ -47,7 +44,7 @@ public class GaussianMixtureManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	public void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
 			GaussianMixtureModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -66,17 +63,7 @@ public class GaussianMixtureManager extends AbstractModelManager {
 
 		/***** MODEL METADATA *****/
 
-		/*
-		 * Append model metadata to the metadata table associated with the
-		 * clustering fileset
-		 */
-		String fsName = SparkMLManager.CLUSTERING_FS;
-		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
-
-		byte[] key = Bytes.toBytes(ts);
-		modelMeta.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
+		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
 
 	}
 

@@ -24,13 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.recommendation.ALSModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -42,6 +40,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.RecommenderConfig;
 import de.kp.works.core.RecommenderSink;
+import de.kp.works.ml.regression.Evaluator;
 
 @Plugin(type = "sparksink")
 @Name("ALSSink")
@@ -102,9 +101,11 @@ public class ALSSink extends RecommenderSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
 		ALSSinkConfig alsConfig = (ALSSinkConfig)config;
+
 		Map<String, Object> params = alsConfig.getParamsAsMap();
+		String paramsJson = alsConfig.getParamsAsJSON();
 		/*
-		 * Split the dataset into a train & test dataset for later classification
+		 * Split the dataset into a train & test dataset for later
 		 * evaluation
 		 */
 		Dataset<Row>[] splitted =source.randomSplit(alsConfig.getSplits());
@@ -114,36 +115,19 @@ public class ALSSink extends RecommenderSink {
 		
 		ALSTrainer trainer = new ALSTrainer();
 		ALSModel model = trainer.train(trainset, alsConfig.userCol, alsConfig.itemCol, alsConfig.ratingCol, params);
-
-		/* Evaluate the model by computing the RMSE on the testset */
+		/*
+		 * Evaluate recommendation model and compute approved
+		 * list of metrics
+		 */
 		String predictionCol = "_prediction";
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-
-	    RegressionEvaluator evaluator = new RegressionEvaluator();
-	    evaluator.setLabelCol(alsConfig.ratingCol);
-	    evaluator.setPredictionCol(predictionCol);
-	    
-	    String metricName = "rmse";
-	    evaluator.setMetricName(metricName);
-	    
-	    double accuracy = evaluator.evaluate(predictions);
+	    String metricsJson = Evaluator.evaluate(predictions, alsConfig.ratingCol, predictionCol);
 		/*
-		 * The accuracy coefficent is specified as JSON metrics for
-		 * this regression model and stored by the RFRegressorManager
-		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
-		metrics.put("name", metricName);
-		metrics.put("coefficient", accuracy);
-		/*
-		 * STEP #3: Store trained ALS model including its associated
-		 * parameters and metrics
-		 */
-		String paramsJson = alsConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
-		
+		 * STEP #3: Store trained recommendation model including
+		 * its associated parameters and metrics
+		 */		
 		String modelName = alsConfig.modelName;
 		new ALSManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
