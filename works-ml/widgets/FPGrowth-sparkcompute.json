@@ -1,0 +1,38 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "FPGrowth Miner",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Items Field",
+          "name": "itemsCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimal Support",
+          "name": "minSupport",
+          "widget-attributes": {
+            "default": "0.3"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Minimal Confidence",
+          "name": "minConfidence",
+          "widget-attributes": {
+            "default": "0.8"
+          }
+        }
+      ]
+    }
+  ]
+}
