@@ -131,7 +131,7 @@ public class TopicSink extends TextSink {
 
 	}
 
-	public static class TopicSinkConfig extends TopicConfig {
+	public static class TopicSinkConfig extends BaseTopicConfig {
 
 		private static final long serialVersionUID = -5856596535004094760L;
 

@@ -24,7 +24,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
-public class TopicConfig extends BaseConfig {
+public class BaseTopicConfig extends BaseConfig {
 
 	private static final long serialVersionUID = 1111955201802835050L;
 

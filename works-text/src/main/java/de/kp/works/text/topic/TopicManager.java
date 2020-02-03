@@ -25,6 +25,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
@@ -34,6 +35,15 @@ public class TopicManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "TopicLDA";
 
+	public LDATopicModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+		
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+
+		return read(fs, table, modelName);
+		
+	}
+	
 	public LDATopicModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
