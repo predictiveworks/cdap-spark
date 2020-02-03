@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
+import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Sentiment")
@@ -55,6 +56,9 @@ public class Sentiment extends BaseCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((SentimentConfig) config).validate();
+
+		modelFs = SparkMLManager.getTextanalysisFS(context);
+		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
 		model = new SentimentManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)

@@ -52,7 +52,7 @@ public class Word2Vec extends BaseCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new Word2VecManager().read(modelFs, modelMeta, config.modelName);
+		model = new Word2VecManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

@@ -1,4 +1,4 @@
-package de.kp.works.text.ner;
+package de.kp.works.text.topic;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,13 +19,15 @@ package de.kp.works.text.ner;
  */
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.spark.ml.clustering.LDAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -38,23 +40,25 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("NERTagger")
-@Description("An tagging stage that leverages a trained Word2Vec model and NER (CRF) model to map an input "
-		+ "text field onto an output token & entities field.")
-public class NERTagger extends BaseCompute {
+@Name("LDAText")
+@Description("An tagging stage that leverages a trained Word2Vec model and LDA model to map an input "
+		+ "text field either onto topic vector or a topic label.")
+public class LDAText extends BaseCompute {
 
-	private static final long serialVersionUID = -7309094976122977799L;
+	private static final long serialVersionUID = 5821757318391348559L;
 
-	private NERTaggerConfig config;
+	private LDAConfig config;
 
-	private NerCrfModel model;
+	private LDAModel model;
 	private Word2VecModel word2vec;
 	
-	public NERTagger(NERTaggerConfig config) {
+	public LDAText(LDAConfig config) {
 		this.config = config;
 	}
 
@@ -62,10 +66,10 @@ public class NERTagger extends BaseCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new NERManager().read(context, config.modelName);
+		model = new LDAClusteringManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A NER (CRF) model with name '%s' does not exist.",
+					String.format("[%s] An LDA model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 		word2vec = new Word2VecManager().read(context, config.embeddingName);
@@ -88,42 +92,60 @@ public class NERTagger extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.nerCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
-	}
-	
-	@Override
-	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		NERPredictor predictor = new NERPredictor(model, word2vec);
-		return predictor.predict(source, config.textCol, config.tokenCol, config.nerCol);
-		
 	}
 
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	public Schema getOutputSchema(Schema inputSchema, String tokenField, String nerField) {
+	public Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(nerField, Schema.arrayOf(Schema.arrayOf(Schema.of(Schema.Type.FLOAT)))));
+		if (config.topicStrategy.equals("cluster")) {
+			fields.add(Schema.Field.of(config.topicCol, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+	    
+		} else {
+			fields.add(Schema.Field.of(config.topicCol, Schema.of(Schema.Type.DOUBLE)));
 		
-		return Schema.recordOf(inputSchema.getRecordName() + ".tagged", fields);
+		}
+		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
+	@Override
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		
+		if (config.topicStrategy.equals("cluster")) {
 
-	public void validateSchema(Schema inputSchema, NERTaggerConfig config) {
+			Map<String, Object> params = config.getParamsAsMap();
+
+			LDAPredictor predictor = new LDAPredictor(model, word2vec);
+			Dataset<Row> predictions = predictor.predict(source, config.textCol, config.topicCol, params);
+			
+			return predictor.devectorize(predictions, config.topicCol, config.topicCol);
+			
+		}
+		else {
+
+			Map<String, Object> params = config.getParamsAsMap();
+			
+			LDALabeler labeler = new LDALabeler(model, word2vec);
+			return labeler.label(source, config.textCol, config.topicCol, params);
+
+		}
+	}
+
+	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/
 
@@ -137,35 +159,43 @@ public class NERTagger extends BaseCompute {
 		isString(config.textCol);
 
 	}
-	
-	public static class NERTaggerConfig extends BaseNERConfig {
 
-		private static final long serialVersionUID = -1825371412290503006L;
+	public static class LDAConfig extends LDATextConfig {
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		private static final long serialVersionUID = 3012205481027114331L;
+		
+		@Description("The indicator to determine whether the trained LDA model is used to predict a topic label or vector. "
+				+ "Supported values are 'label' & 'vector'. Default is 'vector'.")
 		@Macro
-		public String tokenCol;
+		public String topicStrategy;
 
-		@Description("The name of the field in the output schema that contains the extracted entities.")
+		@Description("The name of the field in the output schema that contains the prediction result.")
 		@Macro
-		public String nerCol;
+		public String topicCol;
 
+		public Map<String, Object> getParamsAsMap() {
+
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("strategy", getStrategy());
+
+			return params;
+
+		}
+		
+		public LDAConfig() {
+			poolingStrategy = "average";
+			topicStrategy = "vector";
+		}
+		
 		public void validate() {
 			super.validate();
 			
-			if (Strings.isNullOrEmpty(tokenCol)) {
+			if (Strings.isNullOrEmpty(topicCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(nerCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted entities must not be empty.",
+						"[%s] The name of the field that contains the prediction result must not be empty.",
 						this.getClass().getName()));
 			}
 			
 		}
-		
 	}
 }

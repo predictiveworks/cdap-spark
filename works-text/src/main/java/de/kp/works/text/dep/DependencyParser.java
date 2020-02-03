@@ -35,6 +35,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.BaseCompute;
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.pos.POSManager;
 
 public class DependencyParser extends BaseCompute {
@@ -53,6 +54,9 @@ public class DependencyParser extends BaseCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
+
+		modelFs = SparkMLManager.getTextanalysisFS(context);
+		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
 		model = new DependencyManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)

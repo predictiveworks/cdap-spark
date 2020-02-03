@@ -40,6 +40,15 @@ public class LDATextConfig extends BaseConfig {
 	@Macro
 	public String textCol;
 
+	@Description("The pooling strategy how to merge word embedings into document embeddings. Supported values "
+			+ "are 'average' and 'sum'. Default is 'average'")
+	@Macro
+	public String poolingStrategy;
+	
+	public String getStrategy() {
+		return (poolingStrategy.equals("average")) ? "AVERAGE" : "SUM";
+	}
+
 	public void validate() {
 		super.validate();
 

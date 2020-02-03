@@ -37,7 +37,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.chunk.Chunker;
 import de.kp.works.text.pos.BasePOSConfig;
 import de.kp.works.text.pos.POSManager;
@@ -59,6 +59,9 @@ public class POSChunker extends BaseCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
+
+		modelFs = SparkMLManager.getTextanalysisFS(context);
+		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
 		model = new POSManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)

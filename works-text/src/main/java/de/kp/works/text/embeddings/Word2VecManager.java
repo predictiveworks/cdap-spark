@@ -25,6 +25,8 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.embeddings.Word2VecModel;
@@ -33,6 +35,23 @@ public class Word2VecManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "Word2Vec";
 
+	public Word2VecModel read(SparkPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		return read(fs, table, modelName);
+	}
+	
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		return read(fs, table, modelName);
+	}
+	
+	
 	public Word2VecModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);

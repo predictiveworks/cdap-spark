@@ -24,6 +24,7 @@ import java.util.Date;
 import org.apache.spark.ml.clustering.*;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 /**
  * LDA based clustering is used in works-ml and also 
  * in works-text project
@@ -31,6 +32,16 @@ import co.cask.cdap.api.dataset.table.Table;
 public class LDAClusteringManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "DistributedLDA";
+	
+	public LDAModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getClusteringFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		return read(fs, table, modelName);
+
+	}
+	
 	
 	public LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
 		

@@ -107,5 +107,18 @@ class LDAPredictor(model:LDAModel, word2vec:Word2VecModel) extends AnnotationBas
     document
     
   }
+  
+  def devectorize(dataset:Dataset[Row], vectorCol:String, featureCol:String): Dataset[Row] = {
+    /*
+     * The dataset contains an Apache Spark Vector and must be transformed
+     * into an Array of Double value (to CDAP Structured Record)
+     */
+    val devector_udf = udf {vector:Vector => {
+      vector.toArray
+    }}
+
+    dataset.withColumn(featureCol, devector_udf(col(vectorCol)))
+    
+  }
  
 }

@@ -35,8 +35,6 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
@@ -95,10 +93,7 @@ public class LDATextSink extends TextSink {
 		 * Retrieve text analysis specified Word2Vec embedding model for 
 		 * later use in compute
 		 */
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
-
-		word2vec = new Word2VecManager().read(fs, table, config.embeddingName);
+		word2vec = new Word2VecManager().read(context, config.embeddingName);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -177,11 +172,6 @@ public class LDATextSink extends TextSink {
 
 		private static final long serialVersionUID = -2548563805267897668L;
 
-		@Description("The pooling strategy how to merge word embedings into document embeddings. Supported values "
-				+ "are 'average' and 'sum'. Default is 'average'")
-		@Macro
-		public String poolingStrategy;
-
 		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10")
 		@Macro
 		public String dataSplit;
@@ -216,10 +206,6 @@ public class LDATextSink extends TextSink {
 
 			return params;
 
-		}
-		
-		public String getStrategy() {
-			return (poolingStrategy.equals("average")) ? "AVERAGE" : "SUM";
 		}
 
 		public double[] getSplits() {

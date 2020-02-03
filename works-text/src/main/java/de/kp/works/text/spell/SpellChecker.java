@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
+import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SpellChecker")
@@ -55,6 +56,9 @@ public class SpellChecker extends BaseCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
+
+		modelFs = SparkMLManager.getTextanalysisFS(context);
+		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
 		model = new SpellManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
