@@ -31,7 +31,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.regression.AFTSurvivalRegressorManager;
 
@@ -54,10 +53,7 @@ public class AFTSurvivalPredictor extends BasePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((AFTSurvivalPredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getRegressionFS(context);
-		modelMeta = SparkMLManager.getRegressionMeta(context);
-
-		regressor = new AFTSurvivalRegressorManager().read(modelFs, modelMeta, config.modelName);
+		regressor = new AFTSurvivalRegressorManager().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

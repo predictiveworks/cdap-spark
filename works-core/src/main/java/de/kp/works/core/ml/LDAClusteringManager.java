@@ -36,14 +36,13 @@ public class LDAClusteringManager extends AbstractClusteringManager {
 	public LDAModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		Table table = SparkMLManager.getClusteringMeta(context);
 		
 		return read(fs, table, modelName);
 
 	}
 	
-	
-	public LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
+	private LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

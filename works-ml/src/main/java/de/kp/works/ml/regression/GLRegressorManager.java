@@ -26,13 +26,24 @@ import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractRegressionManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class GLRegressorManager extends AbstractRegressionManager {
 
 	private String ALGORITHM_NAME = "GeneralizedLinearRegressionRegressor";
 
-	public GeneralizedLinearRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public GeneralizedLinearRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getRegressionFS(context);
+		Table table = SparkMLManager.getRegressionMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+
+	private GeneralizedLinearRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

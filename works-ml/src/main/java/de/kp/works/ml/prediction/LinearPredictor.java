@@ -31,7 +31,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.regression.LinearRegressorManager;
 
@@ -54,10 +53,7 @@ public class LinearPredictor extends BasePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((LinearPredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getRegressionFS(context);
-		modelMeta = SparkMLManager.getRegressionMeta(context);
-
-		regressor = new LinearRegressorManager().read(modelFs, modelMeta, config.modelName);
+		regressor = new LinearRegressorManager().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

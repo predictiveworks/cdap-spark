@@ -32,6 +32,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
@@ -41,8 +42,17 @@ public class ALSManager extends AbstractModelManager {
 
 	private Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
+	
+	public ALSModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
 
-	public ALSModel read(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getRecommendationFS(context);
+		Table table = SparkMLManager.getRecommendationMeta(context);
+		
+		return read(fs, table, modelName);
+
+	}
+
+	private ALSModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

@@ -31,7 +31,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.BisectingKMeansManager;
 
@@ -54,10 +53,7 @@ public class BisectingKMeansPredictor extends BasePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((BisectingKMeansPredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
-
-		model = new BisectingKMeansManager().read(modelFs, modelMeta, config.modelName);
+		model = new BisectingKMeansManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

@@ -60,7 +60,7 @@ public class ALSPredictor extends RecommenderCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((ALSConfig) config).validate();
 
-		model = new ALSManager().read(modelFs, modelMeta, config.modelName);
+		model = new ALSManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A recommendation model with name '%s' does not exist.",

@@ -69,10 +69,7 @@ public class DTPredictor extends BasePredictorCompute {
 
 		} else if (config.modelType.equals("regressor")) {
 
-			modelFs = SparkMLManager.getRegressionFS(context);
-			modelMeta = SparkMLManager.getRegressionMeta(context);
-
-			regressor = new DTRegressorManager().read(modelFs, modelMeta, config.modelName);
+			regressor = new DTRegressorManager().read(context, config.modelName);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

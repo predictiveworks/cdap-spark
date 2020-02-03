@@ -26,13 +26,24 @@ import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractRegressionManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class AFTSurvivalRegressorManager extends AbstractRegressionManager {
 
 	private String ALGORITHM_NAME = "AFTSurvivalRegressor";
 
-	public AFTSurvivalRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public AFTSurvivalRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getRegressionFS(context);
+		Table table = SparkMLManager.getRegressionMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+	
+	private AFTSurvivalRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

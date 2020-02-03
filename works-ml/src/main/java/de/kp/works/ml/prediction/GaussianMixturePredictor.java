@@ -38,7 +38,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.GaussianMixtureManager;
 
@@ -61,10 +60,7 @@ public class GaussianMixturePredictor extends BasePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((GaussianMixturePredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
-
-		model = new GaussianMixtureManager().read(modelFs, modelMeta, config.modelName);
+		model = new GaussianMixtureManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

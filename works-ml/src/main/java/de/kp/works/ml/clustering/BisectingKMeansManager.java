@@ -25,13 +25,24 @@ import org.apache.spark.ml.clustering.*;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractClusteringManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class BisectingKMeansManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "BisectingKMeans";
+	
+	public BisectingKMeansModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
 
-	public BisectingKMeansModel read(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getClusteringFS(context);
+		Table table = SparkMLManager.getClusteringMeta(context);
+		
+		return read(fs, table, modelName);
+
+	}
+
+	private BisectingKMeansModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

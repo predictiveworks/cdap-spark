@@ -31,7 +31,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.KMeansManager;
 
@@ -54,10 +53,7 @@ public class KMeansPredictor extends BasePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((KMeansPredictorConfig)config).validate();
 
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
-
-		model = new KMeansManager().read(modelFs, modelMeta, config.modelName);
+		model = new KMeansManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
