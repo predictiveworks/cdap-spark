@@ -1,4 +1,4 @@
-package de.kp.works.text.sentiment;
+package de.kp.works.text.topic;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,9 +24,6 @@ import java.util.List;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import com.google.common.base.Strings;
-import com.johnsnowlabs.nlp.annotators.sda.vivekn.ViveknSentimentModel;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
@@ -39,27 +36,28 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("Sentiment")
-@Description("A prediction stage that leverages a trained Spark-NLP based Sentiment Analysis model.")
-public class Sentiment extends BaseCompute {
+@Name("Topic")
+@Description("An tagging stage that leverages a trained Topic model to either determine the topic distribution "
+		+ "per document or term-distribution per topic.")
+public class Topic extends BaseCompute {
 
-	private static final long serialVersionUID = -5009925022021738613L;
+	private static final long serialVersionUID = 6494628611665323901L;
 
-	private SentimentConfig config;
-	private ViveknSentimentModel model;
-
-	public Sentiment(SentimentConfig config) {
+	private TopicConfig config;
+	private LDATopicModel model;
+	
+	public Topic(TopicConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((SentimentConfig) config).validate();
+		config.validate();
 
-		model = new SentimentManager().read(context, config.modelName);
+		model = new TopicManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A sentiment analysis model with name '%s' does not exist.",
+					String.format("[%s] A Topic model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -76,34 +74,59 @@ public class Sentiment extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	/**
-	 * This method computes predictions either by applying a trained Sentiment
-	 * Analysis model; as a result, the source dataset is enriched by an extra 
-	 * column (predictionCol) that specifies the target variable in form of a 
-	 * String value
-	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		SAPredictor predictor = new SAPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.predictionCol);
-
-		return predictions;
 		
+		if (config.topicStrategy.equals("document-topic")) {
+			return model.transform(source);
+
+		} else {
+			return model.topics();
+		}
+
 	}
 
-	public void validateSchema(Schema inputSchema, SentimentConfig config) {
+	/**
+	 * A helper method to compute the output schema in that use cases where an input
+	 * schema is explicitly given
+	 */
+	public Schema getOutputSchema(Schema inputSchema) {
+		
+		if (config.topicStrategy.equals("document-topic")) {
+
+			List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
+
+			fields.add(Schema.Field.of("topics", Schema.arrayOf(Schema.of(Schema.Type.INT))));
+			fields.add(Schema.Field.of("weights", Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+
+			return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
+	    
+		} else {
+
+			List<Schema.Field> fields = new ArrayList<>();
+			
+			fields.add(Schema.Field.of("topic", Schema.of(Schema.Type.INT)));
+			fields.add(Schema.Field.of("terms", Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+			fields.add(Schema.Field.of("weights", Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+			
+			return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
+		
+		}
+
+	}
+
+	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/
 
@@ -118,36 +141,18 @@ public class Sentiment extends BaseCompute {
 
 	}
 
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
+	public static class TopicConfig extends BaseTopicConfig {
 
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
+		private static final long serialVersionUID = 5771186427389043634L;
 		
-		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.STRING)));
-		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
-
-	}
-
-	public static class SentimentConfig extends BaseSentimentConfig {
-
-		private static final long serialVersionUID = -7796809782922479970L;
-
-		@Description("The name of the field in the output schema that contains the predicted sentiment.")
+		@Description("The indicator to determine whether to retrieve document-topic or topic-term description. "
+				+ "Supported values are 'document-topic' and 'topic-term'. Default is 'document-topic'.")
 		@Macro
-		public String predictionCol;
-
-		public void validate() {
-			super.validate();
-			
-			if (Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted sentiment value must not be empty.",
-						this.getClass().getName()));
-			}
-			
+		public String topicStrategy;
+		
+		public TopicConfig() {
+			topicStrategy = "document-topic";
 		}
+		
 	}
 }

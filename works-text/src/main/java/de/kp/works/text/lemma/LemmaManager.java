@@ -27,12 +27,22 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class LemmaManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "Lemmatization";
+
+	public LemmatizerModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
 
 	public LemmatizerModel read(FileSet fs, Table table, String modelName) throws IOException {
 		

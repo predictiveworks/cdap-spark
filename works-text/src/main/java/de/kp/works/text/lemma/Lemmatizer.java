@@ -37,7 +37,6 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Lemmatizer")
@@ -57,10 +56,7 @@ public class Lemmatizer extends BaseCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		modelFs = SparkMLManager.getTextanalysisFS(context);
-		modelMeta = SparkMLManager.getTextanalysisMeta(context);
-
-		model = new LemmaManager().read(modelFs, modelMeta, config.modelName);
+		model = new LemmaManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Lemmatization model with name '%s' does not exist.",

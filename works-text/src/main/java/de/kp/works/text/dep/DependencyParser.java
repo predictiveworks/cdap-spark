@@ -1,11 +1,4 @@
 package de.kp.works.text.dep;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-
-import com.google.common.base.Strings;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,6 +17,14 @@ import com.google.common.base.Strings;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+import com.google.common.base.Strings;
 import com.johnsnowlabs.nlp.annotators.parser.dep.DependencyParserModel;
 import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
@@ -35,7 +36,6 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.BaseCompute;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.pos.POSManager;
 
 public class DependencyParser extends BaseCompute {
@@ -55,16 +55,13 @@ public class DependencyParser extends BaseCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		modelFs = SparkMLManager.getTextanalysisFS(context);
-		modelMeta = SparkMLManager.getTextanalysisMeta(context);
-
-		model = new DependencyManager().read(modelFs, modelMeta, config.modelName);
+		model = new DependencyManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Dependency Parser model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		perceptron = new POSManager().read(modelFs, modelMeta, config.posName);
+		perceptron = new POSManager().read(context, config.posName);
 		if (perceptron == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech model with name '%s' does not exist.",
