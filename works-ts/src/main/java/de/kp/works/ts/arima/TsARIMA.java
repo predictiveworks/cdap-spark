@@ -47,7 +47,7 @@ public class TsARIMA extends ARIMACompute {
 		TsARIMAConfig computeConfig = (TsARIMAConfig) config;
 		computeConfig.validate();
 
-		model = new ARIMAManager().readARIMA(modelFs, modelMeta, computeConfig.modelName);
+		model = new ARIMAManager().readARIMA(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An ARIMA model with name '%s' does not exist.",

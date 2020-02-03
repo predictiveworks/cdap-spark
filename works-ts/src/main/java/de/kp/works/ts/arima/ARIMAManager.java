@@ -23,7 +23,9 @@ import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.model.AutoARIMAModel;
 
@@ -31,7 +33,16 @@ public class ARIMAManager extends AbstractTimeSeriesManager {
 
 	/** READ **/
 	
-	public ARIMAModel readARIMA(FileSet fs, Table table, String modelName) throws IOException {
+	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readARIMA(fs, table, modelName);
+		
+	}
+	
+	private ARIMAModel readARIMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "ARIMA";
 		
@@ -45,8 +56,17 @@ public class ARIMAManager extends AbstractTimeSeriesManager {
 		return ARIMAModel.load(modelPath);
 		
 	}
+	
+	public AutoARIMAModel readAutoARIMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public AutoARIMAModel readAutoARIMA(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readAutoARIMA(fs, table, modelName);
+		
+	}
+
+	private AutoARIMAModel readAutoARIMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoARIMA";
 		

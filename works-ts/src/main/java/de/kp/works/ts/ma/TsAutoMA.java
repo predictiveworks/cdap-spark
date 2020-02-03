@@ -47,7 +47,7 @@ public class TsAutoMA extends MACompute {
 		TsAutoMAConfig computeConfig = (TsAutoMAConfig) config;
 		computeConfig.validate();
 
-		model = new MAManager().readAutoMA(modelFs, modelMeta, computeConfig.modelName);
+		model = new MAManager().readAutoMA(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto Moving Average model with name '%s' does not exist.",

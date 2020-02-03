@@ -47,7 +47,7 @@ public class TsARMA extends ARMACompute {
 		TsARMAConfig computeConfig = (TsARMAConfig) config;
 		computeConfig.validate();
 
-		model = new ARMAManager().readARMA(modelFs, modelMeta, computeConfig.modelName);
+		model = new ARMAManager().readARMA(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An ARMA model with name '%s' does not exist.",

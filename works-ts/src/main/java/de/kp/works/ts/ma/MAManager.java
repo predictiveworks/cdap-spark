@@ -23,7 +23,9 @@ import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.AutoMAModel;
 import de.kp.works.ts.model.MovingAverageModel;
 
@@ -31,7 +33,16 @@ public class MAManager extends AbstractTimeSeriesManager {
 
 	/** READ **/
 	
-	public MovingAverageModel readMA(FileSet fs, Table table, String modelName) throws IOException {
+	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readMA(fs, table, modelName);
+		
+	}
+	
+	private MovingAverageModel readMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "MA";
 		
@@ -45,8 +56,17 @@ public class MAManager extends AbstractTimeSeriesManager {
 		return MovingAverageModel.load(modelPath);
 		
 	}
+	
+	public AutoMAModel readAutoMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public AutoMAModel readAutoMA(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readAutoMA(fs, table, modelName);
+		
+	}
+
+	private AutoMAModel readAutoMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoMA";
 		

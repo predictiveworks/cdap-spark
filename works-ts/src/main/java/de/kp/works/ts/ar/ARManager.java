@@ -23,7 +23,9 @@ import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.model.AutoARModel;
 import de.kp.works.ts.model.AutoRegressionModel;
@@ -33,7 +35,16 @@ public class ARManager extends AbstractTimeSeriesManager {
 
 	/** READ **/
 	
-	public AutoRegressionModel readAR(FileSet fs, Table table, String modelName) throws IOException {
+	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readAR(fs, table, modelName);
+		
+	}
+		
+	private AutoRegressionModel readAR(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AR";
 		
@@ -47,8 +58,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 		return AutoRegressionModel.load(modelPath);
 		
 	}
+	
+	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public AutoARModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readAutoAR(fs, table, modelName);
+		
+	}
+
+	private AutoARModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoAR";
 		
@@ -62,8 +82,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 		return AutoARModel.load(modelPath);
 		
 	}
+	
+	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public DiffAutoRegressionModel readDiffAR(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readDiffAR(fs, table, modelName);
+		
+	}
+
+	private DiffAutoRegressionModel readDiffAR(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "DiffAR";
 		
@@ -77,8 +106,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 		return DiffAutoRegressionModel.load(modelPath);
 		
 	}
+	
+	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public ARYuleWalkerModel readYuleWalker(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readYuleWalker(fs, table, modelName);
+		
+	}
+
+	private ARYuleWalkerModel readYuleWalker(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "YuleWalker";
 		

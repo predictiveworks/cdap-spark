@@ -47,7 +47,7 @@ public class TsMA extends MACompute {
 		TsMAConfig computeConfig = (TsMAConfig) config;
 		computeConfig.validate();
 
-		model = new MAManager().readMA(modelFs, modelMeta, computeConfig.modelName);
+		model = new MAManager().readMA(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Moving Average model with name '%s' does not exist.",

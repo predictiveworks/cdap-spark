@@ -47,7 +47,7 @@ public class TsDiffAR extends ARCompute {
 		TsDiffARConfig computeConfig = (TsDiffARConfig) config;
 		computeConfig.validate();
 
-		model = new ARManager().readDiffAR(modelFs, modelMeta, computeConfig.modelName);
+		model = new ARManager().readDiffAR(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Differencing AutoRegression model with name '%s' does not exist.",

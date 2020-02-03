@@ -47,7 +47,7 @@ public class TsAutoARMA extends ARMACompute {
 		TsAutoARMAConfig computeConfig = (TsAutoARMAConfig) config;
 		computeConfig.validate();
 
-		model = new ARMAManager().readAutoARMA(modelFs, modelMeta, computeConfig.modelName);
+		model = new ARMAManager().readAutoARMA(context, computeConfig.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto ARMA model with name '%s' does not exist.",

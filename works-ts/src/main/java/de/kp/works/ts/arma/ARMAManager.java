@@ -23,7 +23,9 @@ import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARMAModel;
 import de.kp.works.ts.model.AutoARMAModel;
 
@@ -31,7 +33,16 @@ public class ARMAManager extends AbstractTimeSeriesManager {
 
 	/** READ **/
 	
-	public ARMAModel readARMA(FileSet fs, Table table, String modelName) throws IOException {
+	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readARMA(fs, table, modelName);
+		
+	}
+	
+	private ARMAModel readARMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "ARMA";
 		
@@ -45,8 +56,17 @@ public class ARMAManager extends AbstractTimeSeriesManager {
 		return ARMAModel.load(modelPath);
 		
 	}
+	
+	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-	public AutoARMAModel readAutoARMA(FileSet fs, Table table, String modelName) throws IOException {
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		return readAutoARMA(fs, table, modelName);
+		
+	}
+
+	private AutoARMAModel readAutoARMA(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String algorithmName = "AutoARMA";
 		

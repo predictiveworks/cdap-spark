@@ -36,7 +36,6 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.TimePredictorCompute;
 import de.kp.works.core.TimePredictorConfig;
 import de.kp.works.core.ml.RFRegressorManager;
-import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsPredictor")
@@ -58,10 +57,7 @@ public class TsPredictor extends TimePredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((TsPredictorConfig)config).validate();
 
-			modelFs = SparkMLManager.getRegressionFS(context);
-			modelMeta = SparkMLManager.getRegressionMeta(context);
-
-			model = manager.read(modelFs, modelMeta, config.modelName);
+			model = manager.read(context, config.modelName);
 			if (model == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

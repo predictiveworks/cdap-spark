@@ -69,10 +69,7 @@ public class RFPredictor extends BasePredictorCompute {
 
 		} else if (config.modelType.equals("regressor")) {
 
-			modelFs = SparkMLManager.getRegressionFS(context);
-			modelMeta = SparkMLManager.getRegressionMeta(context);
-
-			regressor = new RFRegressorManager().read(modelFs, modelMeta, config.modelName);
+			regressor = new RFRegressorManager().read(context, config.modelName);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
