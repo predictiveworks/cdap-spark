@@ -35,8 +35,11 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+
 import de.kp.works.core.RegressorConfig;
 import de.kp.works.core.RegressorSink;
+
+import de.kp.works.core.ml.RegressorEvaluator;
 
 @Plugin(type = "sparksink")
 @Name("AFTSurvivalRegressor")
@@ -109,7 +112,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 	    model.setPredictionCol(predictionCol);
 
 	    Dataset<Row> predictions = model.transform(testset);	    
-	    String metricsJson = Evaluator.evaluate(predictions, labelCol, predictionCol);
+	    String metricsJson = RegressorEvaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics

@@ -1,4 +1,4 @@
-package de.kp.works.ml.regression
+package de.kp.works.core.ml
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,12 +19,11 @@ package de.kp.works.ml.regression
  */
 
 import java.util.{ HashMap => JHashMap }
-
 import com.google.gson.Gson
 import org.apache.spark.ml.evaluation.RegressionEvaluator
 import org.apache.spark.sql._
 
-object Evaluator {
+object RegressorEvaluator {
   /*
    * Reference to Apache Spark regression evaluator
    * as this object is an access wrapper

@@ -36,7 +36,6 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClassifierConfig;
 import de.kp.works.core.ClassifierSink;
-import de.kp.works.ml.regression.Evaluator;
 
 @Plugin(type = "sparksink")
 @Name("MLPClassifer")

@@ -19,7 +19,13 @@ package de.kp.works.text
  */
 
 import com.johnsnowlabs.nlp
+
+import org.apache.spark.ml.linalg.Vectors
+
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
+
+import scala.collection.mutable.WrappedArray
 
 trait AnnotationBase {
   
@@ -160,4 +166,33 @@ trait AnnotationBase {
     document
     
   }
+
+  /*
+   * This helper method aggregates the word embeddings computed
+   * through the provided Word2Vec embedding model and leverages
+   * a pooling strategy (average | sum) to retrieve a feature
+   * vector from all token embeddings    
+   */
+  def embeddings2vector_udf(strategy:String) = udf{annotations:WrappedArray[Row] => {
+      
+    val schema = annotations.head.schema
+    val index = schema.fieldIndex("embeddings")
+
+    val matrix = annotations.map(row => row.getAs[WrappedArray[Float]](schema.fieldIndex("embeddings")))
+
+    val res = Array.ofDim[Float](matrix(0).length)
+    matrix(0).indices.foreach {
+      j =>
+        matrix.indices.foreach {
+          i =>
+            res(j) += matrix(i)(j)
+        }
+        if (strategy == "AVERAGE")
+          res(j) /= matrix.length
+    }
+
+    Vectors.dense(res.map(_.toDouble))
+      
+  }}
+  
 }

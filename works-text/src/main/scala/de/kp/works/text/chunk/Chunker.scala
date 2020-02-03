@@ -33,13 +33,13 @@ class Chunker(model:PerceptronModel) extends AnnotationBase {
     val regexParsers = parsers.toArray.map(parser => parser.asInstanceOf[String])
     val document = normalizedTokens(dataset, textCol)
     
-    model.setInputCols(Array("sentence", "token"))
+    model.setInputCols(Array("sentences", "token"))
     model.setOutputCol("tags")
     
     val tagged = model.transform(dataset)
 
     val chunker = new com.johnsnowlabs.nlp.annotators.Chunker()
-    chunker.setInputCols(Array("sentence", "pos"))
+    chunker.setInputCols(Array("sentences", "pos"))
     chunker.setOutputCol("chunk")
 
     chunker.setRegexParsers(regexParsers)

@@ -39,6 +39,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ClusterConfig;
 import de.kp.works.core.ClusterSink;
+import de.kp.works.core.ml.LDAClusteringManager;
 
 @Plugin(type = "sparksink")
 @Name("LDASink")
@@ -131,7 +132,7 @@ public class LDASink extends ClusterSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = builderConfig.modelName;
-		new LDAManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new LDAClusteringManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 	

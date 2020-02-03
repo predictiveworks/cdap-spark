@@ -24,13 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.apache.spark.ml.evaluation.RegressionEvaluator;
 import org.apache.spark.ml.regression.RandomForestRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
-import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -42,8 +40,10 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.TimeConfig;
 import de.kp.works.core.TimeSink;
+
 import de.kp.works.core.ml.RFRegressorManager;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.ml.RegressorEvaluator;
 
 @Plugin(type = "sparksink")
 @Name("TsRegressor")
@@ -106,6 +106,9 @@ public class TsRegressor extends TimeSink {
 		 * avoid data leakage from neighboring values
 		 */
 		TsRegressorConfig regressorConfig = (TsRegressorConfig)config;
+
+		Map<String, Object> params = regressorConfig.getParamsAsMap();
+		String paramsJson = regressorConfig.getParamsAsJSON();
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
@@ -141,41 +144,18 @@ public class TsRegressor extends TimeSink {
 	    Dataset<Row> testset = lagging.transform(splitted[1]);
 	    
 	    /* STEP #3: Train Random Forest regression model */
-	    Map<String, Object> params = regressorConfig.getParamsAsMap();
 		
 	    RFRegressor trainer = new RFRegressor();
 	    RandomForestRegressionModel model = trainer.train(trainset, "features", "label", params);
 		/*
-		 * STEP #4: Compute accuracy of the trained regression
-		 * model
+		 * STEP #4: Evaluate regression model and compute
+		 * approved list of metrics
 		 */
 	    String predictionCol = "_prediction";
 	    model.setPredictionCol(predictionCol);
 
 	    Dataset<Row> predictions = model.transform(testset);
-
-	    RegressionEvaluator evaluator = new RegressionEvaluator();
-	    evaluator.setLabelCol("label");
-	    evaluator.setPredictionCol(predictionCol);
-	    
-	    String metricName = "rmse";
-	    evaluator.setMetricName(metricName);
-	    
-	    double accuracy = evaluator.evaluate(predictions);
-		/*
-		 * The accuracy coefficent is specified as JSON metrics for
-		 * this regression model and stored by the RFRegressorManager
-		 */
-		Map<String,Object> metrics = new HashMap<>();
-		
-		metrics.put("name", metricName);
-		metrics.put("coefficient", accuracy);
-		/*
-		 * STEP #5: Store trained regression model including its associated
-		 * parameters and metrics
-		 */
-		String paramsJson = regressorConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+	    String metricsJson = RegressorEvaluator.evaluate(predictions, "label", predictionCol);
 		
 		String modelName = regressorConfig.modelName;
 		new RFRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);

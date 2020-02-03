@@ -43,7 +43,7 @@ class Sent2VecEmbedder(model:Word2VecModel) extends AnnotationBase {
     val embeddings = new com.johnsnowlabs.nlp.embeddings.SentenceEmbeddings()
     embeddings.setPoolingStrategy(pooling)
 
-    embeddings.setInputCols(Array("document", "embeddings"))
+    embeddings.setInputCols(Array("sentences", "embeddings"))
     embeddings.setOutputCol("embeddings")
     /*
      * The EmbeddingsFinisher does not correctly extract sentences      

@@ -32,7 +32,7 @@ import de.kp.works.text.embeddings.Word2VecModel
  * 
  * This NER model trainer expected a corpus in CoNLL format
  */
-class NERTrainer(word2vec:Word2VecModel) extends AnnotationBase{
+class NERTrainer(word2vec:Word2VecModel) extends AnnotationBase {
 
   def train(corpus:Dataset[Row], lineCol:String, params:JMap[String,Object]):NerCrfModel = {    
     /*

@@ -35,9 +35,9 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.clustering.LDAManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDAPredictor")
@@ -61,7 +61,7 @@ public class LDAPredictor extends BasePredictorCompute {
 		modelFs = SparkMLManager.getClusteringFS(context);
 		modelMeta = SparkMLManager.getClusteringMeta(context);
 
-		model = new LDAManager().read(modelFs, modelMeta, config.modelName);
+		model = new LDAClusteringManager().read(modelFs, modelMeta, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

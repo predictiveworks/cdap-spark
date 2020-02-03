@@ -40,7 +40,8 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.RecommenderConfig;
 import de.kp.works.core.RecommenderSink;
-import de.kp.works.ml.regression.Evaluator;
+
+import de.kp.works.core.ml.RegressorEvaluator;
 
 @Plugin(type = "sparksink")
 @Name("ALSSink")
@@ -123,7 +124,7 @@ public class ALSSink extends RecommenderSink {
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = Evaluator.evaluate(predictions, alsConfig.ratingCol, predictionCol);
+	    String metricsJson = RegressorEvaluator.evaluate(predictions, alsConfig.ratingCol, predictionCol);
 		/*
 		 * STEP #3: Store trained recommendation model including
 		 * its associated parameters and metrics

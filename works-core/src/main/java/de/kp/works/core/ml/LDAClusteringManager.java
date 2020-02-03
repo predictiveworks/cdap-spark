@@ -1,4 +1,4 @@
-package de.kp.works.ml.clustering;
+package de.kp.works.core.ml;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -24,9 +24,11 @@ import java.util.Date;
 import org.apache.spark.ml.clustering.*;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.core.ml.AbstractClusteringManager;
-
-public class LDAManager extends AbstractClusteringManager {
+/**
+ * LDA based clustering is used in works-ml and also 
+ * in works-text project
+ */
+public class LDAClusteringManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "DistributedLDA";
 	
