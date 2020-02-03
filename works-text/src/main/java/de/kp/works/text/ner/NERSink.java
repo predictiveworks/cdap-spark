@@ -13,6 +13,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -88,6 +89,22 @@ public class NERSink extends TextSink {
 		String modelName = config.modelName;
 		new NERManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 	    
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+
+		/** TEXT COLUMN **/
+
+		Schema.Field textCol = inputSchema.getField(config.textCol);
+		if (textCol == null) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The input schema must contain the field that contains the text document.",
+							this.getClass().getName()));
+		}
+
+		isString(config.textCol);
+
 	}
 	
 	public static class NERSinkConfig extends BaseNERConfig {

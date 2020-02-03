@@ -1,4 +1,4 @@
-package de.kp.works.text.ner;
+package de.kp.works.text.topic;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,11 +24,11 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
-public class BaseNERConfig extends BaseConfig {
+public class LDATextConfig extends BaseConfig {
 
-	private static final long serialVersionUID = 8733733573014386425L;
+	private static final long serialVersionUID = 1111955201802835050L;
 
-	@Description("The unique name of NER (CRF) model.")
+	@Description("The unique name of the LDA model.")
 	@Macro
 	public String modelName;
 
@@ -45,7 +45,7 @@ public class BaseNERConfig extends BaseConfig {
 
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+					String.format("[%s] The LDA model name must not be empty.", this.getClass().getName()));
 		}
 
 		if (Strings.isNullOrEmpty(embeddingName)) {

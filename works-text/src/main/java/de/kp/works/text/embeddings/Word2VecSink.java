@@ -84,7 +84,7 @@ public class Word2VecSink extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** LINE COLUMN **/
+		/** TEXT COLUMN **/
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {

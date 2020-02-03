@@ -34,8 +34,8 @@ import de.kp.works.text.embeddings.Word2VecModel
  */
 class LDATrainer(word2vec:Word2VecModel) extends AnnotationBase {
   
-  def train(dataset:Dataset[Row], textCol:String, params:JMap[String,Object]):LDAModel = {
-    /*
+  def vectorize(dataset:Dataset[Row], textCol:String, params:JMap[String,Object]):Dataset[Row] = {
+   /*
      * STEP #1: Extracted normalized tokens and transform
      * each token into an embedding vector
      */
@@ -53,9 +53,13 @@ class LDATrainer(word2vec:Word2VecModel) extends AnnotationBase {
     val embeddings2vector = embeddings2vector_udf(strategy)
     
     val dropCols = Array("document", "sentences", "token", "embeddings")
-    document = document.withColumn("vector", embeddings2vector(col("embeddings"))).drop(dropCols: _*)
+    document.withColumn("vector", embeddings2vector(col("embeddings"))).drop(dropCols: _*)
+    
+  }
+  
+  def train(dataset:Dataset[Row], params:JMap[String,Object]):LDAModel = {
     /*
-     * STEP #3: Build (Distributed) LDA model
+     * Build (Distributed) LDA model
      */
     val model = new LDA()
     
@@ -91,7 +95,7 @@ class LDATrainer(word2vec:Word2VecModel) extends AnnotationBase {
     model.setTopicConcentration(-1)
     
     model.setFeaturesCol("vector")
-    model.fit(document)
+    model.fit(dataset)
     
   }
 }

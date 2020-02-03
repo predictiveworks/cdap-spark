@@ -26,39 +26,4 @@ import de.kp.works.core.BaseConfig;
 
 public class TopicConfig extends BaseConfig {
 
-	private static final long serialVersionUID = 1111955201802835050L;
-
-	@Description("The unique name of the Topics model.")
-	@Macro
-	public String modelName;
-
-	@Description("The unique name of trained Word2Vec embedding model.")
-	@Macro
-	public String embeddingName;
-
-	@Description("The name of the field in the input schema that contains the document.")
-	@Macro
-	public String textCol;
-
-	public void validate() {
-		super.validate();
-
-		if (Strings.isNullOrEmpty(modelName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-		}
-
-		if (Strings.isNullOrEmpty(embeddingName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the trained Word2Vec embedding model must not be empty.", this.getClass().getName()));
-		}
-		
-		if (Strings.isNullOrEmpty(textCol)) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The name of the field that contains the text document must not be empty.",
-					this.getClass().getName()));
-		}
-		
-	}
-
 }
