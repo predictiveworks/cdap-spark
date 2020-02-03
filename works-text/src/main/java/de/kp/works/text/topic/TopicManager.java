@@ -32,7 +32,7 @@ import de.kp.works.text.topic.LDATopicModel;
 
 public class TopicManager extends AbstractModelManager {
 
-	private String ALGORITHM_NAME = "LDAText";
+	private String ALGORITHM_NAME = "TopicLDA";
 
 	public LDATopicModel read(FileSet fs, Table table, String modelName) throws IOException {
 		

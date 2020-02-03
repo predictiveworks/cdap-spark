@@ -205,6 +205,10 @@ class LDATopicModel(override val uid:String, vocab:Map[String,Int], model:LDAMod
     termIndices.map{index => termsMap(index)}    
   }}
   
+  def logPerplexity(dataset:Dataset[_]):Double = model.logPerplexity(dataset)
+
+  def logLikelihood(dataset:Dataset[_]) = model.logLikelihood(dataset)
+
   def topics():Dataset[Row] = {
 
     /* The result desribes a dataframe with columns 'topic', 

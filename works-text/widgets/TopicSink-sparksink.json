@@ -1,0 +1,61 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "Topic Builder",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Text Field",
+          "name": "textCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Data Split",
+          "name": "dataSplit",
+          "widget-attributes": {
+            "default": "90:10"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Topics",
+          "name": "k"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Iterations",
+          "name": "maxIter",
+          "widget-attributes": {
+            "default": "20"
+          }          
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Vocabulary Size",
+          "name": "vocabSize",
+          "widget-attributes": {
+            "default": "10000"
+          }          
+        }        
+      ]
+    }
+  ]
+}
