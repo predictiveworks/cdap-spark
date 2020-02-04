@@ -59,37 +59,12 @@ CDAP Spark is also based on Apache Spark as its foundation for distributed in-me
 
 ## Overview
 
-**CDAP Spark** is designed to offer all instruments of corporate data processing and contains the following modules:
-
-### Works Core
-
-**Works Core** provides common functionality that is used by other modules of this project.
-
-### Works DL
-
-**Works DL** externalizes deep learning algorithms (adapted from Intel's BigDL project) as plugins for Google CDAP data pipelines. Pipelines can be built without coding by either leveraging CDAP's visual pipeline editor or **Predictive Works.** template studio.
-
-### Works ML
-
-**Works ML** externalizes Apache Spark machine learning algorithms as plugins for Google CDAP data pipelines.These pipelines can also be built visually without any coding expertise.
-
-### Works TS
-
-**Works TS** complements Apache Spark with time series algorithms and also externalizes them as plugins for Google CDAP data pipelines.
-
-### Works Rules
-
-**Works Rules** externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines. Drools compliant rules can be applied by an easy-to-use interface without the need to write code in any programming language.
-
-Drools business rules can be used with batch and stream pipelines, and, in the case of the latter ones, support complex event processing in real-time applications.
-
-### Works SQL
-
-**Works SQL** supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. SQL statements can be specified by leveraging an easy-to-use interface and offer aggregation, grouping & filtering support e.g. for real-time applications. 
-
-![alt Works SQL](https://github.com/predictiveworks/cdap-spark/blob/master/images/works-sql.png)
-
-### Works Text
-
-**Works Text** integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines.
+| Module | Description |
+| --- | --- |
+| Works DL | Externalizes deep learning algorithms (adapted from Intel's [Analytics Zoo](https://github.com/intel-analytics/analytics-zoo)) as plugins for Google CDAP data pipelines. |
+| Works ML | Externalizes Apache [Spark ML](spark.apache.org) machine learning algorithms as Google CDAP data pipelines. |
+| Works TS | Completes Apache Spark with proven time series algorithms and also externalizes them as plugins for Google CDAP data pipelines. |
+| Works Rules | Externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines.
+| Works SQL | Supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. |
+| Works Text | Integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines. |
 
