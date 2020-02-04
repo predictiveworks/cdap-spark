@@ -59,12 +59,14 @@ CDAP Spark is also based on Apache Spark as its foundation for distributed in-me
 
 ## Overview
 
+Visual Analytics is supported by the following modules:
+
 | Module | Description |
 | --- | --- |
-| Works DL | Externalizes deep learning algorithms (adapted from Intel's [Analytics Zoo](https://github.com/intel-analytics/analytics-zoo)) as plugins for Google CDAP data pipelines. |
-| Works ML | Externalizes Apache [Spark ML](spark.apache.org) machine learning algorithms as Google CDAP data pipelines. |
-| Works TS | Completes Apache Spark with proven time series algorithms and also externalizes them as plugins for Google CDAP data pipelines. |
-| Works Rules | Externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines.
-| Works SQL | Supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. |
-| Works Text | Integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines. |
+| DL | Externalizes deep learning algorithms (adapted from Intel's [Analytics Zoo](https://github.com/intel-analytics/analytics-zoo)) as plugins for Google CDAP data pipelines. |
+| ML | Externalizes Apache [Spark ML](spark.apache.org) machine learning algorithms as Google CDAP data pipelines. |
+| TS | Completes Apache Spark with proven time series algorithms and also externalizes them as plugins for Google CDAP data pipelines. |
+| Rules | Externalizes [Drools' Rule Engine](https://www.drools.org) as plugin for CDAP data pipelines.
+| SQL | Supports the application of Apache Spark compliant SQL queries for CDAP batch and stream pipelines. |
+| Text | Integrates [John Snow Lab's](https://nlp.johnsnowlabs.com/) excellent **Spark NLP** library with [Google CDAP](https://cdap.io) and offers approved NLP features as plugins for CDAP data pipelines. |
 
