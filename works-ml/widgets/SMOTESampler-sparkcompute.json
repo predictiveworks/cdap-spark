@@ -1,0 +1,58 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "SMOTE Sampler",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Label Field",
+          "name": "labelCol"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Number of Hash Tables",
+          "name": "numHashTables",
+          "widget-attributes": {
+            "default": "1"
+          }
+
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Bucket Length",
+          "name": "bucketLength",
+          "widget-attributes": {
+            "default": "2.0"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Nearest Neighbors",
+          "name": "numNearestNeighbors",
+          "widget-attributes": {
+            "default": "4"
+          }
+        }
+      ]
+    }
+
+  ]
+}
