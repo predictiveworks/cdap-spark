@@ -31,7 +31,6 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
@@ -49,10 +48,7 @@ public class VectorIndexer extends BaseFeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((StringToIndexConfig)config).validate();
 
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = new VectorIndexerManager().read(modelFs, modelMeta, config.modelName);
+		model = new VectorIndexerManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

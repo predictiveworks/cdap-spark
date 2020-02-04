@@ -37,7 +37,6 @@ import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
 
 import de.kp.works.ml.MLUtils;
-import de.kp.works.core.ml.SparkMLManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MinHashLSH")
@@ -59,10 +58,7 @@ public class MinHashLSH extends BaseFeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((MinHashLSHConfig)config).validate();
 
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = new MinHashLSHManager().read(modelFs, modelMeta, config.modelName);
+		model = new MinHashLSHManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

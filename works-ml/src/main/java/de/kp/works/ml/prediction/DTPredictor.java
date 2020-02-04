@@ -32,7 +32,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.DTClassifierManager;
 import de.kp.works.ml.regression.DTRegressorManager;
@@ -59,10 +58,7 @@ public class DTPredictor extends BasePredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			modelFs = SparkMLManager.getClassificationFS(context);
-			modelMeta = SparkMLManager.getClassificationMeta(context);
-
-			classifier = new DTClassifierManager().read(modelFs, modelMeta, config.modelName);
+			classifier = new DTClassifierManager().read(context, config.modelName);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

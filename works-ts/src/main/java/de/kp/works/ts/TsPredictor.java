@@ -122,7 +122,7 @@ public class TsPredictor extends TimePredictorCompute {
 		 * Retrieve time lag from model metadata to leverage
 		 * the same number of features when trained the model
 		 */
-		Integer timeLag = (Integer)manager.getParam(modelMeta, predictorConfig.modelName, "timeLag");
+		Integer timeLag = (Integer)manager.getParam(context, predictorConfig.modelName, "timeLag");
 		/*
 		 * Vectorization of the provided dataset
 		 */		

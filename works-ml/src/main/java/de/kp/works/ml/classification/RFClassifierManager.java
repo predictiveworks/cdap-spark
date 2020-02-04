@@ -26,13 +26,24 @@ import org.apache.spark.ml.classification.RandomForestClassificationModel;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractClassificationManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class RFClassifierManager extends AbstractClassificationManager {
 
 	private String ALGORITHM_NAME = "RandomForestClassifier";
 
-	public RandomForestClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+		Table table = SparkMLManager.getClassificationMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+
+	private RandomForestClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

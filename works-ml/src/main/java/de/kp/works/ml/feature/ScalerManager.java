@@ -29,6 +29,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 /*
@@ -43,7 +44,17 @@ import de.kp.works.core.ml.SparkMLManager;
 public class ScalerManager extends AbstractModelManager {
 
 	/** MIN MAX **/
-	public MinMaxScalerModel readMinMaxScaler(FileSet fs, Table table, String modelName) throws IOException {
+
+	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		return readMinMaxScaler(fs, table, modelName);
+		
+	}
+
+	private MinMaxScalerModel readMinMaxScaler(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, "MinMaxScaler", modelName);
 		if (fsPath == null) return null;
@@ -91,7 +102,17 @@ public class ScalerManager extends AbstractModelManager {
 	}
 
 	/** MAX ABS **/
-	public MaxAbsScalerModel readMaxAbsScaler(FileSet fs, Table table, String modelName) throws IOException {
+
+	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		return readMaxAbsScaler(fs, table, modelName);
+		
+	}
+	
+	private MaxAbsScalerModel readMaxAbsScaler(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, "MaxAbsScaler", modelName);
 		if (fsPath == null) return null;
@@ -140,7 +161,17 @@ public class ScalerManager extends AbstractModelManager {
 	}
 
 	/** STANDARD **/
-	public StandardScalerModel readStandardScaler(FileSet fs, Table table, String modelName) throws IOException {
+
+	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		return readStandardScaler(fs, table, modelName);
+		
+	}
+	
+	private StandardScalerModel readStandardScaler(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, "StandardScaler", modelName);
 		if (fsPath == null) return null;

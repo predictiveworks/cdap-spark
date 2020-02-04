@@ -78,7 +78,8 @@ public class RFRegressorManager extends AbstractRegressionManager {
 
 	}
 
-	public Object getParam(Table table, String modelName, String paramName) {
+	public Object getParam(SparkExecutionPluginContext context, String modelName, String paramName) throws Exception {
+		Table table = SparkMLManager.getRegressionMeta(context);
 		return getModelParam(table, ALGORITHM_NAME, modelName, paramName);
 	}
 

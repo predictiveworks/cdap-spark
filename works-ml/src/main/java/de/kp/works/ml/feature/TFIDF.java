@@ -36,9 +36,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.feature.W2Vec.W2VecConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TFIDF")
@@ -59,12 +57,9 @@ public class TFIDF extends BaseFeatureCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((W2VecConfig)config).validate();
+		((TFIDFConfig)config).validate();
 
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = manager.read(modelFs, modelMeta, config.modelName);
+		model = manager.read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -74,7 +69,7 @@ public class TFIDF extends BaseFeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((W2VecConfig)config).validate();
+		((TFIDFConfig)config).validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -121,7 +116,7 @@ public class TFIDF extends BaseFeatureCompute {
 		 * Determine number of features from TF-IDF model
 		 * metadata information
 		 */
-		Integer numFeatures = (Integer)manager.getParam(modelMeta, tfidfConfig.modelName, "numFeatures");
+		Integer numFeatures = (Integer)manager.getParam(context, tfidfConfig.modelName, "numFeatures");
 		transformer.setNumFeatures(numFeatures);
 
 		Dataset<Row> transformedTF = transformer.transform(source);

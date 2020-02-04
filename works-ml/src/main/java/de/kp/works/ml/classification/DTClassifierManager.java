@@ -26,13 +26,24 @@ import org.apache.spark.ml.classification.*;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractClassificationManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class DTClassifierManager extends AbstractClassificationManager {
 
 	private String ALGORITHM_NAME = "DecisionTreeClassifier";
 
-	public DecisionTreeClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+		Table table = SparkMLManager.getClassificationMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+
+	private DecisionTreeClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		/* Get the latest fileset path */
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);

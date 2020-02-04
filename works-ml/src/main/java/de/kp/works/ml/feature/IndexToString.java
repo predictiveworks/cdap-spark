@@ -33,7 +33,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -53,10 +52,7 @@ public class IndexToString extends BaseFeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((StringToIndexConfig)config).validate();
 
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
-		model = new StringIndexerManager().read(modelFs, modelMeta, config.modelName);
+		model = new StringIndexerManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

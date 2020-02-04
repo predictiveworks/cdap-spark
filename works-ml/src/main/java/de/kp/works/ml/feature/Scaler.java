@@ -38,7 +38,6 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseFeatureCompute;
 import de.kp.works.core.BaseFeatureConfig;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -63,29 +62,26 @@ public class Scaler extends BaseFeatureCompute {
 		ScalerConfig scalerConfig = (ScalerConfig) config;
 		scalerConfig.validate();
 
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-
 		ScalerManager manager = new ScalerManager();
 		String modelType = scalerConfig.modelType;
 
 		if (modelType.equals("maxabs")) {
 
-			maxAbsModel = manager.readMaxAbsScaler(modelFs, modelMeta, config.modelName);
+			maxAbsModel = manager.readMaxAbsScaler(context, config.modelName);
 			if (maxAbsModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 		
 		} else if (modelType.equals("minmax")) {
 
-			minMaxModel = manager.readMinMaxScaler(modelFs, modelMeta, config.modelName);
+			minMaxModel = manager.readMinMaxScaler(context, config.modelName);
 			if (minMaxModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 					
 		} else {
 
-			standardModel = manager.readStandardScaler(modelFs, modelMeta, config.modelName);
+			standardModel = manager.readStandardScaler(context, config.modelName);
 			if (standardModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));

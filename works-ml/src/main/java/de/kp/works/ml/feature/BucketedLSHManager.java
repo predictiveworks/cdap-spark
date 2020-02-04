@@ -27,6 +27,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
@@ -34,7 +35,16 @@ public class BucketedLSHManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "BucketedLSH";
 
-	public BucketedRandomProjectionLSHModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public BucketedRandomProjectionLSHModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+
+	private BucketedRandomProjectionLSHModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;

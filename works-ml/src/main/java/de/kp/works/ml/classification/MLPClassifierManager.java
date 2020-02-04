@@ -26,13 +26,24 @@ import org.apache.spark.ml.classification.MultilayerPerceptronClassificationMode
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractClassificationManager;
+import de.kp.works.core.ml.SparkMLManager;
 
 public class MLPClassifierManager extends AbstractClassificationManager {
 
 	private String ALGORITHM_NAME = "MultilayerPerceptronClassifier";
 
-	public MultilayerPerceptronClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
+	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+		Table table = SparkMLManager.getClassificationMeta(context);
+		
+		return read(fs, table, modelName);
+		
+	}
+
+	private MultilayerPerceptronClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
 
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null)

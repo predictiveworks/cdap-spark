@@ -33,7 +33,6 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BasePredictorCompute;
 import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.RFRegressorManager;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.RFClassifierManager;
 
@@ -59,10 +58,7 @@ public class RFPredictor extends BasePredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			modelFs = SparkMLManager.getClassificationFS(context);
-			modelMeta = SparkMLManager.getClassificationMeta(context);
-
-			classifier = new RFClassifierManager().read(modelFs, modelMeta, config.modelName);
+			classifier = new RFClassifierManager().read(context, config.modelName);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
