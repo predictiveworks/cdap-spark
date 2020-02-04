@@ -62,6 +62,7 @@ public class OVRClassifier extends ClassifierSink {
 
 	}
 	
+	@SuppressWarnings("unused")
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
