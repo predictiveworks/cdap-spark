@@ -16,7 +16,7 @@ Visual Analytics is a technical concept that aims to offer the spectrum of moder
 as code-free, visual components that can be used to gain hindsight, insights and foresights for users without programming skills.
 
 ## Why BPMM?
-The landscape of modern big data and scalable analytics solutions is complex and often opaque for many enterprises. The approch to give value to the continously increasing amout of data typically ends in a plethora of different technologies and solutions with little interoperability.
+The landscape of modern big data and scalable analytics solutions is complex and often opaque for many enterprises. The approch to give value to the continuously increasing amount of data typically ends in a plethora of different technologies and solutions with little interoperability.
 
 We want to share this business maturity model to help companies gain sustainable value from their data with a strong focus on 
 * unification, 
@@ -39,7 +39,7 @@ The *BPMM* is the result of a long standing experience defines 5 maturity levels
 
 ### Level 1
 
-At this level, corporate adoption of predictive analytics is guided by management terms such as "minimum viable product", "pilot project", "quick wins" and more. Such a situation usually indicates that no robust data (analytics) strategy exists. 
+At this level, corporate adoption of predictive analytics is guided by management terms such as "minimal viable product", "pilot project", "quick wins" and more. Such a situation usually indicates that no robust data (analytics) strategy exists. 
 
 > Individual business sections launch hardly reusable software and data science projects which often *prove* fast that "something works".
 
