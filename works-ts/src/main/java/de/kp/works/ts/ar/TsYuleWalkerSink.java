@@ -28,6 +28,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -43,6 +44,8 @@ public class TsYuleWalkerSink extends ARSink {
 
 	private static final long serialVersionUID = 2998150184535380725L;
 	
+	private TsYuleWalkerSinkConfig config;
+	
 	public TsYuleWalkerSink(TsYuleWalkerSinkConfig config) {
 		this.config = config;
 	}
@@ -52,32 +55,31 @@ public class TsYuleWalkerSink extends ARSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsYuleWalkerSinkConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsYuleWalkerSinkConfig sinkConfig = (TsYuleWalkerSinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
-		Dataset<Row>[] splitted = sinkConfig.split(source);
+		Dataset<Row>[] splitted = config.split(source);
 		/*
 		 * STEP #2: Train ARYuleWalker Model
 		 */
 		ARYuleWalker trainer = new ARYuleWalker();
-		trainer.setValueCol(sinkConfig.valueCol); 
-		trainer.setTimeCol(sinkConfig.timeCol);
+		trainer.setValueCol(config.valueCol); 
+		trainer.setTimeCol(config.timeCol);
 		
-		trainer.setP(sinkConfig.p); 
+		trainer.setP(config.p); 
 		
 		ARYuleWalkerModel model = trainer.fit(splitted[0]);
 		/*
@@ -87,14 +89,19 @@ public class TsYuleWalkerSink extends ARSink {
 	    Dataset<Row> predictions = model.transform(splitted[1]);
 	    String metricsJson = model.evaluate(predictions);
 
-	    String paramsJson = sinkConfig.getParamsAsJSON();
+	    String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = sinkConfig.modelName;
+		String modelName = config.modelName;
 		new ARManager().saveYuleWalker(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsYuleWalkerSinkConfig extends ARConfig {

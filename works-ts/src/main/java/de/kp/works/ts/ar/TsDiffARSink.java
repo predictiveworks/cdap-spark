@@ -28,6 +28,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -42,6 +43,8 @@ public class TsDiffARSink extends ARSink {
 
 	private static final long serialVersionUID = 539646198032768805L;
 	
+	private TsDiffARSinkConfig config;
+	
 	public TsDiffARSink(TsDiffARSinkConfig config) {
 		this.config = config;
 	}
@@ -51,39 +54,38 @@ public class TsDiffARSink extends ARSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsDiffARSinkConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsDiffARSinkConfig sinkConfig = (TsDiffARSinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
-		Dataset<Row>[] splitted = sinkConfig.split(source);
+		Dataset<Row>[] splitted = config.split(source);
 		/*
 		 * STEP #2: Train DiffAutoRegression Model
 		 */
 		DiffAutoRegression trainer = new DiffAutoRegression();
-		trainer.setValueCol(sinkConfig.valueCol); 
-		trainer.setTimeCol(sinkConfig.timeCol);
+		trainer.setValueCol(config.valueCol); 
+		trainer.setTimeCol(config.timeCol);
 		
-		trainer.setP(sinkConfig.p); 
-		trainer.setD(sinkConfig.d); 
+		trainer.setP(config.p); 
+		trainer.setD(config.d); 
 
-		trainer.setRegParam(sinkConfig.regParam);
-		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		trainer.setRegParam(config.regParam);
+		trainer.setElasticNetParam(config.elasticNetParam);
 		
-		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
-		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+		trainer.setStandardization(config.toBoolean(config.standardization));
+		trainer.setFitIntercept(config.toBoolean(config.fitIntercept));
 
 		DiffAutoRegressionModel model = trainer.fit(splitted[0]);
 		/*
@@ -93,14 +95,19 @@ public class TsDiffARSink extends ARSink {
 	    Dataset<Row> predictions = model.transform(splitted[1]);
 	    String metricsJson = model.evaluate(predictions);
 
-	    String paramsJson = sinkConfig.getParamsAsJSON();
+	    String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = sinkConfig.modelName;
+		String modelName = config.modelName;
 		new ARManager().saveDiffAR(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsDiffARSinkConfig extends ARSinkConfig {

@@ -28,6 +28,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -42,6 +43,8 @@ public class TsMASink extends BaseMASink {
 
 	private static final long serialVersionUID = 1611776727115974422L;
 	
+	private TsMASinkConfig config;
+	
 	public TsMASink(TsMASinkConfig config) {
 		this.config = config;
 	}
@@ -51,38 +54,37 @@ public class TsMASink extends BaseMASink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsMASinkConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsMASinkConfig sinkConfig = (TsMASinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
-		Dataset<Row>[] splitted = sinkConfig.split(source);
+		Dataset<Row>[] splitted = config.split(source);
 		/*
 		 * STEP #2: Train Moving Average Model
 		 */
 		MovingAverage trainer = new MovingAverage();
-		trainer.setValueCol(sinkConfig.valueCol); 
-		trainer.setTimeCol(sinkConfig.timeCol);
+		trainer.setValueCol(config.valueCol); 
+		trainer.setTimeCol(config.timeCol);
 		
-		trainer.setQ(sinkConfig.q); 
-		trainer.setRegParam(sinkConfig.regParam);
-		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		trainer.setQ(config.q); 
+		trainer.setRegParam(config.regParam);
+		trainer.setElasticNetParam(config.elasticNetParam);
 		
-		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
-		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
-		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
+		trainer.setStandardization(config.toBoolean(config.standardization));
+		trainer.setFitIntercept(config.toBoolean(config.fitIntercept));
+		trainer.setMeanOut(config.toBoolean(config.meanOut));
 
 		MovingAverageModel model = trainer.fit(splitted[0]);
 		/*
@@ -92,14 +94,19 @@ public class TsMASink extends BaseMASink {
 	    Dataset<Row> predictions = model.transform(splitted[1]);
 	    String metricsJson = model.evaluate(predictions);
 
-	    String paramsJson = sinkConfig.getParamsAsJSON();
+	    String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = sinkConfig.modelName;
+		String modelName = config.modelName;
 		new MAManager().saveMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 	    
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/* OK */

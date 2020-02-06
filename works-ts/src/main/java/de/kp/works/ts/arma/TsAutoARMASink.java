@@ -28,6 +28,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -42,6 +43,8 @@ public class TsAutoARMASink extends BaseARMASink {
 
 	private static final long serialVersionUID = -3858467738067952796L;
 	
+	private TsAutoARMASinkConfig config;
+	
 	public TsAutoARMASink(TsAutoARMASinkConfig config) {
 		this.config = config;
 	}
@@ -51,41 +54,40 @@ public class TsAutoARMASink extends BaseARMASink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsAutoARMASinkConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsAutoARMASinkConfig sinkConfig = (TsAutoARMASinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
-		Dataset<Row>[] splitted = sinkConfig.split(source);
+		Dataset<Row>[] splitted = config.split(source);
 		/*
 		 * STEP #2: Train AutoARMA Model
 		 */
 		AutoARMA trainer = new AutoARMA();
-		trainer.setValueCol(sinkConfig.valueCol); 
-		trainer.setTimeCol(sinkConfig.timeCol);
+		trainer.setValueCol(config.valueCol); 
+		trainer.setTimeCol(config.timeCol);
 		
-		trainer.setPMax(sinkConfig.pmax); 
-		trainer.setQMax(sinkConfig.qmax); 
+		trainer.setPMax(config.pmax); 
+		trainer.setQMax(config.qmax); 
 
-		trainer.setRegParam(sinkConfig.regParam);
-		trainer.setElasticNetParam(sinkConfig.elasticNetParam);		
+		trainer.setRegParam(config.regParam);
+		trainer.setElasticNetParam(config.elasticNetParam);		
 		
-		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
-		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
+		trainer.setStandardization(config.toBoolean(config.standardization));
+		trainer.setFitIntercept(config.toBoolean(config.fitIntercept));
 
-		trainer.setCriterion(sinkConfig.criterion);
+		trainer.setCriterion(config.criterion);
 
 		AutoARMAModel model = trainer.fit(splitted[0]);
 		/*
@@ -95,14 +97,19 @@ public class TsAutoARMASink extends BaseARMASink {
 	    Dataset<Row> predictions = model.transform(splitted[1]);
 	    String metricsJson = model.evaluate(predictions);
 
-	    String paramsJson = sinkConfig.getParamsAsJSON();
+	    String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = sinkConfig.modelName;
+		String modelName = config.modelName;
 		new ARMAManager().saveAutoARMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/* OK */

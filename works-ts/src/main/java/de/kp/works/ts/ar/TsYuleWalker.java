@@ -24,6 +24,9 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.ts.model.ARYuleWalkerModel;
@@ -35,6 +38,7 @@ public class TsYuleWalker extends ARCompute {
 
 	private static final long serialVersionUID = -3512433728877952854L;
 
+	private TsYuleWalkerConfig config;
 	private ARYuleWalkerModel model;
 	
 	public TsYuleWalker(TsYuleWalkerConfig config) {
@@ -44,14 +48,37 @@ public class TsYuleWalker extends ARCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		
-		TsYuleWalkerConfig computeConfig = (TsYuleWalkerConfig) config;
-		computeConfig.validate();
+		config.validate();
 
-		model = new ARManager().readYuleWalker(context, computeConfig.modelName);
+		model = new ARManager().readYuleWalker(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Yule Walker AutoRegression model with name '%s' does not exist.",
-							this.getClass().getName(), computeConfig.modelName));
+							this.getClass().getName(), config.modelName));
+
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+
+		config.validate();
+
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		/*
+		 * Try to determine input and output schema; if these schemas are not explicitly
+		 * specified, they will be inferred from the provided data records
+		 */
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null) {
+			validateSchema(inputSchema);
+			/*
+			 * In cases where the input schema is explicitly provided, we determine the
+			 * output schema by explicitly adding the prediction column
+			 */
+			outputSchema = getOutputSchema(config.timeCol, config.valueCol);
+			stageConfigurer.setOutputSchema(outputSchema);
+
+		}
 
 	}
 	
@@ -66,6 +93,11 @@ public class TsYuleWalker extends ARCompute {
 
 		return model.forecast(source, computeConfig.steps);
 		
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsYuleWalkerConfig extends ARComputeConfig {

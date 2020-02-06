@@ -24,6 +24,8 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.ts.model.MovingAverageModel;
@@ -35,6 +37,7 @@ public class TsMA extends MACompute {
 	
 	private static final long serialVersionUID = -1261080177077886834L;
 
+	private TsMAConfig config;
 	private MovingAverageModel model;
 	
 	public TsMA(TsMAConfig config) {
@@ -44,27 +47,48 @@ public class TsMA extends MACompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		
-		TsMAConfig computeConfig = (TsMAConfig) config;
-		computeConfig.validate();
+		config.validate();
 
-		model = new MAManager().readMA(context, computeConfig.modelName);
+		model = new MAManager().readMA(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Moving Average model with name '%s' does not exist.",
-							this.getClass().getName(), computeConfig.modelName));
+							this.getClass().getName(), config.modelName));
+
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+
+		config.validate();
+
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		/*
+		 * Try to determine input and output schema; if these schemas are not explicitly
+		 * specified, they will be inferred from the provided data records
+		 */
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null) {
+			validateSchema(inputSchema);
+			/*
+			 * In cases where the input schema is explicitly provided, we determine the
+			 * output schema by explicitly adding the prediction column
+			 */
+			outputSchema = getOutputSchema(config.timeCol, config.valueCol);
+			stageConfigurer.setOutputSchema(outputSchema);
+
+		}
 
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		TsMAConfig computeConfig = (TsMAConfig)(config);
-		
 		/* Time & value column may have names different from traing phase */
-		model.setTimeCol(computeConfig.timeCol);
-		model.setValueCol(computeConfig.valueCol);
+		model.setTimeCol(config.timeCol);
+		model.setValueCol(config.valueCol);
 
-		return model.forecast(source, computeConfig.steps);
+		return model.forecast(source, config.steps);
 		
 	}
 

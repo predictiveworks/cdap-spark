@@ -28,6 +28,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -42,6 +43,8 @@ public class TsARSink extends ARSink {
 
 	private static final long serialVersionUID = -1532168373135598066L;
 	
+	private TsARSinkConfig config;
+	
 	public TsARSink(TsARSinkConfig config) {
 		this.config = config;
 	}
@@ -51,38 +54,37 @@ public class TsARSink extends ARSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsARSinkConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TsARSinkConfig sinkConfig = (TsARSinkConfig)config;
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
-		Dataset<Row>[] splitted = sinkConfig.split(source);
+		Dataset<Row>[] splitted = config.split(source);
 		/*
 		 * STEP #2: Train AutoRegression Model
 		 */
 		AutoRegression trainer = new AutoRegression();
-		trainer.setValueCol(sinkConfig.valueCol); 
-		trainer.setTimeCol(sinkConfig.timeCol);
+		trainer.setValueCol(config.valueCol); 
+		trainer.setTimeCol(config.timeCol);
 		
-		trainer.setP(sinkConfig.p); 
-		trainer.setRegParam(sinkConfig.regParam);
-		trainer.setElasticNetParam(sinkConfig.elasticNetParam);
+		trainer.setP(config.p); 
+		trainer.setRegParam(config.regParam);
+		trainer.setElasticNetParam(config.elasticNetParam);
 		
-		trainer.setStandardization(sinkConfig.toBoolean(sinkConfig.standardization));
-		trainer.setFitIntercept(sinkConfig.toBoolean(sinkConfig.fitIntercept));
-		trainer.setMeanOut(sinkConfig.toBoolean(sinkConfig.meanOut));
+		trainer.setStandardization(config.toBoolean(config.standardization));
+		trainer.setFitIntercept(config.toBoolean(config.fitIntercept));
+		trainer.setMeanOut(config.toBoolean(config.meanOut));
 
 		AutoRegressionModel model = trainer.fit(splitted[0]);
 		/*
@@ -92,14 +94,19 @@ public class TsARSink extends ARSink {
 	    Dataset<Row> predictions = model.transform(splitted[1]);
 	    String metricsJson = model.evaluate(predictions);
 
-	    String paramsJson = sinkConfig.getParamsAsJSON();
+	    String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = sinkConfig.modelName;
+		String modelName = config.modelName;
 		new ARManager().saveAR(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 	    
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class TsARSinkConfig extends ARSinkConfig {

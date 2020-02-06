@@ -22,37 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.etl.api.PipelineConfigurer;
-import co.cask.cdap.etl.api.StageConfigurer;
 import de.kp.works.core.time.TimeCompute;
 
 public class MACompute extends TimeCompute {
 
 	private static final long serialVersionUID = -874132801488333236L;
-
-	@Override
-	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
-
-		((MAComputeConfig)config).validate();
-
-		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
-		/*
-		 * Try to determine input and output schema; if these schemas are not explicitly
-		 * specified, they will be inferred from the provided data records
-		 */
-		inputSchema = stageConfigurer.getInputSchema();
-		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
-			/*
-			 * In cases where the input schema is explicitly provided, we determine the
-			 * output schema by explicitly adding the prediction column
-			 */
-			outputSchema = getOutputSchema(config.timeCol, config.valueCol);
-			stageConfigurer.setOutputSchema(outputSchema);
-
-		}
-
-	}
 
 	protected Schema getOutputSchema(String timeField, String valueField) {
 

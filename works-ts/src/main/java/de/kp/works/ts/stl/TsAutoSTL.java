@@ -31,6 +31,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -48,6 +49,8 @@ public class TsAutoSTL extends TimeCompute {
 
 	private static final long serialVersionUID = -4933626546193785571L;
 	
+	private TsAutoSTLConfig config;
+	
 	public TsAutoSTL(TsAutoSTLConfig config) {
 		this.config = config;
 	}
@@ -55,7 +58,7 @@ public class TsAutoSTL extends TimeCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((TsAutoSTLConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -64,11 +67,12 @@ public class TsAutoSTL extends TimeCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema);
+			outputSchema = getOutputSchema(inputSchema, config.valueCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -76,36 +80,39 @@ public class TsAutoSTL extends TimeCompute {
 	}
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		TsAutoSTLConfig computeConfig = (TsAutoSTLConfig)config;
 		
 		AutoSTL decomposer = new AutoSTL();
 		
 		/** COLUMNS **/
-		decomposer.setTimeCol(computeConfig.timeCol);
-		decomposer.setValueCol(computeConfig.valueCol);
-		decomposer.setGroupCol(computeConfig.groupCol);
+		decomposer.setTimeCol(config.timeCol);
+		decomposer.setValueCol(config.valueCol);
+		decomposer.setGroupCol(config.groupCol);
 		
 		/** PARAMETERS **/
-		decomposer.setOuterIter(computeConfig.outerIter);
-		decomposer.setInnerIter(computeConfig.innerIter);
+		decomposer.setOuterIter(config.outerIter);
+		decomposer.setInnerIter(config.innerIter);
 
-		decomposer.setSeasonalLoessSize(computeConfig.seasonalLoessSize);
-		decomposer.setTrendLoessSize(computeConfig.trendLoessSize);
+		decomposer.setSeasonalLoessSize(config.seasonalLoessSize);
+		decomposer.setTrendLoessSize(config.trendLoessSize);
 		
-		decomposer.setLevelLoessSize(computeConfig.levelLoessSize);
+		decomposer.setLevelLoessSize(config.levelLoessSize);
 		
-		decomposer.setThreshold(computeConfig.threshold);
-		if (Strings.isNullOrEmpty(computeConfig.lagValues))
-			decomposer.setMaxLag(computeConfig.maxLag);
+		decomposer.setThreshold(config.threshold);
+		if (Strings.isNullOrEmpty(config.lagValues))
+			decomposer.setMaxLag(config.maxLag);
 
 		else
-			decomposer.setLagValues(computeConfig.getLagValues());
+			decomposer.setLagValues(config.getLagValues());
 		
 		
 		Dataset<Row> output = decomposer.transform(source);
 		return output;
 	
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class TsAutoSTLConfig extends BaseSTLConfig {

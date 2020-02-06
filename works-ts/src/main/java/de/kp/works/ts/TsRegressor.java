@@ -34,20 +34,19 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.RFRegressorManager;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.regressor.RegressorSink;
 import de.kp.works.core.time.TimeConfig;
-import de.kp.works.core.time.TimeSink;
 import de.kp.works.core.ml.RegressorEvaluator;
 
 @Plugin(type = "sparksink")
 @Name("TsRegressor")
 @Description("A building stage for an Apache Spark based Random Forest regressor model adjusted to machine learning for time series datasets.")
-public class TsRegressor extends TimeSink {
+public class TsRegressor extends RegressorSink {
 	/*
 	 * Time series regression is a means for predicting future
 	 * values in time series data; this regressor operates on
@@ -60,9 +59,10 @@ public class TsRegressor extends TimeSink {
 	 * and trend, make sure that the specified time column refers to the
 	 * 'remainder' column after an STL decomposition has been applied.
 	 */
+	private TsRegressorConfig config;
+
 	public TsRegressor(TsRegressorConfig config) {
 		this.config = config;
-		this.className = TsRegressor.class.getName();
 	}
 
 	@Override
@@ -70,30 +70,14 @@ public class TsRegressor extends TimeSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TsRegressorConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
-	}
-
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Regression model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createRegressionIfNotExists(context);
-		/*
-		 * Retrieve regression specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getRegressionFS(context);
-		modelMeta = SparkMLManager.getRegressionMeta(context);
-		
 	}
 	
 	@Override
@@ -104,16 +88,14 @@ public class TsRegressor extends TimeSink {
 		 * in time, and, second, this split must be performed BEFORE vectorization to
 		 * avoid data leakage from neighboring values
 		 */
-		TsRegressorConfig regressorConfig = (TsRegressorConfig)config;
-
-		Map<String, Object> params = regressorConfig.getParamsAsMap();
-		String paramsJson = regressorConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
 		TimeSplit splitter = new TimeSplit();
-		splitter.setTimeCol(regressorConfig.timeCol);
-		splitter.setTimeSplit(regressorConfig.timeSplit);
+		splitter.setTimeCol(config.timeCol);
+		splitter.setTimeSplit(config.timeSplit);
 		
 		Dataset<Row>[] splitted = splitter.timeSplit(source);
 		/*
@@ -121,7 +103,7 @@ public class TsRegressor extends TimeSink {
 		 * and vectorization of the testset 
 		 */		
 		Lagging lagging = new Lagging();
-		lagging.setLag(regressorConfig.timeLag);
+		lagging.setLag(config.timeLag);
 		
 		lagging.setFeaturesCol("features");
 		lagging.setLabelCol("label");
@@ -156,9 +138,14 @@ public class TsRegressor extends TimeSink {
 	    Dataset<Row> predictions = model.transform(testset);
 	    String metricsJson = RegressorEvaluator.evaluate(predictions, "label", predictionCol);
 		
-		String modelName = regressorConfig.modelName;
+		String modelName = config.modelName;
 		new RFRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsRegressorConfig extends TimeConfig {

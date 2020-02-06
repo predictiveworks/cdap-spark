@@ -24,6 +24,9 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.ts.model.AutoARIMAModel;
@@ -35,6 +38,7 @@ public class TsAutoARIMA extends ARIMACompute {
 
 	private static final long serialVersionUID = -1031029606032986435L;
 
+	private TsAutoARIMAConfig config;
 	private AutoARIMAModel model;
 	
 	public TsAutoARIMA(TsAutoARIMAConfig config) {
@@ -44,28 +48,54 @@ public class TsAutoARIMA extends ARIMACompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		
-		TsAutoARIMAConfig computeConfig = (TsAutoARIMAConfig) config;
-		computeConfig.validate();
+		config.validate();
 
-		model = new ARIMAManager().readAutoARIMA(context, computeConfig.modelName);
+		model = new ARIMAManager().readAutoARIMA(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto ARIMA model with name '%s' does not exist.",
-							this.getClass().getName(), computeConfig.modelName));
+							this.getClass().getName(), config.modelName));
+
+	}
+
+	@Override
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+
+		config.validate();
+
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+		/*
+		 * Try to determine input and output schema; if these schemas are not explicitly
+		 * specified, they will be inferred from the provided data records
+		 */
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null) {
+			validateSchema(inputSchema);
+			/*
+			 * In cases where the input schema is explicitly provided, we determine the
+			 * output schema by explicitly adding the prediction column
+			 */
+			outputSchema = getOutputSchema(config.timeCol, config.valueCol);
+			stageConfigurer.setOutputSchema(outputSchema);
+
+		}
 
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		TsAutoARIMAConfig computeConfig = (TsAutoARIMAConfig)(config);
-		
 		/* Time & value column may have names different from traing phase */
-		model.setTimeCol(computeConfig.timeCol);
-		model.setValueCol(computeConfig.valueCol);
+		model.setTimeCol(config.timeCol);
+		model.setValueCol(config.valueCol);
 
-		return model.forecast(source, computeConfig.steps);
+		return model.forecast(source, config.steps);
 		
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsAutoARIMAConfig extends ARIMAComputeConfig {

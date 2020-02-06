@@ -33,15 +33,15 @@ public class STLCompute extends TimeCompute {
 	 * schema is explicitly given
 	 */
 	@Override
-	public Schema getOutputSchema(Schema inputSchema) {
+	public Schema getOutputSchema(Schema inputSchema, String valueCol) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
 		for (Schema.Field field: inputSchema.getFields()) {
 			/*
 			 * Cast value field into Double field
 			 */
-			if (field.getName().equals(config.valueCol)) {
-				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
+			if (field.getName().equals(valueCol)) {
+				outfields.add(Schema.Field.of(valueCol, Schema.of(Schema.Type.DOUBLE)));
 				
 			} else
 				outfields.add(field);

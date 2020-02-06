@@ -32,54 +32,17 @@ public class TimeCompute extends BaseCompute {
 	 */
 	protected Schema inputSchema;
 	protected Schema outputSchema;
-	
-	protected TimeConfig config;
-	protected String className;
-
-	protected void validateSchema(Schema inputSchema, TimeConfig config) {
-
-		/** TIME COLUMN **/
-
-		Schema.Field timeCol = inputSchema.getField(config.timeCol);
-		if (timeCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the timestamp.", className));
-		}
-
-		Schema.Type timeColType = timeCol.getSchema().getType();
-		if (!timeColType.equals(Schema.Type.LONG)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the timestamp must be a LONG.", className));
-		}
-
-		/** VALUE COLUMN **/
-
-		Schema.Field valueCol = inputSchema.getField(config.valueCol);
-		if (valueCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the value.", className));
-		}
-
-		Schema.Type valueType = valueCol.getSchema().getType();
-		/*
-		 * The value field must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (isNumericType(valueType) == false) {
-			throw new IllegalArgumentException("The data type of the value field must be numeric.");
-		}
-	}
 
 	/**
 	 * The value data type is changed to DOUBLE
 	 */
-	protected Schema getOutputSchema(Schema inputSchema) {
+	protected Schema getOutputSchema(Schema inputSchema, String valueCol) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
 		for (Schema.Field field: inputSchema.getFields()) {
 			
-			if (field.getName().equals(config.valueCol)) {
-				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
+			if (field.getName().equals(valueCol)) {
+				outfields.add(Schema.Field.of(valueCol, Schema.of(Schema.Type.DOUBLE)));
 				
 			} else
 				outfields.add(field);

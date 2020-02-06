@@ -27,6 +27,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -46,6 +47,8 @@ public class TsSTL extends STLCompute {
 	 * remainder components and consists of a sequence of applications of the LOESS smoother.
 	 * 
 	 */
+	private TsSTLConfig config;
+	
 	public TsSTL(TsSTLConfig config) {
 		this.config = config;
 	}
@@ -53,7 +56,7 @@ public class TsSTL extends STLCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((TsSTLConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -62,11 +65,12 @@ public class TsSTL extends STLCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema);
+			outputSchema = getOutputSchema(inputSchema, config.valueCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -74,30 +78,33 @@ public class TsSTL extends STLCompute {
 	}
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		TsSTLConfig computeConfig = (TsSTLConfig)config;
 		
 		STL decomposer = new STL();
 		
 		/** COLUMNS **/
-		decomposer.setTimeCol(computeConfig.timeCol);
-		decomposer.setValueCol(computeConfig.valueCol);
-		decomposer.setGroupCol(computeConfig.groupCol);
+		decomposer.setTimeCol(config.timeCol);
+		decomposer.setValueCol(config.valueCol);
+		decomposer.setGroupCol(config.groupCol);
 		
 		/** PARAMETERS **/
-		decomposer.setOuterIter(computeConfig.outerIter);
-		decomposer.setInnerIter(computeConfig.innerIter);
+		decomposer.setOuterIter(config.outerIter);
+		decomposer.setInnerIter(config.innerIter);
 		
-		decomposer.setPeriodicity(computeConfig.periodicity);
+		decomposer.setPeriodicity(config.periodicity);
 
-		decomposer.setSeasonalLoessSize(computeConfig.seasonalLoessSize);
-		decomposer.setTrendLoessSize(computeConfig.trendLoessSize);
+		decomposer.setSeasonalLoessSize(config.seasonalLoessSize);
+		decomposer.setTrendLoessSize(config.trendLoessSize);
 		
-		decomposer.setLevelLoessSize(computeConfig.levelLoessSize);
+		decomposer.setLevelLoessSize(config.levelLoessSize);
 		
 		Dataset<Row> output = decomposer.transform(source);
 		return output;
 	
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class TsSTLConfig extends BaseSTLConfig {

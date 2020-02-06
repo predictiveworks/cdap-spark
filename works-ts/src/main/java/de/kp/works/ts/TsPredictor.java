@@ -34,13 +34,13 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.RFRegressorManager;
-import de.kp.works.core.time.TimePredictorCompute;
+import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimePredictorConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Random Forest regressor model.")
-public class TsPredictor extends TimePredictorCompute {
+public class TsPredictor extends TimeCompute {
 
 	private static final long serialVersionUID = 3141012240338918366L;
 
@@ -55,7 +55,7 @@ public class TsPredictor extends TimePredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((TsPredictorConfig)config).validate();
+		config.validate();
 
 			model = manager.read(context, config.modelName);
 			if (model == null)
@@ -76,7 +76,7 @@ public class TsPredictor extends TimePredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -85,28 +85,6 @@ public class TsPredictor extends TimePredictorCompute {
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
-
-	}
-	
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	@Override
-	public Schema getOutputSchema(Schema inputSchema) {
-		
-		List<Schema.Field> outfields = new ArrayList<>();
-		for (Schema.Field field: inputSchema.getFields()) {
-			
-			if (field.getName().equals(config.valueCol)) {
-				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
-				
-			} else
-				outfields.add(field);
-		}
-		
-		outfields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.DOUBLE)));
-		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", outfields);
 
 	}
 	/**
@@ -144,6 +122,32 @@ public class TsPredictor extends TimePredictorCompute {
 		Dataset<Row> output = predictions.drop("features");
 		return output;
 
+	}
+	
+	/**
+	 * A helper method to compute the output schema in that use cases where an input
+	 * schema is explicitly given
+	 */
+	public Schema getOutputSchema(Schema inputSchema) {
+		
+		List<Schema.Field> outfields = new ArrayList<>();
+		for (Schema.Field field: inputSchema.getFields()) {
+			
+			if (field.getName().equals(config.valueCol)) {
+				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
+				
+			} else
+				outfields.add(field);
+		}
+		
+		outfields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.DOUBLE)));
+		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", outfields);
+
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class TsPredictorConfig extends TimePredictorConfig {
