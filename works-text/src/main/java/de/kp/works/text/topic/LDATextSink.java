@@ -40,7 +40,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.TextSink;
 import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.core.ml.SparkMLManager;
@@ -164,7 +164,7 @@ public class LDATextSink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.textCol);
+		SchemaUtil.isString(inputSchema, config.textCol);
 
 	}
 

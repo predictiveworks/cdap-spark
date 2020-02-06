@@ -36,6 +36,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.TextSink;
 
 @Plugin(type = "sparksink")
@@ -95,7 +96,7 @@ public class SpellSink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.lineCol);
+		SchemaUtil.isString(inputSchema, config.lineCol);
 
 	}
 

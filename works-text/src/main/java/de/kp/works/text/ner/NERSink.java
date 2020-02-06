@@ -18,6 +18,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.TextSink;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.embeddings.Word2VecManager;
@@ -103,7 +104,7 @@ public class NERSink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.textCol);
+		SchemaUtil.isString(inputSchema, config.textCol);
 
 	}
 	

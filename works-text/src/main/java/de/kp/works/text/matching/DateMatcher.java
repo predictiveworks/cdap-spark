@@ -84,7 +84,7 @@ public class DateMatcher extends BaseCompute {
 	}
 	
 	@Override
-	public void validateSchema() {
+	public void validateSchema(Schema inputSchema) {
 		
 		/** INPUT COLUMN **/
 

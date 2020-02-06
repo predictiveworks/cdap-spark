@@ -145,6 +145,7 @@ public class LDAText extends BaseCompute {
 		}
 	}
 
+	@Override
 	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/

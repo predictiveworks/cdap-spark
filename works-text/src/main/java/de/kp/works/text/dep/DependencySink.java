@@ -35,7 +35,9 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+
 import de.kp.works.core.TextSink;
+import de.kp.works.core.SchemaUtil;
 
 @Plugin(type = "sparksink")
 @Name("DependencySink")
@@ -94,7 +96,7 @@ public class DependencySink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.textCol);
+		SchemaUtil.isString(inputSchema, config.textCol);
 
 	}
 

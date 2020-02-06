@@ -126,6 +126,7 @@ public class Topic extends BaseCompute {
 
 	}
 
+	@Override
 	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/

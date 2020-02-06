@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.TextSink;
+import de.kp.works.core.SchemaUtil;
 
 @Plugin(type = "sparksink")
 @Name("POSSink")
@@ -95,7 +96,7 @@ public class POSSink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.lineCol);
+		SchemaUtil.isString(inputSchema, config.lineCol);
 
 	}
 

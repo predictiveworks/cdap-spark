@@ -79,7 +79,7 @@ public class POSChunker extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the token & chunk columns
@@ -101,8 +101,8 @@ public class POSChunker extends BaseCompute {
 		return chunker.chunk(source, config.getRules(), config.textCol, config.tokenCol, config.chunkCol);
 		
 	}
-
-	public void validateSchema(Schema inputSchema, POSChunkerConfig config) {
+	@Override
+	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/
 

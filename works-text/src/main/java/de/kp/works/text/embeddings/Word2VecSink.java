@@ -34,6 +34,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.TextSink;
 
 @Plugin(type = "sparksink")
@@ -93,7 +94,7 @@ public class Word2VecSink extends TextSink {
 							this.getClass().getName()));
 		}
 
-		isString(config.textCol);
+		SchemaUtil.isString(inputSchema, config.textCol);
 
 	}
 	

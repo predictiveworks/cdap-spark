@@ -72,7 +72,7 @@ public class Word2Vec extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -106,8 +106,9 @@ public class Word2Vec extends BaseCompute {
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}
-
-	public void validateSchema(Schema inputSchema, Word2VecConfig config) {
+	
+	@Override
+	public void validateSchema(Schema inputSchema) {
 
 		/** TEXT COLUMN **/
 

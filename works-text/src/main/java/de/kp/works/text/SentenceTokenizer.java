@@ -63,7 +63,8 @@ public class SentenceTokenizer extends BaseCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-
+			validateSchema(inputSchema);
+			
 			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
@@ -77,7 +78,7 @@ public class SentenceTokenizer extends BaseCompute {
 	}
 	
 	@Override
-	public void validateSchema() {
+	public void validateSchema(Schema inputSchema) {
 		
 		/** INPUT COLUMN **/
 

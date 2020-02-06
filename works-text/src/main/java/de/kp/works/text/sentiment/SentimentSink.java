@@ -35,6 +35,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.TextSink;
 
 @Plugin(type = "sparksink")
@@ -102,17 +103,17 @@ public class SentimentSink extends TextSink {
 					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 		
-		isString(config.textCol);
+		SchemaUtil.isString(inputSchema, config.textCol);
 
 		/** SENTIMENT COLUMN **/
 
 		Schema.Field sentimentCol = inputSchema.getField(config.sentimentCol);
 		if (sentimentCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentiment.", className));
+					"[%s] The input schema must contain the field that defines the sentiment.", this.getClass().getName()));
 		}
 		
-		isString(config.sentimentCol);
+		SchemaUtil.isString(inputSchema, config.sentimentCol);
 
 	}
 
