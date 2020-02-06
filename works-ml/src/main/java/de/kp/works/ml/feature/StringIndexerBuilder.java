@@ -34,6 +34,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -49,9 +50,10 @@ public class StringIndexerBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = -2360022873735403321L;
 
+	private StringIndexerBuilderConfig config;
+	
 	public StringIndexerBuilder(StringIndexerBuilderConfig config) {
 		this.config = config;
-		this.className = StringIndexerBuilder.class.getName();
 	}
 
 	@Override
@@ -59,23 +61,21 @@ public class StringIndexerBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((StringIndexerBuilderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		StringIndexerBuilderConfig builderConfig = (StringIndexerBuilderConfig)config;
-
 		org.apache.spark.ml.feature.StringIndexer trainer = new org.apache.spark.ml.feature.StringIndexer();
-		trainer.setInputCol(builderConfig.inputCol);
+		trainer.setInputCol(config.inputCol);
 
 		StringIndexerModel model = trainer.fit(source);
 		
@@ -84,7 +84,7 @@ public class StringIndexerBuilder extends FeatureSink {
 		 * Store trained StringIndexer model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
@@ -93,12 +93,8 @@ public class StringIndexerBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class StringIndexerBuilderConfig extends FeatureModelConfig {
@@ -108,5 +104,14 @@ public class StringIndexerBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 		}
+
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isString(inputSchema, inputCol);
+			
+		}
+		
 	}
 }

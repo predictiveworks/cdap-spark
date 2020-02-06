@@ -29,15 +29,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
 public class VectorIndexer extends FeatureCompute {
 
 	private static final long serialVersionUID = 5944112891925832168L;
 
+	private VectorIndexerConfig config;
 	private VectorIndexerModel model;
 
 	public VectorIndexer(VectorIndexerConfig config) {
@@ -46,7 +47,7 @@ public class VectorIndexer extends FeatureCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((StringToIndexConfig)config).validate();
+		config.validate();
 
 		model = new VectorIndexerManager().read(context, config.modelName);
 		if (model == null)
@@ -58,7 +59,7 @@ public class VectorIndexer extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((VectorIndexerConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -68,7 +69,7 @@ public class VectorIndexer extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -81,12 +82,8 @@ public class VectorIndexer extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -111,19 +108,18 @@ public class VectorIndexer extends FeatureCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		VectorIndexerConfig indexerConfig = (VectorIndexerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, indexerConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 
 		model.setInputCol("_input");
 		model.setOutputCol("_vector");
 
 		Dataset<Row> transformed = model.transform(vectorset);
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", indexerConfig.outputCol).drop("_input").drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
 		return output;
 
 	}
@@ -135,6 +131,13 @@ public class VectorIndexer extends FeatureCompute {
 		public void validate() {
 			super.validate();
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 	}
 

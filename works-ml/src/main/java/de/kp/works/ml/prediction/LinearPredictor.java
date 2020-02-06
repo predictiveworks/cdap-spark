@@ -25,6 +25,7 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -42,7 +43,6 @@ public class LinearPredictor extends PredictorCompute {
 	private static final long serialVersionUID = -1443274244219761815L;
 
 	private LinearPredictorConfig config;
-
 	private LinearRegressionModel regressor;
 
 	public LinearPredictor(LinearPredictorConfig config) {
@@ -51,7 +51,7 @@ public class LinearPredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((LinearPredictorConfig)config).validate();
+		config.validate();
 
 		regressor = new LinearRegressorManager().read(context, config.modelName);
 		if (regressor == null)
@@ -63,7 +63,7 @@ public class LinearPredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((LinearPredictorConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -72,7 +72,7 @@ public class LinearPredictor extends PredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -115,6 +115,11 @@ public class LinearPredictor extends PredictorCompute {
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class LinearPredictorConfig extends PredictorConfig {

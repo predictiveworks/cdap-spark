@@ -49,7 +49,6 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	private static final long serialVersionUID = 2048099898896242709L;
 
 	private GaussianMixturePredictorConfig config;
-
 	private GaussianMixtureModel model;
 
 	public GaussianMixturePredictor(GaussianMixturePredictorConfig config) {
@@ -58,7 +57,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((GaussianMixturePredictorConfig)config).validate();
+		config.validate();
 
 		model = new GaussianMixtureManager().read(context, config.modelName);
 		if (model == null)
@@ -70,7 +69,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((GaussianMixturePredictorConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -79,7 +78,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -136,6 +135,11 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class GaussianMixturePredictorConfig extends PredictorConfig {

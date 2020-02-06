@@ -35,6 +35,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -45,9 +46,10 @@ public class W2VecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 3885087751281049601L;
 
+	private W2VecBuilderConfig config;
+	
 	public W2VecBuilder(W2VecBuilderConfig config) {
 		this.config = config;
-		this.className = W2VecBuilder.class.getName();
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class W2VecBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((W2VecBuilderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
@@ -65,39 +67,34 @@ public class W2VecBuilder extends FeatureSink {
 			 * Check whether the input columns is of data type
 			 * Array[String]
 			 */
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		W2VecBuilderConfig builderConfig = (W2VecBuilderConfig)config;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		Map<String, Object> params = config.getParamsAsMap();
 
 		W2VecTrainer trainer = new W2VecTrainer();
-		Word2VecModel model = trainer.train(source, builderConfig.inputCol, params);
+		Word2VecModel model = trainer.train(source, config.inputCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new W2VecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class W2VecBuilderConfig extends FeatureModelConfig {
@@ -188,6 +185,14 @@ public class W2VecBuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The sentence length (in words) must be at least 1.", this.getClass().getName()));
 
+		}
+
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
 		}
 		
 	}

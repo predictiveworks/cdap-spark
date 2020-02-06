@@ -34,7 +34,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -47,6 +48,8 @@ public class TFIDF extends FeatureCompute {
 
 	private static final long serialVersionUID = 5252236917563666462L;
 
+	private TFIDFConfig config;
+	
 	private IDFModel model;
 	private TFIDFManager manager;
 
@@ -57,7 +60,7 @@ public class TFIDF extends FeatureCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((TFIDFConfig)config).validate();
+		config.validate();
 
 		model = manager.read(context, config.modelName);
 		if (model == null)
@@ -69,7 +72,7 @@ public class TFIDF extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((TFIDFConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -79,7 +82,7 @@ public class TFIDF extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -92,12 +95,8 @@ public class TFIDF extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	@Override
@@ -106,17 +105,15 @@ public class TFIDF extends FeatureCompute {
 		/*
 		 * Transformation from Array[String] to Array[Double]
 		 */
-		TFIDFConfig tfidfConfig = (TFIDFConfig)config;
-		
 		HashingTF transformer = new HashingTF();
 
-		transformer.setInputCol(tfidfConfig.inputCol);
+		transformer.setInputCol(config.inputCol);
 		transformer.setOutputCol("_features");
 		/*
 		 * Determine number of features from TF-IDF model
 		 * metadata information
 		 */
-		Integer numFeatures = (Integer)manager.getParam(context, tfidfConfig.modelName, "numFeatures");
+		Integer numFeatures = (Integer)manager.getParam(context, config.modelName, "numFeatures");
 		transformer.setNumFeatures(numFeatures);
 
 		Dataset<Row> transformedTF = transformer.transform(source);
@@ -130,7 +127,7 @@ public class TFIDF extends FeatureCompute {
 		model.setOutputCol("_vector");		
 		Dataset<Row> transformed = model.transform(transformedTF).drop("_features");		
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", tfidfConfig.outputCol).drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 		return output;
 
 	}
@@ -155,6 +152,14 @@ public class TFIDF extends FeatureCompute {
 		public void validate() {
 			super.validate();
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
 		}
 	}
 

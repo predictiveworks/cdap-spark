@@ -32,7 +32,10 @@ import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
+import co.cask.cdap.etl.api.PipelineConfigurer;
+import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
@@ -44,29 +47,35 @@ public class VectorIndexerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -2349583466809428065L;
 
+	private VectorIndexerBuilderConfig config;
+	
 	public VectorIndexerBuilder(VectorIndexerBuilderConfig config) {
 		this.config = config;
-		this.className = VectorIndexerBuilder.class.getName();
 	}
 
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
+	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
+		super.configurePipeline(pipelineConfigurer);
 
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
+		/* Validate configuration */
+		config.validate();
+
+		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
+
+		inputSchema = stageConfigurer.getInputSchema();
+		if (inputSchema != null)
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		VectorIndexerBuilderConfig builderConfig = (VectorIndexerBuilderConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, builderConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 
 		org.apache.spark.ml.feature.VectorIndexer trainer = new org.apache.spark.ml.feature.VectorIndexer();
 		trainer.setInputCol("_input");
@@ -78,12 +87,17 @@ public class VectorIndexerBuilder extends FeatureSink {
 		 * Store trained StringIndexer model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
 		new VectorIndexerManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class VectorIndexerBuilderConfig extends FeatureModelConfig {
@@ -117,6 +131,13 @@ public class VectorIndexerBuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of feature categories must be greater than 1.", this.getClass().getName()));
 			}
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 
 	}

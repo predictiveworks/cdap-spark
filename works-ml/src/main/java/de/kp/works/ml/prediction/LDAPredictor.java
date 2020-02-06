@@ -46,7 +46,6 @@ public class LDAPredictor extends PredictorCompute {
 	private static final long serialVersionUID = 1979301843408604941L;
 
 	private LDAPredictorConfig config;
-
 	private LDAModel model;
 
 	public LDAPredictor(LDAPredictorConfig config) {
@@ -55,7 +54,7 @@ public class LDAPredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((LDAPredictorConfig)config).validate();
+		config.validate();
 
 		model = new LDAClusteringManager().read(context, config.modelName);
 		if (model == null)
@@ -67,7 +66,7 @@ public class LDAPredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((LDAPredictorConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -76,7 +75,7 @@ public class LDAPredictor extends PredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -137,6 +136,11 @@ public class LDAPredictor extends PredictorCompute {
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class LDAPredictorConfig extends PredictorConfig {

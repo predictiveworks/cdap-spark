@@ -25,6 +25,7 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -42,7 +43,6 @@ public class NBPredictor extends PredictorCompute {
 	private static final long serialVersionUID = 178045002409442078L;
 
 	private NBPredictorConfig config;
-
 	private NaiveBayesModel classifier;
 
 	public NBPredictor(NBPredictorConfig config) {
@@ -51,7 +51,7 @@ public class NBPredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((NBPredictorConfig)config).validate();
+		config.validate();
 
 		classifier = new NBClassifierManager().read(context, config.modelName);
 		if (classifier == null)
@@ -63,7 +63,7 @@ public class NBPredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((NBPredictorConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -72,7 +72,7 @@ public class NBPredictor extends PredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -116,6 +116,11 @@ public class NBPredictor extends PredictorCompute {
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class NBPredictorConfig extends PredictorConfig {

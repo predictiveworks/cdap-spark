@@ -41,10 +41,10 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.feature.Binarizer.BinarizerConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Binarizer")
@@ -54,6 +54,8 @@ public class VectorAssembler extends FeatureCompute {
 
 	private static final long serialVersionUID = 2001829171672928424L;
 
+	private VectorAssemblerConfig config;
+	
 	public VectorAssembler(VectorAssemblerConfig config) {
 		this.config = config;
 	}
@@ -61,7 +63,7 @@ public class VectorAssembler extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BinarizerConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -71,7 +73,7 @@ public class VectorAssembler extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -88,41 +90,13 @@ public class VectorAssembler extends FeatureCompute {
 	 * NUMERIC data type or an Array[Numeric]
 	 */
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		
-		VectorAssemblerConfig assemblerConfig = (VectorAssemblerConfig)config;
-		
-		String[] columns = assemblerConfig.getFields();
-		for (String column: columns) {
-
-			Schema.Field field = inputSchema.getField(column);
-			Schema.Type fieldType = field.getSchema().getType();
-			
-			/* Check whether the provided field is a numeric field */
-			if (!isNumericType(fieldType)) {
-				
-				/* Check whether the field is an Array */
-				if (!fieldType.equals(Schema.Type.ARRAY)) {
-					throw new IllegalArgumentException(
-							String.format("[%s] The field that defines the input must be either NUMERIC or an ARRAY.", this.getClass().getName()));
-				}
-
-				Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-				if (!isNumericType(fieldCompType)) {
-					throw new IllegalArgumentException(
-							String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
-				}
-				
-			}
-			
-		}
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		VectorAssemblerConfig assemblerConfig = (VectorAssemblerConfig)config;
 		/*
 		 * The list of all columns that are used by the assembler
 		 */
@@ -134,7 +108,7 @@ public class VectorAssembler extends FeatureCompute {
 		int vectorCnt = 0;
 		List<String> vectorCols = new ArrayList<>();
 		
-		List<String> columns = Arrays.asList(assemblerConfig.getFields());
+		List<String> columns = Arrays.asList(config.getFields());
 		StructField[] schemaFields = source.schema().fields();
 		
 		Dataset<Row> dataset = source;
@@ -180,7 +154,7 @@ public class VectorAssembler extends FeatureCompute {
 		 */
 		transformer.setOutputCol("_vector");		
 		/* Transform dataset and devectorize the output column */
-		Dataset<Row> output = MLUtils.devectorize(transformer.transform(dataset), "_vector", assemblerConfig.outputCol).drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformer.transform(dataset), "_vector", config.outputCol).drop("_vector");
 		if (vectorCols.size() > 0) {
 			/*
 			 * Finally temporary vector columns are removed from the output
@@ -239,6 +213,35 @@ public class VectorAssembler extends FeatureCompute {
 			}
 			
 		}
+		public void validateSchema(Schema inputSchema) {
+			
+			String[] columns = getFields();
+			for (String column: columns) {
+
+				Schema.Field field = inputSchema.getField(column);
+				Schema.Type fieldType = field.getSchema().getType();
+				
+				/* Check whether the provided field is a numeric field */
+				if (!SchemaUtil.isNumericType(fieldType)) {
+					
+					/* Check whether the field is an Array */
+					if (!fieldType.equals(Schema.Type.ARRAY)) {
+						throw new IllegalArgumentException(
+								String.format("[%s] The field that defines the input must be either NUMERIC or an ARRAY.", this.getClass().getName()));
+					}
+
+					Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+					if (!SchemaUtil.isNumericType(fieldCompType)) {
+						throw new IllegalArgumentException(
+								String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
+					}
+					
+				}
+				
+			}
+			
+		}
+		
 		
 	}
 }

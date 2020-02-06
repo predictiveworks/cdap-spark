@@ -25,6 +25,7 @@ import org.apache.spark.sql.Row;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
@@ -42,7 +43,6 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 	private static final long serialVersionUID = -7843836179229489547L;
 
 	private BisectingKMeansPredictorConfig config;
-
 	private BisectingKMeansModel model;
 
 	public BisectingKMeansPredictor(BisectingKMeansPredictorConfig config) {
@@ -51,7 +51,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((BisectingKMeansPredictorConfig)config).validate();
+		config.validate();
 
 		model = new BisectingKMeansManager().read(context, config.modelName);
 		if (model == null)
@@ -63,7 +63,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BisectingKMeansPredictorConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -72,7 +72,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -116,6 +116,11 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class BisectingKMeansPredictorConfig extends PredictorConfig {

@@ -35,7 +35,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -51,13 +52,15 @@ public class Tokenizer extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = 5149156933259052782L;
 
+	private TokenizerConfig config;
+	
 	public Tokenizer(TokenizerConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((TokenizerConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -67,7 +70,7 @@ public class Tokenizer extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -80,12 +83,8 @@ public class Tokenizer extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -106,17 +105,15 @@ public class Tokenizer extends FeatureCompute {
 		/*
 		 * Transformation from [String] to Array[String]
 		 */
-		TokenizerConfig tokenConfig = (TokenizerConfig)config;
-		
 		org.apache.spark.ml.feature.RegexTokenizer transformer = new org.apache.spark.ml.feature.RegexTokenizer();
 		
-		transformer.setInputCol(tokenConfig.inputCol);
-		transformer.setOutputCol(tokenConfig.outputCol);
+		transformer.setInputCol(config.inputCol);
+		transformer.setOutputCol(config.outputCol);
 
-		transformer.setPattern(tokenConfig.pattern);
-		transformer.setMinTokenLength(tokenConfig.minTokenLength);
+		transformer.setPattern(config.pattern);
+		transformer.setMinTokenLength(config.minTokenLength);
 		
-		Boolean gaps = (tokenConfig.gaps.equals("true")) ? true : false;
+		Boolean gaps = (config.gaps.equals("true")) ? true : false;
 		transformer.setGaps(gaps);
 
 		Dataset<Row> output = transformer.transform(source);		
@@ -160,5 +157,13 @@ public class Tokenizer extends FeatureCompute {
 			}
 			
 		}
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isString(inputSchema, inputCol);
+			
+		}
+		
 	}
 }

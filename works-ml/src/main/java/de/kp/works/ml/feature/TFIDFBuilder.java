@@ -35,6 +35,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -48,9 +49,10 @@ public class TFIDFBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = -513344006567533602L;
 
+	private TFIDFBuilderConfig config;
+	
 	public TFIDFBuilder(TFIDFBuilderConfig config) {
 		this.config = config;
-		this.className = TFIDFBuilder.class.getName();
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class TFIDFBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((TFIDFBuilderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
@@ -68,37 +70,32 @@ public class TFIDFBuilder extends FeatureSink {
 			 * Check whether the input columns is of data type
 			 * Array[String]
 			 */
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		TFIDFBuilderConfig builderConfig = (TFIDFBuilderConfig)config;		
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		Map<String, Object> params = config.getParamsAsMap();
 
 		TFIDFTrainer trainer = new TFIDFTrainer();
-		IDFModel model = trainer.train(source, builderConfig.inputCol, params);
+		IDFModel model = trainer.train(source, config.inputCol, params);
 
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new TFIDFManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
@@ -144,6 +141,14 @@ public class TFIDFBuilder extends FeatureSink {
 						.format("[%s] The minimum number of documents must be nonnegative.", this.getClass().getName()));
 			}
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
 		}
 		
 	}

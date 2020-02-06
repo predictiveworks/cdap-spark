@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SMOTESampler")
@@ -94,28 +95,7 @@ public class SMOTESampler extends BaseCompute {
 	}
 	
 	public void validateSchema(Schema inputSchema) {
-		super.validateSchema();
-		
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-		
-		/** LABEL COLUMN **/
-
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the label.", this.getClass().getName()));
-		}
-		
-		isNumeric(config.labelCol);
-		
+		config.validateSchema(inputSchema);
 	}
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
@@ -192,6 +172,29 @@ public class SMOTESampler extends BaseCompute {
 			if (numNearestNeighbors < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of nearest neighbors must be at least 1.", this.getClass().getName()));
+			
+		}
+		public void validateSchema(Schema inputSchema) {
+			
+			/** FEATURES COLUMN **/
+
+			Schema.Field featuresField = inputSchema.getField(featuresCol);
+			if (featuresField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
+			}
+
+			SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
+			
+			/** LABEL COLUMN **/
+
+			Schema.Field labelField = inputSchema.getField(labelCol);
+			if (labelField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the label.", this.getClass().getName()));
+			}
+			
+			SchemaUtil.isNumeric(inputSchema, labelCol);
 			
 		}
 		

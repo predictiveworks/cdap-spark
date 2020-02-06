@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -43,6 +44,7 @@ public class StringToIndex extends FeatureCompute {
 
 	private static final long serialVersionUID = -4361931347919726410L;
 
+	private StringToIndexConfig config;
 	private StringIndexerModel model;
 
 	public StringToIndex(StringToIndexConfig config) {
@@ -51,7 +53,7 @@ public class StringToIndex extends FeatureCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((StringToIndexConfig)config).validate();
+		config.validate();
 
 		model = new StringIndexerManager().read(context, config.modelName);
 		if (model == null)
@@ -63,7 +65,7 @@ public class StringToIndex extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((StringToIndexConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -73,7 +75,7 @@ public class StringToIndex extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -86,12 +88,8 @@ public class StringToIndex extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -135,6 +133,15 @@ public class StringToIndex extends FeatureCompute {
 			super.validate();
 
 		}
+
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isString(inputSchema, inputCol);
+			
+		}
+		
 	}
 
 }
