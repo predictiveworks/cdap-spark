@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -48,13 +49,15 @@ public class OneHotEncoder extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -7284145086498844486L;
 
+	private OneHotEncoderConfig config;
+	
 	public OneHotEncoder(OneHotEncoderConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((OneHotEncoderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -64,7 +67,7 @@ public class OneHotEncoder extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -77,12 +80,8 @@ public class OneHotEncoder extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -104,10 +103,8 @@ public class OneHotEncoder extends FeatureCompute {
 		/*
 		 * Transformation from [Numeric] to Array[Double]
 		 */
-		OneHotEncoderConfig encoderConfig = (OneHotEncoderConfig)config;
-		
 		org.apache.spark.ml.feature.OneHotEncoder transformer = new org.apache.spark.ml.feature.OneHotEncoder();
-		transformer.setInputCol(encoderConfig.inputCol);
+		transformer.setInputCol(config.inputCol);
 		/*
 		 * The internal output of the binarizer is an ML specific
 		 * vector representation; this must be transformed into
@@ -115,12 +112,12 @@ public class OneHotEncoder extends FeatureCompute {
 		 */
 		transformer.setOutputCol("_vector");
 		
-		Boolean dropLast = encoderConfig.dropLast.equals("true") ? true : false;
+		Boolean dropLast = config.dropLast.equals("true") ? true : false;
 		transformer.setDropLast(dropLast);
 
 		Dataset<Row> transformed = transformer.transform(source);		
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", encoderConfig.outputCol).drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 		return output;
 	    		
 	}
@@ -144,6 +141,15 @@ public class OneHotEncoder extends FeatureCompute {
 		public OneHotEncoderConfig() {
 			dropLast = "true";
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isNumeric(inputSchema, inputCol);
+			
+		}
+		
 	}
 	
 }

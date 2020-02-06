@@ -35,6 +35,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -54,9 +55,10 @@ public class MinHashLSHBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = 1064127164732936531L;
 
+	private MinHashLSHBuilderConfig config;
+	
 	public MinHashLSHBuilder(MinHashLSHBuilderConfig config) {
 		this.config = config;
-		this.className = MinHashLSHBuilder.class.getName();
 	}
 
 	@Override
@@ -64,32 +66,26 @@ public class MinHashLSHBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((MinHashLSHBuilderConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		MinHashLSHBuilderConfig builderConfig = (MinHashLSHBuilderConfig)config;
 		
-		String featuresCol = builderConfig.inputCol;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		String featuresCol = config.inputCol;
+		Map<String, Object> params = config.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -109,10 +105,10 @@ public class MinHashLSHBuilder extends FeatureSink {
 		 * Store trained MinHash LSH model including its associated parameters and
 		 * metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new MinHashLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
@@ -148,6 +144,13 @@ public class MinHashLSHBuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of hash tables must be at least 1.", this.getClass().getName()));
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 		
 	}

@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -44,6 +45,7 @@ public class BucketedLSH extends FeatureCompute {
 
 	private static final long serialVersionUID = -5333140801597897278L;
 
+	private BucketedLSHConfig config;
 	private BucketedRandomProjectionLSHModel model;
 
 	public BucketedLSH(BucketedLSHConfig config) {
@@ -52,7 +54,7 @@ public class BucketedLSH extends FeatureCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((BucketedLSHConfig)config).validate();
+		config.validate();
 
 		model = new BucketedLSHManager().read(context, config.modelName);
 		if (model == null)
@@ -64,7 +66,7 @@ public class BucketedLSH extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((BucketedLSHConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -74,7 +76,7 @@ public class BucketedLSH extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -87,12 +89,8 @@ public class BucketedLSH extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);		
 	}
 
 	/**
@@ -154,6 +152,14 @@ public class BucketedLSH extends FeatureCompute {
 			super.validate();
 
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
+		}
+		
 	}
 
 }

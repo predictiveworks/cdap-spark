@@ -42,6 +42,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
@@ -53,9 +54,10 @@ public class ScalerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -7301919602186472418L;
 
+	private ScalerBuilderConfig config;
+	
 	public ScalerBuilder(ScalerBuilderConfig config) {
 		this.config = config;
-		this.className = ScalerBuilder.class.getName();
 	}
 
 	@Override
@@ -63,54 +65,49 @@ public class ScalerBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((ScalerBuilderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		ScalerBuilderConfig builderConfig = (ScalerBuilderConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, builderConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 		Map<String, Object> metrics = new HashMap<>();
 		/*
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 		
-		String modelType = builderConfig.modelType;
+		String modelType = config.modelType;
 		if (modelType.equals("minmax")) {
 			
 			MinMaxScaler minMaxScaler = new MinMaxScaler();
 			minMaxScaler.setInputCol("_input");
 		
-			minMaxScaler.setMin(builderConfig.min);
-			minMaxScaler.setMax(builderConfig.max);
+			minMaxScaler.setMin(config.min);
+			minMaxScaler.setMax(config.max);
 			
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
 
-			String modelName = builderConfig.modelName;
+			String modelName = config.modelName;
 			new ScalerManager().saveMinMaxScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 			
 			
@@ -121,7 +118,7 @@ public class ScalerBuilder extends FeatureSink {
 			
 			MaxAbsScalerModel model = maxAbsScaler.fit(vectorset);
 
-			String modelName = builderConfig.modelName;
+			String modelName = config.modelName;
 			new ScalerManager().saveMaxAbsScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 			
 		} else {
@@ -129,13 +126,13 @@ public class ScalerBuilder extends FeatureSink {
 			StandardScaler standardScaler = new StandardScaler();
 			standardScaler.setInputCol("_input");
 			
-			if (builderConfig.withMean.equals("false"))
+			if (config.withMean.equals("false"))
 				standardScaler.setWithMean(false);
 			
 			else 
 				standardScaler.setWithMean(true);
 			
-			if (builderConfig.withStd.equals("false"))
+			if (config.withStd.equals("false"))
 				standardScaler.setWithStd(false);
 			
 			else 
@@ -143,7 +140,7 @@ public class ScalerBuilder extends FeatureSink {
 				
 			StandardScalerModel model = standardScaler.fit(vectorset);
 
-			String modelName = builderConfig.modelName;
+			String modelName = config.modelName;
 			new ScalerManager().saveStandardScaler(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 		}
@@ -217,6 +214,13 @@ public class ScalerBuilder extends FeatureSink {
 						.format("[%s] The lower bound must be smaller or equal than the upper one.", this.getClass().getName()));
 			}
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 		
 	}

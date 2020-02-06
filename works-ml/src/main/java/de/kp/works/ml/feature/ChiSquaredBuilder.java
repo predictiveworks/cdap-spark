@@ -36,6 +36,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
@@ -47,9 +48,10 @@ public class ChiSquaredBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -5551497359106054161L;
 
+	private ChiSquaredBuilderConfig config;
+	
 	public ChiSquaredBuilder(ChiSquaredBuilderConfig config) {
 		this.config = config;
-		this.className = ChiSquaredBuilder.class.getName();
 	}
 
 	@Override
@@ -57,49 +59,39 @@ public class ChiSquaredBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((ChiSquaredBuilderConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		ChiSquaredBuilderConfig builderConfig = (ChiSquaredBuilderConfig)config;
-
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(builderConfig.inputCol);
-
-		/** Label COLUMN **/
-		isNumeric(builderConfig.labelCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		ChiSquaredBuilderConfig builderConfig = (ChiSquaredBuilderConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		Dataset<Row> vectorset = MLUtils.vectorize(source, builderConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 
 		org.apache.spark.ml.feature.ChiSqSelector trainer = new org.apache.spark.ml.feature.ChiSqSelector();
 		trainer.setFeaturesCol("_input");
-		trainer.setLabelCol(builderConfig.labelCol);
+		trainer.setLabelCol(config.labelCol);
 
-		trainer.setSelectorType(builderConfig.selectorType);
-		trainer.setNumTopFeatures(builderConfig.numTopFeatures);
+		trainer.setSelectorType(config.selectorType);
+		trainer.setNumTopFeatures(config.numTopFeatures);
 		
-		trainer.setPercentile(builderConfig.percentile);
-		trainer.setFpr(builderConfig.fpr);
+		trainer.setPercentile(config.percentile);
+		trainer.setFpr(config.fpr);
 		
 		ChiSqSelectorModel model = trainer.fit(vectorset);
 		
@@ -108,7 +100,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 		 * Store trained StringIndexer model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
@@ -187,6 +179,17 @@ public class ChiSquaredBuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The highest p-value for features to select must be in range (0, 1).", this.getClass().getName()));
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+
+			/** Label COLUMN **/
+			SchemaUtil.isNumeric(inputSchema, labelCol);
+			
 		}
 		
 	}

@@ -21,6 +21,7 @@ package de.kp.works.core.feature;
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseConfig;
 
 public class FeatureModelConfig extends BaseConfig {
@@ -49,6 +50,17 @@ public class FeatureModelConfig extends BaseConfig {
 							this.getClass().getName()));
 		}
 
+	}
+
+	public void validateSchema(Schema inputSchema) {
+
+		/** INPUT COLUMN **/
+
+		Schema.Field inputField = inputSchema.getField(inputCol);
+		if (inputField == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
+		}
 	}
 
 }

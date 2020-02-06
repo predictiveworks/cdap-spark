@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -64,13 +65,15 @@ public class HashingTF extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = 8394737976482170698L;
 
+	private HashTFConfig config;
+	
 	public HashingTF(HashTFConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((HashTFConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -80,7 +83,7 @@ public class HashingTF extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -93,12 +96,8 @@ public class HashingTF extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	@Override
@@ -106,20 +105,18 @@ public class HashingTF extends FeatureCompute {
 		/*
 		 * Transformation from Array[String] to Array[Double]
 		 */
-		HashTFConfig hashConfig = (HashTFConfig)config;
-		
 		org.apache.spark.ml.feature.HashingTF transformer = new org.apache.spark.ml.feature.HashingTF();
-		transformer.setInputCol(hashConfig.inputCol);
+		transformer.setInputCol(config.inputCol);
 		/*
 		 * The internal output of the hasher is an ML specific
 		 * vector representation; this must be transformed into
 		 * an Array[Double] to be compliant with Google CDAP
 		 */		
 		transformer.setOutputCol("_vector");
-		transformer.setNumFeatures(hashConfig.numFeatures);
+		transformer.setNumFeatures(config.numFeatures);
 
 		Dataset<Row> transformed = transformer.transform(source);
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", hashConfig.outputCol).drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 
 		return output;
 
@@ -155,6 +152,15 @@ public class HashingTF extends FeatureCompute {
 			}
 
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
+		}
+		
 	}
 
 }

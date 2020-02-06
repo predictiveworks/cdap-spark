@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -67,6 +68,8 @@ public class QuantileDiscretizer extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -3391666113031818960L;
 
+	private QuantileDiscretizerConfig config;
+	
 	public QuantileDiscretizer(QuantileDiscretizerConfig config) {
 		this.config = config;
 	}
@@ -74,7 +77,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((QuantileDiscretizerConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -84,7 +87,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -97,12 +100,8 @@ public class QuantileDiscretizer extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -124,14 +123,12 @@ public class QuantileDiscretizer extends FeatureCompute {
 		/*
 		 * Transformation from [Numeric] to [Double]
 		 */
-		QuantileDiscretizerConfig discretizerConfig = (QuantileDiscretizerConfig)config;
-		
 		org.apache.spark.ml.feature.QuantileDiscretizer transformer = new org.apache.spark.ml.feature.QuantileDiscretizer();
-		transformer.setInputCol(discretizerConfig.inputCol);
-		transformer.setOutputCol(discretizerConfig.outputCol);
+		transformer.setInputCol(config.inputCol);
+		transformer.setOutputCol(config.outputCol);
 
-		transformer.setNumBuckets(discretizerConfig.numBuckets);
-		transformer.setRelativeError(discretizerConfig.relativeError);
+		transformer.setNumBuckets(config.numBuckets);
+		transformer.setRelativeError(config.relativeError);
 
 		Dataset<Row> output = transformer.fit(source).transform(source);	
 		return output;
@@ -171,5 +168,13 @@ public class QuantileDiscretizer extends FeatureCompute {
 			}
 
 		}
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isNumeric(inputSchema, inputCol);
+			
+		}
+		
 	}
 }

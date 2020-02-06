@@ -31,9 +31,9 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
-import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("IndexToString")
@@ -44,13 +44,15 @@ public class IndexToString extends FeatureCompute {
 
 	private StringIndexerModel model;
 
+	private IndexToStringConfig config;
+	
 	public IndexToString(IndexToStringConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((StringToIndexConfig)config).validate();
+		config.validate();
 
 		model = new StringIndexerManager().read(context, config.modelName);
 		if (model == null)
@@ -60,12 +62,8 @@ public class IndexToString extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -111,6 +109,13 @@ public class IndexToString extends FeatureCompute {
 		public void validate() {
 			super.validate();
 
+		}
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isNumeric(inputSchema, inputCol);
+			
 		}
 		
 	}

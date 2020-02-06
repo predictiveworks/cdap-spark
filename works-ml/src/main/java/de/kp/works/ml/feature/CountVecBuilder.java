@@ -38,6 +38,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -48,9 +49,10 @@ public class CountVecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 2389361295065144103L;
 
+	private CountVecBuilderConfig config;
+	
 	public CountVecBuilder(CountVecBuilderConfig config) {
 		this.config = config;
-		this.className = CountVecBuilder.class.getName();
 	}
 
 	@Override
@@ -58,49 +60,43 @@ public class CountVecBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((CountVecBuilderConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		CountVecBuilderConfig builderConfig = (CountVecBuilderConfig)config;
-		
 		CountVectorizer trainer = new CountVectorizer();
-		trainer.setInputCol(builderConfig.inputCol);
+		trainer.setInputCol(config.inputCol);
 		
-		Double minDF = new Double(builderConfig.minDF);
+		Double minDF = new Double(config.minDF);
 		trainer.setMinDF(minDF);
 		
-		Double minTF = new Double(builderConfig.minTF);
+		Double minTF = new Double(config.minTF);
 		trainer.setMinTF(minTF);
 
-		if (builderConfig.vocabSize != null)
-			trainer.setVocabSize(builderConfig.vocabSize);
+		if (config.vocabSize != null)
+			trainer.setVocabSize(config.vocabSize);
 		
 		CountVectorizerModel model = trainer.fit(source);		
 		Map<String,Object> metrics = new HashMap<>();
 		
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 		
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new CountVecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
 	}
@@ -161,5 +157,14 @@ public class CountVecBuilder extends FeatureSink {
 						"[%s] The minimum of term occurences in each document must be at least 1.", this.getClass().getName()));
 
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
+		}
+		
 	}
 }

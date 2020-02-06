@@ -37,6 +37,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("FPGrowth")
@@ -94,20 +95,10 @@ public class FPGrowth extends BaseCompute {
 		return miner.fit(source).transform(source);
 		
 	}
-	
+
+	@Override
 	public void validateSchema(Schema inputSchema) {
-
-		/** ITEMS COLUMN **/
-
-		Schema.Field itemsCol = inputSchema.getField(config.itemsCol);
-		if (itemsCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the items.", this.getClass().getName()));
-		}
-		
-		/** ITEMS COLUMN **/
-		isArrayOfString(config.itemsCol);
-		
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -178,5 +169,21 @@ public class FPGrowth extends BaseCompute {
 			}
 			
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+
+			/** ITEMS COLUMN **/
+
+			Schema.Field itemsField = inputSchema.getField(itemsCol);
+			if (itemsField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the items.", this.getClass().getName()));
+			}
+			
+			/** ITEMS COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, itemsCol);
+			
+		}
+		
 	}
 }

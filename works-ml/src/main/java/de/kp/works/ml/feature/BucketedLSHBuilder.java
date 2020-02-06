@@ -35,12 +35,13 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("BucketedLSHBuilder")
-@Description("A building stage for an Apache Spark based Bucketed Random Projection LSH model.")
+@Description("A building stage for an Apache Spark ML Bucketed Random Projection LSH model.")
 public class BucketedLSHBuilder extends FeatureSink {
 	/*
 	 * Bucketed Random Projection is an LSH family for Euclidean distance. 
@@ -60,9 +61,10 @@ public class BucketedLSHBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = 4538434693829022065L;
 
+	private BucketedLSHBuilderConfig config;
+	
 	public BucketedLSHBuilder(BucketedLSHBuilderConfig config) {
 		this.config = config;
-		this.className = BucketedLSHBuilder.class.getName();
 	}
 
 	@Override
@@ -70,22 +72,19 @@ public class BucketedLSHBuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((BucketedLSHBuilderConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 		
 	}
 
@@ -164,6 +163,14 @@ public class BucketedLSHBuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The bucket length  must be greater than 0.0.", this.getClass().getName()));
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 		
 	}

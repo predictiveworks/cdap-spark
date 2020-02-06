@@ -35,6 +35,7 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
@@ -45,9 +46,10 @@ public class PCABuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -698695950116408878L;
 
+	private PCABuilderConfig config;
+	
 	public PCABuilder(PCABuilderConfig config) {
 		this.config = config;
-		this.className = PCABuilder.class.getName();
 	}
 
 	@Override
@@ -55,7 +57,7 @@ public class PCABuilder extends FeatureSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((PCABuilderConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 
@@ -65,17 +67,15 @@ public class PCABuilder extends FeatureSink {
 			 * Check whether the input columns is of data type
 			 * Array[Double]
 			 */
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		PCABuilderConfig builderConfig = (PCABuilderConfig)config;
 		
-		String featuresCol = builderConfig.inputCol;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		String featuresCol = config.inputCol;
+		Map<String, Object> params = config.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -95,21 +95,17 @@ public class PCABuilder extends FeatureSink {
 		 * Store trained PCA model including its associated parameters and
 		 * metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new PCAManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfDouble(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class PCABuilderConfig extends FeatureModelConfig {
@@ -136,6 +132,13 @@ public class PCABuilder extends FeatureSink {
 				throw new IllegalArgumentException(String.format("[%s] The number of principal components must be greater than 0.",
 						this.getClass().getName()));
 			}
+			
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
 			
 		}
 	}

@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -45,6 +45,7 @@ public class W2Vec extends FeatureCompute {
 
 	private static final long serialVersionUID = -7817740878594710658L;
 
+	private W2VecConfig config;
 	private Word2VecModel model;
 
 	public W2Vec(W2VecConfig config) {

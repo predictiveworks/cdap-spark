@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -54,13 +55,15 @@ public class NGram extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -3545405220776080200L;
 
+	private NGramConfig config;
+	
 	public NGram(NGramConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((NGramConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -70,7 +73,7 @@ public class NGram extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -88,13 +91,11 @@ public class NGram extends FeatureCompute {
 		/*
 		 * Transformation from Array[String] to Array[String]
 		 */
-		NGramConfig ngramConfig = (NGramConfig)config;
-		
 		org.apache.spark.ml.feature.NGram transformer = new org.apache.spark.ml.feature.NGram();
-		transformer.setInputCol(ngramConfig.inputCol);
+		transformer.setInputCol(config.inputCol);
 
-		transformer.setOutputCol(ngramConfig.outputCol);
-		transformer.setN(ngramConfig.n);
+		transformer.setOutputCol(config.outputCol);
+		transformer.setN(config.n);
 
 		Dataset<Row> output = transformer.transform(source);		
 		return output;
@@ -102,12 +103,8 @@ public class NGram extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfString(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -144,5 +141,14 @@ public class NGram extends FeatureCompute {
 			}
 
 		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** INPUT COLUMN **/
+			SchemaUtil.isArrayOfString(inputSchema, inputCol);
+			
+		}
+		
 	}
 }

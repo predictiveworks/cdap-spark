@@ -33,7 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureConfig;
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
@@ -44,13 +45,15 @@ public class Normalizer extends FeatureCompute {
 
 	private static final long serialVersionUID = 8637506241398507943L;
 
+	private NormalizerConfig config;
+	
 	public Normalizer(NormalizerConfig config) {
 		this.config = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((NormalizerConfig)config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -60,7 +63,7 @@ public class Normalizer extends FeatureCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
@@ -73,12 +76,8 @@ public class Normalizer extends FeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, FeatureConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** INPUT COLUMN **/
-		isArrayOfNumeric(config.inputCol);
-		
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	/**
@@ -102,8 +101,7 @@ public class Normalizer extends FeatureCompute {
 		 * Build internal column from input column and cast to 
 		 * double vector
 		 */
-		NormalizerConfig normConfig = (NormalizerConfig)config;
-		Dataset<Row> vectorset = MLUtils.vectorize(source, normConfig.inputCol, "_input", true);
+		Dataset<Row> vectorset = MLUtils.vectorize(source, config.inputCol, "_input", true);
 		
 		org.apache.spark.ml.feature.Normalizer transformer = new org.apache.spark.ml.feature.Normalizer();
 		transformer.setInputCol("_input");
@@ -113,11 +111,11 @@ public class Normalizer extends FeatureCompute {
 		 * an Array[Double] to be compliant with Google CDAP
 		 */
 		transformer.setOutputCol("_vector");
-		transformer.setP((double)normConfig.norm);
+		transformer.setP((double)config.norm);
 
 		Dataset<Row> transformed = transformer.transform(vectorset);		
 
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", normConfig.outputCol).drop("_input").drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
 		return output;
 	    		
 	}
@@ -142,6 +140,13 @@ public class Normalizer extends FeatureCompute {
 						.format("[%s] The p-norm must be either 1 or 2.", this.getClass().getName()));
 			}
 
+		}
+		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
+			
 		}
 		
 	}
