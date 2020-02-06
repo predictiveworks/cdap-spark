@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.time;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseCompute;
 
 public class TimeCompute extends BaseCompute {
 

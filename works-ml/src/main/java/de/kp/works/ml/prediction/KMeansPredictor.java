@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.KMeansManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("KMeansPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based KMeans clustering model.")
-public class KMeansPredictor extends BasePredictorCompute {
+public class KMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 8662496131393728472L;
 
@@ -118,7 +118,7 @@ public class KMeansPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class KMeansPredictorConfig extends BasePredictorConfig {
+	public static class KMeansPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 

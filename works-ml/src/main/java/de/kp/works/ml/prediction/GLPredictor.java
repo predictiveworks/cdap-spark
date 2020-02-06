@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.regression.GLRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GLPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Generalized Linear Regression regressor model.")
-public class GLPredictor extends BasePredictorCompute {
+public class GLPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4505262483800490605L;
 
@@ -117,7 +117,7 @@ public class GLPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class GLPredictorConfig extends BasePredictorConfig {
+	public static class GLPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 

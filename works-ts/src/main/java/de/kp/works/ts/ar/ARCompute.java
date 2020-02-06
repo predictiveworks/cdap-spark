@@ -24,7 +24,7 @@ import java.util.List;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
-import de.kp.works.core.TimeCompute;
+import de.kp.works.core.time.TimeCompute;
 
 public class ARCompute extends TimeCompute {
 

@@ -29,23 +29,26 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.ClassifierSink;
+import de.kp.works.core.classifier.ClassifierConfig;
+import de.kp.works.core.classifier.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("DTClassifer")
-@Description("A building stage for an Apache Spark based Decision Tree classifier model. This stages expects a dataset that contains at least 2 fields to train the classifier model: "
-		+ "A field that contains the features formatted as an array of double values, and, another field that class or label value also specified as a double value.")
+@Description("A building stage for an Apache Spark ML Decision Tree classifier model. This stage expects "
+		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "
+		+ "another that describes the class or label value as numeric value.")
 public class DTClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
 
+	private DTClassifierConfig config;
+
 	public DTClassifier(DTClassifierConfig config) {
 		this.config = config;
-		this.className = DTClassifier.class.getName();
 	}
 
 	@Override
@@ -53,28 +56,27 @@ public class DTClassifier extends ClassifierSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((DTClassifierConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		DTClassifierConfig classifierConfig = (DTClassifierConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train classifier model
 		 */
-		String featuresCol = classifierConfig.featuresCol;
-		String labelCol = classifierConfig.labelCol;
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
 
-		Map<String, Object> params = classifierConfig.getParamsAsMap();
-		String paramsJson = classifierConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -90,7 +92,7 @@ public class DTClassifier extends ClassifierSink {
 		 * Split the vectorset into a train & test dataset for later classification
 		 * evaluation
 		 */
-		Dataset<Row>[] splitted = vectorset.randomSplit(classifierConfig.getSplits());
+		Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 
 		Dataset<Row> trainset = splitted[0];
 		Dataset<Row> testset = splitted[1];
@@ -109,11 +111,16 @@ public class DTClassifier extends ClassifierSink {
 		 * STEP #3: Store trained classification model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = classifierConfig.modelName;
+		String modelName = config.modelName;
 		new DTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
+	}
+	
 	public static class DTClassifierConfig extends ClassifierConfig {
 
 		private static final long serialVersionUID = -5216062714694933745L;

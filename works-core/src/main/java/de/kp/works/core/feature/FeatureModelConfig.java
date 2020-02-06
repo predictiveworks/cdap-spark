@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,14 +21,19 @@ package de.kp.works.core;
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.BaseConfig;
 
-public class RecommenderConfig extends BaseConfig {
+public class FeatureModelConfig extends BaseConfig {
 
-	private static final long serialVersionUID = -6035538311204588505L;
+	private static final long serialVersionUID = 4822101162876650081L;
 
-	@Description("The unique name of the recommendation model.")
+	@Description("The unique name of the feature model.")
 	@Macro
 	public String modelName;
+
+	@Description("The name of the field in the input schema that contains the features to build the model from.")
+	@Macro
+	public String inputCol;
 
 	public void validate() {
 		super.validate();
@@ -38,7 +43,12 @@ public class RecommenderConfig extends BaseConfig {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
 		}
-		
+		if (Strings.isNullOrEmpty(inputCol)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The name of the field that contains the features must not be empty.",
+							this.getClass().getName()));
+		}
+
 	}
 
 }

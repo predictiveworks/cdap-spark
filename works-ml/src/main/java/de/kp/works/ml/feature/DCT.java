@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DCT")
 @Description("A transformation stage that leverages the Apache Spark Discrete Cosine Tranform to map a feature vector in the time domain "
 		+ "into a feature vector in the frequency domain.")
-public class DCT extends BaseFeatureCompute {
+public class DCT extends FeatureCompute {
 	/*
 	 * The Discrete Cosine Transform transforms a length N real-valued sequence in
 	 * the time domain into another length N real-valued sequence in the frequency
@@ -85,7 +85,7 @@ public class DCT extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -137,7 +137,7 @@ public class DCT extends BaseFeatureCompute {
 
 	}
 	
-	public static class DCTConfig extends BaseFeatureConfig {
+	public static class DCTConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -2746672832026751609L;
 

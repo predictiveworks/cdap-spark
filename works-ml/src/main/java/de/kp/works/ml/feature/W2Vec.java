@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("W2Vec")
 @Description("A transformation stage that turns a sentence into a vector to represent the whole sentence. "
 		+ "The transform is performed by averaging all word vectors it contains, based on a trained Word-to-Vector model.")
-public class W2Vec extends BaseFeatureCompute {
+public class W2Vec extends FeatureCompute {
 
 	private static final long serialVersionUID = -7817740878594710658L;
 
@@ -88,7 +88,7 @@ public class W2Vec extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -132,7 +132,7 @@ public class W2Vec extends BaseFeatureCompute {
 
 	}	
 
-	public static class W2VecConfig extends BaseFeatureConfig {
+	public static class W2VecConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -150130713614696412L;
 

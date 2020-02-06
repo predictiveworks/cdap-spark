@@ -38,11 +38,10 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.TimeConfig;
-import de.kp.works.core.TimeSink;
-
 import de.kp.works.core.ml.RFRegressorManager;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.time.TimeConfig;
+import de.kp.works.core.time.TimeSink;
 import de.kp.works.core.ml.RegressorEvaluator;
 
 @Plugin(type = "sparksink")

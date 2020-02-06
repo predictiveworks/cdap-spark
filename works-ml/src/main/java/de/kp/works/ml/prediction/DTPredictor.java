@@ -30,8 +30,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.DTClassifierManager;
 import de.kp.works.ml.regression.DTRegressorManager;
@@ -39,7 +39,7 @@ import de.kp.works.ml.regression.DTRegressorManager;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DTPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Decision Tree classifier or regressor model.")
-public class DTPredictor extends BasePredictorCompute {
+public class DTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4611875710426366606L;
 
@@ -146,7 +146,7 @@ public class DTPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class DTPredictorConfig extends BasePredictorConfig {
+	public static class DTPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = 7210199521231877169L;
 

@@ -35,7 +35,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
+import de.kp.works.core.time.TimeCompute;
 import de.kp.works.ts.AutoSTL;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)

@@ -29,12 +29,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
-public class VectorIndexer extends BaseFeatureCompute {
+public class VectorIndexer extends FeatureCompute {
 
 	private static final long serialVersionUID = 5944112891925832168L;
 
@@ -81,7 +81,7 @@ public class VectorIndexer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -128,7 +128,7 @@ public class VectorIndexer extends BaseFeatureCompute {
 
 	}
 
-	public static class VectorIndexerConfig extends BaseFeatureConfig {
+	public static class VectorIndexerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 3116673707565679545L;
 

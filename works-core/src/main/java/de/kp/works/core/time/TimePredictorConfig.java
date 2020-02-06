@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.time;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *

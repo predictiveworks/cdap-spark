@@ -33,15 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
-
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MinHashLSH")
 @Description("A transformation stage that leverages a trained MinHash LSH model to project feature vectors onto hash value vectors.")
-public class MinHashLSH extends BaseFeatureCompute {
+public class MinHashLSH extends FeatureCompute {
 	/*
 	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage
 	 * must have a vector binarization stage in front of it.
@@ -91,7 +90,7 @@ public class MinHashLSH extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -151,7 +150,7 @@ public class MinHashLSH extends BaseFeatureCompute {
 
 	}	
 
-	public static class MinHashLSHConfig extends BaseFeatureConfig {
+	public static class MinHashLSHConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
 

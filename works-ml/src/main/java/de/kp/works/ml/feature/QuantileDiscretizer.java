@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("QuantileDiscretizer")
 @Description("A transformation stage that leverages an Apache Spark Quantile Discretizer to continuous input "
 		+ "features onto binned categorical feature.")
-public class QuantileDiscretizer extends BaseFeatureCompute {
+public class QuantileDiscretizer extends FeatureCompute {
 	/*
 	 * 'QuantileDiscretizer' takes a column with continuous features and outputs a
 	 * column with binned categorical features. The number of bins can be set using
@@ -97,7 +97,7 @@ public class QuantileDiscretizer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -138,7 +138,7 @@ public class QuantileDiscretizer extends BaseFeatureCompute {
 	    		
 	}
 
-	public static class QuantileDiscretizerConfig extends BaseFeatureConfig {
+	public static class QuantileDiscretizerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 3497204830649437480L;
 

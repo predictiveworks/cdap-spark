@@ -30,16 +30,16 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.RFRegressorManager;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.RFClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RFPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Random Forest classifier or regressor model.")
-public class RFPredictor extends BasePredictorCompute {
+public class RFPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -566627767807912994L;
 
@@ -146,7 +146,7 @@ public class RFPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class RFPredictorConfig extends BasePredictorConfig {
+	public static class RFPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = 7210199521231877169L;
 

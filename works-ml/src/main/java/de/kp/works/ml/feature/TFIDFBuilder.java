@@ -35,8 +35,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("TFIDFBuilder")
@@ -73,7 +73,7 @@ public class TFIDFBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -103,7 +103,7 @@ public class TFIDFBuilder extends FeatureSink {
 
 	}
 
-	public static class TFIDFBuilderConfig extends BaseFeatureModelConfig {
+	public static class TFIDFBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = 6119701336170807824L;
 

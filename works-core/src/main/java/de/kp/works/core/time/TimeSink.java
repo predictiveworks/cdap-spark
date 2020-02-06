@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.time;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,33 +26,19 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
-
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
 
-public class ClassifierSink extends BaseSink {
+public class TimeSink extends BaseSink {
 
-	private static final long serialVersionUID = -5552264323513756802L;
-	
-	protected ClassifierConfig config;
+	private static final long serialVersionUID = 629771603199297288L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Classification model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createClassificationIfNotExists(context);
-		/*
-		 * Retrieve classification specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
-
+		throw new Exception("[TimeSink] method not implemented.");
 	}
 
 	@Override
@@ -69,7 +55,7 @@ public class ClassifierSink extends BaseSink {
 		if (inputSchema == null) {
 			
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -86,34 +72,5 @@ public class ClassifierSink extends BaseSink {
 		compute(context, rows);
 
 	}
-
-	protected void validateSchema(Schema inputSchema, ClassifierConfig config) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-
-		/** LABEL COLUMN **/
-
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", className));
-		}
-
-		Schema.Type labelType = labelCol.getSchema().getType();
-		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
-		}
-	}
+	
 }

@@ -33,8 +33,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -42,7 +42,7 @@ import de.kp.works.ml.MLUtils;
 @Description("A transformation stage to map input labels (indices) to binary vectors This encoding allows "
 		+ "algorithms which expect continuous features to use categorical features. This transformer expects a Numeric input "
 		+ "and generates an Array[Double] as output.")
-public class OneHotEncoder extends BaseFeatureCompute {
+public class OneHotEncoder extends FeatureCompute {
 	/*
 	 * Transformation: Numeric -> Array[Double]
 	 */
@@ -77,7 +77,7 @@ public class OneHotEncoder extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -133,7 +133,7 @@ public class OneHotEncoder extends BaseFeatureCompute {
 	 * Logistic Regression, to use categorical features.
 	 */
 	
-	public static class OneHotEncoderConfig extends BaseFeatureConfig {
+	public static class OneHotEncoderConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -7779791054523852532L;
 		

@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.predictor;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,13 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseCompute;
 
-public class RecommenderCompute extends BaseCompute {
+public class PredictorCompute extends BaseCompute {
 
-	private static final long serialVersionUID = 1944699231227314308L;
-
-	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-	}
+	private static final long serialVersionUID = -3397323077600081423L;
 
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
@@ -39,7 +37,7 @@ public class RecommenderCompute extends BaseCompute {
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
-		return Schema.recordOf(inputSchema.getRecordName() + ".recommended", fields);
+		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
 

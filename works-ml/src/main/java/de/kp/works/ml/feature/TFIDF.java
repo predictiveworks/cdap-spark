@@ -34,8 +34,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -43,7 +43,7 @@ import de.kp.works.ml.MLUtils;
 @Description("A transformation stage that leverages an Apache Spark based TF-IDF model to map a sequence of words into "
 		+ "its feature vector. Term frequency-inverse document frequency (TF-IDF) is a feature vectorization method widely "
 		+ "used in text mining to reflect the importance of a term to a document in the corpus.")
-public class TFIDF extends BaseFeatureCompute {
+public class TFIDF extends FeatureCompute {
 
 	private static final long serialVersionUID = 5252236917563666462L;
 
@@ -92,7 +92,7 @@ public class TFIDF extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -148,7 +148,7 @@ public class TFIDF extends BaseFeatureCompute {
 
 	}	
 	
-	public static class TFIDFConfig extends BaseFeatureConfig {
+	public static class TFIDFConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6981782808377365083L;
 		

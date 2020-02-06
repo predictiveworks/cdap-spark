@@ -40,9 +40,9 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimeCompute;
-import de.kp.works.core.TimeConfig;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.time.TimeCompute;
+import de.kp.works.core.time.TimeConfig;
 import de.kp.works.ts.util.TimeSeriesModelManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)

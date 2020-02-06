@@ -38,8 +38,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("CountVecBuilder")
@@ -69,7 +69,7 @@ public class CountVecBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -105,7 +105,7 @@ public class CountVecBuilder extends FeatureSink {
 		
 	}
 
-	public static class CountVecBuilderConfig extends BaseFeatureModelConfig {
+	public static class CountVecBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = 7825023669549623718L;
 		

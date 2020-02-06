@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.MLPClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MLPPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Multilayer Perceptron classifier model.")
-public class MLPPredictor extends BasePredictorCompute {
+public class MLPPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7257380193353979238L;
 
@@ -118,7 +118,7 @@ public class MLPPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class MLPPredictorConfig extends BasePredictorConfig {
+	public static class MLPPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 

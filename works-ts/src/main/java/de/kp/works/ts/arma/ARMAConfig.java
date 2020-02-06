@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.TimeConfig;
+import de.kp.works.core.time.TimeConfig;
 
 public class ARMAConfig extends TimeConfig {
 

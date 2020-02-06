@@ -37,14 +37,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Bucketizer")
 @Description("A transformation stage that leverages the Apache Spark Feature Bucketizer to map continuous features onto feature buckets.")
-public class Bucketizer extends BaseFeatureCompute {
+public class Bucketizer extends FeatureCompute {
 	/*
 	 * Bucketizer transforms a column of continuous features to a column of feature buckets, where the buckets 
 	 * are specified by users. It takes a parameter: splits.
@@ -93,7 +93,7 @@ public class Bucketizer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -134,7 +134,7 @@ public class Bucketizer extends BaseFeatureCompute {
 
 	}	
 
-	public static class BucketizerConfig extends BaseFeatureConfig {
+	public static class BucketizerConfig extends FeatureConfig {
 	
 		private static final long serialVersionUID = -4048306352805978020L;
 		

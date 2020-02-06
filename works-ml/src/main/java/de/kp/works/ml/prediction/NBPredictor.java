@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.NBClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NBPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Naive Bayes classifier model.")
-public class NBPredictor extends BasePredictorCompute {
+public class NBPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 178045002409442078L;
 
@@ -118,7 +118,7 @@ public class NBPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class NBPredictorConfig extends BasePredictorConfig {
+	public static class NBPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 

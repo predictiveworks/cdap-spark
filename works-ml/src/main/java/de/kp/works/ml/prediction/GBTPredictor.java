@@ -30,8 +30,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.classification.GBTClassifierManager;
 import de.kp.works.ml.regression.GBTRegressorManager;
@@ -39,7 +39,7 @@ import de.kp.works.ml.regression.GBTRegressorManager;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GBTPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Gradient-Boosted Trees classifier or regressor model.")
-public class GBTPredictor extends BasePredictorCompute {
+public class GBTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4445941695722336690L;
 
@@ -146,7 +146,7 @@ public class GBTPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class GBTPredictorConfig extends BasePredictorConfig {
+	public static class GBTPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = 8253356507092880481L;
 

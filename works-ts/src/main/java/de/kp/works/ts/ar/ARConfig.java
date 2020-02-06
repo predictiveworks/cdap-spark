@@ -22,13 +22,16 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.TimeConfig;
+import de.kp.works.core.time.TimeConfig;
 
 public class ARConfig extends TimeConfig {
 
 	private static final long serialVersionUID = -2081104520718533381L;
-
-	@Description("The unique name of the AR model.")
+	/*
+	 * TimeConfig contributes common 'timeCol' and 'valueCol'
+	 * columns to specify the data points
+	 */
+	@Description("The unique name of the Auto Regression model.")
 	@Macro
 	public String modelName;
 

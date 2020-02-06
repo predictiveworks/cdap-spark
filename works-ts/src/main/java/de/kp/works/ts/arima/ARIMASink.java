@@ -19,8 +19,8 @@ package de.kp.works.ts.arima;
  */
 
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.TimeSink;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.time.TimeSink;
 
 public class ARIMASink extends TimeSink {
 

@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Binarizer")
 @Description("A transformation stage that leverages the Apache Spark Feature Binarizer to map continuous features onto binary values.")
-public class Binarizer extends BaseFeatureCompute {
+public class Binarizer extends FeatureCompute {
 	
 	private static final long serialVersionUID = 4868372641130255213L;
 
@@ -73,7 +73,7 @@ public class Binarizer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -123,7 +123,7 @@ public class Binarizer extends BaseFeatureCompute {
 
 	}	
 
-	public static class BinarizerConfig extends BaseFeatureConfig {
+	public static class BinarizerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6791984345238136178L;
 

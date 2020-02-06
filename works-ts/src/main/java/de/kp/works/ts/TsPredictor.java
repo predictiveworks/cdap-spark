@@ -33,9 +33,9 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TimePredictorCompute;
-import de.kp.works.core.TimePredictorConfig;
 import de.kp.works.core.ml.RFRegressorManager;
+import de.kp.works.core.time.TimePredictorCompute;
+import de.kp.works.core.time.TimePredictorConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsPredictor")

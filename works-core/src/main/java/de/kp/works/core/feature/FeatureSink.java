@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,20 +26,30 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
+import de.kp.works.core.ml.SparkMLManager;
 
-public class TimeSink extends BaseSink {
+public class FeatureSink extends BaseSink {
 
-	private static final long serialVersionUID = 629771603199297288L;
-	
-	protected TimeConfig config;
+	private static final long serialVersionUID = 3329726642087575850L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
-		throw new Exception("[TimeSink] method not implemented.");
+		/*
+		 * Feature model components and metadata are persisted in a CDAP FileSet
+		 * as well as a Table; at this stage, we have to make sure that these internal
+		 * metadata structures are present
+		 */
+		SparkMLManager.createFeatureIfNotExists(context);
+		/*
+		 * Retrieve feature specified dataset for later use incompute
+		 */
+		modelFs = SparkMLManager.getFeatureFS(context);
+		modelMeta = SparkMLManager.getFeatureMeta(context);
 	}
 
 	@Override
@@ -56,7 +66,7 @@ public class TimeSink extends BaseSink {
 		if (inputSchema == null) {
 			
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -73,38 +83,5 @@ public class TimeSink extends BaseSink {
 		compute(context, rows);
 
 	}
-
-	public void validateSchema(Schema inputSchema, TimeConfig config) {
-
-		/** TIME COLUMN **/
-
-		Schema.Field timeCol = inputSchema.getField(config.timeCol);
-		if (timeCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the time value.", className));
-		}
-
-		Schema.Type timeType = timeCol.getSchema().getType();
-		if (isTimeType(timeType) == false) {
-			throw new IllegalArgumentException("The data type of the time value field must be LONG.");
-		}
-
-		/** VALUE COLUMN **/
-
-		Schema.Field valueCol = inputSchema.getField(config.valueCol);
-		if (valueCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the value.", className));
-		}
-
-		Schema.Type valueType = valueCol.getSchema().getType();
-		/*
-		 * The value must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (isNumericType(valueType) == false) {
-			throw new IllegalArgumentException("The data type of the value field must be MUMERIC.");
-		}
-	}
-
+	
 }

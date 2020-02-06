@@ -31,22 +31,26 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClassifierConfig;
-import de.kp.works.core.ClassifierSink;
+import de.kp.works.core.classifier.ClassifierConfig;
+import de.kp.works.core.classifier.ClassifierSink;
 
 @Plugin(type = "sparksink")
 @Name("MLPClassifer")
-@Description("A building stage for an Apache Spark based Multilayer Perceptron classifier model.")
+@Description("A building stage for an Apache Spark ML Multi-Layer Perceptron classifier model. This stage expects "
+		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
+		+ "another that describes the class or label value as numeric value.")
 public class MLPClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -7445401286046769822L;
 	
+	private MLPClassifierConfig config;
+
 	public MLPClassifier(MLPClassifierConfig config) {
 		this.config = config;
-		this.className = MLPClassifier.class.getName();
 	}
 
 	@Override
@@ -54,28 +58,27 @@ public class MLPClassifier extends ClassifierSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((MLPClassifierConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		MLPClassifierConfig classifierConfig = (MLPClassifierConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train classifier model
 		 */
-		String featuresCol = classifierConfig.featuresCol;
-		String labelCol = classifierConfig.labelCol;
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
 
-		Map<String, Object> params = classifierConfig.getParamsAsMap();
-		String paramsJson = classifierConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -92,7 +95,7 @@ public class MLPClassifier extends ClassifierSink {
 		 * Split the vectorset into a train & test dataset for
 		 * later classification evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(classifierConfig.getSplits());
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 		
 	    Dataset<Row> trainset = splitted[0];
 	    Dataset<Row> testset = splitted[1];
@@ -111,9 +114,14 @@ public class MLPClassifier extends ClassifierSink {
 		 * STEP #3: Store trained classification model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = classifierConfig.modelName;
+		String modelName = config.modelName;
 		new MLPClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class MLPClassifierConfig extends ClassifierConfig {

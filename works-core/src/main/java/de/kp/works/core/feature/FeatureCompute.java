@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,33 +26,36 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.BaseCompute;
+import de.kp.works.core.SessionHelper;
 
-public class RecommenderSink extends BaseSink {
+public class FeatureCompute extends BaseCompute {
 
-	private static final long serialVersionUID = 1446304577663186523L;
-
-	protected RecommenderConfig config;
+	private static final long serialVersionUID = -852876404206487204L;
 	
 	@Override
-	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
+	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
+			throws Exception {
 
 		JavaSparkContext jsc = context.getSparkContext();
 		/*
-		 * In case of an empty input immediately return 
-		 * without any further processing
+		 * In case of an empty input the input is immediately returned without any
+		 * furthr processing
 		 */
-		if (input.isEmpty())
-			return;
-
+		if (input.isEmpty()) {
+			return input;
+		}
+		/*
+		 * Determine input schema: first, check whether the input schema is already
+		 * provided by a previous initializing or preparing step
+		 */
 		if (inputSchema == null) {
-			
+
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
+
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -62,31 +65,21 @@ public class RecommenderSink extends BaseSink {
 		 */
 		StructType structType = DataFrames.toDataType(inputSchema);
 		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
+
 		/*
-		 * STEP #2: Compute data model from 'rows' leveraging the underlying Scala
-		 * library of Predictive Works
+		 * STEP #2: Compute source with underlying Scala library and derive the output
+		 * schema dynamically from the computed dataset
 		 */
-		compute(context, rows);
+		Dataset<Row> output = compute(context, rows);
+		if (outputSchema == null) {
+			outputSchema = DataFrames.toSchema(output.schema());
+		}
+		/*
+		 * STEP #3: Transform Dataset<Row> into JavaRDD<StructuredRecord>
+		 */
+		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(output, outputSchema);
+		return records;
 
 	}
-
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Recommendation model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createRecommendationIfNotExists(context);
-		/*
-		 * Retrieve recommendation specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getRecommendationFS(context);
-		modelMeta = SparkMLManager.getRecommendationMeta(context);
-		
-	}
-
-	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-	}
-
+	
 }

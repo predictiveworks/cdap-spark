@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,17 +24,12 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
+import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseConfig;
 
-public class BaseFeatureConfig extends PluginConfig {
+public class FeatureConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -1568798398931701098L;
-
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
 
 	@Description("The unique name of the feature model, if this feature transformation requires a trained feature model. "
 			+ "Examples are Count Vectorizer models, Word2Vec models etc.")
@@ -51,11 +46,7 @@ public class BaseFeatureConfig extends PluginConfig {
 	public String outputCol;
 
 	public void validate() {
-		
-		if (Strings.isNullOrEmpty(referenceName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
+		super.validate();
 
 		/** COLUMNS **/
 		if (Strings.isNullOrEmpty(inputCol)) {
@@ -71,4 +62,16 @@ public class BaseFeatureConfig extends PluginConfig {
 
 	}
 
+	public void validateSchema(Schema inputSchema) {
+
+		/** INPUT COLUMN **/
+
+		Schema.Field inputField = inputSchema.getField(inputCol);
+		if (inputField == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
+		}
+	}
+
 }
+

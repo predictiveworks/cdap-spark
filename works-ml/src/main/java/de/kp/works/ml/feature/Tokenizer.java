@@ -35,13 +35,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Tokenizer")
 @Description("A transformation stage that leverages the Apache Spark RegEx Tokenizer to split an input text into a sequence of tokens.")
-public class Tokenizer extends BaseFeatureCompute {
+public class Tokenizer extends FeatureCompute {
 	/*
 	 * A regex based tokenizer that extracts tokens either by using the provided regex pattern
 	 * to split the text (default) or repeatedly matching the regex (if `gaps` is false).
@@ -80,7 +80,7 @@ public class Tokenizer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -124,7 +124,7 @@ public class Tokenizer extends BaseFeatureCompute {
 
 	}
 
-	public static class TokenizerConfig extends BaseFeatureConfig {
+	public static class TokenizerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -1100822249911973196L;
 		

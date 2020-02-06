@@ -29,25 +29,27 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-
-import de.kp.works.core.RegressorConfig;
-import de.kp.works.core.RegressorSink;
 import de.kp.works.core.ml.RFRegressorManager;
 import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.regressor.RegressorConfig;
+import de.kp.works.core.regressor.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("RFRegressor")
-@Description("A building stage for an Apache Spark based Random Forest Trees regressor model.")
+@Description("A building stage for an Apache Spark based Random Forest Trees regressor model. This stage expects "
+		+ "")
 public class RFRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = 1969655374719118217L;
 	
+	private RFRegressorConfig config;
+	
 	public RFRegressor(RFRegressorConfig config) {
 		this.config = config;
-		this.className = RFRegressor.class.getName();
 	}
 
 	@Override
@@ -55,28 +57,27 @@ public class RFRegressor extends RegressorSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((RFRegressorConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		RFRegressorConfig regressorConfig = (RFRegressorConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train regression model
 		 */
-		String featuresCol = regressorConfig.featuresCol;
-		String labelCol = regressorConfig.labelCol;
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
 
-		Map<String, Object> params = regressorConfig.getParamsAsMap();
-		String paramsJson = regressorConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -93,7 +94,7 @@ public class RFRegressor extends RegressorSink {
 		 * Split the vectorset into a train & test dataset for
 		 * later classification evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(regressorConfig.getSplits());
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 		
 	    Dataset<Row> trainset = splitted[0];
 	    Dataset<Row> testset = splitted[1];
@@ -112,9 +113,14 @@ public class RFRegressor extends RegressorSink {
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = regressorConfig.modelName;
+		String modelName = config.modelName;
 		new RFRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);		
 	}
 
 	public static class RFRegressorConfig extends RegressorConfig {

@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.regression.AFTSurvivalRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("AFTSurvivalPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based AFT Survival regressor model.")
-public class AFTSurvivalPredictor extends BasePredictorCompute {
+public class AFTSurvivalPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4611875710426366606L;
 
@@ -118,7 +118,7 @@ public class AFTSurvivalPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class AFTSurvivalPredictorConfig extends BasePredictorConfig {
+	public static class AFTSurvivalPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = 7210199521231877169L;
 

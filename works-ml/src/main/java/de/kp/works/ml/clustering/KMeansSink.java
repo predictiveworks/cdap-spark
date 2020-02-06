@@ -32,23 +32,26 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClusterConfig;
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.ml.clustering.Evaluator;
-import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("KMeansSink")
-@Description("A building stage for an Apache Spark based KMeans clustering model.")
+@Description("A building stage for an Apache Spark ML KMeans clustering model. This stage expects "
+		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
 public class KMeansSink extends ClusterSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;
 
+	private KMeansConfig config;
+	
 	public KMeansSink(KMeansConfig config) {
 		this.config = config;
-		this.className = KMeansSink.class.getName();
 	}
 
 	@Override
@@ -56,7 +59,7 @@ public class KMeansSink extends ClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((KMeansConfig)config).validate();
+		config.validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -65,21 +68,20 @@ public class KMeansSink extends ClusterSink {
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		KMeansConfig clusterConfig = (KMeansConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train KMeans model
 		 */
-		String featuresCol = clusterConfig.featuresCol;
+		String featuresCol = config.featuresCol;
 
-		Map<String, Object> params = clusterConfig.getParamsAsMap();
-		String paramsJson = clusterConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -111,9 +113,14 @@ public class KMeansSink extends ClusterSink {
 		 * STEP #3: Store trained KMeans model including its associated parameters and
 		 * metrics
 		 */
-		String modelName = clusterConfig.modelName;
+		String modelName = config.modelName;
 		new KMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class KMeansConfig extends ClusterConfig {

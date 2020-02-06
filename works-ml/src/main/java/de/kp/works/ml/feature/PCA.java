@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("PCA")
 @Description("A transformation stage that leverages a trained PCA model to project feature vectors onto a lower dimensional vector space.")
-public class PCA extends BaseFeatureCompute {
+public class PCA extends FeatureCompute {
 
 	private static final long serialVersionUID = -7592807362852855002L;
 
@@ -87,7 +87,7 @@ public class PCA extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -138,7 +138,7 @@ public class PCA extends BaseFeatureCompute {
 
 	}	
 
-	public static class PCAConfig extends BaseFeatureConfig {
+	public static class PCAConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
 

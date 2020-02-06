@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.recommender;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,48 +26,33 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class ClusterSink extends BaseSink {
+public class RecommenderSink extends BaseSink {
 
-	private static final long serialVersionUID = 3246011960545074346L;
-
-	protected ClusterConfig config;
-	protected String className;
-	
-	protected void validateSchema(Schema inputSchema, ClusterConfig config) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-
-	}
+	private static final long serialVersionUID = 1446304577663186523L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * Clstering model components and metadata are persisted in a CDAP FileSet
+		 * Recommendation model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
-		SparkMLManager.createClusteringIfNotExists(context);
+		SparkMLManager.createRecommendationIfNotExists(context);
 		/*
-		 * Retrieve clustering specified dataset for later use incompute
+		 * Retrieve recommendation specified dataset for later use incompute
 		 */
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
+		modelFs = SparkMLManager.getRecommendationFS(context);
+		modelMeta = SparkMLManager.getRecommendationMeta(context);
+		
 	}
-
+	
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
 
@@ -80,10 +65,9 @@ public class ClusterSink extends BaseSink {
 			return;
 
 		if (inputSchema == null) {
-
+			
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
-
+			validateSchema(inputSchema);
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());

@@ -35,8 +35,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("BucketedLSHBuilder")
@@ -81,7 +81,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -123,7 +123,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 
 	}
 
-	public static class BucketedLSHBuilderConfig extends BaseFeatureModelConfig {
+	public static class BucketedLSHBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = -7853341044335453501L;
 		

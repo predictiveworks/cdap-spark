@@ -41,8 +41,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.feature.Binarizer.BinarizerConfig;
 
@@ -50,7 +50,7 @@ import de.kp.works.ml.feature.Binarizer.BinarizerConfig;
 @Name("Binarizer")
 @Description("A transformation stage that leverages the Apache Spark Vector Assember to merge multiple numeric "
 		+ "(or numeric vector) fields into a single feature vector.")
-public class VectorAssembler extends BaseFeatureCompute {
+public class VectorAssembler extends FeatureCompute {
 
 	private static final long serialVersionUID = 2001829171672928424L;
 
@@ -88,7 +88,7 @@ public class VectorAssembler extends BaseFeatureCompute {
 	 * NUMERIC data type or an Array[Numeric]
 	 */
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		
 		VectorAssemblerConfig assemblerConfig = (VectorAssemblerConfig)config;
 		
@@ -206,7 +206,7 @@ public class VectorAssembler extends BaseFeatureCompute {
 
 	}	
 
-	public static class VectorAssemblerConfig extends BaseFeatureConfig {
+	public static class VectorAssemblerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 1127092936375337969L;
 		

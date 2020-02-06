@@ -33,13 +33,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("StringToIndex")
 @Description("A transformation stage that leverages the Apache Spark StringIndexer based on a trained StringIndexer model.")
-public class StringToIndex extends BaseFeatureCompute {
+public class StringToIndex extends FeatureCompute {
 
 	private static final long serialVersionUID = -4361931347919726410L;
 
@@ -86,7 +86,7 @@ public class StringToIndex extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -127,7 +127,7 @@ public class StringToIndex extends BaseFeatureCompute {
 
 	}	
 
-	public static class StringToIndexConfig extends BaseFeatureConfig {
+	public static class StringToIndexConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -3630481748921019607L;
 

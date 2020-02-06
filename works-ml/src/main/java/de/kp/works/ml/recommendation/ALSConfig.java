@@ -22,7 +22,7 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.RecommenderConfig;
+import de.kp.works.core.recommender.RecommenderConfig;
 
 public class ALSConfig extends RecommenderConfig {
 

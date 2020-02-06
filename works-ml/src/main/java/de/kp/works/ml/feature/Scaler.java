@@ -36,15 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Scaler")
 @Description("A transformation stage that leverages a trained Scaler model to project feature vectors onto scaled vectors. "
 		+ "Supported models are 'Max-Abs', 'Min-Max' and 'Standard'.")
-public class Scaler extends BaseFeatureCompute {
+public class Scaler extends FeatureCompute {
 
 	private static final long serialVersionUID = -2419787880853896958L;
 
@@ -116,7 +116,7 @@ public class Scaler extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -185,7 +185,7 @@ public class Scaler extends BaseFeatureCompute {
 		
 	}
 
-	public static class ScalerConfig extends BaseFeatureConfig {
+	public static class ScalerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -5718960366269208424L;
 

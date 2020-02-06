@@ -29,16 +29,18 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClusterConfig;
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.ml.clustering.Evaluator;
-import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("BisectingKMeansSink")
-@Description("A building stage for an Apache Spark based Bisecting KMeans clustering model.")
+@Description("A building stage for an Apache Spark ML Bisecting KMeans clustering model. This stage expects "
+		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
 public class BisectingKMeansSink extends ClusterSink {
 	/*
 	 * Bisecting k-means is a kind of hierarchical clustering using
@@ -51,9 +53,10 @@ public class BisectingKMeansSink extends ClusterSink {
 	 */
 	private static final long serialVersionUID = 7306065544750480510L;
 
+	private BisectingKMeansConfig config;
+	
 	public BisectingKMeansSink(BisectingKMeansConfig config) {
 		this.config = config;
-		this.className = BisectingKMeansSink.class.getName();
 	}
 
 	@Override
@@ -61,7 +64,7 @@ public class BisectingKMeansSink extends ClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((BisectingKMeansConfig)config).validate();
+		config.validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -70,21 +73,20 @@ public class BisectingKMeansSink extends ClusterSink {
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		BisectingKMeansConfig clusterConfig = (BisectingKMeansConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train Bisecting KMeans model
 		 */
-		String featuresCol = clusterConfig.featuresCol;
+		String featuresCol = config.featuresCol;
 
-		Map<String, Object> params = clusterConfig.getParamsAsMap();
-		String paramsJson = clusterConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -116,9 +118,14 @@ public class BisectingKMeansSink extends ClusterSink {
 		 * STEP #3: Store trained Bisecting KMeans model including its associated 
 		 * parameters and metrics
 		 */
-		String modelName = clusterConfig.modelName;
+		String modelName = config.modelName;
 		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class BisectingKMeansConfig extends ClusterConfig {

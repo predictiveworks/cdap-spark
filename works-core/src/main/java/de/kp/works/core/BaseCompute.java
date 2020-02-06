@@ -68,7 +68,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 		 */
 		if (inputSchema == null) {
 			inputSchema = input.first().getSchema();
-			validateSchema();
+			validateSchema(inputSchema);
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -95,7 +95,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 
 	}
 
-	protected void validateSchema() {
+	public void validateSchema(Schema inputSchema) {
 		
 	}
 	

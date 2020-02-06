@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.cluster;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,45 +19,27 @@ package de.kp.works.core;
  */
 
 import com.google.common.base.Strings;
-
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.plugin.PluginConfig;
-import co.cask.hydrator.common.Constants;
+import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
 
-public class BasePredictorConfig extends PluginConfig {
+public class ClusterConfig extends BaseConfig {
 
-	private static final long serialVersionUID = 7887257708238649738L;
+	private static final long serialVersionUID = -1688551189042078478L;
 
-	@Name(Constants.Reference.REFERENCE_NAME)
-	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
-	public String referenceName;
-
-	@Description("The unique name of the classifier or regressor model that is used for prediction.")
+	@Description("The unique name of the clustering model.")
 	@Macro
 	public String modelName;
-
-	@Description("The type of the model that is used for prediction, either 'classifier' or 'regressor'.")
-	@Macro
-	public String modelType;
 
 	@Description("The name of the field in the input schema that contains the feature vector.")
 	@Macro
 	public String featuresCol;
-
-	@Description("The name of the field in the output schema that contains the predicted label.")
-	@Macro
-	public String predictionCol;
 	
 	public void validate() {
-		
-		if (Strings.isNullOrEmpty(referenceName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
-		}
+		super.validate();
 
-		/** MODEL & COLUMNS **/
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
@@ -67,11 +49,20 @@ public class BasePredictorConfig extends PluginConfig {
 					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
 							this.getClass().getName()));
 		}
-		if (Strings.isNullOrEmpty(predictionCol)) {
+
+	}
+	
+	public void validateSchema(Schema inputSchema) {
+
+		/** FEATURES COLUMN **/
+
+		Schema.Field featuresField = inputSchema.getField(featuresCol);
+		if (featuresField == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The name of the field that contains the predicted label value must not be empty.",
-					this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the feature vector.", this.getClass().getName()));
 		}
+
+		SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
 
 	}
 

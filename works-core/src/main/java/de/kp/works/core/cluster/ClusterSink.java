@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.cluster;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,33 +26,30 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
-
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class RegressorSink extends BaseSink {
+public class ClusterSink extends BaseSink {
 
-	private static final long serialVersionUID = 8807040807659351717L;
-	
-	protected RegressorConfig config;
+	private static final long serialVersionUID = 3246011960545074346L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * Regression model components and metadata are persisted in a CDAP FileSet
+		 * Clstering model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
-		SparkMLManager.createRegressionIfNotExists(context);
+		SparkMLManager.createClusteringIfNotExists(context);
 		/*
-		 * Retrieve regression specified dataset for later use incompute
+		 * Retrieve clustering specified dataset for later use incompute
 		 */
-		modelFs = SparkMLManager.getRegressionFS(context);
-		modelMeta = SparkMLManager.getRegressionMeta(context);
-		
+		modelFs = SparkMLManager.getClusteringFS(context);
+		modelMeta = SparkMLManager.getClusteringMeta(context);
 	}
 
 	@Override
@@ -67,9 +64,10 @@ public class RegressorSink extends BaseSink {
 			return;
 
 		if (inputSchema == null) {
-			
+
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
+
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -85,36 +83,6 @@ public class RegressorSink extends BaseSink {
 		 */
 		compute(context, rows);
 
-	}
-
-	public void validateSchema(Schema inputSchema, RegressorConfig config) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresCol = inputSchema.getField(config.featuresCol);
-		if (featuresCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", className));
-		}
-
-		isArrayOfNumeric(config.featuresCol);
-
-		/** LABEL COLUMN **/
-
-		Schema.Field labelCol = inputSchema.getField(config.labelCol);
-		if (labelCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", className));
-		}
-
-		Schema.Type labelType = labelCol.getSchema().getType();
-		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
-		}
 	}
 
 }

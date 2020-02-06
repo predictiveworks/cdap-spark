@@ -3,9 +3,9 @@
 </p>
 
 # 
-Apache Spark based deep learning & machine learning can respond to wide variety of problems and its ability to discover patterns seem to lead to a complete replacement of business rule applications.
+Deep learning and machine learning can respond to wide variety of problems and its ability to discover patterns seem to lead to a complete replacement of business rule applications.
 
-Nowadays business rules seem to be oudated, but what If you need to add extra fields to a real-time event based on a pre-defined and reusable condition. This is a sample of a use case, where facts (e.g. event properties) are transformed into derived facts.
+Nowadays business rules seem to be outdated, but what if you need to add extra fields to a real-time event based on a pre-defined and reusable condition. This is a sample of a use case, where facts (e.g. event properties) are transformed into derived facts.
 
 A [Drools](https://drools.org) rule engine takes a declarative definition of a set of (ad-hoc) business rules as input and
 transforms data records onto the declared output. 

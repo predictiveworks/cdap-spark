@@ -34,16 +34,19 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClusterConfig;
-import de.kp.works.core.ClusterSink;
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.core.ml.LDAClusteringManager;
 
 @Plugin(type = "sparksink")
 @Name("LDASink")
-@Description("A building stage for an Apache Spark based Latent Dirichlet Allocation clustering model.")
+@Description("A building stage for an Apache Spark ML Latent Dirichlet Allocation (LDA) clustering model. "
+		+ "This stage expects a dataset with at least one feature field as an array of numeric values to "
+		+ "train the model.")
 public class LDASink extends ClusterSink {
 
 	private static final long serialVersionUID = 7607102103139502481L;
@@ -52,7 +55,6 @@ public class LDASink extends ClusterSink {
 
 	public LDASink(LDAConfig config) {
 		this.config = config;
-		this.className = LDASink.class.getName();
 	}
 
 	@Override
@@ -60,7 +62,7 @@ public class LDASink extends ClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((LDAConfig)config).validate();
+		config.validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -69,19 +71,18 @@ public class LDASink extends ClusterSink {
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		LDAConfig builderConfig = (LDAConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train LDA model
 		 */
-		String featuresCol = builderConfig.featuresCol;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		String featuresCol = config.featuresCol;
+		Map<String, Object> params = config.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -97,7 +98,7 @@ public class LDASink extends ClusterSink {
 		 * Split the vectorset into a train & test dataset for later clustering
 		 * evaluation
 		 */
-		Dataset<Row>[] splitted = vectorset.randomSplit(builderConfig.getSplits());
+		Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 
 		Dataset<Row> trainset = splitted[0];
 		Dataset<Row> testset = splitted[1];
@@ -128,12 +129,17 @@ public class LDASink extends ClusterSink {
 		 * STEP #3: Store trained LDA model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
+		String paramsJson = config.getParamsAsJSON();
 		String metricsJson = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
+		String modelName = config.modelName;
 		new LDAClusteringManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class LDAConfig extends ClusterConfig {

@@ -29,24 +29,27 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-
-import de.kp.works.core.RegressorConfig;
-import de.kp.works.core.RegressorSink;
 import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.regressor.RegressorConfig;
+import de.kp.works.core.regressor.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("DTRegressor")
-@Description("A building stage for an Apache Spark based Decision Tree regressor model.")
+@Description("A building stage for an Apache Spark ML Decision Tree regressor model. This stage expects "
+		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
+		+ "another that describes the class or label value as numeric value.")
 public class DTRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -6358575044891859770L;
 	
+	private DTRegressorConfig config;
+	
 	public DTRegressor(DTRegressorConfig config) {
 		this.config = config;
-		this.className = DTRegressor.class.getName();
 	}
 
 	@Override
@@ -54,28 +57,27 @@ public class DTRegressor extends RegressorSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((DTRegressorConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		DTRegressorConfig regressorConfig = (DTRegressorConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train regression model
 		 */
-		String featuresCol = regressorConfig.featuresCol;
-		String labelCol = regressorConfig.labelCol;
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
 
-		Map<String, Object> params = regressorConfig.getParamsAsMap();
-		String paramsJson = regressorConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -92,7 +94,7 @@ public class DTRegressor extends RegressorSink {
 		 * Split the vectorset into a train & test dataset for
 		 * later regression evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(regressorConfig.getSplits());
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 		
 	    Dataset<Row> trainset = splitted[0];
 	    Dataset<Row> testset = splitted[1];
@@ -111,9 +113,14 @@ public class DTRegressor extends RegressorSink {
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = regressorConfig.modelName;
+		String modelName = config.modelName;
 		new DTRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);		
 	}
 
 	public static class DTRegressorConfig extends RegressorConfig {

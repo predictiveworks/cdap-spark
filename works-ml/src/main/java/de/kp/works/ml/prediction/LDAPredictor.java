@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
 import de.kp.works.core.ml.LDAClusteringManager;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDAPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Latent Dirichlet Allocation clustering model.")
-public class LDAPredictor extends BasePredictorCompute {
+public class LDAPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 1979301843408604941L;
 
@@ -139,7 +139,7 @@ public class LDAPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class LDAPredictorConfig extends BasePredictorConfig {
+	public static class LDAPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3792791640714779280L;
 

@@ -38,14 +38,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.RecommenderConfig;
-import de.kp.works.core.RecommenderSink;
-
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.recommender.RecommenderSink;
 
 @Plugin(type = "sparksink")
 @Name("ALSSink")
-@Description("A building stage for an Apache Spark based ALS recommendation model.")
+@Description("A building stage for an Apache Spark ML Collaborative Filtering model. This technique "
+		+ "is commonly used for recommender systems and aims to fill in the missing entries of a "
+		+ "Uter-Item association matrix. Spark ML uses the ALS (alternating least squares) algorithm.")
+
 public class ALSSink extends RecommenderSink {
 	/*
 	 * Alternating Least Squares (ALS) matrix factorization.
@@ -78,9 +80,10 @@ public class ALSSink extends RecommenderSink {
 	 */
 	private static final long serialVersionUID = -3516142642574309010L;
 
+	private ALSSinkConfig config;
+	
 	public ALSSink(ALSSinkConfig config) {
 		this.config = config;
-		this.className = ALSSink.class.getName();
 	}
 
 	@Override
@@ -88,34 +91,32 @@ public class ALSSink extends RecommenderSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((ALSSinkConfig)config).validate();
+		config.validate();
 
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		
-		ALSSinkConfig alsConfig = (ALSSinkConfig)config;
 
-		Map<String, Object> params = alsConfig.getParamsAsMap();
-		String paramsJson = alsConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * Split the dataset into a train & test dataset for later
 		 * evaluation
 		 */
-		Dataset<Row>[] splitted =source.randomSplit(alsConfig.getSplits());
+		Dataset<Row>[] splitted =source.randomSplit(config.getSplits());
 
 		Dataset<Row> trainset = splitted[0];
 		Dataset<Row> testset = splitted[1];
 		
 		ALSTrainer trainer = new ALSTrainer();
-		ALSModel model = trainer.train(trainset, alsConfig.userCol, alsConfig.itemCol, alsConfig.ratingCol, params);
+		ALSModel model = trainer.train(trainset, config.userCol, config.itemCol, config.ratingCol, params);
 		/*
 		 * Evaluate recommendation model and compute approved
 		 * list of metrics
@@ -124,60 +125,19 @@ public class ALSSink extends RecommenderSink {
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = RegressorEvaluator.evaluate(predictions, alsConfig.ratingCol, predictionCol);
+	    String metricsJson = RegressorEvaluator.evaluate(predictions, config.ratingCol, predictionCol);
 		/*
 		 * STEP #3: Store trained recommendation model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = alsConfig.modelName;
+		String modelName = config.modelName;
 		new ALSManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 		
 	}
 
 	@Override
-	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-		
-		ALSSinkConfig alsConfig = (ALSSinkConfig)config;
-
-		/** USER COLUMN **/
-
-		Schema.Field userCol = inputSchema.getField(alsConfig.userCol);
-		if (userCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the user identifier.", className));
-		}
-		
-		Schema.Type userType = userCol.getSchema().getType();
-		if (isNumericType(userType) == false) {
-			throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
-		}
-
-		/** ITEM COLUMN **/
-
-		Schema.Field itemCol = inputSchema.getField(alsConfig.itemCol);
-		if (itemCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the user identifier.", className));
-		}
-		
-		Schema.Type itemType = itemCol.getSchema().getType();
-		if (isNumericType(itemType) == false) {
-			throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
-		}
-
-		/** RATING COLUMN **/
-
-		Schema.Field ratingCol = inputSchema.getField(alsConfig.ratingCol);
-		if (ratingCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the user identifier.", className));
-		}
-		
-		Schema.Type ratingType = ratingCol.getSchema().getType();
-		if (isNumericType(ratingType) == false) {
-			throw new IllegalArgumentException("The data type of the rating field must be NUMERIC.");
-		}
-
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 	
 	public static class ALSSinkConfig extends ALSConfig {
@@ -323,5 +283,50 @@ public class ALSSink extends RecommenderSink {
 			}
 			
 		}
+
+		public void validateSchema(Schema inputSchema) {
+
+			/** USER COLUMN **/
+
+			Schema.Field userField = inputSchema.getField(userCol);
+			if (userField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
+			}
+			
+			Schema.Type userType = userField.getSchema().getType();
+			if (SchemaUtil.isNumericType(userType) == false) {
+				throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
+			}
+
+			/** ITEM COLUMN **/
+
+			Schema.Field itemField = inputSchema.getField(itemCol);
+			if (itemField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
+			}
+			
+			Schema.Type itemType = itemField.getSchema().getType();
+			if (SchemaUtil.isNumericType(itemType) == false) {
+				throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
+			}
+
+			/** RATING COLUMN **/
+
+			Schema.Field ratingField = inputSchema.getField(ratingCol);
+			if (ratingField == null) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
+			}
+			
+			Schema.Type ratingType = ratingField.getSchema().getType();
+			if (SchemaUtil.isNumericType(ratingType) == false) {
+				throw new IllegalArgumentException("The data type of the rating field must be NUMERIC.");
+			}
+
+		}
+				
 	}
+	
 }

@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.recommender;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,10 +18,28 @@ package de.kp.works.core;
  * 
  */
 
-public class TimePredictorCompute extends TimeCompute {
+import com.google.common.base.Strings;
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.BaseConfig;
 
-	private static final long serialVersionUID = -7791075841700593718L;
+public class RecommenderConfig extends BaseConfig {
 
-	protected TimePredictorConfig config;
-	
+	private static final long serialVersionUID = -6035538311204588505L;
+
+	@Description("The unique name of the recommendation model.")
+	@Macro
+	public String modelName;
+
+	public void validate() {
+		super.validate();
+
+		/** MODEL & COLUMNS **/
+		if (Strings.isNullOrEmpty(modelName)) {
+			throw new IllegalArgumentException(
+					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
+		}
+		
+	}
+
 }

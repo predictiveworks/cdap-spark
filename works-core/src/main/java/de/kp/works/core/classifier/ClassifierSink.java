@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.classifier;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,17 +26,33 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
+
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class FeatureSink extends BaseSink {
+public class ClassifierSink extends BaseSink {
 
-	private static final long serialVersionUID = 3329726642087575850L;
+	private static final long serialVersionUID = -5552264323513756802L;
 
-	protected BaseFeatureModelConfig config;
+	@Override
+	public void prepareRun(SparkPluginContext context) throws Exception {
+		/*
+		 * Classification model components and metadata are persisted in a CDAP FileSet
+		 * as well as a Table; at this stage, we have to make sure that these internal
+		 * metadata structures are present
+		 */
+		SparkMLManager.createClassificationIfNotExists(context);
+		/*
+		 * Retrieve classification specified dataset for later use incompute
+		 */
+		modelFs = SparkMLManager.getClassificationFS(context);
+		modelMeta = SparkMLManager.getClassificationMeta(context);
+
+	}
 
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
@@ -52,7 +68,7 @@ public class FeatureSink extends BaseSink {
 		if (inputSchema == null) {
 			
 			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 		}
 
 		SparkSession session = new SparkSession(jsc.sc());
@@ -69,31 +85,4 @@ public class FeatureSink extends BaseSink {
 		compute(context, rows);
 
 	}
-
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Feature model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createFeatureIfNotExists(context);
-		/*
-		 * Retrieve feature specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
-	}
-
-	protected void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
-
-		/** INPUT COLUMN **/
-
-		Schema.Field inputCol = inputSchema.getField(config.inputCol);
-		if (inputCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the features.", className));
-		}
-	}
-	
 }

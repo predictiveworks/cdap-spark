@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("HashingTF")
 @Description("A transformation stage that leverages the Apache Spark HashingTF and maps a sequence of terms to their "
 		+ "term frequencies using the hashing trick. Currently the Austin Appleby's MurmurHash 3 algorithm is used.")
-public class HashingTF extends BaseFeatureCompute {
+public class HashingTF extends FeatureCompute {
 	/*
 	 * HashingTF is a Transformer which takes sets of terms and converts those sets into 
 	 * fixed-length feature vectors. In text processing, a 'set of terms' might be a bag 
@@ -93,7 +93,7 @@ public class HashingTF extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -138,7 +138,7 @@ public class HashingTF extends BaseFeatureCompute {
 
 	}	
 	
-	public static class HashTFConfig extends BaseFeatureConfig {
+	public static class HashTFConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6791984345238136178L;
 

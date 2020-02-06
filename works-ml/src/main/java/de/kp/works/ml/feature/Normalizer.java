@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Normalizer")
 @Description("A transformation stage to normalize a feature vector to have unit norm using the given p-norm.")
-public class Normalizer extends BaseFeatureCompute {
+public class Normalizer extends FeatureCompute {
 
 	private static final long serialVersionUID = 8637506241398507943L;
 
@@ -73,7 +73,7 @@ public class Normalizer extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -122,7 +122,7 @@ public class Normalizer extends BaseFeatureCompute {
 	    		
 	}
 		
-	public static class NormalizerConfig extends BaseFeatureConfig {
+	public static class NormalizerConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 4977817064737125270L;
 

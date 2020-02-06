@@ -29,23 +29,26 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ClusterConfig;
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.ml.clustering.Evaluator;
-import de.kp.works.core.ClusterSink;
 
 @Plugin(type = "sparksink")
 @Name("GaussianMixtureSink")
-@Description("A building stage for an Apache Spark based Gaussian Mixture clustering model.")
+@Description("A building stage for an Apache Spark based Gaussian Mixture clustering model. This stage expects "
+		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
 public class GaussianMixtureSink extends ClusterSink {
 
 	private static final long serialVersionUID = -8171201794590284739L;
 
+	private GaussianMixtureConfig config;
+	
 	public GaussianMixtureSink(GaussianMixtureConfig config) {
 		this.config = config;
-		this.className = BisectingKMeansSink.class.getName();
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class GaussianMixtureSink extends ClusterSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((GaussianMixtureConfig)config).validate();
+		config.validate();
 
 		/*
 		 * Validate whether the input schema exists, contains the specified field for
@@ -62,21 +65,20 @@ public class GaussianMixtureSink extends ClusterSink {
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		GaussianMixtureConfig clusterConfig = (GaussianMixtureConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train Gaussian Mixture model
 		 */
-		String featuresCol = clusterConfig.featuresCol;
+		String featuresCol = config.featuresCol;
 
-		Map<String, Object> params = clusterConfig.getParamsAsMap();
-		String paramsJson = clusterConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -108,9 +110,14 @@ public class GaussianMixtureSink extends ClusterSink {
 		 * STEP #3: Store trained Gaussian Mixture model including its associated 
 		 * parameters and metrics
 		 */
-		String modelName = clusterConfig.modelName;
+		String modelName = config.modelName;
 		new GaussianMixtureManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
+	}
+
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);
 	}
 
 	public static class GaussianMixtureConfig extends ClusterConfig {

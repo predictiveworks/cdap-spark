@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.classifier;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,6 +21,9 @@ package de.kp.works.core;
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
 
 public class ClassifierConfig extends BaseConfig {
 
@@ -71,4 +74,35 @@ public class ClassifierConfig extends BaseConfig {
 	public double[] getSplits() {
 		return getDataSplits(dataSplit);
 	}
+
+	public void validateSchema(Schema inputSchema) {
+
+		/** FEATURES COLUMN **/
+
+		Schema.Field featuresField = inputSchema.getField(featuresCol);
+		if (featuresField == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the feature vector.", this.getClass().getName()));
+		}
+
+		SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
+
+		/** LABEL COLUMN **/
+
+		Schema.Field labelField = inputSchema.getField(labelCol);
+		if (labelField == null) {
+			throw new IllegalArgumentException(String
+					.format("[%s] The input schema must contain the field that defines the label value.", this.getClass().getName()));
+		}
+
+		Schema.Type labelType = labelField.getSchema().getType();
+		/*
+		 * The label must be a numeric data type (double, float, int, long), which then
+		 * is casted to Double (see classification trainer)
+		 */
+		if (SchemaUtil.isNumericType(labelType) == false) {
+			throw new IllegalArgumentException("The data type of the label field must be numeric.");
+		}
+	}
+	
 }

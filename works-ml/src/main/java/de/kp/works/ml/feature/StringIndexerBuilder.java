@@ -34,8 +34,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = "sparksink")
 @Name("StringIndexerBuilder")
@@ -93,7 +93,7 @@ public class StringIndexerBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -101,7 +101,7 @@ public class StringIndexerBuilder extends FeatureSink {
 		
 	}
 
-	public static class StringIndexerBuilderConfig extends BaseFeatureModelConfig {
+	public static class StringIndexerBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = -97589053635760766L;
 		

@@ -29,15 +29,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.BisectingKMeansManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BisectingKMeansPredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Bisecting KMeans clustering model.")
-public class BisectingKMeansPredictor extends BasePredictorCompute {
+public class BisectingKMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7843836179229489547L;
 
@@ -118,7 +118,7 @@ public class BisectingKMeansPredictor extends BasePredictorCompute {
 
 	}
 
-	public static class BisectingKMeansPredictorConfig extends BasePredictorConfig {
+	public static class BisectingKMeansPredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = -3385481976641988848L;
 

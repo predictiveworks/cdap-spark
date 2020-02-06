@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.time;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,6 +21,9 @@ package de.kp.works.core;
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.data.schema.Schema;
+import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
 
 public class TimeConfig extends BaseConfig {
 
@@ -49,4 +52,38 @@ public class TimeConfig extends BaseConfig {
 		}
 
 	}
+
+	public void validateSchema(Schema inputSchema) {
+
+		/** TIME COLUMN **/
+
+		Schema.Field timeField = inputSchema.getField(timeCol);
+		if (timeField == null) {
+			throw new IllegalArgumentException(String.format(
+					"[%s] The input schema must contain the field that defines the time value.", this.getClass().getName()));
+		}
+
+		Schema.Type timeType = timeField.getSchema().getType();
+		if (SchemaUtil.isTimeType(timeType) == false) {
+			throw new IllegalArgumentException("The data type of the time value field must be LONG.");
+		}
+
+		/** VALUE COLUMN **/
+
+		Schema.Field valueField = inputSchema.getField(valueCol);
+		if (valueField == null) {
+			throw new IllegalArgumentException(String
+					.format("[%s] The input schema must contain the field that defines the value.", this.getClass().getName()));
+		}
+
+		Schema.Type valueType = valueField.getSchema().getType();
+		/*
+		 * The value must be a numeric data type (double, float, int, long), which then
+		 * is casted to Double (see classification trainer)
+		 */
+		if (SchemaUtil.isNumericType(valueType) == false) {
+			throw new IllegalArgumentException("The data type of the value field must be MUMERIC.");
+		}
+	}
+	
 }

@@ -31,167 +31,18 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 
 	private static final long serialVersionUID = -4938491756852655492L;
 	/*
-	 * Reference to fileset & table for model specific 
-	 * information
+	 * Reference to fileset & table for model specific information
 	 */
 	protected FileSet modelFs;
 	protected Table modelMeta;
 
-	protected String className;
 	/*
 	 * Reference to input & output schema
 	 */
 	protected Schema inputSchema;
 	protected Schema outputSchema;
 
-	protected Boolean isNumericType(Schema.Type dataType) {
-		switch (dataType) {
-		case ARRAY:
-		case BOOLEAN:
-		case BYTES:
-		case MAP:
-		case NULL:
-		case RECORD:
-		case ENUM:
-		case STRING:
-		case UNION:
-			return false;
-		case DOUBLE:
-		case FLOAT:
-		case INT:
-		case LONG:
-			return true;
-
-		default:
-			return false;
-		}
-
-	}
-	
-	protected Boolean isTimeType(Schema.Type dataType) {
-		switch (dataType) {
-		case ARRAY:
-		case BOOLEAN:
-		case BYTES:
-		case MAP:
-		case NULL:
-		case RECORD:
-		case ENUM:
-		case STRING:
-		case UNION:
-		case DOUBLE:
-		case FLOAT:
-		case INT:
-			return false;
-		case LONG:
-			return true;
-
-		default:
-			return false;
-		}
-
-	}
-
-	protected Boolean isIntegerType(Schema.Type dataType) {
-		switch (dataType) {
-		case ARRAY:
-		case BOOLEAN:
-		case BYTES:
-		case MAP:
-		case NULL:
-		case RECORD:
-		case ENUM:
-		case STRING:
-		case UNION:
-		case DOUBLE:
-		case FLOAT:
-		case LONG:
-			return false;
-		case INT:
-			return true;
-
-		default:
-			return false;
-		}
-
-	}
-
-	protected void isArrayOfDouble(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", className));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.DOUBLE)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a DOUBLE.", className));
-		}
-		
-	}
-
-	protected void isArrayOfNumeric(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!isNumericType(fieldCompType)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
-		}
-		
-	}
-
-	protected void isArrayOfString(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", className));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a STRING.", className));
-		}
-		
-	}
-
-	protected void isNumeric(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!isNumericType(fieldType)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be NUMERIC.", this.getClass().getName()));
-		}
-
-	}
-
-	protected void isString(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be a STRING.", this.getClass().getName()));
-		}
-
+	public void validateSchema(Schema inputSchema) {
 	}
 
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {

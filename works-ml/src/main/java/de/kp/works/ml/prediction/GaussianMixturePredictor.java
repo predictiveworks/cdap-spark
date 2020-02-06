@@ -36,15 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BasePredictorCompute;
-import de.kp.works.core.BasePredictorConfig;
+import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.GaussianMixtureManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GaussianMixturePredictor")
 @Description("A prediction stage that leverages a trained Apache Spark based Gaussian Mixture clustering model.")
-public class GaussianMixturePredictor extends BasePredictorCompute {
+public class GaussianMixturePredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 2048099898896242709L;
 
@@ -138,7 +138,7 @@ public class GaussianMixturePredictor extends BasePredictorCompute {
 
 	}
 
-	public static class GaussianMixturePredictorConfig extends BasePredictorConfig {
+	public static class GaussianMixturePredictorConfig extends PredictorConfig {
 
 		private static final long serialVersionUID = 4186952265159732046L;
 

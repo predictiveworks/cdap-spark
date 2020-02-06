@@ -26,7 +26,6 @@ import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
 import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
@@ -82,9 +81,6 @@ public class TextSink extends BaseSink {
 		 */
 		compute(context, rows);
 
-	}
-
-	public void validateSchema(Schema inputSchema) {
 	}
 
 }

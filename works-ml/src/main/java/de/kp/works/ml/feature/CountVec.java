@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("CountVec")
 @Description("A transformation stage that leverages the Apache Spark CountVectorizer based on a trained CountVectorizer model.")
-public class CountVec extends BaseFeatureCompute {
+public class CountVec extends FeatureCompute {
 
 	private static final long serialVersionUID = -6547859144514311308L;
 
@@ -87,7 +87,7 @@ public class CountVec extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -135,7 +135,7 @@ public class CountVec extends BaseFeatureCompute {
 
 	}	
 
-	public static class CountVecConfig extends BaseFeatureConfig {
+	public static class CountVecConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6791984345238136178L;
 

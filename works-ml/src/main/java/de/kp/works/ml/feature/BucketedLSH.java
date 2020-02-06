@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BucketedLSH")
 @Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model to project feature vectors onto hash value vectors.")
-public class BucketedLSH extends BaseFeatureCompute {
+public class BucketedLSH extends FeatureCompute {
 
 	private static final long serialVersionUID = -5333140801597897278L;
 
@@ -87,7 +87,7 @@ public class BucketedLSH extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -146,7 +146,7 @@ public class BucketedLSH extends BaseFeatureCompute {
 
 	}
 
-	public static class BucketedLSHConfig extends BaseFeatureConfig {
+	public static class BucketedLSHConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
 

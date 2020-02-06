@@ -35,22 +35,24 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-
-import de.kp.works.core.RegressorConfig;
-import de.kp.works.core.RegressorSink;
-
+import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.regressor.RegressorConfig;
+import de.kp.works.core.regressor.RegressorSink;
 
 @Plugin(type = "sparksink")
 @Name("AFTSurvivalRegressor")
-@Description("A building stage for an Apache Spark based AFT survival regressor model.")
+@Description("A building stage for an Apache Spark ML Survival (AFT) regressor model. This stage expects "
+		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
+		+ "another that describes the class or label value as numeric value.")
 public class AFTSurvivalRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -2096945742865221471L;
 	
+	private AFTSurvivalConfig config;
+	
 	public AFTSurvivalRegressor(AFTSurvivalConfig config) {
 		this.config = config;
-		this.className = AFTSurvivalRegressor.class.getName();
 	}
 
 	@Override
@@ -58,30 +60,29 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		super.configurePipeline(pipelineConfigurer);
 
 		/* Validate configuration */
-		((AFTSurvivalConfig)config).validate();
+		config.validate();
 		
 		/* Validate schema */
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null)
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 
 	}
 	
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		
-		AFTSurvivalConfig regressorConfig = (AFTSurvivalConfig)config;
 		/*
 		 * STEP #1: Extract parameters and train regression model
 		 */
-		String featuresCol = regressorConfig.featuresCol;
-		String labelCol = regressorConfig.labelCol;
+		String featuresCol = config.featuresCol;
+		String labelCol = config.labelCol;
 
-		String censorCol = regressorConfig.censorCol;
+		String censorCol = config.censorCol;
 		
-		Map<String, Object> params = regressorConfig.getParamsAsMap();
-		String paramsJson = regressorConfig.getParamsAsJSON();
+		Map<String, Object> params = config.getParamsAsMap();
+		String paramsJson = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -98,7 +99,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		 * Split the vectorset into a train & test dataset for
 		 * later regression evaluation
 		 */
-	    Dataset<Row>[] splitted = vectorset.randomSplit(regressorConfig.getSplits());
+	    Dataset<Row>[] splitted = vectorset.randomSplit(config.getSplits());
 		
 	    Dataset<Row> trainset = splitted[0];
 	    Dataset<Row> testset = splitted[1];
@@ -117,34 +118,14 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
-		String modelName = regressorConfig.modelName;
+		String modelName = config.modelName;
 		new AFTSurvivalRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 
-	@Override 
-	public void validateSchema(Schema inputSchema, RegressorConfig config) {
-		super.validateSchema(inputSchema, config);
-		
-		/** CENSOR COL **/
-
-		AFTSurvivalConfig survivalConfig = (AFTSurvivalConfig)config;
-		
-		Schema.Field censorCol = inputSchema.getField(survivalConfig.labelCol);
-		if (censorCol == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the censor value.", className));
-		}
-
-		Schema.Type censorType = censorCol.getSchema().getType();
-		/*
-		 * The censor must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see regression trainer)
-		 */
-		if (isNumericType(censorType) == false) {
-			throw new IllegalArgumentException("The data type of the censor field must be numeric.");
-		}
-		
+	@Override
+	public void validateSchema(Schema inputSchema) {
+		config.validateSchema(inputSchema);		
 	}
 	
 	public static class AFTSurvivalConfig extends RegressorConfig {
@@ -213,5 +194,23 @@ public class AFTSurvivalRegressor extends RegressorSink {
 			
 		}
 		
+		public void validateSchema(Schema inputSchema) {
+			super.validateSchema(inputSchema);
+			
+			/** CENSOR COL **/
+			
+			Schema.Field censorField = inputSchema.getField(labelCol);
+			if (censorField == null) {
+				throw new IllegalArgumentException(String
+						.format("[%s] The input schema must contain the field that defines the censor value.",  this.getClass().getName()));		
+			}
+
+			Schema.Type censorType = censorField.getSchema().getType();
+
+			if (SchemaUtil.isNumericType(censorType) == false) {
+				throw new IllegalArgumentException("The data type of the censor field must be numeric.");
+			}
+			
+		}
 	}
 }

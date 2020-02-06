@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.cask.cdap.api.data.schema.Schema;
-import de.kp.works.core.TimeCompute;
+import de.kp.works.core.time.TimeCompute;
 
 public class STLCompute extends TimeCompute {
 

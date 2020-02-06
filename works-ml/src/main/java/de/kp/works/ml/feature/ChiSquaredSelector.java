@@ -33,15 +33,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ChiSquaredSelector")
 @Description("A transformation stage that leverages a trained Chi-Squared Selector model to select "
 		+ "categorical features to use for predicting categorical labels.")
-public class ChiSquaredSelector extends BaseFeatureCompute {
+public class ChiSquaredSelector extends FeatureCompute {
 
 	private static final long serialVersionUID = 181964982743803324L;
 
@@ -88,7 +88,7 @@ public class ChiSquaredSelector extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -134,7 +134,7 @@ public class ChiSquaredSelector extends BaseFeatureCompute {
 
 	}
 
-	public static class ChiSquaredSelectorConfig extends BaseFeatureConfig {
+	public static class ChiSquaredSelectorConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6059733954453473186L;
 

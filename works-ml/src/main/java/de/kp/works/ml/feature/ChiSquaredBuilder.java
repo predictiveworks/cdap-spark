@@ -36,8 +36,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = "sparksink")
@@ -68,7 +68,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		ChiSquaredBuilderConfig builderConfig = (ChiSquaredBuilderConfig)config;
@@ -116,7 +116,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 		
 	}
 
-	public static class ChiSquaredBuilderConfig extends BaseFeatureModelConfig {
+	public static class ChiSquaredBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = 2325925067724294126L;
 

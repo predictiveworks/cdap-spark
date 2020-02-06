@@ -33,14 +33,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NGram")
 @Description("A transformation stage that leverages Apache Spark NGram transformer to convert the input array of string into "
 		+ "an array of n-grams.")
-public class NGram extends BaseFeatureCompute {
+public class NGram extends FeatureCompute {
 	/*
 	 * A feature transformer that converts the input array of strings into an array
 	 * of n-grams. Null values in the input array are ignored.
@@ -102,7 +102,7 @@ public class NGram extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -123,7 +123,7 @@ public class NGram extends BaseFeatureCompute {
 
 	}	
 
-	public static class NGramConfig extends BaseFeatureConfig {
+	public static class NGramConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 3771824648631925491L;
 

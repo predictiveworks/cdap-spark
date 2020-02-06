@@ -33,8 +33,8 @@ import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureModelConfig;
-import de.kp.works.core.FeatureSink;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = "sparksink")
@@ -50,7 +50,7 @@ public class VectorIndexerBuilder extends FeatureSink {
 	}
 
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureModelConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureModelConfig config) {
 		super.validateSchema(inputSchema, config);
 
 		/** INPUT COLUMN **/
@@ -86,7 +86,7 @@ public class VectorIndexerBuilder extends FeatureSink {
 		
 	}
 
-	public static class VectorIndexerBuilderConfig extends BaseFeatureModelConfig {
+	public static class VectorIndexerBuilderConfig extends FeatureModelConfig {
 
 		private static final long serialVersionUID = 6467486002712190478L;
 

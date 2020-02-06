@@ -31,14 +31,14 @@ import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseFeatureCompute;
-import de.kp.works.core.BaseFeatureConfig;
+import de.kp.works.core.FeatureConfig;
+import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.feature.StringToIndex.StringToIndexConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("IndexToString")
 @Description("A transformation stage that leverages the Apache Spark IndexToString based on a trained StringIndexer model.")
-public class IndexToString extends BaseFeatureCompute {
+public class IndexToString extends FeatureCompute {
 
 	private static final long serialVersionUID = -7894198310242025849L;
 
@@ -60,7 +60,7 @@ public class IndexToString extends BaseFeatureCompute {
 	}
 	
 	@Override
-	public void validateSchema(Schema inputSchema, BaseFeatureConfig config) {
+	public void validateSchema(Schema inputSchema, FeatureConfig config) {
 		super.validateSchema(inputSchema, config);
 		
 		/** INPUT COLUMN **/
@@ -104,7 +104,7 @@ public class IndexToString extends BaseFeatureCompute {
 
 	}
 
-	public static class IndexToStringConfig extends BaseFeatureConfig {
+	public static class IndexToStringConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = -514363427339189006L;
 
