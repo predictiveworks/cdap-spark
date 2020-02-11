@@ -40,16 +40,19 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.TextSink;
 import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.text.TextSink;
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDATextSink")
-@Description("A building stage for an Apache Spark based LDA model. It leverages a pre-trained Word2Vec embedding model.")
+@Description("A building stage for a Latent Dirichlet Allocation (LDA) model. An LDA model can be used for "
+		+ "text clustering or labeling. This model training stage requires a pre-trained Word Embedding model.")
 public class LDATextSink extends TextSink {
 
 	private static final long serialVersionUID = 4678742201151266996L;

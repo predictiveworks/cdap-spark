@@ -40,9 +40,14 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BucketedLSH")
-@Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model to project feature vectors onto hash value vectors.")
+@Description("A transformation stage that leverages a trained Bucketed Random Projection LSH model "
+		+ "to project feature vectors onto hash value vectors. Similar feature vectors are mapped onto "
+		+ "the same hash value vector.")
 public class BucketedLSH extends FeatureCompute {
-
+	/*
+	 * This transformer has been provided as a preprocessing stage 
+	 * for data pipelines that focus on the "product" of similarity.
+	 */
 	private static final long serialVersionUID = -5333140801597897278L;
 
 	private BucketedLSHConfig config;

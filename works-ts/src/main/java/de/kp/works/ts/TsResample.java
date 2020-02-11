@@ -39,9 +39,10 @@ import de.kp.works.core.time.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsResample")
-@Description("A time series resampling stage that turns a sparse time series into equidistant time grid. Resampling may lead to missing values for intermediate "
-		+ "points in time. ")
-
+@Description("A time series resampling stage that turns a sparse time series into an equidistant time grid. "
+		+ "This stage supports data values that belong to different categories or groups, say sensor devices. "
+		+ "Then resampling is performed on a per group basis. Note, resampling may lead to missing values for "
+		+ "intermediate points in time.")
 public class TsResample extends TimeCompute {
 
 	private static final long serialVersionUID = 2602057748184161616L;
@@ -105,13 +106,13 @@ public class TsResample extends TimeCompute {
 
 		private static final long serialVersionUID = -833273325170246060L;
 
-		@Description("The name of the field in the input schema that contains the group value.")
+		@Description(TimeConfig.GROUP_COL_DESC)
 		@Macro
 		@Nullable
 		public String groupCol;
 
-		@Description("Distance between subsequent points of the time series after resampling. The value specifies a certain time interval, e.g. 10 seconds "
-				+ "in seconds. Default is 30.")
+		@Description("Distance between subsequent points of the time series after resampling. The value "
+				+ "specifies a certain time interval in seconds. Default is 30.")
 		@Macro
 		@Nullable
 		public Integer stepSize;

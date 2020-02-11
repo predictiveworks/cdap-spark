@@ -33,13 +33,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Topic")
-@Description("An tagging stage that leverages a trained Topic model to either determine the topic distribution "
-		+ "per document or term-distribution per topic.")
-public class Topic extends BaseCompute {
+@Description("A transformation stage to either determine the topic distribution per document "
+		+ "or term-distribution per topic. This stage is based on a trained Topic model.")
+public class Topic extends TextCompute {
 
 	private static final long serialVersionUID = 6494628611665323901L;
 

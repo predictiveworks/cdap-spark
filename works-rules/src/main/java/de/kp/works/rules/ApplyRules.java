@@ -58,9 +58,10 @@ import co.cask.hydrator.common.Constants;
  * while scoring adds an additional field to the result, i.e. the score
  *
  */
-@Plugin(type = "sparkcompute")
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ApplyRules")
-@Description("A Drools compliant business rule engine that applies rules to a batch data records.")
+@Description("A transformation stage that leverages a Drools compliant business rule engine "
+        + "to apply business rules to pipeline data records.")
 public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord> {
 
 	private static final long serialVersionUID = 7585185760627607283L;

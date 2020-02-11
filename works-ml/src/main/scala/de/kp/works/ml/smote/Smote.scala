@@ -234,6 +234,7 @@ final case class Smote(
     
     val keyColumnPrefix: String = "_smote_key_"
     val knn: DataFrame = nearestNeighbours(keyColumnPrefix)
+    
     knn flatMap { row =>
       val arr: ArrayBuffer[Row] = ArrayBuffer()
       for (_ <- 0 until sizeMultiplier) {

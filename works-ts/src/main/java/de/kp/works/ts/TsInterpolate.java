@@ -102,7 +102,7 @@ public class TsInterpolate extends TimeCompute {
 
 		private static final long serialVersionUID = -833273325170246060L;
 
-		@Description("The name of the field in the input schema that contains the group value.")
+		@Description(TimeConfig.GROUP_COL_DESC)
 		@Macro
 		@Nullable
 		public String groupCol;

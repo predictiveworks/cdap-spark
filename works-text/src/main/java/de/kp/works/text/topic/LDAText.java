@@ -39,7 +39,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 
 import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.text.embeddings.Word2VecManager;
@@ -47,9 +47,9 @@ import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDAText")
-@Description("An tagging stage that leverages a trained Word2Vec model and LDA model to map an input "
-		+ "text field either onto topic vector or a topic label.")
-public class LDAText extends BaseCompute {
+@Description("A transformation stage to map text documents on their topic vectors or most likely topic label. "
+		+ "This stage is based on two trained models, an LDA Topic model and a Word Embedding model.")
+public class LDAText extends TextCompute {
 
 	private static final long serialVersionUID = 5821757318391348559L;
 

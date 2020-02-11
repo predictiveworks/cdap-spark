@@ -37,12 +37,17 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.TextSink;
+import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TopicSink")
-@Description("A building stage for an Apache Spark based Topic model.")
+@Description("A building stage for a Latent Dirichlet Allocation (LDA) model. In contrast to "
+		+ "the LDATextSink plugin, this stage leverages an implicit document vectorization based "
+		+ "on the term counts of the provided corpus. The trained model can be used to either "
+		+ "determine the topic distribution per document or term-distribution per topic.")
+
 public class TopicSink extends TextSink {
 
 	private static final long serialVersionUID = 6709578668752668893L;

@@ -46,17 +46,17 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.hydrator.common.Constants;
 import de.kp.works.core.SessionHelper;
 
-@Plugin(type = "sparkcompute")
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ApplySQL")
-@Description("An Apache Spark SQL based data exploration engine.")
-/**
- * The [ApplySQL] plugin is a general purpose plugin which applies
- * a user defined SQL statement (that is Apache Spark compliant)
- * to the incoming data records
- *
- */
+@Description("A transformation stage that uses an Apache Spark SQL based data exploration engine "
+		+ "to aggregate, group and filter pipeline data records.")
 public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
-	
+	/**
+	 * The [ApplySQL] plugin is a general purpose plugin which applies
+	 * a user defined SQL statement (that is Apache Spark compliant)
+	 * to the incoming data records
+	 *
+	 */	
 	private static final long serialVersionUID = 4939234688659944895L;
 
 	private ApplySQLConfig config;

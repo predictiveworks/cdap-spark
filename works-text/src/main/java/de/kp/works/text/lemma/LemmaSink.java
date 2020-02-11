@@ -37,8 +37,8 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.TextSink;
 import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.text.TextSink;
 
 @Plugin(type = "sparksink")
 @Name("LemmaSink")

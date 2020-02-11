@@ -19,8 +19,8 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.TextSink;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.text.TextSink;
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 

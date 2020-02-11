@@ -29,6 +29,8 @@ public class TimeConfig extends BaseConfig {
 
 	private static final long serialVersionUID = 3721883166765717447L;
 
+	public static final String GROUP_COL_DESC = "The name of the field in the input schema that specifies data groups.";
+	
 	@Description("The name of the field in the input schema that contains the time value.")
 	@Macro
 	public String timeCol;

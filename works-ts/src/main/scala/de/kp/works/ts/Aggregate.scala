@@ -64,14 +64,23 @@ trait TimeAggregateParams extends TimeParams {
   setDefault(aggregationMethod -> "avg", windowDuration -> "10 minutes")
 
 }
-
+/*
+ * [Aggregate] offers an alternative approach (e.g. compared to time grid aggregation)
+ * to preprocess time series data: A tumbling window is used to collect points in time 
+ * and their associated values that lay in a user defined time interval. 
+ * 
+ * The values referring to a certain time interval are aggregated leveraging one of the
+ * supported aggregation methods. Finally the mean value of each time window is specified
+ * as new point in time.
+ */
 class Aggregate(override val uid: String) extends Transformer with TimeAggregateParams {
 
   def this() = this(Identifiable.randomUID("aggregate"))
 
   private val window_to_timestamp = udf { (start: java.sql.Timestamp, end: java.sql.Timestamp) =>
     {
-
+      println(start)
+      println(end)
       val center = (start.getTime + end.getTime) / 2
       new java.sql.Timestamp(center)
 
@@ -158,13 +167,7 @@ object AggregateTest {
       StructField("ts", StringType, true),
       StructField("value", IntegerType, true),
       StructField("index", StringType, true)))
-
-    val old_schema = StructType(Array(
-      StructField("ts", StringType, true),
-      StructField("value", IntegerType, true),
-      StructField("index", StringType, true)))
-    val new_schema = StructType(old_schema.fields ++ Array(StructField("xyz", IntegerType, true)))      
-    
+   
     val session = SparkSession.builder
       .appName("AggregateTest")
       .master("local")
@@ -177,14 +180,13 @@ object AggregateTest {
       Row("A", "01-07-2018 12:00", 10, "d"),
       Row("A", "01-08-2018 13:00", 11, "e"))
 
-    val test_udf = udf(test_func _, DataTypes.createArrayType(new_schema))
-
     val ds = session.createDataFrame(session.sparkContext.parallelize(data), schema)
+     .withColumn("ts", unix_timestamp(col("ts"),"MM-dd-yyyy hh:mm").cast("timestamp"))
+
+     val transformer = new Aggregate().setTimeCol("ts").setValueCol("value")
     
-     val as = ds.groupBy("group").agg(collect_list(struct(Array(col("ts"),col("value"),col("index")): _*)).as("items"))
-    
-    val rs = as.withColumn("new_items", explode(test_udf(col("items")))).withColumn("ts", col("new_items").getItem("xyz"))
-    rs.show
+    val output = transformer.transform(ds)
+    output.show
     
   }
 }

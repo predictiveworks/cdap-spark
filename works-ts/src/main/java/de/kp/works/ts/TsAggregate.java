@@ -39,9 +39,16 @@ import de.kp.works.core.time.TimeConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAggregate")
-@Description("A time series aggregation stage that leverages a tumbling window.")
+@Description("A time series aggregation stage that aggregates a sparse time series leveraging a user-defined "
+		+ "tumbling window. Suppose a certain point in time refers to 09:00 am and a window of 10 minutes is "
+		+ "defined, then all points in time falling into the window [09:00, 09:10] are collected and their "
+		+ "associated values aggregated.")
 public class TsAggregate extends TimeCompute {
-
+	/*
+	 * TsAggregated refers to the preprocessing phase of time series
+	 * processing and is an alternative to transforming a series into
+	 * a time grid of equidistant points in time.
+	 */
 	private static final long serialVersionUID = 404643815476832744L;
 
 	private TsAggregateConfig config;
@@ -102,12 +109,12 @@ public class TsAggregate extends TimeCompute {
 
 		private static final long serialVersionUID = -8785851598214457493L;
 
-		@Description("The name of the field in the input schema that contains the group value.")
+		@Description(TimeConfig.GROUP_COL_DESC)
 		@Macro
 		@Nullable
 		public String groupCol;
 
-		@Description("The time window used to aggregate intermediate values. Default is 10 minutes.")
+		@Description("The time window used to aggregate intermediate values. Default is '10 minutes'.")
 		@Macro
 		public String windowDuration;
 

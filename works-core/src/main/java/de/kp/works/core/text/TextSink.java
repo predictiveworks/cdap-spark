@@ -1,4 +1,4 @@
-package de.kp.works.core;
+package de.kp.works.core.text;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -29,6 +29,8 @@ import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.spark.sql.DataFrames;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.BaseSink;
+import de.kp.works.core.SessionHelper;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class TextSink extends BaseSink {
