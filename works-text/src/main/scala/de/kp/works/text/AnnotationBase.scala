@@ -27,7 +27,106 @@ import org.apache.spark.sql.functions._
 
 import scala.collection.mutable.WrappedArray
 
+case class DateMatcherResult(sentence:String, odate:String, ndate:String)
+
 trait AnnotationBase {
+  /*
+   * A helper method to finalize the result of the date matcher
+   * annotation stage; two different options are supported: "extract"
+   * and "replace"
+   */
+  def finishDataMatcher(option:String) = udf{(sentences:WrappedArray[Row], dates:WrappedArray[Row]) => {
+      /*
+       * The extracted number of dates may not match the 
+       * number of sentences; therefore the sentences are
+       * transformed into an index dictionary to enable
+       * proper assignmed of extracted dates
+       */
+      val sidx = sentences.head.schema.fieldIndex("result")
+      val indexed = sentences.map(_.getString(sidx)).zipWithIndex
+      /*
+       * Extract date annotations and thereby assign the
+       * reference to the respective sentence
+       */
+      val bidx = dates.head.schema.fieldIndex("begin")
+      val eidx = dates.head.schema.fieldIndex("end")
+      
+      val didx = dates.head.schema.fieldIndex("result")
+      val midx = dates.head.schema.fieldIndex("metadata")
+      
+      val dateMap = dates.map(row => {
+
+        val date = row.getString(didx)
+        /* 
+         * Start and end indices to retrieve the original
+         * date or time expression from the respective 
+         * sentence
+         */
+        val begin = row.getInt(bidx)
+        val end   = row.getInt(eidx) + 1
+        
+        val index = row.getJavaMap[String,String](midx).get("sentence")
+        
+        (index.toInt, (begin, end, date))
+        
+      }).toMap
+      
+      /* 
+       * Finally finish result with respect to the provided
+       * option parameter 
+       */
+      val result = indexed.map{case(sentence,index) => {
+        
+        option match {
+          case "extract" => {
+        
+            if (dateMap.contains(index)) {
+              
+              val (begin, end, date) = dateMap(index)
+              val odate = sentence.substring(begin, end)
+ 
+              Array(sentence, odate, date)
+              
+            } else {
+              /* 
+               * The extracted sentences does not contain any data 
+               * or time expression; initial & extracted date is set
+               * to an empty String
+               */
+              Array(sentence, "", "")
+
+            }
+            
+          }
+          case "replace" => {
+        
+            if (dateMap.contains(index)) {
+              
+              val (begin, end, date) = dateMap(index)
+              val odate = sentence.substring(begin, end)
+
+              val replaced = sentence.replace(odate, date)
+              Array(replaced)
+              
+            } else {
+              /* 
+               * The extracted sentences does not contain any data
+               * or time expression; the sentence is returned without
+               * any change
+               */
+             Array(sentence)
+            }
+                        
+          }
+          case _ => throw new IllegalArgumentException(s"Option parameter '$option' is not supported")
+        }
+        
+      }}
+      
+      result
+      
+    
+  }}
   
   def detectedSentences(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
     

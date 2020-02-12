@@ -28,7 +28,19 @@
           "widget-attributes": {
             "default": "yyyy/MM/dd"
           }
-        }
+        },
+        {
+          "widget-type": "select",
+          "label": "Output Option",
+          "name": "outputOption",
+          "widget-attributes": {
+            "values": [
+              "extract",
+              "replace"
+            ],
+            "default": "replace"
+          }
+        }        
 
       ]
     }

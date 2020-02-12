@@ -36,19 +36,21 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("SpellChecker")
-@Description("A linguistic spell checker stage that leverages a trained Spark-NLP based Norvig Sweeting model.")
-public class SpellChecker extends BaseCompute {
+@Name("NorvigChecker")
+@Description("A transformation stage that checks the spelling of each term in a text document, leveraging a trained "
+		+ "Norvig Spelling model. This stage appends two fields to the input schema, one that contains the extracted "
+		+ "normalized terms per document, and another that contains the correct spelling of these terms.")
+public class NorvigChecker extends TextCompute {
 
 	private static final long serialVersionUID = 2369095136053899600L;
 
 	private SpellCheckerConfig config;
 	private NorvigSweetingModel model;
 
-	public SpellChecker(SpellCheckerConfig config) {
+	public NorvigChecker(SpellCheckerConfig config) {
 		this.config = config;
 	}
 

@@ -36,19 +36,22 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
-@Name("SpellSink")
-@Description("A building stage for a Spark-NLP based Norvig Sweeting model.")
-public class SpellSink extends TextSink {
+@Plugin(type = SparkSink.PLUGIN_TYPE)
+@Name("NorvigSink")
+@Description("A building stage for a Spell Checking model based on Norvig's algorithm. The training "
+		+ "text corpus is a term dictionary with one or more terms per line.")
+public class NorvigSink extends TextSink {
 
 	private static final long serialVersionUID = -2931861752983178288L;
 
 	private SpellSinkConfig config;
 	
-	public SpellSink(SpellSinkConfig config) {
+	public NorvigSink(SpellSinkConfig config) {
 		this.config = config;
 	}
 

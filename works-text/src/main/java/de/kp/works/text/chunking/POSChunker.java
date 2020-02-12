@@ -36,16 +36,18 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.chunk.Chunker;
 import de.kp.works.text.pos.BasePOSConfig;
 import de.kp.works.text.pos.POSManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSChunker")
-@Description("A chunking stage that leverages a trained Part-of-Speech model.")
-public class POSChunker extends BaseCompute {
-
+@Description("A transformation stage that extracts meaningful phrases from text documents. Phrase extraction "
+		+ "is based on patterns of part-of-speech tags. This stage requires a trained Part-of-Speech model.")
+public class POSChunker extends TextCompute {
+	
 	private static final long serialVersionUID = 4211653733506144147L;
 
 	private POSChunkerConfig config;

@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Spell Checker",
+"display-name": "Norvig Checker",
  "configuration-groups": [
     {
       "label": "Basic Configuration",

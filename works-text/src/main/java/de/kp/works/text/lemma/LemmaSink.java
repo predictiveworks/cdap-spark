@@ -42,7 +42,8 @@ import de.kp.works.core.text.TextSink;
 
 @Plugin(type = "sparksink")
 @Name("LemmaSink")
-@Description("A building stage for a Spark-NLP based Lemmatization model.")
+@Description("A building stage for a Lemmatization model. The training corpus assigns each lemma "
+		+ "to a set of term variations that all map onto this lemma.")
 public class LemmaSink extends TextSink {
 
 	private static final long serialVersionUID = 3819386514287004996L;

@@ -36,15 +36,24 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Lemmatizer")
-@Description("A linguistic processing stage that leverages a trained Spark-NLP based Lemmatization model.")
-public class Lemmatizer extends BaseCompute {
+@Description("A transformation stage requires a trained Lemmatization model. It extracts "
+		+ "normalized terms from a text document and maps each token onto its trained lemma. "
+		+ "This stage appends two fields to the input schema, one that contains the extracted "
+		+ "terms per document, and another that contains their lemmas.")
+public class Lemmatizer extends TextCompute {
 
 	private static final long serialVersionUID = 1494670903195615242L;
-
+	/*
+	 * The result of this lemmatization stage is an Array[String] for normalized
+	 * tokens and lemmas. It can be used with Spark ML model building that starts
+	 * from this as an input format
+	 */
+	
 	private LemmatizerConfig config;
 	private LemmatizerModel model;
 

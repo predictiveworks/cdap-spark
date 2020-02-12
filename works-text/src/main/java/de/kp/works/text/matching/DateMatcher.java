@@ -34,14 +34,18 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DateMatcher")
-@Description("A transformation stage that leverages the Spark NLP Date Matcher to read from "
-		+ "different forms of date and time expressions and converts them to a provided date format.")
-public class DateMatcher extends BaseCompute {
+@Description("A transformation stage that reads different forms of date and time expressions "
+		+ "and converts them to a provided date format. This stage transforms each text document "
+		+ "into a list of sentences where each detected date and time expression is replaced by "
+		+ "the provided format. As an alternative, the list of detected date and time expressions "
+		+ "is returned.")
+public class DateMatcher extends TextCompute {
 	
 	private static final long serialVersionUID = 3922979028456465845L;
 
@@ -91,7 +95,7 @@ public class DateMatcher extends BaseCompute {
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
 		isString(config.inputCol);
@@ -114,9 +118,14 @@ public class DateMatcher extends BaseCompute {
 		@Description("The expected output date format. Default is 'yyyy/MM/dd'.")
 		@Macro
 		public String dateFormat;
+
+		@Description("An option to determine how to format the output of the date matcher. Supported values are 'extract' and 'replace'. Default is 'replace'.")
+		@Macro
+		public String outputOption;
 		
 		public DateMatcherConfig() {
 			dateFormat = "yyyy/MM/dd";
+			outputOption = "replace";
 		}
 		
 	}
