@@ -36,12 +36,14 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("POSSink")
-@Description("A building stage for a Spark-NLP based Part-of-Speech model.")
+@Description("A building stage for a Part-of-Speech model.")
 public class POSSink extends TextSink {
 
 	private static final long serialVersionUID = 1L;

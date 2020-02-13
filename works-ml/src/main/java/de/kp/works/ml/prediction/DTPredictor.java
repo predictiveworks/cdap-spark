@@ -39,7 +39,8 @@ import de.kp.works.ml.regression.DTRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DTPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Decision Tree classifier or regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Decision Tree classifier or regressor model. "
+		+ "The model type parameter determines whether this stage predicts from a classifier or regressor model.")
 public class DTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4611875710426366606L;

@@ -138,7 +138,7 @@ public class POSChunker extends TextCompute {
 
 		private static final long serialVersionUID = -7335693906960966678L;
 
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String textCol;
 

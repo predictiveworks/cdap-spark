@@ -18,13 +18,16 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
+          "label": "Corpus Field",
+          "name": "lineCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Sentiment Field",
-          "name": "sentimentCol"
+          "label": "Sentiment Delimiter",
+          "name": "sentimentDelimiter",
+          "widget-attributes": {
+              "default": "->"
+          }
         },
         {
           "widget-type": "textbox",

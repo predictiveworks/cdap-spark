@@ -40,7 +40,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDAPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Latent Dirichlet Allocation clustering model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Latent Dirichlet Allocation (LDA) clustering model.")
 public class LDAPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 1979301843408604941L;

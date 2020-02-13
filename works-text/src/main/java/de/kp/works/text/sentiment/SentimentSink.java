@@ -35,12 +35,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("SentimentSink")
-@Description("A building stage for a Spark-NLP based Sentiment Analysis model.")
+@Description("A building stage for a Sentiment Analysis model based on the sentiment algorithm "
+		+ 	"introduced by Vivek Narayanan. The training corpus comprises a labeled set of sentiment "
+		+ 	"tokens.")
 public class SentimentSink extends TextSink {
 	
 	private static final long serialVersionUID = -242069506700606299L;
@@ -69,22 +73,29 @@ public class SentimentSink extends TextSink {
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		/*
-		 * Split the source into a train & test dataset for later model
+		 * The corpus defines, line by line, a set of sentiment tokens and
+		 * assigned sentiment label; first step is to split tokens and label.
+		 * 
+		 * The result is dataset with two additional columns _tokens and _label
+		 */
+		SATrainer trainer = new SATrainer();
+		Dataset<Row> document = trainer.prepare(source, config.lineCol, config.sentimentDelimiter);
+		/*
+		 * Split the document into a train & test dataset for later model
 		 * evaluation; A sentiment analysis model is evaluated with a
 		 * regression evaluator
 		 */
-		Dataset<Row>[] splitted = source.randomSplit(config.getSplits());
+		Dataset<Row>[] splitted = document.randomSplit(config.getSplits());
 
 		Dataset<Row> trainset = splitted[0];
 		Dataset<Row> testset = splitted[1];
 		
-		SATrainer trainer = new SATrainer();
-		ViveknSentimentModel model = trainer.train(trainset, config.textCol, config.sentimentCol);
+		ViveknSentimentModel model = trainer.train(trainset, "_text", "_label");
 
 	    SAPredictor predictor = new SAPredictor(model);
-	    Dataset<Row> predictions = predictor.predict(testset, config.textCol, "predicted");
+	    Dataset<Row> predictions = predictor.predict(testset, "_text", "predicted");
 	    
-	    String metricsJson = SAEvaluator.evaluate(predictions, config.sentimentCol, "predicted");    
+	    String metricsJson = SAEvaluator.evaluate(predictions, "_label", "predicted");    
 		String paramsJson = config.getParamsAsJSON();
 
 		String modelName = config.modelName;
@@ -97,23 +108,13 @@ public class SentimentSink extends TextSink {
 
 		/** TEXT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.textCol);
+		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
+					"[%s] The input schema must contain the field that defines the labeled sentiment tokens.", this.getClass().getName()));
 		}
 		
-		SchemaUtil.isString(inputSchema, config.textCol);
-
-		/** SENTIMENT COLUMN **/
-
-		Schema.Field sentimentCol = inputSchema.getField(config.sentimentCol);
-		if (sentimentCol == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the sentiment.", this.getClass().getName()));
-		}
-		
-		SchemaUtil.isString(inputSchema, config.sentimentCol);
+		SchemaUtil.isString(inputSchema, config.lineCol);
 
 	}
 
@@ -121,9 +122,13 @@ public class SentimentSink extends TextSink {
 
 		private static final long serialVersionUID = 7018920867242125687L;
 
-		@Description("The name of the field in the input schema that contains the sentiment value.")
+		@Description("The name of the field in the input schema that contains the labeled sentiment tokens.")
 		@Macro
-		public String sentimentCol;
+		public String lineCol;
+
+		@Description("The delimiter to separate labels and associated tokens in the corpus. Default is '->'.")
+		@Macro
+		public String sentimentDelimiter;
 
 		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
 		@Macro
@@ -131,6 +136,7 @@ public class SentimentSink extends TextSink {
 
 		public SentimentSinkConfig() {
 			dataSplit = "70:30";
+			sentimentDelimiter = "->";
 		}
 
 		@Override
@@ -139,6 +145,8 @@ public class SentimentSink extends TextSink {
 			Map<String, Object> params = new HashMap<>();
 
 			params.put("dataSplit", dataSplit);
+			params.put("sentimentDelimiter", sentimentDelimiter);
+			
 			return params;
 
 		}
@@ -146,11 +154,18 @@ public class SentimentSink extends TextSink {
 		public void validate() {
 			super.validate();
 			
-			if (Strings.isNullOrEmpty(sentimentCol)) {
+			if (Strings.isNullOrEmpty(lineCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the sentiment value must not be empty.",
+						"[%s] The name of the field that contains the labeled sentiment tokens must not be empty.",
 						this.getClass().getName()));
 			}
+
+			if (Strings.isNullOrEmpty(sentimentDelimiter)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The sentiment delimiter must not be empty.",
+								this.getClass().getName()));
+			}
+			
 			if (Strings.isNullOrEmpty(dataSplit)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The data split must not be empty.",

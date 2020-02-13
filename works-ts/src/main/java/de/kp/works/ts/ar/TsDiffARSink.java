@@ -32,13 +32,15 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.DiffAutoRegression;
 import de.kp.works.ts.model.DiffAutoRegressionModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsDiffARSink")
-@Description("A building stage for an Apache Spark based Differencing AutoRegression model for time series datasets.")
+@Description("A building stage for an Apache Spark based Differencing AR model for time series datasets.")
 public class TsDiffARSink extends ARSink {
 
 	private static final long serialVersionUID = 539646198032768805L;

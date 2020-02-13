@@ -39,7 +39,9 @@ import de.kp.works.ml.regression.GBTRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GBTPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Gradient-Boosted Trees classifier or regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Gradient-Boosted Trees classifier or regressor model. "
+		+ "The model type parameter determines whether this stage predicts from a classifier or regressor model.")
+		
 public class GBTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4445941695722336690L;

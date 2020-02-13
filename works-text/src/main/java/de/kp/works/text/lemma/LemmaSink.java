@@ -37,10 +37,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LemmaSink")
 @Description("A building stage for a Lemmatization model. The training corpus assigns each lemma "
 		+ "to a set of term variations that all map onto this lemma.")

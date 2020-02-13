@@ -37,7 +37,7 @@ import de.kp.works.ml.classification.LRClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LRPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Logistic Regression classifier model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Logistic Regression classifier model.")
 public class LRPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -4919226198000991487L;

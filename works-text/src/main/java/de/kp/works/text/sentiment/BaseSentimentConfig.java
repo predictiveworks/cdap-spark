@@ -32,22 +32,12 @@ public class BaseSentimentConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The name of the field in the input schema that contains the document.")
-	@Macro
-	public String textCol;
-
 	public void validate() {
 		super.validate();
 
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-		}
-
-		if (Strings.isNullOrEmpty(textCol)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the document must not be empty.",
-							this.getClass().getName()));
 		}
 		
 	}

@@ -32,14 +32,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.AutoARMA;
 import de.kp.works.ts.model.AutoARMAModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsAutoARMASink")
-@Description("A building stage for an Apache Spark based Auto ARMA model for time series datasets.")
-public class TsAutoARMASink extends BaseARMASink {
+@Description("A building stage for an Apache Spark based AutoARMA model for time series datasets.")
+public class TsAutoARMASink extends ARMASink {
 
 	private static final long serialVersionUID = -3858467738067952796L;
 	

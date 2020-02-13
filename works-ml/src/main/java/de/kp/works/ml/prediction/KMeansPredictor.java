@@ -37,7 +37,7 @@ import de.kp.works.ml.clustering.KMeansManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("KMeansPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based KMeans clustering model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML K-Means clustering model.")
 public class KMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 8662496131393728472L;

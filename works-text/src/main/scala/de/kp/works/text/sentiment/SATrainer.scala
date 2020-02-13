@@ -21,6 +21,7 @@ package de.kp.works.text.sentiment
 import com.johnsnowlabs.nlp
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 
 import de.kp.works.text.AnnotationBase
@@ -45,15 +46,50 @@ class SATrainer extends AnnotationBase {
    * Original accuracy: 88.80% on the popular IMDB movie reviews dataset.
    * 
    */
+  private def splitter(delimiter:String) = udf{line:String => {
+      
+    val tuple = line.split(delimiter).map(_.trim)
+    Array(tuple(0), tuple(1))
+  
+  }}
+  /*
+   * The corpus is provided in the following format
+   * 
+   * 			label -> token token token
+   * 
+   */
+  def prepare(dataset:Dataset[_], lineCol:String, sentimentDelimiter:String): Dataset[Row] = {
+    
+    val split = splitter(sentimentDelimiter)
+
+    val output = dataset
+      .withColumn("_split", split(col(lineCol)))
+      .withColumn("_label", col("_split").getItem(0))
+      .withColumn("_text",  col("_split").getItem(1))
+      .drop("_split")
+      
+    output  
+
+  }
+  
   def train(trainset:Dataset[Row], textCol:String, sentimentCol:String): nlp.annotators.sda.vivekn.ViveknSentimentModel = {
+    
     /*
      * The dataset contains at least two columns, one that contains a certain
      * sample document, and another which holds the assigned sentiment.
      */
     val document = normalizedTokens(trainset, textCol)
-    
+    document.show
+    /*
+     * The Spark-NLP approach requires two columns, one that contains the 
+     * token annotations of a certain text document, and another that holds
+     * the sentiment (positive or negative) specification.
+     * 
+     * This approach trains a labeled bag of words (tokens).
+     *  
+     */
     val algorithm = new nlp.annotators.sda.vivekn.ViveknSentimentApproach()
-    .setInputCols("document", "token")
+    .setInputCols(Array(textCol, "token"))
     .setSentimentCol(sentimentCol)
     
     val model = algorithm.fit(document)
@@ -71,30 +107,35 @@ object SentimentTrainer {
       .master("local")
       .getOrCreate()
 
-    val training = Seq(
-      Row("I really liked this movie!", "positive"),
-      Row("The cast was horrible", "negative"),
-      Row("Never going to watch this again or recommend it to anyone", "negative"),
-      Row("It's a waste of time", "negative"),
-      Row("I loved the protagonist", "positive"),
-      Row("The music was really really good", "positive")
+//    val path = "/Work/oxygen/spark-nlp/src/test/resources/sentiment.parquet"
+//    val df = session.read.parquet(path)
+//     df.show
+      
+    val corpus = Seq(
+      Row("positive -> I really liked this movie!"),
+      Row("negative -> The cast was horrible", "negative"),
+      Row("negative -> Never going to watch this again or recommend it to anyone"),
+      Row("negative -> It's a waste of time"),
+      Row("positive -> I loved the protagonist"),
+      Row("positive -> The music was really really good")
     )
-
      
-    val schema = StructType(Array(
-      StructField("text", StringType, true),
-      StructField("sentiment", StringType, true)
+    val trainSchema = StructType(Array(
+      StructField("text", StringType, true)
     ))
-     
-    val ds = session.createDataFrame(session.sparkContext.parallelize(training), schema)
+    
+    val ds = session.createDataFrame(session.sparkContext.parallelize(corpus), trainSchema)
    
     val trainer = new SATrainer()
-    val model = trainer.train(ds, "text", "sentiment")
+    var document = trainer.prepare(ds, "text", "->")
+    document.show
+   
+    val model = trainer.train(document, "_text", "_label")
 
     val predictor = new SAPredictor(model)
-    val predictions = predictor.predict(ds, "text", "prediction")
+    val predictions = predictor.predict(document, "_text", "_prediction")
     
-    val metrics = SAEvaluator.evaluate(predictions, "sentiment", "prediction")    
+    val metrics = SAEvaluator.evaluate(predictions, "_label", "_prediction")    
     predictions.show
     println(metrics)
     

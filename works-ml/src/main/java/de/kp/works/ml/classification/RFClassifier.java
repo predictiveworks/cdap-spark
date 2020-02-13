@@ -33,10 +33,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("RFClassifer")
 @Description("A building stage for an Apache Spark ML Random Forest Tree classifier model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  

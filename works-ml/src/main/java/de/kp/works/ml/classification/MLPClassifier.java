@@ -35,10 +35,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("MLPClassifer")
 @Description("A building stage for an Apache Spark ML Multi-Layer Perceptron classifier model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
@@ -130,7 +132,7 @@ public class MLPClassifier extends ClassifierSink {
 
 		@Description("The comma-separated list of the sizes of the layers from the input to the output layer. "
 				+ "For example: 780,100,10 means 780 inputs, one hidden layer with 100 neurons and an output "
-				+ "layer with 10 neuros. At least 2 layers (input, output) must be specified.")
+				+ "layer with 10 neurons. At least 2 layers (input, output) must be specified.")
 		@Macro
 		public String layers;
 		
@@ -140,7 +142,7 @@ public class MLPClassifier extends ClassifierSink {
 		@Macro
 		public Integer blockSize;
 
-		@Description("The maximum number of iterations to train the Multilayer Perceptron model. Default is 100.")
+		@Description("The maximum number of iterations to train the Multi-Layer Perceptron model. Default is 100.")
 		@Macro
 		public Integer maxIter;
 
@@ -153,7 +155,7 @@ public class MLPClassifier extends ClassifierSink {
 		public String solver;
 		
 		@Description("The positive convergence tolerance of iterations. Smaller values wuth lead to higher accuracy with the cost "
-				+ "of more iterations. Default is 1e-6")
+				+ "of more iterations. Default is 1e-6.")
 		@Macro
 		public Double tol;
 

@@ -20,25 +20,28 @@ package de.kp.works.text.spell
 import com.johnsnowlabs.nlp.annotators.spell.norvig._
 
 import org.apache.spark.sql._
-import de.kp.works.text.AnnotationBase
+import org.apache.spark.sql.functions._
 
+import de.kp.works.text.AnnotationBase
 
 class NorvigPredictor(model:NorvigSweetingModel) extends AnnotationBase {
   
-  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
-    
-    val document = normalizedTokens(dataset, textCol)
+  def predict(dataset:Dataset[Row], textCol:String, predictionCol:String, threshold:Double):Dataset[Row] = {
+
+    var document = normalizedTokens(dataset, textCol)
 
     model.setInputCols("token")
     model.setOutputCol("check")
     
-    val checked = model.transform(dataset)
-    
-    val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token", "check"))
-    .setOutputCols(Array(tokenCol,predictionCol))
-
-    finisher.transform(checked)
+    document = model.transform(dataset)
+    /*
+     * Spell checking is an instrument for noise reduction; therefore this
+     * predictor returns the most likely version of the initial document
+     */
+    val dropCols = Array("document", "sentences", "token", "check")
+    document
+      .withColumn(predictionCol, finishSpellChecker(threshold)(col("check")))
+      .drop(dropCols: _*)
     
   }
 }

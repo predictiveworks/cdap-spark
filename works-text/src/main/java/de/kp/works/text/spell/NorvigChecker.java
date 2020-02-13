@@ -41,8 +41,8 @@ import de.kp.works.core.text.TextCompute;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NorvigChecker")
 @Description("A transformation stage that checks the spelling of each term in a text document, leveraging a trained "
-		+ "Norvig Spelling model. This stage appends two fields to the input schema, one that contains the extracted "
-		+ "normalized terms per document, and another that contains the correct spelling of these terms.")
+		+ "Norvig Spelling model. This stage appends one field to the input schema, that contains the suggested "
+		+ "corrections of the input text document.")
 public class NorvigChecker extends TextCompute {
 
 	private static final long serialVersionUID = 2369095136053899600L;
@@ -83,7 +83,7 @@ public class NorvigChecker extends TextCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -98,7 +98,7 @@ public class NorvigChecker extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		NorvigPredictor predictor = new NorvigPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
+		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.predictionCol, config.threshold);
 
 		return predictions;
 		
@@ -124,33 +124,35 @@ public class NorvigChecker extends TextCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	protected Schema getOutputSchema(Schema inputSchema, String tokenField, String predictionField) {
+	protected Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
 
-	public static class SpellCheckerConfig extends BaseSpellConfig {
+	public static class SpellCheckerConfig extends SpellConfig {
 
 		private static final long serialVersionUID = 2295039730979859235L;
 
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description("The name of the field in the input schema that contains the text document.")
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
-		@Macro
-		public String tokenCol;
-
-		@Description("The name of the field in the output schema that contains the corrected tokens.")
+		@Description("The name of the field in the output schema that contains the suggested text document.")
 		@Macro
 		public String predictionCol;
 
+		@Description("The probability threshold above which a suggested term spelling is accepted. Default is 0.75.")
+		@Macro
+		public Double threshold;
+
+		public SpellCheckerConfig() {
+			threshold = 0.75;
+		}
+		
 		public void validate() {
 			super.validate();
 			
@@ -159,10 +161,10 @@ public class NorvigChecker extends TextCompute {
 						"[%s] The name of the field that contains the text document must not be empty.",
 						this.getClass().getName()));
 			}
-			
-			if (Strings.isNullOrEmpty(tokenCol)) {
+
+			if (threshold < 0.0 || threshold > 1.0) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
+						"[%s] The probability threshold must be in the range [0, 1].",
 						this.getClass().getName()));
 			}
 			

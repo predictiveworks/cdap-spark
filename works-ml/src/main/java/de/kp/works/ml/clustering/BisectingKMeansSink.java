@@ -33,13 +33,15 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.cluster.ClusterConfig;
 import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.ml.clustering.Evaluator;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("BisectingKMeansSink")
-@Description("A building stage for an Apache Spark ML Bisecting KMeans clustering model. This stage expects "
+@Description("A building stage for an Apache Spark ML Bisecting K-Means clustering model. This stage expects "
 		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
 public class BisectingKMeansSink extends ClusterSink {
 	/*

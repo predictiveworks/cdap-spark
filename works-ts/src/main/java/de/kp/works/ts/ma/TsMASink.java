@@ -32,14 +32,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.MovingAverage;
 import de.kp.works.ts.model.MovingAverageModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsMASink")
-@Description("A building stage for an Apache Spark based Moving Average model for time series datasets.")
-public class TsMASink extends BaseMASink {
+@Description("A building stage for an Apache Spark based MA model for time series datasets.")
+public class TsMASink extends MASink {
 
 	private static final long serialVersionUID = 1611776727115974422L;
 	

@@ -39,7 +39,8 @@ import de.kp.works.ml.classification.RFClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RFPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Random Forest classifier or regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Random Forest classifier or regressor model. "
+		+ "The model type parameter determines whether this stage predicts from a classifier or regressor model.")		
 public class RFPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -566627767807912994L;

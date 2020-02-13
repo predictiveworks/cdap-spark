@@ -32,7 +32,7 @@ import de.kp.works.ts.model.MovingAverageModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsMA")
-@Description("A prediction stage that leverages a trained Apache Spark based Moving Average time series model.")
+@Description("A prediction stage that leverages a trained Apache Spark based MA time series model.")
 public class TsMA extends MACompute {
 	
 	private static final long serialVersionUID = -1261080177077886834L;

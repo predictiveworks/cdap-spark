@@ -32,13 +32,15 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.AutoARIMA;
 import de.kp.works.ts.model.AutoARIMAModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsAutoARIMASink")
-@Description("A building stage for an Apache Spark based Auto ARIMA model for time series datasets.")
+@Description("A building stage for an Apache Spark based AutoARIMA model for time series datasets.")
 public class TsAutoARIMASink extends ARIMASink {
 
 	private static final long serialVersionUID = -4997838624011706379L;

@@ -43,7 +43,7 @@ import de.kp.works.ml.clustering.GaussianMixtureManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GaussianMixturePredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Gaussian Mixture clustering model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Gaussian Mixture clustering model.")
 public class GaussianMixturePredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 2048099898896242709L;

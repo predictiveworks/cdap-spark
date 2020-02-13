@@ -32,11 +32,13 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.ARIMA;
 import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsARIMASink")
 @Description("A building stage for an Apache Spark based ARIMA model for time series datasets.")
 public class TsARIMASink extends ARIMASink {

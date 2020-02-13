@@ -33,7 +33,9 @@ import de.kp.works.ts.model.AutoARIMAModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoARIMA")
-@Description("A prediction stage that leverages a trained Apache Spark based Auto ARIMA time series model.")
+@Description("A transformation stage that leverages a trained AutoARIMA model to look n steps in time ahead. "
+		+ "The forecast result is described by a two column output schema, one column specifies the future "
+		+ "points in time, and another the forecasted values.")
 public class TsAutoARIMA extends ARIMACompute {
 
 	private static final long serialVersionUID = -1031029606032986435L;

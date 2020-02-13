@@ -37,7 +37,7 @@ import de.kp.works.ml.classification.MLPClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MLPPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Multilayer Perceptron classifier model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Multi-Layer Perceptron classifier model.")
 public class MLPPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7257380193353979238L;

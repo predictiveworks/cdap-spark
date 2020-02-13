@@ -35,7 +35,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -45,10 +45,8 @@ import de.kp.works.core.BaseConfig;
 		+ "will clean up each token, taking as input column token out from the Tokenizer, "
 		+ "and putting normalized tokens in the normal column. Cleaning up includes removing "
 		+ "any non-character strings.")
-public class TokenNormalizer extends BaseCompute {
-	/*
-	 * The current version is restricted to the EnglishStemmer
-	 */
+public class TokenNormalizer extends TextCompute {
+
 	private static final long serialVersionUID = 7292639821710358852L;
 	private TokenNormalizerConfig config;
 	

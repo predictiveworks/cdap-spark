@@ -33,7 +33,7 @@ import de.kp.works.ts.model.AutoRegressionModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAR")
-@Description("A prediction stage that leverages a trained Apache Spark based AutoRegression time series model.")
+@Description("A prediction stage that leverages a trained Apache Spark based AR time series model.")
 public class TsAR extends ARCompute {
 
 	private static final long serialVersionUID = -4388615366081416402L;

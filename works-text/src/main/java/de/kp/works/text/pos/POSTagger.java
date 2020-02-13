@@ -36,12 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSTagger")
-@Description("A tagging stage that leverages a trained Part-of-Speech model.")
-public class POSTagger extends BaseCompute {
+@Description("A transformation stage that requires a trained Part-of-Speech model. This stage appends "
+		+ "two fields to the input schema, one that contains the extracted terms per document, and "
+		+ "another that contains their POS tags.")
+public class POSTagger extends TextCompute {
 
 	private static final long serialVersionUID = 8592003792127757573L;
 

@@ -35,14 +35,14 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("SentenceAssembler")
+@Name("SentenceDetector")
 @Description("A transformation stage that leverages the Spark NLP Sentence Detector to map an input "
 		+ "text field onto an output field that contains detected sentences.")
-public class SentenceDetector extends BaseCompute {
+public class SentenceDetector extends TextCompute {
 
 	private static final long serialVersionUID = 3247150334409546416L;
 

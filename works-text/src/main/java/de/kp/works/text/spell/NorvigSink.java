@@ -103,7 +103,7 @@ public class NorvigSink extends TextSink {
 
 	}
 
-	public static class SpellSinkConfig extends BaseSpellConfig {
+	public static class SpellSinkConfig extends SpellConfig {
 
 		private static final long serialVersionUID = -2584154226923794844L;
 

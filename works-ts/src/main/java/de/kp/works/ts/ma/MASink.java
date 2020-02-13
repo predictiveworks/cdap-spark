@@ -1,4 +1,4 @@
-package de.kp.works.ts.arma;
+package de.kp.works.ts.ma;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,9 +22,9 @@ import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.time.TimeSink;
 
-public class BaseARMASink extends TimeSink {
+public class MASink extends TimeSink {
 
-	private static final long serialVersionUID = -5171912527796533037L;
+	private static final long serialVersionUID = 4608821403762579531L;
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {

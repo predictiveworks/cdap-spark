@@ -52,7 +52,7 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Minimum Information Gain",
+          "label": "Minimum Gain",
           "name": "minInfoGain",
           "widget-attributes": {
             "default": "0.0"

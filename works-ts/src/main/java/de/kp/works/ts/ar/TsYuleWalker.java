@@ -33,7 +33,7 @@ import de.kp.works.ts.model.ARYuleWalkerModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsYuleWalker")
-@Description("A prediction stage that leverages a trained Apache Spark based Yule Walker AutoRegression time series model.")
+@Description("A prediction stage that leverages a trained Apache Spark based Yule Walker AR time series model.")
 public class TsYuleWalker extends ARCompute {
 
 	private static final long serialVersionUID = -3512433728877952854L;

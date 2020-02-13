@@ -33,7 +33,7 @@ import de.kp.works.ts.model.DiffAutoRegressionModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsDiffAR")
-@Description("A prediction stage that leverages a trained Apache Spark based Differencing AutoRegression time series model.")
+@Description("A prediction stage that leverages a trained Apache Spark based Differencing AR time series model.")
 public class TsDiffAR extends ARCompute {
 
 	private static final long serialVersionUID = 5008850620168692633L;

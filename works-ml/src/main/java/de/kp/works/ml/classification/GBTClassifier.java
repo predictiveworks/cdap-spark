@@ -33,10 +33,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("GBTClassifer")
 @Description("A building stage for an Apache Spark ML Gradient-Boosted Tree classifier model. This stage expects " 
 				+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
@@ -146,7 +148,7 @@ public class GBTClassifier extends ClassifierSink {
 		@Macro
 		public Double minInfoGain;
 
-		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.1")
+		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.1.")
 		@Macro
 		public Double stepSize;
 

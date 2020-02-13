@@ -24,11 +24,11 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
-public class BaseSpellConfig extends BaseConfig {
+public class SpellConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -1113002321679551921L;
 
-	@Description("The unique name of the Norvig Sweeting model.")
+	@Description("The unique name of the Norvig Spelling model.")
 	@Macro
 	public String modelName;
 

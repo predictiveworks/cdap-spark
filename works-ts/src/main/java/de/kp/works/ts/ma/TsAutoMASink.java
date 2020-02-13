@@ -32,14 +32,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.ts.model.AutoMA;
 import de.kp.works.ts.model.AutoMAModel;
 import de.kp.works.ts.params.ModelParams;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsAutoMASink")
-@Description("A building stage for an Apache Spark based Auto Moving Average model for time series datasets.")
-public class TsAutoMASink extends BaseMASink {
+@Description("A building stage for an Apache Spark based AutoMA model for time series datasets.")
+public class TsAutoMASink extends MASink {
 
 	private static final long serialVersionUID = -2078063701847845205L;
 	

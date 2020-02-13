@@ -36,16 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.time.TimeCompute;
 import de.kp.works.ts.AutoSTL;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoSTL")
 @Description("A time series transformation stage to decompose each time signal into seasonality, "
 		+ "trend and remainder component leveraging an STL algorithm (Seasonal and Trend decomposition using Loess). "
-		+ "The periodicity required for the SL algorithm is determined automatically through an embedded ACF."
+		+ "The periodicity required for the SL algorithm is determined automatically through an embedded ACF. "
 		+ "This transformation stage adds 'seasonal', 'trend' and 'remainder' fields to the each time record.")
-public class TsAutoSTL extends TimeCompute {
+public class TsAutoSTL extends STLCompute {
 
 	private static final long serialVersionUID = -4933626546193785571L;
 	

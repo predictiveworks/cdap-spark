@@ -38,14 +38,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.ml.RFRegressorManager;
 import de.kp.works.core.regressor.RegressorSink;
 import de.kp.works.core.time.TimeConfig;
 import de.kp.works.core.ml.RegressorEvaluator;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsRegressor")
-@Description("A building stage for an Apache Spark based Random Forest regressor model adjusted to machine learning for time series datasets.")
+@Description("A building stage for an Apache Spark ML Random Forest regressor model adjusted to machine learning for time series datasets.")
 public class TsRegressor extends RegressorSink {
 	/*
 	 * Time series regression is a means for predicting future

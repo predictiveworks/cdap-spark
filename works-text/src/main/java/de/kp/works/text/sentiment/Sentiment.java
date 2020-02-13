@@ -36,12 +36,13 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Sentiment")
-@Description("A prediction stage that leverages a trained Spark-NLP based Sentiment Analysis model.")
-public class Sentiment extends BaseCompute {
+@Description("A transformation stage that predicts sentiment labels (positive or negative) for "
+		+ "text documents, leveraging a trained Sentiment Analysis model.")
+public class Sentiment extends TextCompute {
 
 	private static final long serialVersionUID = -5009925022021738613L;
 
@@ -135,12 +136,22 @@ public class Sentiment extends BaseCompute {
 
 		private static final long serialVersionUID = -7796809782922479970L;
 
+		@Description("The name of the field in the input schema that contains the document.")
+		@Macro
+		public String textCol;
+
 		@Description("The name of the field in the output schema that contains the predicted sentiment.")
 		@Macro
 		public String predictionCol;
 
 		public void validate() {
 			super.validate();
+
+			if (Strings.isNullOrEmpty(textCol)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the document must not be empty.",
+								this.getClass().getName()));
+			}
 			
 			if (Strings.isNullOrEmpty(predictionCol)) {
 				throw new IllegalArgumentException(String.format(

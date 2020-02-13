@@ -37,7 +37,7 @@ import de.kp.works.ml.classification.NBClassifierManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NBPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Naive Bayes classifier model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Naive Bayes classifier model.")
 public class NBPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 178045002409442078L;

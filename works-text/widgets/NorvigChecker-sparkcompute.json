@@ -23,14 +23,18 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
+          "label": "Prediction Field",
+          "name": "predictionCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Lemma Field",
-          "name": "predictionCol"
+          "label": "Probability Threshold",
+          "name": "threshold",
+          "widget-attributes": {
+            "default": "0.75"
+          }
         }
+
       ]
     }
   ]

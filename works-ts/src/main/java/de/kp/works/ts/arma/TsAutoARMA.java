@@ -33,7 +33,9 @@ import de.kp.works.ts.model.AutoARMAModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoARMA")
-@Description("A prediction stage that leverages a trained Apache Spark based Auto ARMA time series model.")
+@Description("A transformation stage that leverages a trained AutoARMA model to look n steps in time ahead. "
+		+ "The forecast result is described by a two column output schema, one column specifies the future "
+		+ "points in time, and another the forecasted values.")
 public class TsAutoARMA extends ARMACompute {
 
 	private static final long serialVersionUID = -4782182822373835162L;

@@ -33,10 +33,12 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LRClassifer")
 @Description("A building stage for an Apache Spark ML Logistic Regression classifier model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
@@ -125,7 +127,7 @@ public class LRClassifier extends ClassifierSink {
 
 		private static final long serialVersionUID = -4962647798125981464L;
 
-		@Description("The maximum number of iterations to train the Gradient-Boosted Trees model. Default is 20.")
+		@Description("The maximum number of iterations to train the Logistic Regression model. Default is 20.")
 		@Macro
 		public Integer maxIter;
 
@@ -141,7 +143,7 @@ public class LRClassifier extends ClassifierSink {
 		public Double regParam;
 
 		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
-				+ "of more iterations. Default is 1e-6")
+				+ "of more iterations. Default is 1e-6.")
 		@Macro
 		public Double tol;
 

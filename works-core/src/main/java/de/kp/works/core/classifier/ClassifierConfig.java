@@ -41,7 +41,7 @@ public class ClassifierConfig extends BaseConfig {
 	@Macro
 	public String labelCol;
 
-	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30.")
 	@Macro
 	public String dataSplit;
 	

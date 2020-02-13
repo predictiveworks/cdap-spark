@@ -62,7 +62,12 @@ class NorvigApproach(override val uid: String) extends AnnotatorApproach[NorvigS
     shortCircuit -> false,
     frequencyPriority -> true,
     wordSizeIgnore -> 3,
-    dupsLimit -> 2,
+    /* 
+     * Note: This parameters controls the number of duplicates, i.e. Pe(e)ter is 
+     * a term with one duplicate and Pe(ee)ter a term with two duplicates
+     *  
+     */
+    dupsLimit -> 1,
     reductLimit -> 3,
     intersections -> 10,
     vowelSwapLimit -> 6

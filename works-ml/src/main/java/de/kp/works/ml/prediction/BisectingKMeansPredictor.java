@@ -37,7 +37,7 @@ import de.kp.works.ml.clustering.BisectingKMeansManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BisectingKMeansPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Bisecting KMeans clustering model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Bisecting K-Means clustering model.")
 public class BisectingKMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7843836179229489547L;

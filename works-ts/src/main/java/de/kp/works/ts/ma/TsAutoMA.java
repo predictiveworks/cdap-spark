@@ -33,7 +33,7 @@ import de.kp.works.ts.model.AutoMAModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoMA")
-@Description("A prediction stage that leverages a trained Apache Spark based Auto Moving Average time series model.")
+@Description("A prediction stage that leverages a trained Apache Spark based AutoMA time series model.")
 public class TsAutoMA extends MACompute {
 
 	private static final long serialVersionUID = -3457589115912285863L;

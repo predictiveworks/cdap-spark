@@ -39,7 +39,7 @@ import de.kp.works.core.time.TimePredictorConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Random Forest regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Random Forest regressor model.")
 public class TsPredictor extends TimeCompute {
 
 	private static final long serialVersionUID = 3141012240338918366L;
