@@ -18,7 +18,6 @@ package de.kp.works.ml.regression;
  * 
  */
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.spark.ml.regression.GBTRegressionModel;
@@ -26,18 +25,19 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.RegressorEvaluator;
-import de.kp.works.core.regressor.RegressorConfig;
-import de.kp.works.core.regressor.RegressorSink;
+import co.cask.cdap.etl.api.batch.SparkSink;
 
-@Plugin(type = "sparksink")
+import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.regressor.RegressorSink;
+import de.kp.works.ml.config.GBTConfig;
+
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("GBTRegressor")
 @Description("A building stage for an Apache Spark ML Gradient-Boosted Tree regressor model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
@@ -46,9 +46,9 @@ public class GBTRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -8027323270352311072L;
 	
-	private GBTRegressorConfig config;
+	private GBTConfig config;
 	
-	public GBTRegressor(GBTRegressorConfig config) {
+	public GBTRegressor(GBTConfig config) {
 		this.config = config;
 	}
 
@@ -123,100 +123,4 @@ public class GBTRegressor extends RegressorSink {
 		config.validateSchema(inputSchema);		
 	}
 
-	public static class GBTRegressorConfig extends RegressorConfig {
-
-		private static final long serialVersionUID = 8655177932723069092L;
-
-		/*
-		 * Impurity is set to 'variance' and cannot be changed; therefore no
-		 * external parameter is provided
-		 */
-
-		@Description("The type of the loss function the Gradient-Boosted Trees algorithm tries to minimize. Supported values are 'squared' (L2) and 'absolute' (L1). Default is 'squared'.")
-		@Macro
-		public String lossType;
-		
-		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
-				+ " on features at each node. More bins give higher granularity. Must be at least 2. Default is 32.")
-		@Macro
-		public Integer maxBins;
-		
-		@Description("Nonnegative value that maximum depth of the tree. E.g. depth 0 means 1 leaf node; "
-				+" depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
-		@Macro
-		public Integer maxDepth;
-
-		@Description("The maximum number of iterations to train the Gradient-Boosted Trees model. Default is 20.")
-		@Macro
-		public Integer maxIter;
-
-		@Description("The minimum information gain for a split to be considered at a tree node. The value should be at least 0.0. Default is 0.0.")
-		@Macro
-		public Double minInfoGain;
-		
-		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.1")
-		@Macro
-		public Double stepSize;
-		
-		public GBTRegressorConfig() {
-
-			dataSplit = "70:30";
-			
-			lossType = "squared";
-			minInfoGain = 0D;
-
-			maxBins = 32;
-			maxDepth = 5;
-			
-			maxIter = 20;
-			stepSize = 0.1;
-
-		}
-	    
-		@Override
-		public Map<String, Object> getParamsAsMap() {
-			
-			Map<String, Object> params = new HashMap<>();
-
-			params.put("lossType", lossType);
-			params.put("minInfoGain", minInfoGain);
-
-			params.put("maxBins", maxBins);
-			params.put("maxDepth", maxDepth);
-
-			params.put("maxIter", maxIter);
-			params.put("stepSize", stepSize);
-
-			params.put("dataSplit", dataSplit);
-			return params;
-		
-		}
-
-		public void validate() {
-			super.validate();
-			
-			/** PARAMETERS **/
-			if (maxBins < 2)
-				throw new IllegalArgumentException(
-						String.format("[%s] The maximum bins must be at least 2.", this.getClass().getName()));
-
-			if (maxDepth < 0)
-				throw new IllegalArgumentException(
-						String.format("[%s] The maximum depth must be nonnegative.", this.getClass().getName()));
-
-			if (minInfoGain < 0D)
-				throw new IllegalArgumentException(String
-						.format("[%s] The minimum information gain must be at least 0.0.", this.getClass().getName()));
-
-			if (maxIter < 1)
-				throw new IllegalArgumentException(String.format(
-						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
-
-			if (stepSize <= 0D || stepSize > 1D)
-				throw new IllegalArgumentException(
-						String.format("[%s] The learning rate must be in interval (0, 1].", this.getClass().getName()));
-			
-		}
-		
-	}
 }

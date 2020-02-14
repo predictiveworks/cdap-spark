@@ -25,15 +25,23 @@ import org.apache.spark.ml.feature.VectorIndexerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.feature.FeatureConfig;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("VectorIndexer")
+@Description("A transformation stage that leverages the Apache Spark ML VectorIndexer to decide which features are "
+		+ "categorical and converts the original values into category indices. This stage requires a trained VectorIndexer model.")
 public class VectorIndexer extends FeatureCompute {
 
 	private static final long serialVersionUID = 5944112891925832168L;

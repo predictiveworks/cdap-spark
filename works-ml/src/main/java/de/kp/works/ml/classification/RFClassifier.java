@@ -18,7 +18,6 @@ package de.kp.works.ml.classification;
  * 
  */
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.spark.ml.classification.RandomForestClassificationModel;
@@ -26,7 +25,6 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
 import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -35,8 +33,8 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkSink;
 
-import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
+import de.kp.works.ml.config.RFConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("RFClassifer")
@@ -47,8 +45,8 @@ public class RFClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -6423500795219581617L;
 
-	private RFClassifierConfig config;
-	public RFClassifier(RFClassifierConfig config) {
+	private RFConfig config;
+	public RFClassifier(RFConfig config) {
 		this.config = config;
 	}
 
@@ -121,87 +119,5 @@ public class RFClassifier extends ClassifierSink {
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
 	}
-	
-	/*
-	 * The configuration for Random Forest classification & regression
-	 * models are identical
-	 */
-	public static class RFClassifierConfig extends ClassifierConfig {
 
-		private static final long serialVersionUID = -6477522356251530089L;
-
-		@Description("Impurity is a criterion how to calculate information gain. Supported values: 'entropy' and 'gini'. Default is 'gini'.")
-		@Macro
-		public String impurity;
-
-		@Description("The maximum number of bins used for discretizing continuous features and for choosing how to split "
-				+ " on features at each node. More bins give higher granularity. Must be at least 2. Default is 32.")
-		@Macro
-		public Integer maxBins;
-
-		@Description("Nonnegative value that maximum depth of the tree. E.g. depth 0 means 1 leaf node; "
-				+ " depth 1 means 1 internal node + 2 leaf nodes. Default is 5.")
-		@Macro
-		public Integer maxDepth;
-
-		@Description("The minimum information gain for a split to be considered at a tree node. The value should be at least 0.0. Default is 0.0.")
-		@Macro
-		public Double minInfoGain;
-
-		@Description("The number of trees to train the model. Default is 20.")
-		@Macro
-		public Integer numTrees;
-
-		public RFClassifierConfig() {
-
-			dataSplit = "70:30";
-			impurity = "gini";
-
-			maxBins = 32;
-			maxDepth = 5;
-
-			minInfoGain = 0D;
-			numTrees = 20;
-
-		}
-
-		@Override
-		public Map<String, Object> getParamsAsMap() {
-
-			Map<String, Object> params = new HashMap<>();
-			params.put("impurity", impurity);
-
-			params.put("maxBins", maxBins);
-			params.put("maxDepth", maxDepth);
-
-			params.put("minInfoGain", minInfoGain);
-			params.put("numTrees", numTrees);
-
-			return params;
-
-		}
-
-		public void validate() {
-			super.validate();
-
-			/** PARAMETERS **/
-			if (maxBins < 2)
-				throw new IllegalArgumentException(
-						String.format("[%s] The maximum bins must be at least 2.", this.getClass().getName()));
-
-			if (maxDepth < 0)
-				throw new IllegalArgumentException(
-						String.format("[%s] The maximum depth must be nonnegative.", this.getClass().getName()));
-
-			if (minInfoGain < 0D)
-				throw new IllegalArgumentException(String
-						.format("[%s] The minimum information gain must be at least 0.0.", this.getClass().getName()));
-
-			if (numTrees < 1)
-				throw new IllegalArgumentException(
-						String.format("[%s] The number of trees must be at least 1.", this.getClass().getName()));
-
-		}
-
-	}
 }

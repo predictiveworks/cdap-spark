@@ -35,15 +35,16 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
 import de.kp.works.core.BaseConfig;
 import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.smote.SMOTECompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SMOTESampler")
-@Description("A preparation stage for either building Apache Spark based classification or regression models. This stages leverages the "
+@Description("A preparation stage for either building Apache Spark based classification or regression models. This stage leverages the "
 		+ "SMOTE algorithm to extends a training dataset containing features & labels with synthetic data records.")
-public class SMOTESampler extends BaseCompute {
+public class SMOTESampler extends SMOTECompute {
 	
 	private static final long serialVersionUID = 6941306314689386349L;
 

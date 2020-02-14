@@ -37,7 +37,7 @@ import de.kp.works.ml.regression.IsotonicRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("IsotonicPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Isotonic regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Isotonic Regression (regressor) model.")
 public class IsotonicPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -4791418353475612212L;

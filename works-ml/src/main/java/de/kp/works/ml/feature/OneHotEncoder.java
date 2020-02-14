@@ -40,7 +40,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("OneHotEncoder")
-@Description("A transformation stage to map input labels (indices) to binary vectors This encoding allows "
+@Description("A transformation stage to map input labels (indices) to binary vectors. This encoding allows "
 		+ "algorithms which expect continuous features to use categorical features. This transformer expects a Numeric input "
 		+ "and generates an Array[Double] as output.")
 public class OneHotEncoder extends FeatureCompute {

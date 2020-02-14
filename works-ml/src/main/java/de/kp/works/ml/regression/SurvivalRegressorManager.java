@@ -30,7 +30,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractRegressionManager;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class AFTSurvivalRegressorManager extends AbstractRegressionManager {
+public class SurvivalRegressorManager extends AbstractRegressionManager {
 
 	private String ALGORITHM_NAME = "AFTSurvivalRegressor";
 

@@ -42,14 +42,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ScalerBuilder")
-@Description("A building stage for an Apache Spark based feature scaling model. Supported models are Min-Max, Max-Abs and Standard Scaler.")
+@Description("A building stage for an Apache Spark ML feature scaling model. Supported models are Min-Max, Max-Abs and Standard Scaler.")
 public class ScalerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -7301919602186472418L;
@@ -167,13 +169,13 @@ public class ScalerBuilder extends FeatureSink {
 		public Double max;
 
 		@Description("Indicator to determine whether to center the data with mean before scaling. "
-				+ " This parameter applies to the model type 'standard'. Default is 'false'.")
+				+ "This parameter applies to the model type 'standard'. Default is 'false'.")
 		@Macro
 		@Nullable
 		public String withMean;
 
 		@Description("Indicator to determine whether to scale the data to unit standard deviation. "
-				+ " This parameter applies to the model type 'standard'. Default is 'true'.")
+				+ "This parameter applies to the model type 'standard'. Default is 'true'.")
 		@Macro
 		@Nullable
 		public String withStd;

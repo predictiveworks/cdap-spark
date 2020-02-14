@@ -99,7 +99,7 @@
          {
           "widget-type": "select",
           "label": "Implicit Preference",
-          "name": "nonnegative",
+          "name": "implicitPrefs",
           "widget-attributes": {
             "values": [
               "false",

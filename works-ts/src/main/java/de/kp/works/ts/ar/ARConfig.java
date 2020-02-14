@@ -31,7 +31,7 @@ public class ARConfig extends TimeConfig {
 	 * TimeConfig contributes common 'timeCol' and 'valueCol'
 	 * columns to specify the data points
 	 */
-	@Description("The unique name of the Auto Regression model.")
+	@Description("The unique name of the AR model.")
 	@Macro
 	public String modelName;
 

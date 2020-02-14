@@ -41,7 +41,7 @@ import de.kp.works.ml.MLUtils;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("W2Vec")
 @Description("A transformation stage that turns a sentence into a vector to represent the whole sentence. "
-		+ "The transform is performed by averaging all word vectors it contains, based on a trained Word-to-Vector model.")
+		+ "The transform is performed by averaging all word vectors it contains, based on a trained Word2Vec model.")
 public class W2Vec extends FeatureCompute {
 
 	private static final long serialVersionUID = -7817740878594710658L;

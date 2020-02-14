@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "AFT Predictor",
+"display-name": "Survival Predictor",
  "configuration-groups": [
     {
       "label": "Basic Configuration",

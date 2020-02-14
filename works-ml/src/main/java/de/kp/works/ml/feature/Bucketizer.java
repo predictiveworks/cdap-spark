@@ -44,7 +44,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Bucketizer")
-@Description("A transformation stage that leverages the Apache Spark Feature Bucketizer to map continuous features onto feature buckets.")
+@Description("A transformation stage that leverages the Apache Spark ML Feature Bucketizer to map continuous features onto feature buckets.")
 public class Bucketizer extends FeatureCompute {
 	/*
 	 * Bucketizer transforms a column of continuous features to a column of feature buckets, where the buckets 
@@ -140,7 +140,7 @@ public class Bucketizer extends FeatureCompute {
 		@Description("A comma separated list of split points (Double values) for mapping continuous features into buckets. "
 				+ "With n+1 splits, there are n buckets. A bucket defined by splits x,y holds values in the range [x,y) "
 				+ "except the last bucket, which also includes y. The splits should be of length >= 3 and strictly increasing. "
-				+ "Values at -infinity, infinity must be explicitly provided to cover all Double values; otherwise, values outside"
+				+ "Values at -infinity, infinity must be explicitly provided to cover all Double values; otherwise, values outside "
 				+ "the splits specified will be treated as errors.")
 		@Macro
 		public String splits;

@@ -35,14 +35,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
 import de.kp.works.core.BaseConfig;
 import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.mining.MiningCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("FPGrowth")
-@Description("A transformation stage that leverages the Apache Spark FPGrowth algorithm to detect frequent patterns.")
-public class FPGrowth extends BaseCompute {
+@Description("A transformation stage that leverages the Apache Spark ML FPGrowth algorithm to detect frequent patterns.")
+public class FPGrowth extends MiningCompute {
 
 	private static final long serialVersionUID = -6799602007838602218L;
 
@@ -125,20 +126,14 @@ public class FPGrowth extends BaseCompute {
 		@Macro
 		public String itemsCol;
 
-		/**
-		 * Minimal support level of the frequent pattern. [0.0, 1.0]. Any pattern that
-		 * appears more than (minSupport * size-of-the-dataset) times will be output in
-		 * the frequent itemsets. Default: 0.3
-		 */
-
 		@Description("Minimal support level of the frequent pattern. Value must be in range [0.0, 1.0]. "
-				+ "Any pattern that appears * more than (minSupport * size-of-the-dataset) times will be "
+				+ "Any pattern that appears more than (minSupport * data size) times will be "
 				+ "output in the frequent itemsets. Default is 0.3.")
 		@Macro
 		public Double minSupport;
 
 		@Description("Minimal confidence for generating Association Rule. minConfidence will not affect the mining "
-				+ "	* for frequent itemsets, but will affect the association rules generation. Default is 0.8.")
+				+ "for frequent itemsets, but will affect the association rules generation. Default is 0.8.")
 		@Macro
 		public Double minConfidence;
 

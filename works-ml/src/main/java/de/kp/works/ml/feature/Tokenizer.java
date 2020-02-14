@@ -41,7 +41,7 @@ import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Tokenizer")
-@Description("A transformation stage that leverages the Apache Spark RegEx Tokenizer to split an input text into a sequence of tokens.")
+@Description("A transformation stage that leverages the Apache Spark ML Regex Tokenizer to split an input text into a sequence of tokens.")
 public class Tokenizer extends FeatureCompute {
 	/*
 	 * A regex based tokenizer that extracts tokens either by using the provided regex pattern

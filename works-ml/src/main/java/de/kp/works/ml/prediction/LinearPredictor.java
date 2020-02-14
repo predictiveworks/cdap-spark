@@ -37,7 +37,7 @@ import de.kp.works.ml.regression.LinearRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LinearPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Linear Regression regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Linear Regression (regressor) model.")
 public class LinearPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -1443274244219761815L;

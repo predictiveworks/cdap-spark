@@ -38,16 +38,17 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.RegressorEvaluator;
 import de.kp.works.core.recommender.RecommenderSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ALSSink")
 @Description("A building stage for an Apache Spark ML Collaborative Filtering model. This technique "
 		+ "is commonly used for recommender systems and aims to fill in the missing entries of a "
-		+ "Uter-Item association matrix. Spark ML uses the ALS (alternating least squares) algorithm.")
-
+		+ "User-Item association matrix. Spark ML uses the ALS (alternating least squares) algorithm.")
 public class ALSSink extends RecommenderSink {
 	/*
 	 * Alternating Least Squares (ALS) matrix factorization.
@@ -180,7 +181,7 @@ public class ALSSink extends RecommenderSink {
 		@Macro
 		public Double regParam;
 
-		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30.")
 		@Macro
 		public String dataSplit;
 		

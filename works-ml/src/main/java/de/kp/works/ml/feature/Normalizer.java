@@ -124,7 +124,7 @@ public class Normalizer extends FeatureCompute {
 
 		private static final long serialVersionUID = 4977817064737125270L;
 
-		@Description("The p-norm to use for normalization. Supported values are '1' and '2'. Default is 2. ")
+		@Description("The p-norm to use for normalization. Supported values are '1' and '2'. Default is 2.")
 		@Macro
 		public Integer norm;
 		

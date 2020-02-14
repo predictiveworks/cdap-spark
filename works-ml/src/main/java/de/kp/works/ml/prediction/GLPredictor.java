@@ -37,7 +37,7 @@ import de.kp.works.ml.regression.GLRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GLPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Generalized Linear Regression regressor model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML Generalized Linear Regression (regressor) model.")
 public class GLPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4505262483800490605L;

@@ -33,9 +33,10 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.LDAClusteringManager;
+
 import de.kp.works.core.predictor.PredictorCompute;
-import de.kp.works.core.predictor.PredictorConfig;
+import de.kp.works.core.cluster.PredictorConfig;
+import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -45,10 +46,10 @@ public class LDAPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 1979301843408604941L;
 
-	private LDAPredictorConfig config;
+	private PredictorConfig config;
 	private LDAModel model;
 
-	public LDAPredictor(LDAPredictorConfig config) {
+	public LDAPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -141,16 +142,6 @@ public class LDAPredictor extends PredictorCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class LDAPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

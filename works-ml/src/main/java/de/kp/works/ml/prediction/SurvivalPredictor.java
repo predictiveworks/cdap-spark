@@ -33,19 +33,19 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.ml.MLUtils;
-import de.kp.works.ml.regression.AFTSurvivalRegressorManager;
+import de.kp.works.ml.regression.SurvivalRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("AFTSurvivalPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based AFT Survival regressor model.")
-public class AFTSurvivalPredictor extends PredictorCompute {
+@Name("SurvivalPredictor")
+@Description("A prediction stage that leverages a trained Apache Spark ML Survival (AFT) Regression (regressor) model.")
+public class SurvivalPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4611875710426366606L;
 
 	private AFTSurvivalPredictorConfig config;
 	private AFTSurvivalRegressionModel regressor;
 
-	public AFTSurvivalPredictor(AFTSurvivalPredictorConfig config) {
+	public SurvivalPredictor(AFTSurvivalPredictorConfig config) {
 		this.config = config;
 	}
 
@@ -53,7 +53,7 @@ public class AFTSurvivalPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		regressor = new AFTSurvivalRegressorManager().read(context, config.modelName);
+		regressor = new SurvivalRegressorManager().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

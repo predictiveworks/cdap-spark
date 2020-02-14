@@ -148,7 +148,7 @@ public class LDASink extends ClusterSink {
 		  
 		private static final long serialVersionUID = 7925435496096417998L;
 
-		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10")
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10.")
 		@Macro
 		public String dataSplit;
 		
@@ -156,7 +156,7 @@ public class LDASink extends ClusterSink {
 	    @Macro
 	    private Integer k;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
 	    @Macro
 	    private Integer maxIter;
 	    

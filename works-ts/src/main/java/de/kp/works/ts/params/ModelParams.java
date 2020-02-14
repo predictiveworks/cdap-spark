@@ -45,7 +45,7 @@ public class ModelParams {
 			+ "are differenced (also called the degree of differencing).";
 
 	public static final String D_MAX_PARAM_DESC = "The positive upper limit for tuning the degree of "
-			+ "differencing (d),";
+			+ "differencing (d).";
 
 	/** LINEAR REGRESSION **/
 	

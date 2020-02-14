@@ -44,7 +44,7 @@ import de.kp.works.ml.recommendation.ALSSink.ALSSinkConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ALSPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark based Alternating Least Squares recommendation model.")
+@Description("A prediction stage that leverages a trained Apache Spark ML ALS recommendation model.")
 public class ALSPredictor extends RecommenderCompute {
 
 	private static final long serialVersionUID = -3668319605054724319L;

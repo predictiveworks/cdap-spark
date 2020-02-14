@@ -36,14 +36,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ChiSquaredBuilder")
-@Description("A building stage for an Apache Spark based Chi-Squared Selector model.")
+@Description("A building stage for an Apache Spark ML Chi-Squared Selector model.")
 public class ChiSquaredBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -5551497359106054161L;
@@ -132,7 +134,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 		@Macro
 		public Double fpr;
 
-		@Description("The selector type of the ChisqSelector. Supported values: 'numTopFeatures, 'percentile, and 'fpr'"
+		@Description("The selector type. Supported values: 'numTopFeatures, 'percentile, and 'fpr'. "
 				+ "Default is 'numTopFeatures'.")
 		@Macro
 		public String selectorType;

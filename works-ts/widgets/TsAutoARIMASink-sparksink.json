@@ -56,6 +56,14 @@
         },
         {
           "widget-type": "textbox",
+          "label": "ElasticNet Mixing",
+          "name": "elasticNetParam",
+          "widget-attributes": {
+            "default": "0.0"
+          }
+        },
+        {
+          "widget-type": "textbox",
           "label": "Regularization Parameter",
           "name": "regParam",
           "widget-attributes": {

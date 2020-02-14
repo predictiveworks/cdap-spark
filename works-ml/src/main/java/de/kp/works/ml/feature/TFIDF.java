@@ -41,7 +41,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TFIDF")
-@Description("A transformation stage that leverages an Apache Spark based TF-IDF model to map a sequence of words into "
+@Description("A transformation stage that leverages an Apache Spark ML TF-IDF model to map a sequence of words into "
 		+ "its feature vector. Term frequency-inverse document frequency (TF-IDF) is a feature vectorization method widely "
 		+ "used in text mining to reflect the importance of a term to a document in the corpus.")
 public class TFIDF extends FeatureCompute {

@@ -37,7 +37,8 @@ import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("IndexToString")
-@Description("A transformation stage that leverages the Apache Spark IndexToString based on a trained StringIndexer model.")
+@Description("A transformation stage that leverages the Apache Spark ML IndexToString transformer. "
+		+ "This stage requires a trained StringIndexer model.")
 public class IndexToString extends FeatureCompute {
 
 	private static final long serialVersionUID = -7894198310242025849L;

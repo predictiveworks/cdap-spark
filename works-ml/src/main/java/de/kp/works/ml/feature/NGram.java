@@ -39,7 +39,7 @@ import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NGram")
-@Description("A transformation stage that leverages Apache Spark NGram transformer to convert the input array of string into "
+@Description("A transformation stage that leverages Apache Spark ML N-Gram transformer to convert the input array of string into "
 		+ "an array of n-grams.")
 public class NGram extends FeatureCompute {
 	/*

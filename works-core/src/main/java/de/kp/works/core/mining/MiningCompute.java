@@ -1,4 +1,4 @@
-package de.kp.works.core.regressor;
+package de.kp.works.core.mining;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,10 +18,10 @@ package de.kp.works.core.regressor;
  * 
  */
 
-import de.kp.works.core.CRConfig;
+import de.kp.works.core.BaseCompute;
 
-public class RegressorConfig extends CRConfig {
+public class MiningCompute extends BaseCompute {
 
-	private static final long serialVersionUID = -840366122609747351L;
+	private static final long serialVersionUID = -3484666217758453013L;
 
 }

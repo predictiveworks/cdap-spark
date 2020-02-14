@@ -35,14 +35,16 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 import de.kp.works.ml.MLUtils;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("VectorIndexerBuilder")
-@Description("A building stage for an Apache Spark based Vector Indexer model.")
+@Description("A building stage for an Apache Spark ML VectorIndexer model.")
 public class VectorIndexerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -2349583466809428065L;
@@ -105,7 +107,7 @@ public class VectorIndexerBuilder extends FeatureSink {
 		private static final long serialVersionUID = 6467486002712190478L;
 
 		@Description("The threshold for the number of values a categorical feature can take. If a feature is found "
-				+ "to have more category values than 'maxCategories', then it is declared continuous. Must be greater "
+				+ "to have more category values than this threshold, then it is declared continuous. Must be greater "
 				+ "than or equal to 2. Default is 20.")
 		@Macro
 		public Integer maxCategories;

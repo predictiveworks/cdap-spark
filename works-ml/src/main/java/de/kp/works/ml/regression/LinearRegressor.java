@@ -34,13 +34,16 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.RegressorEvaluator;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.regressor.RegressorConfig;
 import de.kp.works.core.regressor.RegressorSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LinearRegressor")
-@Description("A building stage for an Apache Spark based linear regressor model. This stage expects "
-		+ "")
+@Description("A building stage for an Apache Spark ML Linear Regression (regressor) model. This stage expects "
+		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, " 
+		+ "another that describes the class or label value as numeric value.")
 public class LinearRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -9189352556712045343L;
@@ -142,7 +145,7 @@ public class LinearRegressor extends RegressorSink {
 		public Double regParam;
 
 		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
-				+ "of more iterations. Default is 1e-6")
+				+ "of more iterations. Default is 1e-6.")
 		@Macro
 		public Double tol;		
 		

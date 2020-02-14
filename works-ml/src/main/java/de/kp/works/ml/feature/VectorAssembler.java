@@ -41,14 +41,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.feature.FeatureConfig;
+
+import de.kp.works.core.BaseConfig;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
 import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("Binarizer")
-@Description("A transformation stage that leverages the Apache Spark Vector Assember to merge multiple numeric "
+@Name("VectorAssembler")
+@Description("A transformation stage that leverages the Apache Spark ML Vector Assembler to merge multiple numeric "
 		+ "(or numeric vector) fields into a single feature vector.")
 public class VectorAssembler extends FeatureCompute {
 
@@ -180,13 +181,17 @@ public class VectorAssembler extends FeatureCompute {
 
 	}	
 
-	public static class VectorAssemblerConfig extends FeatureConfig {
+	public static class VectorAssemblerConfig extends BaseConfig {
 
 		private static final long serialVersionUID = 1127092936375337969L;
 		
-		@Description("The comma-separated list of numeric fields (or numeric vectors field) that has to be be merged.")
+		@Description("The comma-separated list of numeric (or numeric vector) fields that have to be be assembled.")
 		@Macro
 		public String inputCols;
+
+		@Description("The name of the field in the output schema that contains the transformed features.")
+		@Macro
+		public String outputCol;
 		
 		public VectorAssemblerConfig() {			
 		}
@@ -211,10 +216,17 @@ public class VectorAssembler extends FeatureCompute {
 				throw new IllegalArgumentException(
 						String.format("[%s] The fields must not be empty.", this.getClass().getName()));
 			}
+
+			if (Strings.isNullOrEmpty(outputCol)) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The name of the field that contains the transformed features must not be empty.",
+						this.getClass().getName()));
+			}
 			
 		}
+
 		public void validateSchema(Schema inputSchema) {
-			
+		
 			String[] columns = getFields();
 			for (String column: columns) {
 
@@ -240,8 +252,7 @@ public class VectorAssembler extends FeatureCompute {
 				
 			}
 			
-		}
-		
+		}		
 		
 	}
 }

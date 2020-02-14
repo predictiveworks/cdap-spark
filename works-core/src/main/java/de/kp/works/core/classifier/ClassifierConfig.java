@@ -18,91 +18,10 @@ package de.kp.works.core.classifier;
  * 
  */
 
-import com.google.common.base.Strings;
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.data.schema.Schema;
-import de.kp.works.core.BaseConfig;
-import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.CRConfig;
 
-public class ClassifierConfig extends BaseConfig {
+public class ClassifierConfig extends CRConfig {
 
 	private static final long serialVersionUID = -8367528839538247694L;
 
-	@Description("The unique name of the classifier model.")
-	@Macro
-	public String modelName;
-
-	@Description("The name of the field in the input schema that contains the feature vector.")
-	@Macro
-	public String featuresCol;
-
-	@Description("The name of the field in the input schema that contains the label.")
-	@Macro
-	public String labelCol;
-
-	@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30.")
-	@Macro
-	public String dataSplit;
-	
-	public void validate() {
-		super.validate();
-
-		/** MODEL & COLUMNS **/
-		if (Strings.isNullOrEmpty(modelName)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
-		}
-		if (Strings.isNullOrEmpty(featuresCol)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the feature vector must not be empty.",
-							this.getClass().getName()));
-		}
-		if (Strings.isNullOrEmpty(labelCol)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The name of the field that contains the label value must not be empty.",
-							this.getClass().getName()));
-		}
-		if (Strings.isNullOrEmpty(dataSplit)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data split must not be empty.",
-							this.getClass().getName()));
-		}
-
-	}
-	
-	public double[] getSplits() {
-		return getDataSplits(dataSplit);
-	}
-
-	public void validateSchema(Schema inputSchema) {
-
-		/** FEATURES COLUMN **/
-
-		Schema.Field featuresField = inputSchema.getField(featuresCol);
-		if (featuresField == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the feature vector.", this.getClass().getName()));
-		}
-
-		SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
-
-		/** LABEL COLUMN **/
-
-		Schema.Field labelField = inputSchema.getField(labelCol);
-		if (labelField == null) {
-			throw new IllegalArgumentException(String
-					.format("[%s] The input schema must contain the field that defines the label value.", this.getClass().getName()));
-		}
-
-		Schema.Type labelType = labelField.getSchema().getType();
-		/*
-		 * The label must be a numeric data type (double, float, int, long), which then
-		 * is casted to Double (see classification trainer)
-		 */
-		if (SchemaUtil.isNumericType(labelType) == false) {
-			throw new IllegalArgumentException("The data type of the label field must be numeric.");
-		}
-	}
-	
 }

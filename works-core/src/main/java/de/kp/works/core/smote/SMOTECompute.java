@@ -1,4 +1,4 @@
-package de.kp.works.core.regressor;
+package de.kp.works.core.smote;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,10 +18,10 @@ package de.kp.works.core.regressor;
  * 
  */
 
-import de.kp.works.core.CRConfig;
+import de.kp.works.core.BaseCompute;
 
-public class RegressorConfig extends CRConfig {
+public class SMOTECompute extends BaseCompute {
 
-	private static final long serialVersionUID = -840366122609747351L;
+	private static final long serialVersionUID = 796827551338287813L;
 
 }

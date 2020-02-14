@@ -33,11 +33,13 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.ml.RegressorEvaluator;
 import de.kp.works.core.regressor.RegressorConfig;
 import de.kp.works.core.regressor.RegressorSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("GLRegressor")
 @Description("A building stage for an Apache Spark ML Generalized Linear regressor model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  

@@ -51,7 +51,7 @@ public class ARIMASinkConfig extends ARIMAConfig {
 	public String meanOut;
 
 	@Description("The split of the dataset into train & test data, e.g. 80:20. Note, this is a split time "
-			+ "and is computed from the total time span (min, max) of the time series. Default is 70:30")
+			+ "and is computed from the total time span (min, max) of the time series. Default is 70:30.")
 	@Macro
 	public String timeSplit;
 

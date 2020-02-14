@@ -35,23 +35,25 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.RegressorEvaluator;
 import de.kp.works.core.regressor.RegressorConfig;
 import de.kp.works.core.regressor.RegressorSink;
 
-@Plugin(type = "sparksink")
-@Name("AFTSurvivalRegressor")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
+@Name("SurvivalRegressor")
 @Description("A building stage for an Apache Spark ML Survival (AFT) regressor model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
 		+ "another that describes the class or label value as numeric value.")
-public class AFTSurvivalRegressor extends RegressorSink {
+public class SurvivalRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -2096945742865221471L;
 	
-	private AFTSurvivalConfig config;
+	private SurvivalConfig config;
 	
-	public AFTSurvivalRegressor(AFTSurvivalConfig config) {
+	public SurvivalRegressor(SurvivalConfig config) {
 		this.config = config;
 	}
 
@@ -119,7 +121,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new AFTSurvivalRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new SurvivalRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 
 	}
 
@@ -128,7 +130,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		config.validateSchema(inputSchema);		
 	}
 	
-	public static class AFTSurvivalConfig extends RegressorConfig {
+	public static class SurvivalConfig extends RegressorConfig {
 
 		private static final long serialVersionUID = 8618207399826721560L;
 
@@ -151,7 +153,7 @@ public class AFTSurvivalRegressor extends RegressorSink {
 		 * default settings are used 
 		 */
 		
-		public AFTSurvivalConfig() {
+		public SurvivalConfig() {
 
 			dataSplit = "70:30";
 			

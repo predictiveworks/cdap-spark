@@ -40,7 +40,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("HashingTF")
-@Description("A transformation stage that leverages the Apache Spark HashingTF and maps a sequence of terms to their "
+@Description("A transformation stage that leverages the Apache Spark ML HashingTF and maps a sequence of terms to their "
 		+ "term frequencies using the hashing trick. Currently the Austin Appleby's MurmurHash 3 algorithm is used.")
 public class HashingTF extends FeatureCompute {
 	/*

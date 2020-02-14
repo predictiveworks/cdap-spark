@@ -30,8 +30,9 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+
 import de.kp.works.core.predictor.PredictorCompute;
-import de.kp.works.core.predictor.PredictorConfig;
+import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.KMeansManager;
 
@@ -42,10 +43,10 @@ public class KMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 8662496131393728472L;
 
-	private KMeansPredictorConfig config;
+	private PredictorConfig config;
 	private KMeansModel model;
 
-	public KMeansPredictor(KMeansPredictorConfig config) {
+	public KMeansPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -121,16 +122,6 @@ public class KMeansPredictor extends PredictorCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class KMeansPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

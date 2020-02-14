@@ -35,13 +35,15 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("W2VecBuilder")
-@Description("A building stage for an Apache Spark based Word-to-Vector feature model.")
+@Description("A building stage for an Apache Spark ML Word2Vec feature model.")
 public class W2VecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 3885087751281049601L;
@@ -105,7 +107,7 @@ public class W2VecBuilder extends FeatureSink {
 		@Macro
 		public Integer maxIter;
 		
-		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.025")
+		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.025.")
 		@Macro
 		public Double stepSize;
 

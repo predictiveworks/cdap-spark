@@ -39,7 +39,7 @@ import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("QuantileDiscretizer")
-@Description("A transformation stage that leverages the Apache Spark Quantile Discretizer "
+@Description("A transformation stage that leverages the Apache Spark ML Quantile Discretizer "
 		+ "to map continuous features of a certain input field onto binned categorical feature.")
 public class QuantileDiscretizer extends FeatureCompute {
 	/*

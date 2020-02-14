@@ -31,7 +31,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
-import de.kp.works.core.predictor.PredictorConfig;
+import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.ml.MLUtils;
 import de.kp.works.ml.clustering.BisectingKMeansManager;
 
@@ -42,10 +42,10 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7843836179229489547L;
 
-	private BisectingKMeansPredictorConfig config;
+	private PredictorConfig config;
 	private BisectingKMeansModel model;
 
-	public BisectingKMeansPredictor(BisectingKMeansPredictorConfig config) {
+	public BisectingKMeansPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -121,16 +121,6 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class BisectingKMeansPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3385481976641988848L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

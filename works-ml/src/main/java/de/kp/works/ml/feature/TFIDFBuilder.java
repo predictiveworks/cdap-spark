@@ -35,13 +35,15 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
 
-@Plugin(type = "sparksink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TFIDFBuilder")
-@Description("A building stage for an Apache Spark based TF-IDF feature model.")
+@Description("A building stage for an Apache Spark ML TF-IDF feature model.")
 public class TFIDFBuilder extends FeatureSink {
 	/*
 	 * This model builder trains a text model that is used to transform

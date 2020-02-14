@@ -40,7 +40,7 @@ import de.kp.works.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Binarizer")
-@Description("A transformation stage that leverages the Apache Spark Feature Binarizer to map continuous features onto binary values.")
+@Description("A transformation stage that leverages the Apache Spark ML Binarizer to map continuous features onto binary values.")
 public class Binarizer extends FeatureCompute {
 	
 	private static final long serialVersionUID = 4868372641130255213L;
