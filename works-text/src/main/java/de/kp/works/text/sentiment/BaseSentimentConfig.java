@@ -28,7 +28,7 @@ public class BaseSentimentConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -5971941200750995084L;
 
-	@Description("The unique name of the sentiment analysis model.")
+	@Description("The unique name of the Sentiment model.")
 	@Macro
 	public String modelName;
 

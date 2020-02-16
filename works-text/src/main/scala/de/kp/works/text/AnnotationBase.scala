@@ -128,65 +128,70 @@ trait AnnotationBase {
     
   }}
   /*
+   * A helper method to finalize the result of the POS tagging approach;
+   * it concatenates tokens and tags and returns a single set of mixed
+   * tokens separatetd by whitespaces
+   */
+  def finishPOSTagger = udf{(tokens:WrappedArray[Row], pos:WrappedArray[Row]) => {
+   
+    val tSchema = tokens.head.schema
+    val tridx = tSchema.fieldIndex("result")
+   
+    val pSchema = pos.head.schema
+    val pridx = pSchema.fieldIndex("result")
+
+    val mixin = tokens.zip(pos).map{case(token, tag) => {
+      s"${token.getString(tridx)}__${tag.getString(pridx)}"
+    }}
+
+    mixin.mkString(" ")
+    
+  }}
+  
+  /*
    * A helper method to finalize the result of the Norvig spell checking
    * approach; as this mechanism is assigned to noise reduction, the plugin
    * returns the corrected sentence
    */
-  def finishSpellChecker(threshold:Double) = udf{(document:String, checked:WrappedArray[Row]) => {
+  def finishSpellChecker(threshold:Double) = udf{(tokens:WrappedArray[Row], suggestions:WrappedArray[Row]) => {
+      
+    val tSchema = tokens.head.schema
+    val tridx = tSchema.fieldIndex("result")
     
-    val schema = checked.head.schema
+    val sSchema = suggestions.head.schema
+    val sridx = sSchema.fieldIndex("result")
+    val smidx = sSchema.fieldIndex("metadata")
+    
+    val corrections = tokens.zip(suggestions).map{case(token, suggestion) => {
+
+      val term = token.getString(tridx)
       
-    val bidx = schema.fieldIndex("begin")
-    val eidx = schema.fieldIndex("end")
+      val confidence = suggestion.getJavaMap[String,String](smidx).get("confidence").toDouble
+      val spelling = suggestion.getString(sridx)
       
+      if (term != spelling && confidence > threshold) 
+        spelling
+
+      else term
+      
+    }}
+
+    corrections.mkString(" ")
+
+  }}
+  /**
+   * This is a helper method that concatenates the result of a 
+   * tokenization stage into a whitespace separated sequence of 
+   * tokens. The output can be used as 'text document' with other
+   * text analysis plugins.
+   */
+  def finishTokens = udf{tokens:WrappedArray[Row] => {
+    
+    val schema = tokens.head.schema
     val ridx = schema.fieldIndex("result")
-    val midx = schema.fieldIndex("metadata")
     
-    var output = document
-    val replaces = checked.map(row => {
-
-      val confidence = row.getJavaMap[String,String](midx).get("confidence").toDouble
-      /* 
-       * Start and end indices to retrieve the original
-       * token from the document
-       */
-      val begin = row.getInt(bidx)
-      val end   = row.getInt(eidx) + 1
-      
-      val result = row.getString(ridx)
-      val token = document.substring(begin, end)
-      
-      (confidence, token, result)
-      
-    })
-
-    /* 
-     * Restrict to those terms where raw & suggested 
-     * version are different 
-     */
-    .filter(v => v._2 != v._3)
-    .filter(v => {
-      /* 
-       * Extreme values 0 and 1 specify that the term
-       * is in the dictionary, where 0 indicates that
-       * it is below the ignore size threshold 
-       */
-      if (v._1 == 0 || v._1 == 1) true 
-      else {
-        if (v._1 > threshold) true else false
-      }
-    })
+    tokens.map(row => row.getString(ridx)).mkString(" ")
     
-    if (replaces.isEmpty) document
-    else {
-
-      replaces.foreach(v => {
-        output = output.replace(v._2, v._3)
-      })
-
-      output
-
-    }
   }}
   
   def detectedSentences(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
@@ -223,6 +228,16 @@ trait AnnotationBase {
     
   }
   
+  def extractTokens(dataset:Dataset[Row], textCol:String, normalization:Boolean):Dataset[Row] = {
+       
+      if (normalization == true)
+        normalizedTokens(dataset, textCol)
+
+      else
+        tokenizedSentences(dataset, textCol)
+ 
+  }
+  
   def tokenizedSentences(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
     
     var document = detectedSentences(dataset, textCol)
@@ -243,7 +258,7 @@ trait AnnotationBase {
   /**
    * A helper method to annotate a raw text document up to normalized tokens
    */
-  def normalizedTokens(dataset:Dataset[Row], textCol:String):Dataset[Row] = {
+  def normalizedTokens(dataset:Dataset[Row], textCol:String, cleanupRegex:String = "[^A-Za-z0-9-]"):Dataset[Row] = {
     
     var document = tokenizedSentences(dataset, textCol)
     /*
@@ -257,6 +272,7 @@ trait AnnotationBase {
     val normalizer = new nlp.annotators.Normalizer()
     normalizer.setInputCols("token")
     normalizer.setOutputCol("token")
+    normalizer.setCleanupPatterns(Array(cleanupRegex))
     
     document = normalizer.fit(document).transform(document)
     document

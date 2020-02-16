@@ -118,7 +118,7 @@ public class TsAggregate extends TimeCompute {
 		@Macro
 		public String windowDuration;
 
-		@Description("The name of the aggregation method. Supported values are 'avg', 'mean' and 'sum'. Default is 'avg'.")
+		@Description("The name of the aggregation method. Supported values are 'avg', 'count', 'mean' and 'sum'. Default is 'avg'.")
 		@Macro
 		public String aggregationMethod;
 

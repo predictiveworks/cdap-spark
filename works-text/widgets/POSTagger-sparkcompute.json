@@ -23,13 +23,8 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "POS Field",
-          "name": "predictionCol"
+          "label": "Output Field",
+          "name": "mixinCol"
         }
       ]
     }

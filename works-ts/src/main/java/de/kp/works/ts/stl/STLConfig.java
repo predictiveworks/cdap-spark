@@ -24,7 +24,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.time.TimeConfig;
 
-public class BaseSTLConfig extends TimeConfig {
+public class STLConfig extends TimeConfig {
 
 	private static final long serialVersionUID = 4387623595034151300L;
 

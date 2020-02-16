@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "TS Aggregate",
+"display-name": "TS Regressor",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -36,7 +36,7 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Time Lag",
+          "label": "Lag Order",
           "name": "timeLag",
           "widget-attributes": {
             "default": "20"
@@ -49,7 +49,7 @@
       "properties": [
         {
           "widget-type": "textbox",
-          "label": "Minimum Information Gain",
+          "label": "Minimum Gain",
           "name": "minInfoGain",
           "widget-attributes": {
             "default": "0.0"

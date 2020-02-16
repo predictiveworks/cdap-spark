@@ -1,4 +1,4 @@
-package de.kp.works.text.chunk
+package de.kp.works.text.pos
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -19,15 +19,14 @@ package de.kp.works.text.chunk
  */
 import java.util.{List => JList}
 import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel
-
 import org.apache.spark.sql._
 import de.kp.works.text.AnnotationBase
-
 import scala.collection.JavaConversions._
+import org.apache.spark.annotation.InterfaceStability
 
 class Chunker(model:PerceptronModel) extends AnnotationBase {
   
-  def chunk(dataset:Dataset[Row], parsers:JList[String], textCol:String, tokenCol:String, chunkCol:String):Dataset[Row] = {
+  def chunk(dataset:Dataset[Row], parsers:JList[String], textCol:String, chunkCol:String):Dataset[Row] = {
     
     /* Sample: ["(?:<JJ|DT>)(?:<NN|VBG>)+"] */
     val regexParsers = parsers.toArray.map(parser => parser.asInstanceOf[String])
@@ -46,8 +45,8 @@ class Chunker(model:PerceptronModel) extends AnnotationBase {
     val chunked = chunker.transform(tagged)
     
     val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token", "chunk"))
-    .setOutputCols(tokenCol, chunkCol)
+    .setInputCols(Array("chunk"))
+    .setOutputCols(chunkCol)
 
     finisher.transform(chunked)
     

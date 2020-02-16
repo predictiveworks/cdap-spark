@@ -29,7 +29,8 @@ class Word2VecTrainer extends AnnotationBase {
 
   def train(dataset:Dataset[Row], textCol:String, params:JMap[String,Object]):Word2VecModel = {
     
-    val document = normalizedTokens(dataset, textCol)
+    val normalization = params.get("normalization").asInstanceOf[Boolean]    
+    val document = extractTokens(dataset, textCol, normalization)
 
     val approach = new Word2VecApproach()
 		

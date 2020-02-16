@@ -34,14 +34,16 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.core.BaseConfig;
+
 import de.kp.works.text.associations.RelNER;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NERRelation")
-@Description("An transformat stage that leverages the result of a susequent NER tagging stage and extracts relations from co-occurring named entities.")
-public class NERRelation extends BaseCompute {
+@Description("A transformation stage that leverages the result of an NER tagging stage and "
+		+ "extracts relations between named entities from their co-occurring.")
+public class NERRelation extends TextCompute {
 
 	private static final long serialVersionUID = 1L;
 

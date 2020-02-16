@@ -1,4 +1,4 @@
-package de.kp.works.text.chunking;
+package de.kp.works.text.pos;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -38,9 +38,8 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
-import de.kp.works.text.chunk.Chunker;
-import de.kp.works.text.pos.BasePOSConfig;
-import de.kp.works.text.pos.POSManager;
+import de.kp.works.text.pos.Chunker;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSChunker")
@@ -64,7 +63,7 @@ public class POSChunker extends TextCompute {
 		model = new POSManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
+					String.format("[%s] A Part-of-Speech analysis model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -86,7 +85,7 @@ public class POSChunker extends TextCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the token & chunk columns
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.chunkCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -100,7 +99,7 @@ public class POSChunker extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Chunker chunker = new Chunker(model);
-		return chunker.chunk(source, config.getRules(), config.textCol, config.tokenCol, config.chunkCol);
+		return chunker.chunk(source, config.getRules(), config.textCol, config.chunkCol);
 		
 	}
 	@Override
@@ -123,12 +122,10 @@ public class POSChunker extends TextCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	protected Schema getOutputSchema(Schema inputSchema, String tokenField, String chunkField) {
+	protected Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(chunkField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.chunkCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
@@ -138,13 +135,9 @@ public class POSChunker extends TextCompute {
 
 		private static final long serialVersionUID = -7335693906960966678L;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
-
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
-		@Macro
-		public String tokenCol;
 
 		@Description("The name of the field in the output schema that contains the extracted chunks.")
 		@Macro
@@ -181,12 +174,6 @@ public class POSChunker extends TextCompute {
 			if (Strings.isNullOrEmpty(textCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the text document must not be empty.",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(tokenCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
 						this.getClass().getName()));
 			}
 			

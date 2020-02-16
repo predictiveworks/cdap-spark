@@ -114,7 +114,7 @@ public class TsAutoSTL extends STLCompute {
 		config.validateSchema(inputSchema);
 	}
 	
-	public static class TsAutoSTLConfig extends BaseSTLConfig {
+	public static class TsAutoSTLConfig extends STLConfig {
 
 		private static final long serialVersionUID = -3984501613672361196L;
 

@@ -35,6 +35,18 @@
           "widget-type": "textbox",
           "label": "Entities Field",
           "name": "nerCol"
+        },
+        {
+          "widget-type": "select",
+          "label": "Normalization",
+          "name": "normalization",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
         }
       ]
     }

@@ -28,17 +28,13 @@ public class BaseNERConfig extends BaseConfig {
 
 	private static final long serialVersionUID = 8733733573014386425L;
 
-	@Description("The unique name of NER (CRF) model.")
+	@Description("The unique name of the NER (CRF) model.")
 	@Macro
 	public String modelName;
 
-	@Description("The unique name of trained Word2Vec embedding model.")
+	@Description("The unique name of the trained Word2Vec embedding model.")
 	@Macro
 	public String embeddingName;
-
-	@Description("The name of the field in the input schema that contains the document.")
-	@Macro
-	public String textCol;
 
 	public void validate() {
 		super.validate();
@@ -51,12 +47,6 @@ public class BaseNERConfig extends BaseConfig {
 		if (Strings.isNullOrEmpty(embeddingName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the trained Word2Vec embedding model must not be empty.", this.getClass().getName()));
-		}
-		
-		if (Strings.isNullOrEmpty(textCol)) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The name of the field that contains the text document must not be empty.",
-					this.getClass().getName()));
 		}
 		
 	}

@@ -22,7 +22,7 @@ import org.apache.hadoop.fs.Path
 
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.{Vector,Vectors}
-import org.apache.spark.ml.clustering.{LDA, LDAModel, DistributedLDAModel}
+import org.apache.spark.ml.clustering.{LDAModel, DistributedLDAModel}
 
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
@@ -143,7 +143,7 @@ class LDATopic(override val uid: String)
     /*
      * STEP #2: Train LDA (distributed) model
      */
-    val algo = new LDA()
+    val algo = new org.apache.spark.ml.clustering.LDA()
 
     algo.setK($(k))
     algo.setMaxIter($(maxIter))

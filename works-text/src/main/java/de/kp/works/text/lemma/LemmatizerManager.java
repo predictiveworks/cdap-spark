@@ -31,7 +31,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.AbstractModelManager;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class LemmaManager extends AbstractModelManager {
+public class LemmatizerManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "Lemmatization";
 

@@ -48,8 +48,8 @@ import de.kp.works.ts.util.TimeSeriesModelManager;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoCorrelate")
 @Description("A time series computation stage that determines the ACF (Auto Correlation Function) of a time series. "
-		+ "This stage does not trasform the input dataset, but computes and persists its ACF for ease of use in subsequent stages.")
-public class TsAutoCorrelate extends TimeCompute {
+		+ "This stage does not transform the input dataset, but computes and persists its ACF for ease of use in subsequent stages.")
+public class TsACF extends TimeCompute {
 
 	private static final long serialVersionUID = -2782650546004837104L;
 
@@ -58,7 +58,7 @@ public class TsAutoCorrelate extends TimeCompute {
 	private FileSet modelFs;
 	private Table modelMeta;
 
-	public TsAutoCorrelate(TsAutoCorrelateConfig config) {
+	public TsACF(TsAutoCorrelateConfig config) {
 		this.config = config;
 
 	}
@@ -117,7 +117,7 @@ public class TsAutoCorrelate extends TimeCompute {
 
 		private static final long serialVersionUID = 3768876963479002781L;
 
-		@Description("The unique name of the time prediction (regression) model.")
+		@Description("The unique name of the ACF dataset.")
 		@Macro
 		public String modelName;
 
@@ -130,7 +130,7 @@ public class TsAutoCorrelate extends TimeCompute {
 		@Macro
 		public String lagValues;
 
-		@Description("The threshold used to determine the lag value with the highest correlation score. Default is 0.95")
+		@Description("The threshold used to determine the lag value with the highest correlation score. Default is 0.95.")
 		@Macro
 		public Double threshold;
 

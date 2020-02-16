@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Lemma Builder",
+"display-name": "Sentiment Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -23,18 +23,18 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Lemma Delimiter",
-          "name": "keyDelimiter",
+          "label": "Sentiment Delimiter",
+          "name": "sentimentDelimiter",
           "widget-attributes": {
-            "default": "->"
+              "default": "->"
           }
         },
         {
           "widget-type": "textbox",
-          "label": "Token Delimiter",
-          "name": "valueDelimiter",
+          "label": "Data Split",
+          "name": "dataSplit",
           "widget-attributes": {
-            "default": "\\S+"
+            "default": "70:30"
           }
         }
       ]

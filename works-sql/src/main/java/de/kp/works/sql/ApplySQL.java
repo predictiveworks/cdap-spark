@@ -182,7 +182,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		private static final long serialVersionUID = -4037375709289068859L;
 		
 		private static final String SQL_DESCRIPTION = "Please provide an Apache Spark compliant SQL statement to filter, " 
-				+ "group or aggregate the data records that have been published by your previous data stage.";
+				+ "group or aggregate the data records that have been published by your previous pipeline stage.";
 		  
 		@Name(Constants.Reference.REFERENCE_NAME)
 		@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)

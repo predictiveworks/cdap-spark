@@ -37,15 +37,17 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
+
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NERTagger")
-@Description("An tagging stage that leverages a trained Word2Vec model and NER (CRF) model to map an input "
+@Description("A tagging stage that leverages a trained Word2Vec model and NER (CRF) model to map an input "
 		+ "text field onto an output token & entities field.")
-public class NERTagger extends BaseCompute {
+public class NERTagger extends TextCompute {
 
 	private static final long serialVersionUID = -7309094976122977799L;
 
@@ -104,7 +106,7 @@ public class NERTagger extends BaseCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		NERPredictor predictor = new NERPredictor(model, word2vec);
-		return predictor.predict(source, config.textCol, config.tokenCol, config.nerCol);
+		return predictor.predict(source, config.textCol, config.tokenCol, config.nerCol, config.getNormalization());
 		
 	}
 
@@ -143,7 +145,15 @@ public class NERTagger extends BaseCompute {
 
 		private static final long serialVersionUID = -1825371412290503006L;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description("The name of the field in the input schema that contains the document.")
+		@Macro
+		public String textCol;
+
+		@Description(Names.NORMALIZATION)
+		@Macro
+		public String normalization;
+
+		@Description(Names.TOKEN_COL)
 		@Macro
 		public String tokenCol;
 
@@ -151,8 +161,18 @@ public class NERTagger extends BaseCompute {
 		@Macro
 		public String nerCol;
 
+		public Boolean getNormalization() {
+			return (normalization.equals("true")) ? true : false;
+		}
+
 		public void validate() {
 			super.validate();
+			
+			if (Strings.isNullOrEmpty(textCol)) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The name of the field that contains the text document must not be empty.",
+						this.getClass().getName()));
+			}
 			
 			if (Strings.isNullOrEmpty(tokenCol)) {
 				throw new IllegalArgumentException(String.format(

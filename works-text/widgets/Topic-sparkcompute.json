@@ -22,11 +22,6 @@
           "name": "textCol"
         },
         {
-          "widget-type": "textbox",
-          "label": "Topic Field",
-          "name": "topicCol"
-        },
-        {
           "widget-type": "select",
           "label": "Topic Strategy",
           "name": "topicStrategy",

@@ -42,15 +42,15 @@ import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("POSSink")
-@Description("A building stage for a Part-of-Speech model.")
-public class POSSink extends TextSink {
+@Name("POSBuilder")
+@Description("A building stage for a Part of Speech model.")
+public class POSBuilder extends TextSink {
 
 	private static final long serialVersionUID = 1L;
 
 	private POSSinkConfig config;
 
-	public POSSink(POSSinkConfig config) {
+	public POSBuilder(POSSinkConfig config) {
 		this.config = config;
 	}
 

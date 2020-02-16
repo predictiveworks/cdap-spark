@@ -14,16 +14,16 @@
         {
           "widget-type": "textbox",
           "label": "Text Field",
-          "name": "inputCol"
+          "name": "textCol"
         },
         {
           "widget-type": "textbox",
-          "label": "N-gram Field",
-          "name": "outputCol"
+          "label": "N-Gram Field",
+          "name": "ngramCol"
         },
         {
           "widget-type": "textbox",
-          "label": "N-gram Length",
+          "label": "N-Gram Length",
           "name": "n",
           "widget-attributes": {
             "default": "2"

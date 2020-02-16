@@ -20,6 +20,18 @@
           "widget-type": "textbox",
           "label": "Text Field",
           "name": "textCol"
+        },
+        {
+          "widget-type": "select",
+          "label": "Normalization",
+          "name": "normalization",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
         }
       ]
     },

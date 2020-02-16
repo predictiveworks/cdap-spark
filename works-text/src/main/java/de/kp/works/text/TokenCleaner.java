@@ -35,14 +35,18 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.pos.BasePOSConfig;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TokenCleaner")
 @Description("A transformation stage that leverages the Spark NLP Stopword Cleaner to map an input "
-		+ "text field onto an output token & cleaned token field.")
-public class TokenCleaner extends BaseCompute {
+		+ "text field onto its normalized terms and remove each term that is defined as stop word. "
+		+ "This stage adds an extra field to the input schema that contains the whitespace "
+		+ "separated set of remaining tokens.")		
+public class TokenCleaner extends TextCompute {
 	
 	private static final long serialVersionUID = 4659252932384061356L;
 
@@ -75,7 +79,7 @@ public class TokenCleaner extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		return NLP.cleanStopwords(source, config.getWords(), config.textCol, config.tokenCol, config.cleanedCol);
+		return NLP.cleanStopwords(source, config.getWords(), config.textCol, config.cleanCol);
 	}
 	
 	@Override
@@ -100,9 +104,7 @@ public class TokenCleaner extends BaseCompute {
 	protected Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(config.tokenCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(config.cleanedCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.cleanCol, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
@@ -112,23 +114,19 @@ public class TokenCleaner extends BaseCompute {
 
 		private static final long serialVersionUID = 268522139824357779L;
 
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description(Names.CLEAN_COL)
 		@Macro
-		public String tokenCol;
+		public String cleanCol;
 
-		@Description("The name of the field in the output schema that contains the cleaned tokens.")
-		@Macro
-		public String cleanedCol;
-
-		@Description("A delimiter separated list of chunking rules.")
+		@Description("A delimiter separated list of stop words, i.e. words that have to be removed from the extracted tokens.")
 		@Macro
 		private String words;
 
-		@Description("The delimiter used to separate the different chunking rules.")
+		@Description("The delimiter used to separate the different stop words. Default is comma-separated.")
 		@Macro
 		private String delimiter;
 		
@@ -158,13 +156,7 @@ public class TokenCleaner extends BaseCompute {
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(tokenCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(cleanedCol)) {
+			if (Strings.isNullOrEmpty(cleanCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the cleaned tokens must not be empty.",
 						this.getClass().getName()));

@@ -50,17 +50,17 @@ import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("LDATextSink")
+@Name("LDABuilder")
 @Description("A building stage for a Latent Dirichlet Allocation (LDA) model. An LDA model can be used for "
 		+ "text clustering or labeling. This model training stage requires a pre-trained Word Embedding model.")
-public class LDATextSink extends TextSink {
+public class LDABuilder extends TextSink {
 
 	private static final long serialVersionUID = 4678742201151266996L;
 
 	private LDATextSinkConfig config;
 	private Word2VecModel word2vec;
 	
-	public LDATextSink(LDATextSinkConfig config) {
+	public LDABuilder(LDATextSinkConfig config) {
 		this.config = config;
 	}
 

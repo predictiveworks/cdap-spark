@@ -41,17 +41,17 @@ import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("SentimentSink")
+@Name("SentimentBuilder")
 @Description("A building stage for a Sentiment Analysis model based on the sentiment algorithm "
 		+ 	"introduced by Vivek Narayanan. The training corpus comprises a labeled set of sentiment "
 		+ 	"tokens.")
-public class SentimentSink extends TextSink {
+public class SentimentBuilder extends TextSink {
 	
 	private static final long serialVersionUID = -242069506700606299L;
 
 	private SentimentSinkConfig config;
 	
-	public SentimentSink(SentimentSinkConfig config) {
+	public SentimentBuilder(SentimentSinkConfig config) {
 		this.config = config;
 	}
 

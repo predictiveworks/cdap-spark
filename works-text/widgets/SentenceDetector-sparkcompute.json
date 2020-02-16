@@ -14,12 +14,12 @@
         {
           "widget-type": "textbox",
           "label": "Text Field",
-          "name": "inputCol"
+          "name": "textCol"
         },
         {
           "widget-type": "textbox",
           "label": "Sentence Field",
-          "name": "outputCol"
+          "name": "sentenceCol"
         }
       ]
     }

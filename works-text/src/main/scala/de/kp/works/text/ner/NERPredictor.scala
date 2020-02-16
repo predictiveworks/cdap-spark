@@ -27,9 +27,9 @@ import org.apache.spark.sql._
 
 class NERPredictor(model:NerCrfModel, word2vec:Word2VecModel) extends AnnotationBase {
   
-  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, nerCol:String):Dataset[Row] = {
+  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, nerCol:String, normalization:Boolean):Dataset[Row] = {
     
-    var document = normalizedTokens(dataset, textCol)
+    var document = extractTokens(dataset, textCol, normalization)
     /*
      * 'sentences' is the column build by the 'normalizedTokens'
      * method is named slightly different from the CoNLL Parser

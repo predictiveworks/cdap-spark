@@ -23,13 +23,8 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
-        },
-        {
-          "widget-type": "textbox",
           "label": "Lemma Field",
-          "name": "predictionCol"
+          "name": "lemmaCol"
         }
       ]
     }

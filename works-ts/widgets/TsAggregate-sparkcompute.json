@@ -33,6 +33,7 @@
           "widget-attributes": {
             "values": [
               "avg",
+              "count",
               "mean",
               "sum"
             ],

@@ -36,13 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NorvigChecker")
-@Description("A transformation stage that checks the spelling of each term in a text document, leveraging a trained "
-		+ "Norvig Spelling model. This stage appends one field to the input schema, that contains the suggested "
-		+ "corrections of the input text document.")
+@Description("A transformation stage that checks the spelling of each normalized term in a text document, "
+		+ "leveraging a trained Norvig Spelling model. This stage adds an extra field to the input schema "
+		+ "that contains the whitespace separated set of suggested spelling corrections.")
 public class NorvigChecker extends TextCompute {
 
 	private static final long serialVersionUID = 2369095136053899600L;
@@ -61,7 +63,7 @@ public class NorvigChecker extends TextCompute {
 		model = new SpellManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
-					String.format("[%s] A Norvig Sweeting model with name '%s' does not exist.",
+					String.format("[%s] A Norvig Spell Checking model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
 	}
@@ -98,7 +100,7 @@ public class NorvigChecker extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		NorvigPredictor predictor = new NorvigPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.predictionCol, config.threshold);
+		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.spellCol, config.threshold);
 
 		return predictions;
 		
@@ -127,7 +129,7 @@ public class NorvigChecker extends TextCompute {
 	protected Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		fields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.STRING)));
+		fields.add(Schema.Field.of(config.spellCol, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
@@ -137,13 +139,13 @@ public class NorvigChecker extends TextCompute {
 
 		private static final long serialVersionUID = 2295039730979859235L;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the suggested text document.")
+		@Description(Names.SPELL_COL)
 		@Macro
-		public String predictionCol;
+		public String spellCol;
 
 		@Description("The probability threshold above which a suggested term spelling is accepted. Default is 0.75.")
 		@Macro
@@ -161,16 +163,16 @@ public class NorvigChecker extends TextCompute {
 						"[%s] The name of the field that contains the text document must not be empty.",
 						this.getClass().getName()));
 			}
+			
+			if (Strings.isNullOrEmpty(spellCol)) {
+				throw new IllegalArgumentException(String.format(
+						"[%s] The name of the field that contains the suggested spellings must not be empty.",
+						this.getClass().getName()));
+			}
 
 			if (threshold < 0.0 || threshold > 1.0) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The probability threshold must be in the range [0, 1].",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the corrected tokens must not be empty.",
 						this.getClass().getName()));
 			}
 			

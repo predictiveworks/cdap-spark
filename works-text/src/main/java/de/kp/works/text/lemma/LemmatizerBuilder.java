@@ -1,4 +1,4 @@
-package de.kp.works.text.spell;
+package de.kp.works.text.lemma;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -26,7 +26,8 @@ import org.apache.spark.sql.Row;
 
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
-import com.johnsnowlabs.nlp.annotators.spell.norvig.NorvigSweetingModel;
+
+import com.johnsnowlabs.nlp.annotators.LemmatizerModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -42,16 +43,19 @@ import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("NorvigSink")
-@Description("A building stage for a Spell Checking model based on Norvig's algorithm. The training "
-		+ "text corpus is a term dictionary with one or more terms per line.")
-public class NorvigSink extends TextSink {
+@Name("LemmatizerBuilder")
+@Description("A building stage for a Lemmatization model. The training corpus assigns each lemma "
+		+ "to a set of term variations that all map onto this lemma.")
+public class LemmatizerBuilder extends TextSink {
+	/*
+	 * The training corpus is "AS-IS", i.e. the corpus provided is responsible
+	 * for text noise reduction such as misspellings. 
+	 */
+	private static final long serialVersionUID = 3819386514287004996L;
 
-	private static final long serialVersionUID = -2931861752983178288L;
-
-	private SpellSinkConfig config;
+	private LemmaSinkConfig config;
 	
-	public NorvigSink(SpellSinkConfig config) {
+	public LemmatizerBuilder(LemmaSinkConfig config) {
 		this.config = config;
 	}
 
@@ -76,14 +80,14 @@ public class NorvigSink extends TextSink {
 		Map<String, Object> params = config.getParamsAsMap();
 		String paramsJson = config.getParamsAsJSON();
 		
-		NorvigTrainer trainer = new NorvigTrainer();
-		NorvigSweetingModel model = trainer.train(source, config.lineCol, params);
+		LemmaTrainer trainer = new LemmaTrainer();
+		LemmatizerModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new SpellManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new LemmatizerManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
 	    
 	}
 
@@ -95,7 +99,7 @@ public class NorvigSink extends TextSink {
 		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The input schema must contain the field that contains the tokens.",
+					String.format("[%s] The input schema must contain the field that contains the lemma and assigned tokens.",
 							this.getClass().getName()));
 		}
 
@@ -103,19 +107,24 @@ public class NorvigSink extends TextSink {
 
 	}
 
-	public static class SpellSinkConfig extends SpellConfig {
+	public static class LemmaSinkConfig extends BaseLemmaConfig {
 
-		private static final long serialVersionUID = -2584154226923794844L;
+		private static final long serialVersionUID = 6743392367262183249L;
 
-		@Description("The name of the field in the input schema that contains the tokens.")
+		@Description("The name of the field in the input schema that contains the lemma and assigned tokens.")
 		@Macro
 		public String lineCol;
 
-		@Description("The delimiter to separate the tokens in the corpus.")
+		@Description("The delimiter to separate lemma and associated tokens in the corpus. Key & value delimiter must be different.")
+		@Macro
+		public String keyDelimiter;
+
+		@Description("The delimiter to separate the tokens in the corpus. Key & value delimiter must be different.")
 		@Macro
 		public String valueDelimiter;
 
-		public SpellSinkConfig() {
+		public LemmaSinkConfig() {
+			keyDelimiter = "->";
 			valueDelimiter = "\\S+";
 		}
 
@@ -124,7 +133,9 @@ public class NorvigSink extends TextSink {
 
 			Map<String, Object> params = new HashMap<>();
 
+			params.put("keyDelimiter", keyDelimiter);
 			params.put("valueDelimiter", valueDelimiter);
+			
 			return params;
 
 		}
@@ -134,16 +145,25 @@ public class NorvigSink extends TextSink {
 			
 			if (Strings.isNullOrEmpty(lineCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the tokens.",
+						"[%s] The name of the field that contains the lemma and assigned tokens.",
 						this.getClass().getName()));
+			}
+			if (Strings.isNullOrEmpty(keyDelimiter)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The lemma delimiter must not be empty.",
+								this.getClass().getName()));
 			}
 			if (Strings.isNullOrEmpty(valueDelimiter)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The token delimiter must not be empty.",
 								this.getClass().getName()));
 			}			
+			if (keyDelimiter.equals(valueDelimiter))
+				throw new IllegalArgumentException(
+						String.format("[%s] The lemma & token delimiter must not be empty.",
+								this.getClass().getName()));
 			
 		}
-
+		
 	}
 }

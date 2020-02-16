@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "NER Builder",
+"display-name": "TS ACF",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -13,36 +13,46 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Model Name",
+          "label": "Dataset Name",
           "name": "modelName"
         },
-       {
+        {
           "widget-type": "textbox",
-          "label": "Embedding Name",
-          "name": "embeddingName"
+          "label": "Time Field",
+          "name": "timeCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Minimum Epochs",
-          "name": "minEpochs",
-          "widget-attributes": {
-            "default": "10"
-          }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Maximum Epochs",
-          "name": "maxEpochs",
-          "widget-attributes": {
-            "default": "1000"
-          }
+          "label": "Value Field",
+          "name": "valueCol"
         }
       ]
+    },
+    {
+      "label": "Algorithm Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Maximum Lag Order",
+          "name": "maxLag",
+          "widget-attributes": {
+            "default": "1"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Discrete Lags",
+          "name": "lagValues"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Correlation Threshold",
+          "name": "threshold",
+          "widget-attributes": {
+            "default": "0.95"
+          }
+        }
+      ]      
     }
   ]
 }

@@ -33,6 +33,18 @@
         },
         {
           "widget-type": "select",
+          "label": "Normalization",
+          "name": "normalization",
+          "widget-attributes": {
+            "values": [
+              "false",
+              "true"
+            ],
+            "default": "true"
+          }
+        },        
+        {
+          "widget-type": "select",
           "label": "Pooling Strategy",
           "name": "poolingStrategy",
           "widget-attributes": {

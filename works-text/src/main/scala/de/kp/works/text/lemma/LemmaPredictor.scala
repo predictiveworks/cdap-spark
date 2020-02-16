@@ -20,24 +20,25 @@ package de.kp.works.text.lemma
 import com.johnsnowlabs.nlp.annotators.LemmatizerModel
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
+
 import de.kp.works.text.AnnotationBase
 
 class LemmaPredictor(model:LemmatizerModel) extends AnnotationBase {
   
-  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
+  def predict(dataset:Dataset[Row], textCol:String, lemmaCol:String):Dataset[Row] = {
     
-    val document = normalizedTokens(dataset, textCol)
+    var document = normalizedTokens(dataset, textCol)
 
     model.setInputCols("token")
     model.setOutputCol("lemma")
     
-    val lemmatized = model.transform(dataset)
+    document = model.transform(dataset)
     
-    val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token", "lemma"))
-    .setOutputCols(Array(tokenCol,predictionCol))
-
-    finisher.transform(lemmatized)
+    val dropCols = Array("document", "sentences", "token", "lemma")
+    document
+      .withColumn(lemmaCol, finishTokens(col("lemma")))
+      .drop(dropCols: _*)
 
   }
 }

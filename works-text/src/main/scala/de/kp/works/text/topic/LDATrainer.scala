@@ -20,7 +20,7 @@ package de.kp.works.text.topic
 
 import java.util.{Map => JMap}
 
-import org.apache.spark.ml.clustering.{LDA,LDAModel}
+import org.apache.spark.ml.clustering.{LDAModel}
 
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
@@ -61,7 +61,7 @@ class LDATrainer(word2vec:Word2VecModel) extends AnnotationBase {
     /*
      * Build (Distributed) LDA model
      */
-    val model = new LDA()
+    val model = new org.apache.spark.ml.clustering.LDA()
     
     val k = params.get("k").asInstanceOf[Int]
     model.setK(k)

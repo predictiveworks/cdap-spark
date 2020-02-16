@@ -18,13 +18,8 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
-        },
-        {
-          "widget-type": "textbox",
           "label": "Cleaned Field",
-          "name": "cleanedCol"
+          "name": "cleanCol"
         },
         {
           "widget-type": "textarea",

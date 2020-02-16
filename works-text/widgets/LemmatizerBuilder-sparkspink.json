@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Word2Vec Embedding",
+"display-name": "Lemmatizer Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -18,31 +18,25 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
+          "label": "Corpus Field",
+          "name": "lineCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Embedding Field",
-          "name": "embeddingCol"
-        },
-        {
-          "widget-type": "select",
-          "label": "Normalization",
-          "name": "normalization",
+          "label": "Lemma Delimiter",
+          "name": "keyDelimiter",
           "widget-attributes": {
-            "values": [
-              "false",
-              "true"
-            ],
-            "default": "true"
+            "default": "->"
           }
-        }        
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Token Delimiter",
+          "name": "valueDelimiter",
+          "widget-attributes": {
+            "default": "\\S+"
+          }
+        }
       ]
     }
   ]

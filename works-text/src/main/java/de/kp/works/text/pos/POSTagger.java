@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSTagger")
@@ -84,7 +85,7 @@ public class POSTagger extends TextCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -99,7 +100,7 @@ public class POSTagger extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		POSPredictor predictor = new POSPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
+		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.mixinCol);
 
 		return predictions;
 		
@@ -124,12 +125,10 @@ public class POSTagger extends TextCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	public Schema getOutputSchema(Schema inputSchema, String tokenField, String predictionField) {
+	public Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.mixinCol, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
@@ -139,17 +138,13 @@ public class POSTagger extends TextCompute {
 
 		private static final long serialVersionUID = 6046559336809356607L;
 
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description("The name of the field in the output schema that contains the mixin of extracted tokens and predicted POS tags.")
 		@Macro
-		public String tokenCol;
-
-		@Description("The name of the field in the output schema that contains the predicted POS tags.")
-		@Macro
-		public String predictionCol;
+		public String mixinCol;
 
 		public void validate() {
 			super.validate();
@@ -160,15 +155,9 @@ public class POSTagger extends TextCompute {
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(tokenCol)) {
+			if (Strings.isNullOrEmpty(mixinCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(predictionCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the predicted POS tags must not be empty.",
+						"[%s] The name of the field that contains the mixin of extracted tokens and predicted POS tags must not be empty.",
 						this.getClass().getName()));
 			}
 			

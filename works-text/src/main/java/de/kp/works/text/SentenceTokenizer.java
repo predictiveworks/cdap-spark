@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -74,7 +75,7 @@ public class SentenceTokenizer extends TextCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		return NLP.tokenizeSentences(source, config.inputCol, config.outputCol);
+		return NLP.tokenizeSentences(source, config.textCol, config.tokenCol);
 	}
 	
 	@Override
@@ -82,13 +83,13 @@ public class SentenceTokenizer extends TextCompute {
 		
 		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.inputCol);
+		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
-		isString(config.inputCol);
+		isString(config.textCol);
 		
 	}
 	
@@ -96,7 +97,7 @@ public class SentenceTokenizer extends TextCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.tokenCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
@@ -105,23 +106,23 @@ public class SentenceTokenizer extends TextCompute {
 
 		private static final long serialVersionUID = 1L;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
-		public String inputCol;
+		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description(Names.TOKEN_COL)
 		@Macro
-		public String outputCol;
+		public String tokenCol;
 		
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(textCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(outputCol))
+			if (Strings.isNullOrEmpty(tokenCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the extracted tokens must not be empty.",
 								this.getClass().getName()));

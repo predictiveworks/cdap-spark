@@ -38,13 +38,14 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Lemmatizer")
 @Description("A transformation stage requires a trained Lemmatization model. It extracts "
-		+ "normalized terms from a text document and maps each token onto its trained lemma. "
-		+ "This stage appends two fields to the input schema, one that contains the extracted "
-		+ "terms per document, and another that contains their lemmas.")
+		+ "normalized terms from a text document and maps each term onto its trained lemma. "
+		+ "This stage adds an extra field to the input schema that contains the whitespace "
+		+ "separated set of lemmas.")
 public class Lemmatizer extends TextCompute {
 
 	private static final long serialVersionUID = 1494670903195615242L;
@@ -65,7 +66,7 @@ public class Lemmatizer extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LemmaManager().read(context, config.modelName);
+		model = new LemmatizerManager().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Lemmatization model with name '%s' does not exist.",
@@ -90,7 +91,7 @@ public class Lemmatizer extends TextCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.predictionCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -105,7 +106,7 @@ public class Lemmatizer extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		LemmaPredictor predictor = new LemmaPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.tokenCol, config.predictionCol);
+		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.lemmaCol);
 
 		return predictions;
 		
@@ -131,13 +132,11 @@ public class Lemmatizer extends TextCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	protected Schema getOutputSchema(Schema inputSchema, String tokenField, String predictionField) {
+	public Schema getOutputSchema(Schema inputSchema) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
-		
+		fields.add(Schema.Field.of(config.lemmaCol, Schema.of(Schema.Type.STRING)));		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
@@ -146,17 +145,13 @@ public class Lemmatizer extends TextCompute {
 
 		private static final long serialVersionUID = 2764272986545420558L;
 
-		@Description("The name of the field in the input schema that contains the document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description(Names.LEMMA_COL)
 		@Macro
-		public String tokenCol;
-
-		@Description("The name of the field in the output schema that contains the assigned lemmas.")
-		@Macro
-		public String predictionCol;
+		public String lemmaCol;
 
 		public void validate() {
 			super.validate();
@@ -167,13 +162,7 @@ public class Lemmatizer extends TextCompute {
 						this.getClass().getName()));
 			}
 			
-			if (Strings.isNullOrEmpty(tokenCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the extracted tokens must not be empty.",
-						this.getClass().getName()));
-			}
-			
-			if (Strings.isNullOrEmpty(predictionCol)) {
+			if (Strings.isNullOrEmpty(lemmaCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the assigned lemmas must not be empty.",
 						this.getClass().getName()));

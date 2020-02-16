@@ -23,20 +23,20 @@ import de.kp.works.text.AnnotationBase
 
 class Word2VecEmbedder(model:Word2VecModel) extends AnnotationBase {
   
-  def embed(dataset:Dataset[Row], textCol:String, tokenCol:String, embeddingCol:String):Dataset[Row] = {
+  def embed(dataset:Dataset[Row], textCol:String, tokenCol:String, embeddingCol:String, normalization:Boolean):Dataset[Row] = {
     
-    val document = normalizedTokens(dataset, textCol)
+    var document = extractTokens(dataset, textCol, normalization)
 
     model.setInputCols(Array("document", "token"))
     model.setOutputCol("embeddings")
     
-    val embedded = model.transform(document)
+    document = model.transform(document)
        
     val finisher = new com.johnsnowlabs.nlp.EmbeddingsFinisher()
     finisher.setInputCols(Array("token","embeddings"))
     finisher.setOutputCols(Array(tokenCol, embeddingCol))
       
-    finisher.transform(embedded)
+    finisher.transform(document)
 
   }
 }

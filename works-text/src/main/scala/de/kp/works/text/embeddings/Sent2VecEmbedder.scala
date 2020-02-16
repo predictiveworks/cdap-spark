@@ -26,16 +26,16 @@ import scala.collection.mutable.WrappedArray
 
 class Sent2VecEmbedder(model:Word2VecModel) extends AnnotationBase {
   
-  def embed(dataset:Dataset[Row], pooling:String, textCol:String, sentenceCol:String, embeddingCol:String):Dataset[Row] = {
+  def embed(dataset:Dataset[Row], pooling:String, textCol:String, sentenceCol:String, embeddingCol:String, normalization: Boolean):Dataset[Row] = {
     
-    val document = normalizedTokens(dataset, textCol)
+    var document = extractTokens(dataset, textCol, normalization)
     /*
      * STEP #1: Build token (word) embeddings
      */
     model.setInputCols(Array("document", "token"))
     model.setOutputCol("embeddings")
     
-    val wordvec = model.transform(document)
+    document = model.transform(document)
     /*
      * STEP #2: Build sentence embedding with provided 
      * pooling strategy
@@ -53,13 +53,13 @@ class Sent2VecEmbedder(model:Word2VecModel) extends AnnotationBase {
       sentences.map(sentence => sentence.getString(index))
     }}
        
-    val sentvec = embeddings.transform(wordvec).withColumn(sentenceCol, sentence_udf(col("sentences")))
+    document = embeddings.transform(document).withColumn(sentenceCol, sentence_udf(col("sentences")))
     
     val finisher = new com.johnsnowlabs.nlp.EmbeddingsFinisher()
     finisher.setInputCols("embeddings")
     finisher.setOutputCols(embeddingCol)
       
-    finisher.transform(sentvec)
+    finisher.transform(document)
 
   }
 }

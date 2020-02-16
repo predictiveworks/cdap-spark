@@ -27,20 +27,25 @@ import de.kp.works.text.AnnotationBase
 class NorvigPredictor(model:NorvigSweetingModel) extends AnnotationBase {
   
   def predict(dataset:Dataset[Row], textCol:String, predictionCol:String, threshold:Double):Dataset[Row] = {
-
+    /*
+     * The Norvig Corpus is used "AS-IS", i.e. no extra cleaning or
+     * normalization steps are performed. However, it is expected
+     * that all terms in the corpus are reduced to alphanumeric 
+     * characters plus hyphen '-'
+     */
     var document = normalizedTokens(dataset, textCol)
 
     model.setInputCols("token")
-    model.setOutputCol("check")
+    model.setOutputCol("spell")
     
     document = model.transform(dataset)
     /*
      * Spell checking is an instrument for noise reduction; therefore this
-     * predictor returns the most likely version of the initial document
+     * predictor returns the most likely version of the normalized tokens
      */
-    val dropCols = Array("document", "sentences", "token", "check")
+    val dropCols = Array("document", "sentences", "token", "spell")
     document
-      .withColumn(predictionCol, finishSpellChecker(threshold)(col("check")))
+      .withColumn(predictionCol, finishSpellChecker(threshold)(col("token"),col("spell")))
       .drop(dropCols: _*)
     
   }

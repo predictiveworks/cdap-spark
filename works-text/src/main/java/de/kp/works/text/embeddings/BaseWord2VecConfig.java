@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.text.util.Names;
 
 public class BaseWord2VecConfig extends BaseConfig {
 
@@ -32,10 +33,18 @@ public class BaseWord2VecConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The name of the field in the input schema that contains the document.")
+	@Description(Names.TEXT_COL)
 	@Macro
 	public String textCol;
 
+	@Description(Names.NORMALIZATION)
+	@Macro
+	public String normalization;
+
+	public Boolean getNormalization() {
+		return (normalization.equals("true")) ? true : false;
+	}
+	
 	public void validate() {
 		super.validate();
 

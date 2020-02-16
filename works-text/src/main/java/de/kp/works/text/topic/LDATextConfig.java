@@ -23,6 +23,7 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.text.util.Names;
 
 public class LDATextConfig extends BaseConfig {
 
@@ -32,16 +33,16 @@ public class LDATextConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The unique name of trained Word2Vec embedding model.")
+	@Description("The unique name of a trained Word2Vec embedding model.")
 	@Macro
 	public String embeddingName;
 
-	@Description("The name of the field in the input schema that contains the document.")
+	@Description(Names.TEXT_COL)
 	@Macro
 	public String textCol;
 
 	@Description("The pooling strategy how to merge word embedings into document embeddings. Supported values "
-			+ "are 'average' and 'sum'. Default is 'average'")
+			+ "are 'average' and 'sum'. Default is 'average'.")
 	@Macro
 	public String poolingStrategy;
 	

@@ -20,25 +20,30 @@ package de.kp.works.text.pos
 import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel
 
 import org.apache.spark.sql._
+import org.apache.spark.sql.functions._
+
 import de.kp.works.text.AnnotationBase
 
 class POSPredictor(model:PerceptronModel) extends AnnotationBase {
   
-  def predict(dataset:Dataset[Row], textCol:String, tokenCol:String, predictionCol:String):Dataset[Row] = {
+  def predict(dataset:Dataset[Row], textCol:String, mixinCol:String):Dataset[Row] = {
     
-    val document = normalizedTokens(dataset, textCol)
+    var document = normalizedTokens(dataset, textCol)
     
     model.setInputCols(Array("sentences", "token"))
     model.setOutputCol("tags")
     
-    val tagged = model.transform(dataset)
-    
-    val finisher = new com.johnsnowlabs.nlp.Finisher()
-    .setInputCols(Array("token", "tags"))
-    .setOutputCols(Array(tokenCol, predictionCol))
-
-    finisher.transform(tagged)
-    
+    document = model.transform(document)
+    /*
+     * POS tagging is a means to build strong text features as the
+     * linguistic context of a word is preserved; therefore token
+     * and detected tag are concatenated into a string word.
+     */
+    val dropCols = Array("document", "sentences", "token", "tags")
+    document
+      .withColumn(mixinCol, finishPOSTagger(col("token"), col("tags")))
+      .drop(dropCols: _*)
+     
   }
   
 }

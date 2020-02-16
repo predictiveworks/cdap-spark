@@ -38,23 +38,23 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("TopicSink")
+@Name("TopicBuilder")
 @Description("A building stage for a Latent Dirichlet Allocation (LDA) model. In contrast to "
-		+ "the LDATextSink plugin, this stage leverages an implicit document vectorization based "
+		+ "the LDABuilder plugin, this stage leverages an implicit document vectorization based "
 		+ "on the term counts of the provided corpus. The trained model can be used to either "
 		+ "determine the topic distribution per document or term-distribution per topic.")
-
-public class TopicSink extends TextSink {
+public class TopicBuilder extends TextSink {
 
 	private static final long serialVersionUID = 6709578668752668893L;
 
 	private TopicSinkConfig config;
 	
-	public TopicSink(TopicSinkConfig config) {
+	public TopicBuilder(TopicSinkConfig config) {
 		this.config = config;
 	}
 
@@ -141,7 +141,7 @@ public class TopicSink extends TextSink {
 
 		private static final long serialVersionUID = -5856596535004094760L;
 
-		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10")
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10.")
 		@Macro
 		public String dataSplit;
 
@@ -149,7 +149,7 @@ public class TopicSink extends TextSink {
 		@Macro
 		private Integer k;
 
-		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
 		@Macro
 		private Integer maxIter;
 

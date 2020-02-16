@@ -35,14 +35,16 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TokenNgrams")
 @Description("A transformation stage that leverages the Spark NLP N-gram generator to map an input "
 		+ "text field onto an output field that contains its associated N-grams.")
-public class TokenNgrams extends BaseCompute {
+public class TokenNgrams extends TextCompute {
 
 	private static final long serialVersionUID = -8026917293183629882L;
 	
@@ -75,7 +77,7 @@ public class TokenNgrams extends BaseCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		return NLP.generateNgrams(source, config.n, config.inputCol, config.outputCol);
+		return NLP.generateNgrams(source, config.n, config.textCol, config.ngramCol);
 	}
 	
 	@Override
@@ -83,13 +85,13 @@ public class TokenNgrams extends BaseCompute {
 		
 		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.inputCol);
+		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
-		isString(config.inputCol);
+		isString(config.textCol);
 		
 	}
 	
@@ -97,7 +99,7 @@ public class TokenNgrams extends BaseCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.ngramCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
@@ -106,13 +108,13 @@ public class TokenNgrams extends BaseCompute {
 
 		private static final long serialVersionUID = -4410021712903510108L;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
-		public String inputCol;
+		public String textCol;
 
 		@Description("The name of the field in the output schema that contains the N-grams.")
 		@Macro
-		public String outputCol;
+		public String ngramCol;
 
 		@Description("Minimum n-gram length, greater than or equal to 1. Default is 2.")
 		@Macro
@@ -125,12 +127,12 @@ public class TokenNgrams extends BaseCompute {
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(textCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 
-			if (Strings.isNullOrEmpty(outputCol))
+			if (Strings.isNullOrEmpty(ngramCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the N-grams must not be empty.",
 								this.getClass().getName()));

@@ -18,23 +18,25 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.text.TextSink;
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 
-@Plugin(type = "sparksink")
-@Name("NERSink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
+@Name("NERBuilder")
 @Description("A building stage for an Apache Spark-NLP based NER (CRF) model.")
-public class NERSink extends TextSink {
+public class NERBuilder extends TextSink {
 
 	private static final long serialVersionUID = 4968897885133224506L;
 	
 	private NERSinkConfig config;
 	private Word2VecModel word2vec;
 
-	public NERSink(NERSinkConfig config) {
+	public NERBuilder(NERSinkConfig config) {
 		this.config = config;
 	}
 
@@ -82,7 +84,7 @@ public class NERSink extends TextSink {
 		String paramsJson = config.getParamsAsJSON();
 		
 		NERTrainer trainer = new NERTrainer(word2vec);
-		NerCrfModel model = trainer.train(source, config.textCol, params);
+		NerCrfModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
 		String metricsJson = new Gson().toJson(metrics);
@@ -95,22 +97,26 @@ public class NERSink extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/** LINE COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.textCol);
-		if (textCol == null) {
+		Schema.Field lineCol = inputSchema.getField(config.lineCol);
+		if (lineCol == null) {
 			throw new IllegalArgumentException(
-					String.format("[%s] The input schema must contain the field that contains the text document.",
+					String.format("[%s] The input schema must contain the field that contains the labeled tokens.",
 							this.getClass().getName()));
 		}
 
-		SchemaUtil.isString(inputSchema, config.textCol);
+		SchemaUtil.isString(inputSchema, config.lineCol);
 
 	}
 	
 	public static class NERSinkConfig extends BaseNERConfig {
 
 		private static final long serialVersionUID = 2523264167211336615L;
+
+		@Description("The name of the field in the input schema that contains the labeled tokens.")
+		@Macro
+		public String lineCol;
 
 		@Description("Minimum number of epochs to train. Default is 10.")
 		@Macro

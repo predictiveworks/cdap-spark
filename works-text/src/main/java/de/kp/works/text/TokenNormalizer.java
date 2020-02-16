@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 import de.kp.works.core.BaseConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -77,7 +78,7 @@ public class TokenNormalizer extends TextCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		return NLP.normalizeToken(source, config.inputCol, config.outputCol);
+		return NLP.normalizeToken(source, config.textCol, config.normCol);
 	}
 	
 	@Override
@@ -85,13 +86,13 @@ public class TokenNormalizer extends TextCompute {
 		
 		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.inputCol);
+		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
-		isString(config.inputCol);
+		isString(config.textCol);
 		
 	}
 	
@@ -99,7 +100,7 @@ public class TokenNormalizer extends TextCompute {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
-		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
+		fields.add(Schema.Field.of(config.normCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}	
@@ -108,23 +109,23 @@ public class TokenNormalizer extends TextCompute {
 
 		private static final long serialVersionUID = -2180450887445343238L;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
-		public String inputCol;
+		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the normalized tokens.")
+		@Description(Names.NORM_COL)
 		@Macro
-		public String outputCol;
+		public String normCol;
 		
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(inputCol))
+			if (Strings.isNullOrEmpty(textCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the text document must not be empty.",
 								this.getClass().getName()));
 			
-			if (Strings.isNullOrEmpty(outputCol))
+			if (Strings.isNullOrEmpty(normCol))
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the normalized tokens must not be empty.",
 								this.getClass().getName()));

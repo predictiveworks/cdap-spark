@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "TS ACF",
+"display-name": "NER Builder",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -16,43 +16,38 @@
           "label": "Model Name",
           "name": "modelName"
         },
-        {
+       {
           "widget-type": "textbox",
-          "label": "Time Field",
-          "name": "timeCol"
+          "label": "Embedding Name",
+          "name": "embeddingName"
         },
         {
           "widget-type": "textbox",
-          "label": "Value Field",
-          "name": "valueCol"
+          "label": "Corpus Field",
+          "name": "lineCol"
         }
-      ]
+       ]
     },
     {
-      "label": "Algorithm Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
-          "label": "Maximum Lag",
-          "name": "maxLag",
+          "label": "Minimum Epochs",
+          "name": "minEpochs",
           "widget-attributes": {
-            "default": "1"
+            "default": "10"
           }
         },
         {
           "widget-type": "textbox",
-          "label": "Discrete Lags",
-          "name": "lagValues"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Correlation Threshold",
-          "name": "threshold",
+          "label": "Maximum Epochs",
+          "name": "maxEpochs",
           "widget-attributes": {
-            "default": "0.95"
+            "default": "1000"
           }
         }
-      ]      
+      ]
     }
   ]
 }

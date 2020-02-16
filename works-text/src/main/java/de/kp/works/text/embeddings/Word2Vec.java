@@ -35,13 +35,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Word2Vec")
 @Description("An embedding stage that leverages a trained Word2Vec model to map an input "
 		+ "text field onto an output token & word embedding field.")
-public class Word2Vec extends BaseCompute {
+public class Word2Vec extends TextCompute {
 
 	private static final long serialVersionUID = 1849637381439375304L;
 
@@ -77,19 +79,19 @@ public class Word2Vec extends BaseCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.tokenCol, config.embeddingCol);
+			outputSchema = getOutputSchema(inputSchema, config.tokenCol, config.embeddingCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	
+
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Word2VecEmbedder embedder = new Word2VecEmbedder(model);
-		return embedder.embed(source, config.textCol, config.tokenCol, config.embeddingCol);
-		
+		return embedder.embed(source, config.textCol, config.tokenCol, config.embeddingCol, config.getNormalization());
+
 	}
 
 	/**
@@ -99,14 +101,14 @@ public class Word2Vec extends BaseCompute {
 	public Schema getOutputSchema(Schema inputSchema, String tokenField, String embeddingField) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
+
 		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		fields.add(Schema.Field.of(embeddingField, Schema.arrayOf(Schema.arrayOf(Schema.of(Schema.Type.FLOAT)))));
-		
+
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}
-	
+
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
@@ -122,12 +124,12 @@ public class Word2Vec extends BaseCompute {
 		isString(config.textCol);
 
 	}
-	
+
 	public static class Word2VecConfig extends BaseWord2VecConfig {
 
 		private static final long serialVersionUID = 1874465715678995387L;
 
-		@Description("The name of the field in the output schema that contains the extracted tokens.")
+		@Description(Names.TOKEN_COL)
 		@Macro
 		public String tokenCol;
 
@@ -137,19 +139,19 @@ public class Word2Vec extends BaseCompute {
 
 		public void validate() {
 			super.validate();
-			
+
 			if (Strings.isNullOrEmpty(tokenCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the extracted tokens must not be empty.",
 						this.getClass().getName()));
 			}
-			
+
 			if (Strings.isNullOrEmpty(embeddingCol)) {
-				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the word embeddings must not be empty.",
-						this.getClass().getName()));
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the word embeddings must not be empty.",
+								this.getClass().getName()));
 			}
-			
+
 		}
 	}
 }

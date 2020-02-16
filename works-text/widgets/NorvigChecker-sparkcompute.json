@@ -23,8 +23,8 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Prediction Field",
-          "name": "predictionCol"
+          "label": "Suggestion Field",
+          "name": "spellCol"
         },
         {
           "widget-type": "textbox",

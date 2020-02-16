@@ -22,7 +22,9 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+
 import de.kp.works.core.BaseConfig;
+import de.kp.works.text.util.Names;
 
 public class BaseTopicConfig extends BaseConfig {
 
@@ -32,7 +34,7 @@ public class BaseTopicConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The name of the field in the input schema that contains the document.")
+	@Description(Names.TEXT_COL)
 	@Macro
 	public String textCol;
 

@@ -34,19 +34,21 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
-@Name("Word2VecSink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
+@Name("Word2VecBuilder")
 @Description("A building stage for an Apache Spark-NLP based Word2Vec embedding model.")
-public class Word2VecSink extends TextSink {
+public class Word2VecBuilder extends TextSink {
 
 	private static final long serialVersionUID = 393252026613980477L;
 
 	private Word2VecSinkConfig config;
 	
-	public Word2VecSink(Word2VecSinkConfig config) {
+	public Word2VecBuilder(Word2VecSinkConfig config) {
 		this.config = config;
 	}
 
@@ -102,7 +104,7 @@ public class Word2VecSink extends TextSink {
 
 		private static final long serialVersionUID = 6821152390553851034L;
 
-		@Description("The maximum number of iterations to train the Word-to-Vector model. Default is 1.")
+		@Description("The maximum number of iterations to train the Word2Vec model. Default is 1.")
 		@Macro
 		public Integer maxIter;
 		
@@ -118,7 +120,7 @@ public class Word2VecSink extends TextSink {
 		@Macro
 		public Integer windowSize;
 
-		@Description("The minimum number of times a word must appear to be included in the Word-to-Vector vocabulary. Default is 5.")
+		@Description("The minimum number of times a word must appear to be included in the Word2Vec vocabulary. Default is 5.")
 		@Macro
 		public Integer minCount;
 
@@ -154,6 +156,7 @@ public class Word2VecSink extends TextSink {
 			params.put("minCount", minCount);
 			params.put("maxSentenceLength", maxSentenceLength);
 
+			params.put("normalization", getNormalization());
 			return params;
 		
 		}

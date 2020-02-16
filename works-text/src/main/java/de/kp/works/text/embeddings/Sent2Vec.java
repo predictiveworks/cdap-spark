@@ -35,14 +35,16 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.embeddings.Word2VecModel;
+import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Sent2Vec")
 @Description("An embedding stage that leverages a trained Word2Vec model to map an input "
 		+ "text field onto an output sentence & sentence embedding field with a user-specific pooling strategy.")
-public class Sent2Vec extends BaseCompute {
+public class Sent2Vec extends TextCompute {
 
 	private static final long serialVersionUID = 2454938187092703188L;
 
@@ -78,19 +80,20 @@ public class Sent2Vec extends BaseCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(inputSchema,config.sentenceCol, config.embeddingCol);
+			outputSchema = getOutputSchema(inputSchema, config.sentenceCol, config.embeddingCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	
+
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Sent2VecEmbedder embedder = new Sent2VecEmbedder(model);
-		return embedder.embed(source, config.getStrategy(), config.textCol, config.sentenceCol, config.embeddingCol);
-		
+		return embedder.embed(source, config.getStrategy(), config.textCol, config.sentenceCol, config.embeddingCol,
+				config.getNormalization());
+
 	}
 
 	@Override
@@ -116,19 +119,19 @@ public class Sent2Vec extends BaseCompute {
 	public Schema getOutputSchema(Schema inputSchema, String sentenceField, String embeddingField) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
+
 		fields.add(Schema.Field.of(sentenceField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		fields.add(Schema.Field.of(embeddingField, Schema.arrayOf(Schema.arrayOf(Schema.of(Schema.Type.FLOAT)))));
-		
+
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
 
 	}
-	
+
 	public static class Sent2VecConfig extends BaseWord2VecConfig {
 
 		private static final long serialVersionUID = 5849792304953202359L;
 
-		@Description("The name of the field in the output schema that contains the extracted sentences.")
+		@Description(Names.SENTENCE_COL)
 		@Macro
 		public String sentenceCol;
 
@@ -136,39 +139,40 @@ public class Sent2Vec extends BaseCompute {
 		@Macro
 		public String embeddingCol;
 
-		@Description("The pooling strategy how to merge word embedings into sentence embeddings. Supported values "
-				+ "are 'average' and 'sum'. Default is 'average'")
+		@Description(Names.POOLING_STRATEGY)
 		@Macro
 		public String poolingStrategy;
-		
+
 		public Sent2VecConfig() {
+			normalization = "true";
 			poolingStrategy = "average";
 		}
+
 		public String getStrategy() {
 			return (poolingStrategy.equals("average")) ? "AVERAGE" : "SUM";
 		}
 
 		public void validate() {
 			super.validate();
-			
+
 			if (Strings.isNullOrEmpty(sentenceCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the extracted sentences must not be empty.",
 						this.getClass().getName()));
 			}
-			
+
 			if (Strings.isNullOrEmpty(embeddingCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the sentence embeddings must not be empty.",
 						this.getClass().getName()));
 			}
-			
+
 			if (Strings.isNullOrEmpty(poolingStrategy)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the pooling strategy must not be empty.",
 						this.getClass().getName()));
 			}
-			
+
 		}
 	}
 }
