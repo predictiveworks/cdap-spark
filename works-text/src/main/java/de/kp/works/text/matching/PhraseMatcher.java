@@ -36,14 +36,15 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.BaseCompute;
+
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("PhraseMatcher")
 @Description("A transformation stage that leverages the Spark NLP Text Matcher to detected provided ."
 		+ "phrases in the input text document.")
-public class PhraseMatcher extends BaseCompute {
+public class PhraseMatcher extends TextCompute {
 
 	private static final long serialVersionUID = 2804482371714576676L;
 
@@ -77,7 +78,7 @@ public class PhraseMatcher extends BaseCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
+		props.setProperty("input.col", config.textCol);
 		props.setProperty("output.col", config.outputCol);
 		
 		props.setProperty("phrases", config.getPhrases());		
@@ -92,13 +93,13 @@ public class PhraseMatcher extends BaseCompute {
 		
 		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.inputCol);
+		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text.", this.getClass().getName()));
 		}
 
-		isString(config.inputCol);
+		isString(config.textCol);
 		
 	}
 	

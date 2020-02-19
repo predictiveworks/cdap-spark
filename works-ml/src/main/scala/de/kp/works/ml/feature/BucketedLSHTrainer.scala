@@ -22,7 +22,7 @@ import java.util.{Map => JMap}
 import org.apache.spark.ml.feature._
 
 import org.apache.spark.sql._
-import de.kp.works.ml.MLUtils
+import de.kp.works.core.ml.MLUtils
 
 class BucketedLSHTrainer {
       

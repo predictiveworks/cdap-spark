@@ -32,7 +32,6 @@ public class STLCompute extends TimeCompute {
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given
 	 */
-	@Override
 	public Schema getOutputSchema(Schema inputSchema, String valueCol) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();

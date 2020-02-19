@@ -45,11 +45,7 @@ public class ClusterSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createClusteringIfNotExists(context);
-		/*
-		 * Retrieve clustering specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
+
 	}
 
 	@Override

@@ -121,7 +121,7 @@ public class BisectingKMeansSink extends ClusterSink {
 		 * parameters and metrics
 		 */
 		String modelName = config.modelName;
-		new BisectingKMeansManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new BisectingKMeansManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

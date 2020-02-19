@@ -14,11 +14,11 @@
         {
           "widget-type": "textbox",
           "label": "Text Field",
-          "name": "inputCol"
+          "name": "textCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Date Field",
+          "label": "Token Field",
           "name": "outputCol"
         },
         {

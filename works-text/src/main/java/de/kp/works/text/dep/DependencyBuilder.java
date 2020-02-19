@@ -35,19 +35,21 @@ import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import co.cask.cdap.etl.api.batch.SparkSink;
+
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
 
-@Plugin(type = "sparksink")
-@Name("DependencySink")
+@Plugin(type = SparkSink.PLUGIN_TYPE)
+@Name("DependencyBuilder")
 @Description("A building stage for an Apache Spark-NLP based Unlabeled Dependency Parser model.")
-public class DependencySink extends TextSink {
+public class DependencyBuilder extends TextSink {
 
 	private static final long serialVersionUID = 3384231592795011247L;
 
 	private DependencySinkConfig config;
 	
-	public DependencySink(DependencySinkConfig config) {
+	public DependencyBuilder(DependencySinkConfig config) {
 		this.config = config;
 	}
 
@@ -73,7 +75,7 @@ public class DependencySink extends TextSink {
 		String paramsJson = config.getParamsAsJSON();
 		
 		DepTrainer trainer = new DepTrainer();
-		DependencyParserModel model = trainer.train(source, config.textCol, params);
+		DependencyParserModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
 		String metricsJson = new Gson().toJson(metrics);
@@ -88,14 +90,14 @@ public class DependencySink extends TextSink {
 
 		/** LINE COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.textCol);
+		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The input schema must contain the field that contains the corpus document.",
 							this.getClass().getName()));
 		}
 
-		SchemaUtil.isString(inputSchema, config.textCol);
+		SchemaUtil.isString(inputSchema, config.lineCol);
 
 	}
 
@@ -105,7 +107,7 @@ public class DependencySink extends TextSink {
 
 		@Description("The name of the field in the input schema that contains the annotated corpus document.")
 		@Macro
-		public String textCol;
+		public String lineCol;
 
 		@Description("The format of the training corpus. Supported values are 'conll-u' (CoNLL-U corpus) and 'treebank' (TreeBank corpus). Default is 'conll-u'.")
 		@Macro
@@ -135,7 +137,7 @@ public class DependencySink extends TextSink {
 		public void validate() {
 			super.validate();
 			
-			if (Strings.isNullOrEmpty(textCol)) {
+			if (Strings.isNullOrEmpty(lineCol)) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The name of the field that contains the corpus document must not be empty.",
 						this.getClass().getName()));

@@ -113,7 +113,7 @@ public class GaussianMixtureSink extends ClusterSink {
 		 * parameters and metrics
 		 */
 		String modelName = config.modelName;
-		new GaussianMixtureManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new GaussianMixtureManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

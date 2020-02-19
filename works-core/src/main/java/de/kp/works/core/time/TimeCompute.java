@@ -18,38 +18,13 @@ package de.kp.works.core.time;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import co.cask.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseCompute;
 
 public class TimeCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -1433147745214918467L;
-	/*
-	 * Reference to input & output schema
-	 */
+
 	protected Schema inputSchema;
-	protected Schema outputSchema;
-
-	/**
-	 * The value data type is changed to DOUBLE
-	 */
-	protected Schema getOutputSchema(Schema inputSchema, String valueCol) {
-		
-		List<Schema.Field> outfields = new ArrayList<>();
-		for (Schema.Field field: inputSchema.getFields()) {
-			
-			if (field.getName().equals(valueCol)) {
-				outfields.add(Schema.Field.of(valueCol, Schema.of(Schema.Type.DOUBLE)));
-				
-			} else
-				outfields.add(field);
-		}
-		
-		return Schema.recordOf(inputSchema.getRecordName(), outfields);
-
-	}
 
 }

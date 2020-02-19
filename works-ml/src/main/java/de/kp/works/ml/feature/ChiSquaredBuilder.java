@@ -41,7 +41,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
-import de.kp.works.ml.MLUtils;
+import de.kp.works.core.ml.MLUtils;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ChiSquaredBuilder")

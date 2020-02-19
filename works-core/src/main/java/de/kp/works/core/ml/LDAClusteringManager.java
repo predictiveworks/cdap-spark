@@ -33,7 +33,7 @@ public class LDAClusteringManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "DistributedLDA";
 	
-	public LDAModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
+	public LDAModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringMeta(context);
@@ -55,7 +55,17 @@ public class LDAClusteringManager extends AbstractClusteringManager {
 		
 	}
 
-	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			LDAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getClusteringFS(context);
+		Table table = SparkMLManager.getClusteringMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			LDAModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

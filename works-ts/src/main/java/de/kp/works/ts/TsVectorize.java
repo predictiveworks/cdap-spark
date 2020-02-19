@@ -21,11 +21,13 @@ package de.kp.works.ts;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.spark.ml.regression.RandomForestRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import com.google.common.base.Strings;
+
 import co.cask.cdap.api.annotation.Description;
+import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
@@ -33,35 +35,24 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.RFRegressorManager;
+
 import de.kp.works.core.time.TimeCompute;
-import de.kp.works.core.time.TimePredictorConfig;
+import de.kp.works.core.time.TimeConfig;
+import de.kp.works.core.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("TsPredictor")
-@Description("A prediction stage that leverages a trained Apache Spark ML Random Forest regressor model.")
-public class TsPredictor extends TimeCompute {
+@Name("TsVectorize")
+@Description("A time series transformation stage that vectorizes time series data "
+		+ "by assembling each observation in time and its past N-1 observations into "
+		+ "a feature vector.")
+public class TsVectorize extends TimeCompute {
 
-	private static final long serialVersionUID = 3141012240338918366L;
+	private static final long serialVersionUID = -3722021453251234803L;
 
-	private TsPredictorConfig config;
-
-	private RandomForestRegressionModel model;
-	private RFRegressorManager manager;
-
-	public TsPredictor(TsPredictorConfig config) {
+	private TsVectorizeConfig config;
+	
+	public TsVectorize(TsVectorizeConfig config) {
 		this.config = config;
-	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
-
-			model = manager.read(context, config.modelName);
-			if (model == null)
-				throw new IllegalArgumentException(String
-						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
-
 	}
 
 	@Override
@@ -77,61 +68,41 @@ public class TsPredictor extends TimeCompute {
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
 			validateSchema(inputSchema);
-			/*
-			 * In cases where the input schema is explicitly provided, we determine the
-			 * output schema by explicitly adding the prediction column
-			 */
+
 			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
 
 	}
-	/**
-	 * This method computes predictions either by applying a trained Random Forest
-	 * regression model; as a result, the source dataset is enriched by an extra 
-	 * column (predictionCol) that specifies the target variable in form of a Double
-	 */
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		
-		/* 
-		 * Retrieve time lag from model metadata to leverage
-		 * the same number of features when trained the model
-		 */
-		Integer timeLag = (Integer)manager.getParam(context, config.modelName, "timeLag");
-		/*
-		 * Vectorization of the provided dataset
-		 */		
+
 		Lagging lagging = new Lagging();
-		lagging.setLag(timeLag);
 		
-		lagging.setFeaturesCol("features");
-		lagging.setLaggingType("features");		
-
-		Dataset<Row> vectorset = lagging.transform(source);
+		lagging.setLag(config.vectorSize);
+		lagging.setLaggingType("features");
+		
+		lagging.setFeaturesCol(config.featuresCol);
 		/*
-		 * Leverage trained Random Forest regressor model
+		 * The feature vector of the transformation stage is 
+		 * specified by Apache Spark ML vector format has to be
+		 * transformed into an array of double to be compliant
+		 * with Google CDAP
 		 */
-		model.setFeaturesCol("features");
-		model.setPredictionCol(config.predictionCol);
-
-		Dataset<Row> predictions = model.transform(vectorset);	    
-
-		Dataset<Row> output = predictions.drop("features");
+		Dataset<Row> output = MLUtils.devectorize(lagging.transform(source), config.featuresCol, config.featuresCol);		
 		return output;
-
+		
 	}
-	
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
+
 	public Schema getOutputSchema(Schema inputSchema) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
 		for (Schema.Field field: inputSchema.getFields()) {
-			
+			/*
+			 * Cast the data type of the value field to double
+			 */
 			if (field.getName().equals(config.valueCol)) {
 				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
 				
@@ -139,8 +110,9 @@ public class TsPredictor extends TimeCompute {
 				outfields.add(field);
 		}
 		
-		outfields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.DOUBLE)));
-		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", outfields);
+		outfields.add(Schema.Field.of(config.featuresCol, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+		
+		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", outfields);
 
 	}
 
@@ -149,12 +121,35 @@ public class TsPredictor extends TimeCompute {
 		config.validateSchema(inputSchema);
 	}
 
-	public static class TsPredictorConfig extends TimePredictorConfig {
+	public static class TsVectorizeConfig extends TimeConfig {
 
-		private static final long serialVersionUID = 5016642365098354770L;
-		
+		private static final long serialVersionUID = 6119699429989993083L;
+
+		@Description("The name of the field in the output schema that contains the feature vector.")
+		@Macro
+		public String featuresCol;
+
+		@Description("The dimension of the feature vector, i.e the number of observations in time that are assembled as a vector. Default is 10.")
+		@Macro
+		public Integer vectorSize;
+
+		public TsVectorizeConfig() {
+			vectorSize = 10;
+		}
+
 		public void validate() {
 			super.validate();
+
+			if (Strings.isNullOrEmpty(featuresCol)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.", this.getClass().getName()));
+			}
+
+			if (vectorSize < 1) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The size of the feature vector must be greater than 0.", this.getClass().getName()));
+			}
+
 		}
 		
 	}

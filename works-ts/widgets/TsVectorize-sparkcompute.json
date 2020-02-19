@@ -1,7 +1,7 @@
 {
 "metadata": {"spec-version": "1.5"},
 
-"display-name": "Phrase Matcher",
+"display-name": "TS Vectorize",
  "configuration-groups": [
     {
       "label": "Basic Configuration",
@@ -13,31 +13,27 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
+          "label": "Time Field",
+          "name": "timeCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Phrase Field",
-          "name": "outputCol"
-        },
-        {
-          "widget-type": "textarea",
-          "label": "Phrases",
-          "name": "phrases",
-          "widget-attributes": {
-            "rows": "10"
-          }
+          "label": "Value Field",
+          "name": "valueCol"
         },
         {
           "widget-type": "textbox",
-          "label": "Phrase Delimiter",
-          "name": "delimiter",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Feature Dimensions",
+          "name": "vectorSize",
           "widget-attributes": {
-            "default": ","
+            "default": "10"
           }
         }
-
       ]
     }
   ]

@@ -79,7 +79,7 @@ public class DateMatcher extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
+		props.setProperty("input.col", config.textCol);
 		props.setProperty("output.col", config.outputCol);
 		props.setProperty("date.format", config.dateFormat);
 
@@ -92,13 +92,13 @@ public class DateMatcher extends TextCompute {
 		
 		/** INPUT COLUMN **/
 
-		Schema.Field textCol = inputSchema.getField(config.inputCol);
+		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The input schema must contain the field that defines the text document.", this.getClass().getName()));
 		}
 
-		isString(config.inputCol);
+		isString(config.textCol);
 		
 	}
 	

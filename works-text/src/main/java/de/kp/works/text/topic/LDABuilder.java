@@ -151,7 +151,7 @@ public class LDABuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LDAClusteringManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new LDAClusteringManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

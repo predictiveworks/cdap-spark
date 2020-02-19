@@ -18,21 +18,8 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
-        }
-      ]
-    },
-    {
-      "label": "Model Configuration",
-      "properties": [
-        {
-          "widget-type": "textbox",
-          "label": "Iterations",
-          "name": "numIter",
-          "widget-attributes": {
-            "default": "10"
-          }
+          "label": "Corpus Field",
+          "name": "lineCol"
         },
         {
           "widget-type": "select",
@@ -46,6 +33,19 @@
             "default": "conll-u"
           }
         }        
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Iterations",
+          "name": "numIter",
+          "widget-attributes": {
+            "default": "10"
+          }
+        }
       ]
     }
   ]

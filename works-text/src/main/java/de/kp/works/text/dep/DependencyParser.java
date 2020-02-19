@@ -30,15 +30,23 @@ import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.annotation.Plugin;
 import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
+import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.BaseCompute;
+import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.pos.POSManager;
+import de.kp.works.text.util.Names;
 
-public class DependencyParser extends BaseCompute {
+@Plugin(type = SparkCompute.PLUGIN_TYPE)
+@Name("DependencyParser")
+@Description("A transformation stage that leverages an Unlabeled Dependency Parser model to extract "
+		+ "syntactic relations between words in a text document.")
+public class DependencyParser extends TextCompute {
 
 	private static final long serialVersionUID = 2556276054866498202L;
 
@@ -134,15 +142,15 @@ public class DependencyParser extends BaseCompute {
 
 		private static final long serialVersionUID = 4755283827244455912L;
 
-		@Description("The unique name of trained Part-of-Speech model.")
+		@Description("The unique name of trained Part of Speech model.")
 		@Macro
 		public String posName;
 
-		@Description("The name of the field in the input schema that contains the text document.")
+		@Description(Names.TEXT_COL)
 		@Macro
 		public String textCol;
 
-		@Description("The name of the field in the output schema that contains the extracted sentences.")
+		@Description(Names.SENTENCE_COL)
 		@Macro
 		public String sentenceCol;
 

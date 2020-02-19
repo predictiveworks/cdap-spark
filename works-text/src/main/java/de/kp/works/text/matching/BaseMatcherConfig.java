@@ -23,14 +23,15 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.text.util.Names;
 
 public class BaseMatcherConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -5564167870606129566L;
 
-	@Description("The name of the field in the input schema that contains the text document.")
+	@Description(Names.TEXT_COL)
 	@Macro
-	public String inputCol;
+	public String textCol;
 
 	@Description("The name of the field in the output schema that contains the text matches.")
 	@Macro
@@ -39,7 +40,7 @@ public class BaseMatcherConfig extends BaseConfig {
 	public void validate() {
 		super.validate();
 
-		if (Strings.isNullOrEmpty(inputCol))
+		if (Strings.isNullOrEmpty(textCol))
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the text document must not be empty.",
 							this.getClass().getName()));

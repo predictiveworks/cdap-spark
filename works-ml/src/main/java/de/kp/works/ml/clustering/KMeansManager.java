@@ -32,30 +32,41 @@ import de.kp.works.core.ml.SparkMLManager;
 public class KMeansManager extends AbstractClusteringManager {
 
 	private String ALGORITHM_NAME = "KMeans";
-	
-	public KMeansModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
+
+	public KMeansModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringMeta(context);
-		
+
 		return read(fs, table, modelName);
 
 	}
 
 	private KMeansModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
+
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the KMeans clustering model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the KMeans clustering model from a
+		 * model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return KMeansModel.load(modelPath);
-		
+
 	}
 
-	public void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			KMeansModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getClusteringFS(context);
+		Table table = SparkMLManager.getClusteringMeta(context);
+
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+
+	}
+
+	private void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
 			KMeansModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -66,8 +77,8 @@ public class KMeansManager extends AbstractClusteringManager {
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the KMeans model
-		 * to a model specific file set
+		 * Leverage Apache Spark mechanism to write the KMeans model to a model specific
+		 * file set
 		 */
 		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);

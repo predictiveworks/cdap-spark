@@ -21,8 +21,6 @@ package de.kp.works.ts;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.Nullable;
-
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -37,26 +35,24 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimeConfig;
+import de.kp.works.core.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
-@Name("TsAggregate")
-@Description("A time series aggregation stage that aggregates a sparse time series leveraging a user-defined "
-		+ "tumbling window. Suppose a certain point in time refers to 09:00 am and a window of 10 minutes is "
-		+ "defined, then all points in time falling into the window [09:00, 09:10] are collected and their "
-		+ "associated values aggregated.")
-public class TsAggregate extends TimeCompute {
-	/*
-	 * TsAggregated refers to the preprocessing phase of time series
-	 * processing and is an alternative to transforming a series into
-	 * a time grid of equidistant points in time.
-	 */
-	private static final long serialVersionUID = 404643815476832744L;
+@Name("TsLabelize")
+@Description("A time series transformation stage that vectorizes and labels time series data "
+		+ "by assembling N past observations into a feature vector and leveraging the current "
+		+ "observation as target or label. This approach is based on the hypothesis that each "
+		+ "observation can be described by its previous observations.")
+public class TsLabelize extends TimeCompute {
 
-	private TsAggregateConfig config;
+	private static final long serialVersionUID = 7459495787871346631L;
 
-	public TsAggregate(TsAggregateConfig config) {
+	private TsLabelConfig config;
+	
+	public TsLabelize(TsLabelConfig config) {
 		this.config = config;
 	}
 
@@ -80,24 +76,27 @@ public class TsAggregate extends TimeCompute {
 		}
 
 	}
-
+	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		Aggregate computer = new Aggregate();
-
-		computer.setTimeCol(config.timeCol);
-		computer.setValueCol(config.valueCol);
-
-		if (!Strings.isNullOrEmpty(config.groupCol))
-			computer.setGroupCol(config.groupCol);
-
-		computer.setWindowDuration(config.windowDuration);
-		computer.setAggregationMethod(config.aggregationMethod);
+		Lagging lagging = new Lagging();
 		
-		Dataset<Row> output = computer.transform(source);
+		lagging.setLag(config.vectorSize);
+		lagging.setLaggingType("featuresAndLabels");
+		
+		lagging.setFeaturesCol(config.featuresCol);
+		lagging.setLabelCol(config.labelCol);
+		
+		/*
+		 * The feature vector of the transformation stage is 
+		 * specified by Apache Spark ML vector format has to be
+		 * transformed into an array of double to be compliant
+		 * with Google CDAP
+		 */
+		Dataset<Row> output = MLUtils.devectorize(lagging.transform(source), config.featuresCol, config.featuresCol);		
 		return output;
-
+		
 	}
 
 	public Schema getOutputSchema(Schema inputSchema) {
@@ -114,7 +113,10 @@ public class TsAggregate extends TimeCompute {
 				outfields.add(field);
 		}
 		
-		return Schema.recordOf(inputSchema.getRecordName(), outfields);
+		outfields.add(Schema.Field.of(config.featuresCol, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
+		outfields.add(Schema.Field.of(config.labelCol, Schema.of(Schema.Type.DOUBLE)));
+		
+		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", outfields);
 
 	}
 
@@ -122,41 +124,43 @@ public class TsAggregate extends TimeCompute {
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
 	}
-	
-	public static class TsAggregateConfig extends TimeConfig {
 
-		private static final long serialVersionUID = -8785851598214457493L;
+	public static class TsLabelConfig extends TimeConfig {
 
-		@Description(TimeConfig.GROUP_COL_DESC)
+		private static final long serialVersionUID = -473852817613422117L;
+
+		@Description("The name of the field in the output schema that contains the feature vector.")
 		@Macro
-		@Nullable
-		public String groupCol;
+		public String featuresCol;
 
-		@Description("The time window used to aggregate intermediate values. Default is '10 minutes'.")
+		@Description("The name of the field in the outputschema that contains the label value.")
 		@Macro
-		public String windowDuration;
+		public String labelCol;
 
-		@Description("The name of the aggregation method. Supported values are 'avg', 'count', 'mean' and 'sum'. Default is 'avg'.")
+		@Description("The dimension of the feature vector, i.e the number of past observations in time "
+				+ "that are assembled as a vector. Default is 10.")
 		@Macro
-		public String aggregationMethod;
-
-		public TsAggregateConfig() {
-
-			aggregationMethod = "avg";
-			windowDuration = "10 minutes";
-
-		}
+		public Integer vectorSize;
 
 		public void validate() {
 			super.validate();
 
-			if (Strings.isNullOrEmpty(windowDuration)) {
+			if (Strings.isNullOrEmpty(featuresCol)) {
 				throw new IllegalArgumentException(
-						String.format("[%s] The window duration must not be empty.", this.getClass().getName()));
+						String.format("[%s] The name of the field that contains the feature vector must not be empty.", this.getClass().getName()));
+			}
+
+			if (Strings.isNullOrEmpty(labelCol)) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The name of the field that contains the label value must not be empty.", this.getClass().getName()));
+			}
+
+			if (vectorSize < 1) {
+				throw new IllegalArgumentException(
+						String.format("[%s] The size of the feature vector must be greater than 0.", this.getClass().getName()));
 			}
 
 		}
-
+		
 	}
-
 }

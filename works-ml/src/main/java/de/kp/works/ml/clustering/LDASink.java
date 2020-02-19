@@ -135,7 +135,7 @@ public class LDASink extends ClusterSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LDAClusteringManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new LDAClusteringManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

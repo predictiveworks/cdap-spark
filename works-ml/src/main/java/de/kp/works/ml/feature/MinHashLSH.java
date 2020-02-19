@@ -36,7 +36,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.feature.FeatureConfig;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
-import de.kp.works.ml.MLUtils;
+import de.kp.works.core.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MinHashLSH")

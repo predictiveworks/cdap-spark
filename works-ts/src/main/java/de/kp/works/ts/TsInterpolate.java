@@ -18,6 +18,9 @@ package de.kp.works.ts;
  * 
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import org.apache.spark.sql.Dataset;
@@ -68,7 +71,7 @@ public class TsInterpolate extends TimeCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema and change the data type of the value field to DOUBLE
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.valueCol);
+			outputSchema = getOutputSchema(inputSchema);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -90,6 +93,24 @@ public class TsInterpolate extends TimeCompute {
 
 		Dataset<Row> output = computer.transform(source);
 		return output;
+
+	}
+
+	public Schema getOutputSchema(Schema inputSchema) {
+		
+		List<Schema.Field> outfields = new ArrayList<>();
+		for (Schema.Field field: inputSchema.getFields()) {
+			/*
+			 * Cast the data type of the value field to double
+			 */
+			if (field.getName().equals(config.valueCol)) {
+				outfields.add(Schema.Field.of(config.valueCol, Schema.of(Schema.Type.DOUBLE)));
+				
+			} else
+				outfields.add(field);
+		}
+		
+		return Schema.recordOf(inputSchema.getRecordName(), outfields);
 
 	}
 

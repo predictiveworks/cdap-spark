@@ -32,7 +32,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
-import de.kp.works.ml.MLUtils;
+import de.kp.works.core.ml.MLUtils;
 import de.kp.works.ml.regression.SurvivalRegressorManager;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
