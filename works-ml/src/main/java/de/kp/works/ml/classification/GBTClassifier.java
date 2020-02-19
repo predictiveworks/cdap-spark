@@ -111,7 +111,7 @@ public class GBTClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new GBTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new GBTClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

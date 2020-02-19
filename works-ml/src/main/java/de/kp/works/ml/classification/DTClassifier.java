@@ -112,7 +112,7 @@ public class DTClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new DTClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new DTClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

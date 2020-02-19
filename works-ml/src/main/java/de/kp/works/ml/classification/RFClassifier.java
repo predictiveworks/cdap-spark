@@ -111,7 +111,7 @@ public class RFClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new RFClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new RFClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

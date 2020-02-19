@@ -40,7 +40,7 @@ public class ClusterSink extends BaseSink {
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
 		/*
-		 * Clstering model components and metadata are persisted in a CDAP FileSet
+		 * Clustering model components and metadata are persisted in a CDAP FileSet
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */

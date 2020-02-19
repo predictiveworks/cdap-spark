@@ -115,7 +115,7 @@ public class NBClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new NBClassifierManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new NBClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

@@ -57,7 +57,17 @@ public class RFClassifierManager extends AbstractClassificationManager {
 
 	}
 
-	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			RandomForestClassificationModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+		Table table = SparkMLManager.getClassificationMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			RandomForestClassificationModel model) throws IOException {
 
 		/*

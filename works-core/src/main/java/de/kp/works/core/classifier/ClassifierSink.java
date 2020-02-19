@@ -46,11 +46,6 @@ public class ClassifierSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createClassificationIfNotExists(context);
-		/*
-		 * Retrieve classification specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClassificationFS(context);
-		modelMeta = SparkMLManager.getClassificationMeta(context);
 
 	}
 
