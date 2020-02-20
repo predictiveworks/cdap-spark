@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.MLPClassifierManager;
+import de.kp.works.ml.classification.MLPRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MLPPredictor")
@@ -53,7 +53,7 @@ public class MLPPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		classifier = new MLPClassifierManager().read(context, config.modelName);
+		classifier = new MLPRecorder().read(context, config.modelName);
 		if (classifier == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

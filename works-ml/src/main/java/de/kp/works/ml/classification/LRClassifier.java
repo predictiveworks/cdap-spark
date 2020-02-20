@@ -114,7 +114,7 @@ public class LRClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new LRClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
+		new LRRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

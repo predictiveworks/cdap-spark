@@ -105,7 +105,7 @@ public class TsAutoARSink extends ARSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARManager().saveAutoAR(context, modelName, paramsJson, metricsJson, model);
+		new ARRecorder().trackAutoAR(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

@@ -114,7 +114,7 @@ public class GBTRegressor extends RegressorSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new GBTRegressorManager().save(context, modelName, paramsJson, metricsJson, model);
+		new GBRRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

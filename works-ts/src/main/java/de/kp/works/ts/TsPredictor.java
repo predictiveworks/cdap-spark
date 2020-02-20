@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.regressor.RFRegressorManager;
+import de.kp.works.core.regressor.RFRRecorder;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimePredictorConfig;
 
@@ -47,7 +47,7 @@ public class TsPredictor extends TimeCompute {
 	private TsPredictorConfig config;
 
 	private RandomForestRegressionModel model;
-	private RFRegressorManager manager;
+	private RFRRecorder manager;
 
 	public TsPredictor(TsPredictorConfig config) {
 		this.config = config;

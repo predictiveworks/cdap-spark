@@ -121,7 +121,7 @@ public class SurvivalRegressor extends RegressorSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new SurvivalRegressorManager().save(context, modelName, paramsJson, metricsJson, model);
+		new SurvivalRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

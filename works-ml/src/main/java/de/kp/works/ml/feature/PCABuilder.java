@@ -101,7 +101,7 @@ public class PCABuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new PCAManager().save(context, modelName, paramsJson, metricsJson, model);
+		new PCARecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 	

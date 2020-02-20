@@ -103,7 +103,7 @@ public class TsDiffARSink extends ARSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARManager().saveDiffAR(context, modelName, paramsJson, metricsJson, model);
+		new ARRecorder().trackDiffAR(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

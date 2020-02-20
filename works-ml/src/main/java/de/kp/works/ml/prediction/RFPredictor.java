@@ -33,9 +33,9 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
-import de.kp.works.core.regressor.RFRegressorManager;
+import de.kp.works.core.regressor.RFRRecorder;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.RFClassifierManager;
+import de.kp.works.ml.classification.RFCRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RFPredictor")
@@ -60,14 +60,14 @@ public class RFPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new RFClassifierManager().read(context, config.modelName);
+			classifier = new RFCRecorder().read(context, config.modelName);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new RFRegressorManager().read(context, config.modelName);
+			regressor = new RFRRecorder().read(context, config.modelName);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

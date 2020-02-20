@@ -41,7 +41,7 @@ import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.core.predictor.PredictorCompute;
 
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.clustering.GaussianMixtureManager;
+import de.kp.works.ml.clustering.GaussianMixtureRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GaussianMixturePredictor")
@@ -61,7 +61,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new GaussianMixtureManager().read(context, config.modelName);
+		model = new GaussianMixtureRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

@@ -39,7 +39,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
 
-import de.kp.works.text.embeddings.Word2VecManager;
+import de.kp.works.text.embeddings.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 import de.kp.works.text.util.Names;
 
@@ -64,13 +64,13 @@ public class NERTagger extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new NERManager().read(context, config.modelName);
+		model = new NERRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A NER (CRF) model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecManager().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

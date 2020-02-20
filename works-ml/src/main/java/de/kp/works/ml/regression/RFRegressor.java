@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.RegressorEvaluator;
 import co.cask.cdap.etl.api.batch.SparkSink;
-import de.kp.works.core.regressor.RFRegressorManager;
+import de.kp.works.core.regressor.RFRRecorder;
 import de.kp.works.core.regressor.RegressorSink;
 import de.kp.works.ml.config.RFConfig;
 
@@ -114,7 +114,7 @@ public class RFRegressor extends RegressorSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new RFRegressorManager().save(context, modelName, paramsJson, metricsJson, model);
+		new RFRRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

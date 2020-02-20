@@ -97,7 +97,7 @@ public class TsYuleWalkerSink extends ARSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARManager().saveYuleWalker(context, modelName, paramsJson, metricsJson, model);
+		new ARRecorder().trackYuleWalker(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

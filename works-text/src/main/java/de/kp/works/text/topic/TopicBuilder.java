@@ -117,7 +117,7 @@ public class TopicBuilder extends TextSink {
 		String paramsJson = config.getParamsAsJSON();
 
 		String modelName = config.modelName;
-		new TopicManager().save(context, modelName, paramsJson, metricsJson, model);
+		new TopicRecorder().track(context, modelName, paramsJson, metricsJson, model);
 				
 	}
 	

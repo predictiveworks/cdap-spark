@@ -52,7 +52,7 @@ public class TsAutoARIMA extends ARIMACompute {
 		
 		config.validate();
 
-		model = new ARIMAManager().readAutoARIMA(context, config.modelName);
+		model = new ARIMARecorder().readAutoARIMA(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto ARIMA model with name '%s' does not exist.",

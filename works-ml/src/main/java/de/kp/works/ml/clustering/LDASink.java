@@ -42,7 +42,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.cluster.ClusterConfig;
 import de.kp.works.core.cluster.ClusterSink;
-import de.kp.works.core.cluster.LDAClusteringManager;
+import de.kp.works.core.cluster.LDARecorder;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDASink")
@@ -135,7 +135,7 @@ public class LDASink extends ClusterSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LDAClusteringManager().save(context, modelName, paramsJson, metricsJson, model);
+		new LDARecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

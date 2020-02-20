@@ -110,7 +110,7 @@ public class ScalerBuilder extends FeatureSink {
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerManager().saveMinMaxScaler(context, modelName, paramsJson, metricsJson, model);
+			new ScalerRecorder().trackMinMaxScaler(context, modelName, paramsJson, metricsJson, model);
 			
 			
 		} else if (modelType.equals("maxabs")) {
@@ -121,7 +121,7 @@ public class ScalerBuilder extends FeatureSink {
 			MaxAbsScalerModel model = maxAbsScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerManager().saveMaxAbsScaler(context, modelName, paramsJson, metricsJson, model);
+			new ScalerRecorder().trackMaxAbsScaler(context, modelName, paramsJson, metricsJson, model);
 			
 		} else {
 			
@@ -143,7 +143,7 @@ public class ScalerBuilder extends FeatureSink {
 			StandardScalerModel model = standardScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerManager().saveStandardScaler(context, modelName, paramsJson, metricsJson, model);
+			new ScalerRecorder().trackStandardScaler(context, modelName, paramsJson, metricsJson, model);
 
 		}
 	}

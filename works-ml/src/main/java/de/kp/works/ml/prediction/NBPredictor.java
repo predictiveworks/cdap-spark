@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.NBClassifierManager;
+import de.kp.works.ml.classification.NBRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NBPredictor")
@@ -53,7 +53,7 @@ public class NBPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		classifier = new NBClassifierManager().read(context, config.modelName);
+		classifier = new NBRecorder().read(context, config.modelName);
 		if (classifier == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

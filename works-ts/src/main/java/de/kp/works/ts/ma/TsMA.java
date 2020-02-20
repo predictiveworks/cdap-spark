@@ -49,7 +49,7 @@ public class TsMA extends MACompute {
 		
 		config.validate();
 
-		model = new MAManager().readMA(context, config.modelName);
+		model = new MARecorder().readMA(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Moving Average model with name '%s' does not exist.",

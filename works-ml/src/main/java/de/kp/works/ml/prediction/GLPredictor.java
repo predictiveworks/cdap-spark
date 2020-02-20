@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.regression.GLRegressorManager;
+import de.kp.works.ml.regression.GLRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GLPredictor")
@@ -54,7 +54,7 @@ public class GLPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		regressor = new GLRegressorManager().read(context, config.modelName);
+		regressor = new GLRecorder().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

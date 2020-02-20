@@ -117,7 +117,7 @@ public class MLPClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new MLPClassifierManager().save(context, modelName, paramsJson, metricsJson, model);
+		new MLPRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

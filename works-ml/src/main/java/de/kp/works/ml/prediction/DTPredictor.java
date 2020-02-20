@@ -34,8 +34,8 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.DTClassifierManager;
-import de.kp.works.ml.regression.DTRegressorManager;
+import de.kp.works.ml.classification.DTCRecorder;
+import de.kp.works.ml.regression.DTRRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DTPredictor")
@@ -60,14 +60,14 @@ public class DTPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new DTClassifierManager().read(context, config.modelName);
+			classifier = new DTCRecorder().read(context, config.modelName);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new DTRegressorManager().read(context, config.modelName);
+			regressor = new DTRRecorder().read(context, config.modelName);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

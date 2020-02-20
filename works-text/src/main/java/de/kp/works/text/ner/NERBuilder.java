@@ -23,7 +23,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.text.TextSink;
-import de.kp.works.text.embeddings.Word2VecManager;
+import de.kp.works.text.embeddings.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
@@ -64,7 +64,7 @@ public class NERBuilder extends TextSink {
 		 */
 		SparkMLManager.createTextanalysisIfNotExists(context);
 
-		word2vec = new Word2VecManager().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -85,7 +85,7 @@ public class NERBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new NERManager().save(context, modelName, paramsJson, metricsJson, model);
+		new NERRecorder().track(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

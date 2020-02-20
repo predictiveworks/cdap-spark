@@ -99,7 +99,7 @@ public class CountVecBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
-		new CountVecManager().save(context, modelName, paramsJson, metricsJson, model);
+		new CountVecRecorder().track(context, modelName, paramsJson, metricsJson, model);
 		
 	}
 

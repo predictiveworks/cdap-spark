@@ -107,7 +107,7 @@ public class TsAutoARIMASink extends ARIMASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARIMAManager().saveAutoARIMA(context, modelName, paramsJson, metricsJson, model);
+		new ARIMARecorder().trackAutoARIMA(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

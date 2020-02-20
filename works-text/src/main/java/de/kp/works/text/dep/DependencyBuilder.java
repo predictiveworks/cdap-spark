@@ -81,7 +81,7 @@ public class DependencyBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new DependencyManager().save(context, modelName, paramsJson, metricsJson, model);
+		new DependencyRecorder().track(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 	

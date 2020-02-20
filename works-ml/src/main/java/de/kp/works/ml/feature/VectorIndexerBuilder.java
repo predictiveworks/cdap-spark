@@ -93,7 +93,7 @@ public class VectorIndexerBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new VectorIndexerManager().save(context, modelName, paramsJson, metricsJson, model);
+		new VectorIndexerRecorder().track(context, modelName, paramsJson, metricsJson, model);
 		
 	}
 

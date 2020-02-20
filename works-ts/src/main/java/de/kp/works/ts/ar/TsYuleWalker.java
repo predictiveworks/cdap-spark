@@ -50,7 +50,7 @@ public class TsYuleWalker extends ARCompute {
 		
 		config.validate();
 
-		model = new ARManager().readYuleWalker(context, config.modelName);
+		model = new ARRecorder().readYuleWalker(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Yule Walker AutoRegression model with name '%s' does not exist.",

@@ -50,7 +50,7 @@ public class TsAR extends ARCompute {
 		
 		config.validate();
 
-		model = new ARManager().readAR(context, config.modelName);
+		model = new ARRecorder().readAR(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An AutoRegression model with name '%s' does not exist.",

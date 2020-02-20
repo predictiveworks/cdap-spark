@@ -60,7 +60,7 @@ public class NorvigChecker extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new SpellManager().read(context, config.modelName);
+		model = new SpellRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Norvig Spell Checking model with name '%s' does not exist.",

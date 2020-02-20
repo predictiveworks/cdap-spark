@@ -90,7 +90,7 @@ public class StringIndexerBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new StringIndexerManager().save(context, modelName, paramsJson, metricsJson, model);
+		new StringIndexerRecorder().track(context, modelName, paramsJson, metricsJson, model);
 		
 	}
 	

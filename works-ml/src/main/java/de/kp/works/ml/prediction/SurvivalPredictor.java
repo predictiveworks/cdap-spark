@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.regression.SurvivalRegressorManager;
+import de.kp.works.ml.regression.SurvivalRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SurvivalPredictor")
@@ -53,7 +53,7 @@ public class SurvivalPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		regressor = new SurvivalRegressorManager().read(context, config.modelName);
+		regressor = new SurvivalRecorder().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

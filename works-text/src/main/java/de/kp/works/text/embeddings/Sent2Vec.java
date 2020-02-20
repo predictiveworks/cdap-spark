@@ -55,7 +55,7 @@ public class Sent2Vec extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new Word2VecManager().read(context, config.modelName);
+		model = new Word2VecRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

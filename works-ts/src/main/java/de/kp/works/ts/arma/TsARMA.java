@@ -52,7 +52,7 @@ public class TsARMA extends ARMACompute {
 		
 		config.validate();
 
-		model = new ARMAManager().readARMA(context, config.modelName);
+		model = new ARMARecorder().readARMA(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An ARMA model with name '%s' does not exist.",

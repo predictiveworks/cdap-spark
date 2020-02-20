@@ -34,8 +34,8 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.GBTClassifierManager;
-import de.kp.works.ml.regression.GBTRegressorManager;
+import de.kp.works.ml.classification.GBCRecorder;
+import de.kp.works.ml.regression.GBRRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GBTPredictor")
@@ -61,14 +61,14 @@ public class GBTPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new GBTClassifierManager().read(context, config.modelName);
+			classifier = new GBCRecorder().read(context, config.modelName);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new GBTRegressorManager().read(context, config.modelName);
+			regressor = new GBRRecorder().read(context, config.modelName);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

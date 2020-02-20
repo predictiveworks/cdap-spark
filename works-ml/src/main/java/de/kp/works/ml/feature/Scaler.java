@@ -64,7 +64,7 @@ public class Scaler extends FeatureCompute {
 
 		config.validate();
 
-		ScalerManager manager = new ScalerManager();
+		ScalerRecorder manager = new ScalerRecorder();
 		String modelType = config.modelType;
 
 		if (modelType.equals("maxabs")) {

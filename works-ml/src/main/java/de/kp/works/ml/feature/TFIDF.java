@@ -51,11 +51,11 @@ public class TFIDF extends FeatureCompute {
 	private TFIDFConfig config;
 	
 	private IDFModel model;
-	private TFIDFManager manager;
+	private TFIDFRecorder manager;
 
 	public TFIDF(TFIDFConfig config) {
 		this.config = config;
-		this.manager = new TFIDFManager();
+		this.manager = new TFIDFRecorder();
 	}
 
 	@Override

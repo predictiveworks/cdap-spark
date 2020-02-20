@@ -57,7 +57,7 @@ public class VectorIndexer extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new VectorIndexerManager().read(context, config.modelName);
+		model = new VectorIndexerRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

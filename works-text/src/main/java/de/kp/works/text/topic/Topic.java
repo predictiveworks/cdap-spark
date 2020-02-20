@@ -54,7 +54,7 @@ public class Topic extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new TopicManager().read(context, config.modelName);
+		model = new TopicRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Topic model with name '%s' does not exist.",

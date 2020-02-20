@@ -66,7 +66,7 @@ public class Lemmatizer extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LemmatizerManager().read(context, config.modelName);
+		model = new LemmatizerRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Lemmatization model with name '%s' does not exist.",

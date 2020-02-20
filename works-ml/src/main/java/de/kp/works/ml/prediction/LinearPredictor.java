@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.regression.LinearRegressorManager;
+import de.kp.works.ml.regression.LinearRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LinearPredictor")
@@ -53,7 +53,7 @@ public class LinearPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		regressor = new LinearRegressorManager().read(context, config.modelName);
+		regressor = new LinearRecorder().read(context, config.modelName);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

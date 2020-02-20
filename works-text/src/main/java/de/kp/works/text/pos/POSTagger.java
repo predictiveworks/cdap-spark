@@ -60,7 +60,7 @@ public class POSTagger extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new POSManager().read(context, config.modelName);
+		model = new POSRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",

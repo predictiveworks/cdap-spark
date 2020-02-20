@@ -38,9 +38,9 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.cluster.LDAClusteringManager;
+import de.kp.works.core.cluster.LDARecorder;
 import de.kp.works.core.text.TextCompute;
-import de.kp.works.text.embeddings.Word2VecManager;
+import de.kp.works.text.embeddings.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -64,13 +64,13 @@ public class LDA extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LDAClusteringManager().read(context, config.modelName);
+		model = new LDARecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An LDA model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecManager().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

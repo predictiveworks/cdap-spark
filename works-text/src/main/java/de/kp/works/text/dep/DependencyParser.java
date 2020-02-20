@@ -39,7 +39,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
-import de.kp.works.text.pos.POSManager;
+import de.kp.works.text.pos.POSRecorder;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -63,13 +63,13 @@ public class DependencyParser extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new DependencyManager().read(context, config.modelName);
+		model = new DependencyRecorder().read(context, config.modelName);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Dependency Parser model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		perceptron = new POSManager().read(context, config.posName);
+		perceptron = new POSRecorder().read(context, config.posName);
 		if (perceptron == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech model with name '%s' does not exist.",

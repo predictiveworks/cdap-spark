@@ -106,7 +106,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new ChiSquaredManager().save(context, modelName, paramsJson, metricsJson, model);
+		new ChiSquaredRecorder().track(context, modelName, paramsJson, metricsJson, model);
 		
 	}
 

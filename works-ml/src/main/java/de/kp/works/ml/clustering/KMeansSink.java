@@ -116,7 +116,7 @@ public class KMeansSink extends ClusterSink {
 		 * metrics
 		 */
 		String modelName = config.modelName;
-		new KMeansManager().save(context, modelName, paramsJson, metricsJson, model);
+		new KMeansRecorder().track(context, modelName, paramsJson, metricsJson, model);
 
 	}
 
