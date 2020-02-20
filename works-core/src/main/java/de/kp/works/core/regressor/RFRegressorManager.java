@@ -1,5 +1,4 @@
-package de.kp.works.core.ml;
-
+package de.kp.works.core.regressor;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,71 +20,80 @@ package de.kp.works.core.ml;
 
 import java.io.IOException;
 import java.util.Date;
-import org.apache.spark.ml.clustering.*;
+
+import org.apache.spark.ml.regression.RandomForestRegressionModel;
+
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-/**
- * LDA based clustering is used in works-ml and also 
- * in works-text project
- */
-public class LDAClusteringManager extends AbstractClusteringManager {
+import de.kp.works.core.ml.AbstractRegressionManager;
+import de.kp.works.core.ml.SparkMLManager;
 
-	private String ALGORITHM_NAME = "DistributedLDA";
-	
-	public LDAModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+public class RFRegressorManager extends AbstractRegressionManager {
 
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
+	private String ALGORITHM_NAME = "RandomForestRegressor";
+
+	public RandomForestRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+
+		FileSet fs = SparkMLManager.getRegressionFS(context);
+		Table table = SparkMLManager.getRegressionMeta(context);
 		
 		return read(fs, table, modelName);
-
+		
 	}
 	
-	private LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
+	private RandomForestRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the LDA clustering model
+		 * Leverage Apache Spark mechanism to read the RandomForestRegression model
 		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		return DistributedLDAModel.load(modelPath);
+		return RandomForestRegressionModel.load(modelPath);
 		
 	}
 
 	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
-			LDAModel model) throws Exception {
+			RandomForestRegressionModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
+		FileSet fs = SparkMLManager.getRegressionFS(context);
+		Table table = SparkMLManager.getRegressionMeta(context);
 		
 		save(fs, table, modelName, modelParams, modelMetrics, model);
 		
 	}
 
 	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			LDAModel model) throws IOException {
+			RandomForestRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
 
 		/*
-		 * Define the path of this model on CDAP's internal clustering fileset
+		 * Define the path of this model on CDAP's internal regression fileset;
+		 * not, the timestamp within the path ensures that each model of the 
+		 * same name but different version has its own path
 		 */
 		Long ts = new Date().getTime();
 		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the LDA model
+		 * Leverage Apache Spark mechanism to write the RandomForestRegressor model
 		 * to a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
-		
+
 		/***** MODEL METADATA *****/
 
 		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
 
 	}
 
+	public Object getParam(SparkExecutionPluginContext context, String modelName, String paramName) throws Exception {
+		Table table = SparkMLManager.getRegressionMeta(context);
+		return getModelParam(table, ALGORITHM_NAME, modelName, paramName);
+	}
+
 }
+

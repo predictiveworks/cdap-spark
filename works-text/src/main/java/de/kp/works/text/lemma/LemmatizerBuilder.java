@@ -87,7 +87,7 @@ public class LemmatizerBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LemmatizerManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new LemmatizerManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

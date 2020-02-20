@@ -102,7 +102,7 @@ public class TsARSink extends ARSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARManager().saveAR(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ARManager().saveAR(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

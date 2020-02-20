@@ -105,7 +105,7 @@ public class TsARIMASink extends ARIMASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARIMAManager().saveARIMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ARIMAManager().saveARIMA(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

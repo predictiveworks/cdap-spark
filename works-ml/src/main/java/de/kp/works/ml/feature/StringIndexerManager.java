@@ -56,7 +56,18 @@ public class StringIndexerManager extends AbstractModelManager {
 		return StringIndexerModel.load(modelPath);
 		
 	}
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			StringIndexerModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
 			StringIndexerModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

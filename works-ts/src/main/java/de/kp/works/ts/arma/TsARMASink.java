@@ -103,7 +103,7 @@ public class TsARMASink extends ARMASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARMAManager().saveARMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ARMAManager().saveARMA(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

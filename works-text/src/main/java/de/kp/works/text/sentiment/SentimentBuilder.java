@@ -99,7 +99,7 @@ public class SentimentBuilder extends TextSink {
 		String paramsJson = config.getParamsAsJSON();
 
 		String modelName = config.modelName;
-		new SentimentManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new SentimentManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 	

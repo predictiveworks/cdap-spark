@@ -65,7 +65,17 @@ public class ALSManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			ALSModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getRecommendationFS(context);
+		Table table = SparkMLManager.getRecommendationMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
 			ALSModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

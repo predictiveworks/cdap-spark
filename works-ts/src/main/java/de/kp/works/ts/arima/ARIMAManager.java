@@ -83,7 +83,17 @@ public class ARIMAManager extends AbstractTimeSeriesManager {
 
 	/** WRITE **/
 	
-	public void saveARIMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveARIMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			ARIMAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveARIMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveARIMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			ARIMAModel model) throws IOException {
 		
 		String algorithmName = "ARIMA";
@@ -110,7 +120,17 @@ public class ARIMAManager extends AbstractTimeSeriesManager {
 
 	}
 	
-	public void saveAutoARIMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			AutoARIMAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveAutoARIMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveAutoARIMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			AutoARIMAModel model) throws IOException {
 		
 		String algorithmName = "AutoARIMA";

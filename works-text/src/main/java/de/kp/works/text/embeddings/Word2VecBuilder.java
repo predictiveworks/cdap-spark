@@ -80,7 +80,7 @@ public class Word2VecBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new Word2VecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new Word2VecManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

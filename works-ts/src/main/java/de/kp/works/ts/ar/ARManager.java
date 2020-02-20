@@ -133,7 +133,18 @@ public class ARManager extends AbstractTimeSeriesManager {
 
 	/** WRITE **/
 	
-	public void saveAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			AutoRegressionModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveAR(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+		
+	private void saveAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			AutoRegressionModel model) throws IOException {
 		
 		String algorithmName = "AR";
@@ -160,7 +171,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 
 	}
 	
-	public void saveAutoAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveAutoAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			AutoARModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveAutoAR(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveAutoAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			AutoARModel model) throws IOException {
 		
 		String algorithmName = "AutoAR";
@@ -187,7 +208,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 
 	}
 	
-	public void saveDiffAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveDiffAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			DiffAutoRegressionModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveDiffAR(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveDiffAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			DiffAutoRegressionModel model) throws IOException {
 		
 		String algorithmName = "DiffAR";
@@ -214,7 +245,17 @@ public class ARManager extends AbstractTimeSeriesManager {
 
 	}
 	
-	public void saveYuleWalker(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveYuleWalker(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			ARYuleWalkerModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveYuleWalker(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveYuleWalker(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			ARYuleWalkerModel model) throws IOException {
 		
 		String algorithmName = "YuleWalker";

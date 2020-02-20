@@ -83,7 +83,7 @@ public class NorvigBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new SpellManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new SpellManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

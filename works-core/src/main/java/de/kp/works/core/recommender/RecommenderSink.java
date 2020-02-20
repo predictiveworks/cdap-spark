@@ -45,11 +45,6 @@ public class RecommenderSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createRecommendationIfNotExists(context);
-		/*
-		 * Retrieve recommendation specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getRecommendationFS(context);
-		modelMeta = SparkMLManager.getRecommendationMeta(context);
 		
 	}
 	

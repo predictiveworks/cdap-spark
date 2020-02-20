@@ -34,11 +34,6 @@ public class MASink extends TimeSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createTimeseriesIfNotExists(context);
-		/*
-		 * Retrieve time series specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getTimeseriesFS(context);
-		modelMeta = SparkMLManager.getTimeseriesMeta(context);
 		
 	}
 

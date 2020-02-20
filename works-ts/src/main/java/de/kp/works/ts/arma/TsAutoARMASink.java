@@ -105,7 +105,7 @@ public class TsAutoARMASink extends ARMASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARMAManager().saveAutoARMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ARMAManager().saveAutoARMA(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

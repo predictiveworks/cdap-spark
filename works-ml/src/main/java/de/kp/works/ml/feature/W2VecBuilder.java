@@ -90,7 +90,7 @@ public class W2VecBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new W2VecManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new W2VecManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 	

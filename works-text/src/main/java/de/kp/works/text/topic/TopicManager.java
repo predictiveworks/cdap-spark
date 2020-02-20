@@ -57,7 +57,17 @@ public class TopicManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			LDATopicModel model) throws Exception {
+		
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			LDATopicModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

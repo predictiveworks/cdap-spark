@@ -67,7 +67,17 @@ public class ScalerManager extends AbstractModelManager {
 		
 	}
 
-	public void saveMinMaxScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	public void saveMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			MinMaxScalerModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		saveMinMaxScaler(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void saveMinMaxScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
 			MinMaxScalerModel model) throws IOException {
 
 		String algorithmName = "MinMaxScaler";
@@ -124,8 +134,18 @@ public class ScalerManager extends AbstractModelManager {
 		return MaxAbsScalerModel.load(modelPath);
 		
 	}
+	
+	public void saveMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			MaxAbsScalerModel model) throws Exception {
 
-	public void saveMaxAbsScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		saveMaxAbsScaler(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void saveMaxAbsScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
 			MaxAbsScalerModel model) throws IOException {
 
 		String algorithmName = "MaxAbsScaler";
@@ -183,8 +203,18 @@ public class ScalerManager extends AbstractModelManager {
 		return StandardScalerModel.load(modelPath);
 		
 	}
+	
+	public void saveStandardScaler(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			StandardScalerModel model) throws Exception {
 
-	public void saveStandardScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		saveStandardScaler(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void saveStandardScaler(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
 			StandardScalerModel model) throws IOException {
 
 		String algorithmName = "StandardScaler";

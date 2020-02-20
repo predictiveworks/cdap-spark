@@ -38,10 +38,8 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-
+import de.kp.works.core.cluster.LDAClusteringManager;
 import de.kp.works.core.text.TextCompute;
-
-import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.text.embeddings.Word2VecManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 

@@ -43,7 +43,7 @@ import co.cask.cdap.etl.api.batch.SparkPluginContext;
 import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.ml.LDAClusteringManager;
+import de.kp.works.core.cluster.LDAClusteringManager;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.text.TextSink;
 import de.kp.works.text.embeddings.Word2VecManager;
@@ -87,11 +87,6 @@ public class LDABuilder extends TextSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createClusteringIfNotExists(context);
-		/*
-		 * Retrieve clustering specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getClusteringFS(context);
-		modelMeta = SparkMLManager.getClusteringMeta(context);
 		/*
 		 * Retrieve text analysis specified Word2Vec embedding model for 
 		 * later use in compute

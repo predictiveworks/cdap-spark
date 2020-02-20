@@ -45,11 +45,6 @@ public class TextSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createTextanalysisIfNotExists(context);
-		/*
-		 * Retrieve text analysis specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getTextanalysisFS(context);
-		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
 	}
 

@@ -132,7 +132,7 @@ public class ALSSink extends RecommenderSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ALSManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new ALSManager().save(context, modelName, paramsJson, metricsJson, model);
 		
 	}
 

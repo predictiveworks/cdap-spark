@@ -111,7 +111,7 @@ public class MinHashLSHBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new MinHashLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new MinHashLSHManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

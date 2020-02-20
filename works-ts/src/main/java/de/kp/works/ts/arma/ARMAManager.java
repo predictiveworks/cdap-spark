@@ -83,7 +83,17 @@ public class ARMAManager extends AbstractTimeSeriesManager {
 
 	/** WRITE **/
 	
-	public void saveARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			ARMAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveARMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			ARMAModel model) throws IOException {
 		
 		String algorithmName = "ARMA";
@@ -110,7 +120,17 @@ public class ARMAManager extends AbstractTimeSeriesManager {
 
 	}
 	
-	public void saveAutoARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveAutoARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			AutoARMAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveAutoARMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveAutoARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			AutoARMAModel model) throws IOException {
 		
 		String algorithmName = "AutoARMA";

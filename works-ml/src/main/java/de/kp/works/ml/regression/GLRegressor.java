@@ -116,7 +116,7 @@ public class GLRegressor extends RegressorSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new GLRegressorManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new GLRegressorManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

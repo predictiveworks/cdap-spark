@@ -102,7 +102,7 @@ public class TsMASink extends MASink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new MAManager().saveMA(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new MAManager().saveMA(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

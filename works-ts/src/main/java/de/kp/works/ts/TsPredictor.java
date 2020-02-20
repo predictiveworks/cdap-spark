@@ -33,7 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.RFRegressorManager;
+import de.kp.works.core.regressor.RFRegressorManager;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimePredictorConfig;
 

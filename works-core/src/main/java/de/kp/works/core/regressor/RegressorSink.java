@@ -46,11 +46,6 @@ public class RegressorSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createRegressionIfNotExists(context);
-		/*
-		 * Retrieve regression specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getRegressionFS(context);
-		modelMeta = SparkMLManager.getRegressionMeta(context);
 		
 	}
 

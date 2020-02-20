@@ -56,7 +56,17 @@ public class BucketedLSHManager extends AbstractModelManager {
 		return BucketedRandomProjectionLSHModel.load(modelPath);
 		
 	}
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			BucketedRandomProjectionLSHModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet modelFs, Table modelTable, String modelName, String modelParams, String modelMetrics,
 			BucketedRandomProjectionLSHModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/
@@ -80,10 +90,10 @@ public class BucketedLSHManager extends AbstractModelManager {
 		 * clustering fileset
 		 */
 		String fsName = SparkMLManager.FEATURE_FS;
-		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
+		String modelVersion = getModelVersion(modelTable, ALGORITHM_NAME, modelName);
 
 		byte[] key = Bytes.toBytes(ts);
-		modelMeta.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
+		modelTable.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
 				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
 				.add("fsName", fsName).add("fsPath", fsPath));
 

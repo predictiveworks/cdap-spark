@@ -56,7 +56,17 @@ public class IsotonicRegressorManager extends AbstractRegressionManager {
 		
 	}
 
-	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			IsotonicRegressionModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getRegressionFS(context);
+		Table table = SparkMLManager.getRegressionMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			IsotonicRegressionModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

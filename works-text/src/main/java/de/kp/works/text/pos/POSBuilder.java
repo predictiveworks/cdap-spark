@@ -82,7 +82,7 @@ public class POSBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new POSManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new POSManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

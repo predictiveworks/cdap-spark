@@ -34,7 +34,10 @@ import de.kp.works.text.embeddings.Word2VecModel;
 public class Word2VecManager extends AbstractModelManager {
 
 	private String ALGORITHM_NAME = "Word2Vec";
-
+	/**
+	 * The Word2Vec model is used with other builders; as their initializtion
+	 * phase is based on the basic plugin context, we need an extra read method
+	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getTextanalysisFS(context);
@@ -50,9 +53,8 @@ public class Word2VecManager extends AbstractModelManager {
 		
 		return read(fs, table, modelName);
 	}
-	
-	
-	public Word2VecModel read(FileSet fs, Table table, String modelName) throws IOException {
+		
+	private Word2VecModel read(FileSet fs, Table table, String modelName) throws IOException {
 		
 		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
 		if (fsPath == null) return null;
@@ -62,6 +64,16 @@ public class Word2VecManager extends AbstractModelManager {
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return Word2VecModel.load(modelPath);
+		
+	}
+
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			Word2VecModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
 		
 	}
 

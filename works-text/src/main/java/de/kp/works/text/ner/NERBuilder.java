@@ -63,13 +63,8 @@ public class NERBuilder extends TextSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createTextanalysisIfNotExists(context);
-		/*
-		 * Retrieve text analysis specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getTextanalysisFS(context);
-		modelMeta = SparkMLManager.getTextanalysisMeta(context);
 
-		word2vec = new Word2VecManager().read(modelFs, modelMeta, config.embeddingName);
+		word2vec = new Word2VecManager().read(context, config.embeddingName);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -90,7 +85,7 @@ public class NERBuilder extends TextSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new NERManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new NERManager().save(context, modelName, paramsJson, metricsJson, model);
 	    
 	}
 

@@ -45,11 +45,6 @@ public class FeatureSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createFeatureIfNotExists(context);
-		/*
-		 * Retrieve feature specified dataset for later use incompute
-		 */
-		modelFs = SparkMLManager.getFeatureFS(context);
-		modelMeta = SparkMLManager.getFeatureMeta(context);
 	}
 
 	@Override

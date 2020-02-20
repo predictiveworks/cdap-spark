@@ -66,7 +66,17 @@ public class SentimentManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			ViveknSentimentModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTextanalysisFS(context);
+		Table table = SparkMLManager.getTextanalysisMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
 			ViveknSentimentModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

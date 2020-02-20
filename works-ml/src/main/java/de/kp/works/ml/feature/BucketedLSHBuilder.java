@@ -120,7 +120,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 		String metricsJson = new Gson().toJson(metrics);
 
 		String modelName = builderConfig.modelName;
-		new BucketedLSHManager().save(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		new BucketedLSHManager().save(context, modelName, paramsJson, metricsJson, model);
 
 	}
 

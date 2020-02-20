@@ -35,8 +35,8 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.predictor.PredictorCompute;
+import de.kp.works.core.cluster.LDAClusteringManager;
 import de.kp.works.core.cluster.PredictorConfig;
-import de.kp.works.core.ml.LDAClusteringManager;
 import de.kp.works.core.ml.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)

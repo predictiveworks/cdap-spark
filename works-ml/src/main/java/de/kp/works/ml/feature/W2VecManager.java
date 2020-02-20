@@ -57,7 +57,17 @@ public class W2VecManager extends AbstractModelManager {
 		
 	}
 
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
+	public void save(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			Word2VecModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getFeatureFS(context);
+		Table table = SparkMLManager.getFeatureMeta(context);
+		
+		save(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+
+	private void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
 			Word2VecModel model) throws IOException {
 
 		/***** MODEL COMPONENTS *****/

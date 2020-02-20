@@ -83,7 +83,17 @@ public class MAManager extends AbstractTimeSeriesManager {
 
 	/** WRITE **/
 	
-	public void saveMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
+	public void saveMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			MovingAverageModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
+	}
+	
+	private void saveMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
 			MovingAverageModel model) throws IOException {
 		
 		String algorithmName = "MA";
@@ -108,6 +118,16 @@ public class MAManager extends AbstractTimeSeriesManager {
 
 		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
 
+	}
+	
+	public void saveAutoMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+			AutoMAModel model) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeseriesFS(context);
+		Table table = SparkMLManager.getTimeseriesMeta(context);
+		
+		saveAutoMA(fs, table, modelName, modelParams, modelMetrics, model);
+		
 	}
 	
 	public void saveAutoMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
