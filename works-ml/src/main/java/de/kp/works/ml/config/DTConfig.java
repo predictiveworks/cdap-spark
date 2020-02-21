@@ -50,6 +50,7 @@ public class DTConfig extends CRConfig {
 	public DTConfig() {
 
 		dataSplit = "70:30";
+		modelStage = "experiment";
 
 		impurity = "gini";
 		minInfoGain = 0D;

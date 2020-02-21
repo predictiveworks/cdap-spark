@@ -32,6 +32,10 @@ public class FeatureModelConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	@Description("The name of the field in the input schema that contains the features to build the model from.")
 	@Macro
 	public String inputCol;
@@ -58,8 +62,9 @@ public class FeatureModelConfig extends BaseConfig {
 
 		Schema.Field inputField = inputSchema.getField(inputCol);
 		if (inputField == null) {
-			throw new IllegalArgumentException(String.format(
-					"[%s] The input schema must contain the field that defines the features.", this.getClass().getName()));
+			throw new IllegalArgumentException(
+					String.format("[%s] The input schema must contain the field that defines the features.",
+							this.getClass().getName()));
 		}
 	}
 

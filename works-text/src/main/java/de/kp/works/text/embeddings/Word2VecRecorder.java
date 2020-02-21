@@ -27,11 +27,11 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.text.embeddings.Word2VecModel;
 
-public class Word2VecRecorder extends AbstractModelManager {
+public class Word2VecRecorder extends AbstractRecorder {
 
 	private String ALGORITHM_NAME = "Word2Vec";
 	/**
@@ -40,16 +40,16 @@ public class Word2VecRecorder extends AbstractModelManager {
 	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		FileSet fs = SparkMLManager.getTextFS(context);
+		Table table = SparkMLManager.getTextTable(context);
 		
 		return read(fs, table, modelName);
 	}
 	
 	public Word2VecModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		FileSet fs = SparkMLManager.getTextFS(context);
+		Table table = SparkMLManager.getTextTable(context);
 		
 		return read(fs, table, modelName);
 	}
@@ -70,8 +70,8 @@ public class Word2VecRecorder extends AbstractModelManager {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			Word2VecModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		FileSet fs = SparkMLManager.getTextFS(context);
+		Table table = SparkMLManager.getTextTable(context);
 		
 		save(fs, table, modelName, modelParams, modelMetrics, model);
 		

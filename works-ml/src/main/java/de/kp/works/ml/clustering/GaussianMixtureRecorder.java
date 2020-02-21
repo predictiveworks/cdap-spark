@@ -18,7 +18,6 @@ package de.kp.works.ml.clustering;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.clustering.GaussianMixtureModel;
@@ -26,25 +25,20 @@ import org.apache.spark.ml.clustering.GaussianMixtureModel;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractClusteringManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.ClusterRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class GaussianMixtureRecorder extends AbstractClusteringManager {
-
-	private String ALGORITHM_NAME = "GaussianMixture";
+public class GaussianMixtureRecorder extends ClusterRecorder {
 
 	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
+		Table table = SparkMLManager.getClusteringTable(context);
 
-		return read(fs, table, modelName);
+		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
 
-	}
-
-	private GaussianMixtureModel read(FileSet fs, Table table, String modelName) throws IOException {
-
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null)
 			return null;
 		/*
@@ -56,35 +50,30 @@ public class GaussianMixtureRecorder extends AbstractClusteringManager {
 
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			GaussianMixtureModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
+		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
 
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-	}
+		/***** ARTIFACTS *****/
 
-	private void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
-			GaussianMixtureModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal clustering fileset
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the GaussianMixture model to a model
-		 * specific file set
+		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
+		 * model specific file set
 		 */
-		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
+		FileSet fs = SparkMLManager.getClusteringFS(context);
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getClusteringTable(context);
+
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

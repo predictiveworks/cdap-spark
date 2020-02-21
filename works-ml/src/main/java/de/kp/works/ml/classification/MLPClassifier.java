@@ -80,7 +80,7 @@ public class MLPClassifier extends ClassifierSink {
 		String labelCol = config.labelCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -117,7 +117,9 @@ public class MLPClassifier extends ClassifierSink {
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new MLPRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new MLPRecorder().track(context, modelName, modelStage, modelParams, metricsJson, model);
 
 	}
 
@@ -162,6 +164,8 @@ public class MLPClassifier extends ClassifierSink {
 		public MLPClassifierConfig() {
 
 			dataSplit = "70:30";
+			modelStage = "experiment";
+			
 			blockSize = 128;
 
 			maxIter = 100;

@@ -58,6 +58,7 @@ public class GBTConfig extends CRConfig {
 	public GBTConfig() {
 
 		dataSplit = "70:30";
+		modelStage = "experiment";
 
 		lossType = "logistic";
 		minInfoGain = 0D;

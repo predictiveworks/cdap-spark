@@ -35,8 +35,8 @@ public class ARMARecorder extends AbstractTimeSeriesManager {
 	
 	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readARMA(fs, table, modelName);
 		
@@ -59,8 +59,8 @@ public class ARMARecorder extends AbstractTimeSeriesManager {
 	
 	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readAutoARMA(fs, table, modelName);
 		
@@ -86,8 +86,8 @@ public class ARMARecorder extends AbstractTimeSeriesManager {
 	public void trackARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			ARMAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveARMA(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -123,8 +123,8 @@ public class ARMARecorder extends AbstractTimeSeriesManager {
 	public void trackAutoARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			AutoARMAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveAutoARMA(fs, table, modelName, modelParams, modelMetrics, model);
 		

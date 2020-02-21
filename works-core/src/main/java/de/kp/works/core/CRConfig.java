@@ -32,6 +32,10 @@ public class CRConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	@Description("The name of the field in the input schema that contains the feature vector.")
 	@Macro
 	public String featuresCol;

@@ -40,15 +40,17 @@ import co.cask.cdap.etl.api.batch.SparkPluginContext;
 public class SparkMLManager {
 
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to classification models.
+	 * The name of the internal dataset that is used to persist metadata for
+	 * all classifier models in a time series; this dataset is publically
+	 * visible from the CDAP user interface
 	 */
-	public static String CLASSIFICATION_META = "classificationMeta";
+	public static String CLASSIFICATION_TABLE = "Classifiers";
 	/*
-	 * The fileset name of the internal fileset that is used to store classification
-	 * models
+	 * The fileset name of the internal fileset that is used to store 
+	 * classification model artifacts; it is a convention that the last
+	 * part of the base path is equal to the fs name
 	 */
-	public static String CLASSIFICATION_FS = "classificationFs";
+	public static String CLASSIFICATION_FS = "classification";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
@@ -56,60 +58,64 @@ public class SparkMLManager {
 	public static String CLASSIFICATION_FS_BASE = "models/classification/";
 
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to clustering models.
+	 * The name of the internal dataset that is used to persist metadata for
+	 * all cluster models
 	 */
-	public static String CLUSTERING_META = "clusteringMeta";
+	public static String CLUSTERING_TABLE = "Clusters";
 	/*
 	 * The fileset name of the internal fileset that is used to store clustering
-	 * models
+	 * model artifacts; it is a convention that the last part of the base path is 
+	 * equal to the fs name
 	 */
-	public static String CLUSTERING_FS = "clusteringFs";
+	public static String CLUSTERING_FS = "clustering";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String CLUSTERING_FS_BASE = "models/clustering/";
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to feature models.
+	 * The name of the internal dataset that is used to persist metadata for
+	 * all feature models.
 	 */
-	public static String FEATURE_META = "featureMeta";
+	public static String FEATURE_TABLE = "Features";
 	/*
-	 * The fileset name of the internal fileset that is used to store feature models
-	 * (e.g. count vectorizer or word2vec models)
+	 * The fileset name of the internal fileset that is used to store feature model
+	 * (e.g. count vectorizer or word2vec models) artifacts; it is a convention that 
+	 * the last part of the base path is equal to the fs name
 	 */
-	public static String FEATURE_FS = "featureFs";
+	public static String FEATURE_FS = "feature";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String FEATURE_FS_BASE = "models/feature/";
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to recommendation models.
+	 * The model of the internal dataset that is used to persist metadata for
+	 * recommendation models.
 	 */
-	public static String RECOMMENDATION_META = "recommendationMeta";
+	public static String RECOMMENDATION_TABLE = "Recommenders";
 	/*
 	 * The fileset name of the internal fileset that is used to store recommendation
-	 * models
+	 * model artifacts; it is a convention that the last part of the base path is 
+	 * equal to the fs name
 	 */
-	public static String RECOMMENDATION_FS = "recommendationFs";
+	public static String RECOMMENDATION_FS = "recommendation";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String RECOMMENDATION_FS_BASE = "models/recommendation/";
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to regression models.
+	 * The model of the internal dataset that is used to persist metadata for
+	 * all regression models.
 	 */
-	public static String REGRESSION_META = "regressionMeta";
+	public static String REGRESSION_TABLE = "Regressors";
 	/*
 	 * The fileset name of the internal fileset that is used to store regression
-	 * models
+	 * model artifacts; it is a convention that the last part of the base path is 
+	 * equal to the fs name
 	 */
-	public static String REGRESSION_FS = "regressionFs";
+	public static String REGRESSION_FS = "regression";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
@@ -117,15 +123,16 @@ public class SparkMLManager {
 	public static String REGRESSION_FS_BASE = "models/regression/";
 	
 	/*
-	 * The model of the internal dataset that is used to persist metadata with
-	 * respect to text analysis models.
+	 * The model of the internal dataset that is used to persist metadata for
+	 * all text analysis models.
 	 */
-	public static String TEXTANALYSIS_META = "textanalysisMeta";
+	public static String TEXTANALYSIS_TABLE = "TextModels";
 	/*
 	 * The fileset name of the internal fileset that is used to store text analysis
-	 * models
+	 * model artifacts; it is a convention that the last part of the base path is 
+	 * equal to the fs name
 	 */
-	public static String TEXTANALYSIS_FS = "textanalysisFs";
+	public static String TEXTANALYSIS_FS = "textanalysis";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
@@ -135,12 +142,13 @@ public class SparkMLManager {
 	 * The model of the internal dataset that is used to persist metadata with
 	 * respect to time series models.
 	 */
-	public static String TIMESERIES_META = "timeseriesMeta";
+	public static String TIMESERIES_TABLE = "TimeModels";
 	/*
 	 * The fileset name of the internal fileset that is used to store time series
-	 * models
+	 * model artifacts; it is a convention that the last part of the base path is 
+	 * equal to the fs name
 	 */
-	public static String TIMESERIES_FS = "timeseriesFs";
+	public static String TIMESERIES_FS = "timeseries";
 	/*
 	 * Note, we do NOT specify an absolute base path (begins with /) as this would
 	 * be interpreted as an absolute path in the file system
@@ -152,7 +160,7 @@ public class SparkMLManager {
 	public static FileSet getClassificationFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(CLASSIFICATION_FS) == false)
-			throw new Exception("Fileset to store classification model components does not exist.");
+			throw new Exception("Fileset to store classification model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(CLASSIFICATION_FS);
 		return fs;
@@ -167,20 +175,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getClassificationMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getClassificationTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(CLASSIFICATION_META) == false)
+		if (context.datasetExists(CLASSIFICATION_TABLE) == false)
 			throw new Exception("Table to store classification model metadata does not exist.");
 
-		Table table = context.getDataset(CLASSIFICATION_META);
+		Table table = context.getDataset(CLASSIFICATION_TABLE);
 		return table;
 
 	}
 
-	public static Table getClassificationMeta(SparkExecutionPluginContext context)
+	public static Table getClassificationTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(CLASSIFICATION_META);
+		Table table = context.getDataset(CLASSIFICATION_TABLE);
 		return table;
 
 	}
@@ -199,7 +207,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(CLASSIFICATION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(CLASSIFICATION_META) == false) {
+		if (context.datasetExists(CLASSIFICATION_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a classification model; therefore, the
 			 * associated metadata dataset has to be created
@@ -210,13 +218,13 @@ public class SparkMLManager {
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works classification models.");
+					"This table contains a timeseries of metadata for ML classification models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(CLASSIFICATION_META, Table.class.getName(), builder.build());
+			context.createDataset(CLASSIFICATION_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 
@@ -225,7 +233,7 @@ public class SparkMLManager {
 	public static FileSet getClusteringFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(CLUSTERING_FS) == false)
-			throw new Exception("Fileset to store clustering model components does not exist.");
+			throw new Exception("Fileset to store clustering model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(CLUSTERING_FS);
 		return fs;
@@ -240,20 +248,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getClusteringMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getClusteringTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(CLUSTERING_META) == false)
+		if (context.datasetExists(CLUSTERING_TABLE) == false)
 			throw new Exception("Table to store clustering model metadata does not exist.");
 
-		Table table = context.getDataset(CLUSTERING_META);
+		Table table = context.getDataset(CLUSTERING_TABLE);
 		return table;
 
 	}
 
-	public static Table getClusteringMeta(SparkExecutionPluginContext context)
+	public static Table getClusteringTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(CLUSTERING_META);
+		Table table = context.getDataset(CLUSTERING_TABLE);
 		return table;
 
 	}
@@ -272,7 +280,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(CLUSTERING_FS_BASE).build());
 		}
 
-		if (context.datasetExists(CLUSTERING_META) == false) {
+		if (context.datasetExists(CLUSTERING_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a clustering model; therefore, the
 			 * associated metadata dataset has to be created
@@ -283,13 +291,13 @@ public class SparkMLManager {
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works clustering models.");
+					"This table contains a timeseries of metadata for ML clustering models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(CLUSTERING_META, Table.class.getName(), builder.build());
+			context.createDataset(CLUSTERING_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 
@@ -298,7 +306,7 @@ public class SparkMLManager {
 	public static FileSet getFeatureFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(FEATURE_FS) == false)
-			throw new Exception("Fileset to store feature model components does not exist.");
+			throw new Exception("Fileset to store feature model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(FEATURE_FS);
 		return fs;
@@ -313,20 +321,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getFeatureMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getFeatureTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(FEATURE_META) == false)
+		if (context.datasetExists(FEATURE_TABLE) == false)
 			throw new Exception("Table to store feature model metadata does not exist.");
 
-		Table table = context.getDataset(FEATURE_META);
+		Table table = context.getDataset(FEATURE_TABLE);
 		return table;
 
 	}
 
-	public static Table getFeatureMeta(SparkExecutionPluginContext context)
+	public static Table getFeatureTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(FEATURE_META);
+		Table table = context.getDataset(FEATURE_TABLE);
 		return table;
 
 	}
@@ -345,24 +353,24 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(FEATURE_FS_BASE).build());
 		}
 
-		if (context.datasetExists(FEATURE_META) == false) {
+		if (context.datasetExists(FEATURE_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a feature model; therefore, the
 			 * associated metadata dataset has to be created
 			 */
-			Schema metaSchema = createMetaSchema("featureSchema");
+			Schema metaSchema = createCommonSchema("featureSchema");
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works feature models.");
+					"This table contains a timeseries of metadata for ML feature models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(FEATURE_META, Table.class.getName(), builder.build());
+			context.createDataset(FEATURE_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 
@@ -371,7 +379,7 @@ public class SparkMLManager {
 	public static FileSet getRecommendationFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(RECOMMENDATION_FS) == false)
-			throw new Exception("Fileset to store recommendation model components does not exist.");
+			throw new Exception("Fileset to store recommendation model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(RECOMMENDATION_FS);
 		return fs;
@@ -386,20 +394,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getRecommendationMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getRecommendationTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(RECOMMENDATION_META) == false)
+		if (context.datasetExists(RECOMMENDATION_TABLE) == false)
 			throw new Exception("Table to store recommendation model metadata does not exist.");
 
-		Table table = context.getDataset(RECOMMENDATION_META);
+		Table table = context.getDataset(RECOMMENDATION_TABLE);
 		return table;
 
 	}
 
-	public static Table getRecommendationMeta(SparkExecutionPluginContext context)
+	public static Table getRecommendationTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(RECOMMENDATION_META);
+		Table table = context.getDataset(RECOMMENDATION_TABLE);
 		return table;
 
 	}
@@ -418,7 +426,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(RECOMMENDATION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(RECOMMENDATION_META) == false) {
+		if (context.datasetExists(RECOMMENDATION_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a recommendation model; therefore, the
 			 * associated metadata dataset has to be created: note, the (current) ALS model
@@ -430,13 +438,13 @@ public class SparkMLManager {
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works recommendation models.");
+					"This table contains a timeseries of metadata for ML recommendation models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(RECOMMENDATION_META, Table.class.getName(), builder.build());
+			context.createDataset(RECOMMENDATION_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 
@@ -445,7 +453,7 @@ public class SparkMLManager {
 	public static FileSet getRegressionFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(REGRESSION_FS) == false)
-			throw new Exception("Fileset to store regression model components does not exist.");
+			throw new Exception("Fileset to store regression model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(REGRESSION_FS);
 		return fs;
@@ -460,20 +468,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getRegressionMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getRegressionTabl(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(REGRESSION_META) == false)
+		if (context.datasetExists(REGRESSION_TABLE) == false)
 			throw new Exception("Table to store regression model metadata does not exist.");
 
-		Table table = context.getDataset(REGRESSION_META);
+		Table table = context.getDataset(REGRESSION_TABLE);
 		return table;
 
 	}
 
-	public static Table getRegressionMeta(SparkExecutionPluginContext context)
+	public static Table getRegressionTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(REGRESSION_META);
+		Table table = context.getDataset(REGRESSION_TABLE);
 		return table;
 
 	}
@@ -492,7 +500,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(REGRESSION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(REGRESSION_META) == false) {
+		if (context.datasetExists(REGRESSION_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a regression model; therefore, the
 			 * associated metadata dataset has to be created
@@ -503,29 +511,29 @@ public class SparkMLManager {
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works regression models.");
+					"This table contains a timeseries of metadata for ML regression models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(REGRESSION_META, Table.class.getName(), builder.build());
+			context.createDataset(REGRESSION_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 
 	/***** TEXT ANALYSIS *****/
 
-	public static FileSet getTextanalysisFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getTextFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(TEXTANALYSIS_FS) == false)
-			throw new Exception("Fileset to store text analysis model components does not exist.");
+			throw new Exception("Fileset to store text analysis model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
 		return fs;
 
 	}
 
-	public static FileSet getTextanalysisFS(SparkExecutionPluginContext context)
+	public static FileSet getTextFS(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
 		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
@@ -533,20 +541,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getTextanalysisMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getTextTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(TEXTANALYSIS_META) == false)
+		if (context.datasetExists(TEXTANALYSIS_TABLE) == false)
 			throw new Exception("Table to store text analysis model metadata does not exist.");
 
-		Table table = context.getDataset(TEXTANALYSIS_META);
+		Table table = context.getDataset(TEXTANALYSIS_TABLE);
 		return table;
 
 	}
 
-	public static Table getTextanalysisMeta(SparkExecutionPluginContext context)
+	public static Table getTextTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(TEXTANALYSIS_META);
+		Table table = context.getDataset(TEXTANALYSIS_TABLE);
 		return table;
 
 	}
@@ -565,40 +573,40 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(TEXTANALYSIS_FS_BASE).build());
 		}
 
-		if (context.datasetExists(TEXTANALYSIS_META) == false) {
+		if (context.datasetExists(TEXTANALYSIS_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a text analysis model; therefore, the
 			 * associated metadata dataset has to be created
 			 */
-			Schema metaSchema = createMetaSchema("textanalysisSchema");
+			Schema metaSchema = createCommonSchema("textSchema");
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works text analysis models.");
+					"This table contains a timeseries of metadata for text analysis models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(TEXTANALYSIS_META, Table.class.getName(), builder.build());
+			context.createDataset(TEXTANALYSIS_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
+		
 
 	}
 	
 	/***** TIMESERIES *****/
 
-	public static FileSet getTimeseriesFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getTimeFS(SparkPluginContext context) throws DatasetManagementException, Exception {
 
 		if (context.datasetExists(TIMESERIES_FS) == false)
-			throw new Exception("Fileset to store timeseries model components does not exist.");
+			throw new Exception("Fileset to store time series model artifacts does not exist.");
 
 		FileSet fs = context.getDataset(TIMESERIES_FS);
 		return fs;
 
 	}
 
-	public static FileSet getTimeseriesFS(SparkExecutionPluginContext context)
+	public static FileSet getTimeFS(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
 		FileSet fs = context.getDataset(TIMESERIES_FS);
@@ -606,20 +614,20 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getTimeseriesMeta(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getTimeTable(SparkPluginContext context) throws DatasetManagementException, Exception {
 
-		if (context.datasetExists(TIMESERIES_META) == false)
-			throw new Exception("Table to store timeseries model metadata does not exist.");
+		if (context.datasetExists(TIMESERIES_TABLE) == false)
+			throw new Exception("Table to store time series model metadata does not exist.");
 
-		Table table = context.getDataset(TIMESERIES_META);
+		Table table = context.getDataset(TIMESERIES_TABLE);
 		return table;
 
 	}
 
-	public static Table getTimeseriesMeta(SparkExecutionPluginContext context)
+	public static Table getTimesTable(SparkExecutionPluginContext context)
 			throws DatasetManagementException, Exception {
 
-		Table table = context.getDataset(TIMESERIES_META);
+		Table table = context.getDataset(TIMESERIES_TABLE);
 		return table;
 
 	}
@@ -638,32 +646,41 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(TIMESERIES_FS_BASE).build());
 		}
 
-		if (context.datasetExists(TIMESERIES_META) == false) {
+		if (context.datasetExists(TIMESERIES_TABLE) == false) {
 			/*
 			 * This is the first time, that we train a timeseries model; therefore, the
 			 * associated metadata dataset has to be created
 			 */
-			Schema metaSchema = createMetaSchema("timeseriesSchema");
+			Schema metaSchema = createCommonSchema("timeseriesSchema");
 			/*
 			 * Create a CDAP table with the schema provided
 			 */
 			TableProperties.Builder builder = TableProperties.builder();
 			builder.setDescription(
-					"This table contains a timeseries of metadata information about Predictive Works timeseries models.");
+					"This table contains a timeseries of metadata for time series models.");
 			builder.setSchema(metaSchema);
 
-			context.createDataset(TIMESERIES_META, Table.class.getName(), builder.build());
+			context.createDataset(TIMESERIES_TABLE, Table.class.getName(), builder.build());
 
 		}
-		;
 
 	}
-
-	private static Schema createMetaSchema(String name) {
-
+	/****************************************
+	 * 
+	 * 			SCHEMA DEFINITIONS
+	 * 
+	 * CDAP tables do not require a fixed row schema; 
+	 * however, as we offer the tables via REST interface, 
+	 * a fixed schema is defined
+	 */
+	
+	private static List<Schema.Field> getSharedFields() {
+		
 		List<Schema.Field> fields = new ArrayList<>();
 		/*
-		 * The timestamp this model has been created
+		 * The timestamp this version of the model has been 
+		 * created; the timestamp is used as a foundation for
+		 * metric timeseries
 		 */
 		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
 		/*
@@ -675,6 +692,22 @@ public class SparkMLManager {
 		 */
 		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
 		/*
+		 * The fileset name of the artifacts of certain ML model; 
+		 * artifacts are persisted leveraging Apache Spark's internal 
+		 * mechanism backed by CDAP's fileset API
+		 */
+		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
+		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));		
+		/*
+		 * The package of a certain ML model, e.g. WorksML, WorksTs;
+		 */
+		fields.add(Schema.Field.of("pack", Schema.of(Schema.Type.STRING)));		
+		/*
+		 * The stage of a certain ML model, e.g. Staging or Production;
+		 * this is an indicator describe the life cycle stage of a model
+		 */
+		fields.add(Schema.Field.of("stage", Schema.of(Schema.Type.STRING)));		
+		/*
 		 * The algorithm of a certain ML model
 		 */
 		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
@@ -683,49 +716,41 @@ public class SparkMLManager {
 		 * parameter set that has been used to train a certain model instance
 		 */
 		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
+		
+		return fields;
+		
+	}
+	
+	private static Schema createCommonSchema(String name) {
+
+		List<Schema.Field> fields = new ArrayList<>();
+		/* 
+		 * Append shared field to the common schema 
+		 */
+		fields.addAll(getSharedFields());
 		/*
-		 * The metrics of a certain ML model; this is a JSON object that contains metric
-		 * data of a certain model instance
+		 * The metrics of a certain ML model; for common models
+		 * this is specified as a JSON object 
 		 */
 		fields.add(Schema.Field.of("metrics", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The fileset name of a certain ML model; the model itself is persisted
-		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
-		 */
-		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
-		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
 
 		Schema schema = Schema.recordOf(name, fields);
 		return schema;
 
 	}
-
+	/*
+	 * This method defines the metadata schema for classification
+	 * models; in contrast to the common schema, classification
+	 * specific metrics are explicitly defined as schema fields
+	 */
 	private static Schema createClassificationSchema() {
 
 		String schemaName = "classificationSchema";
-		List<Schema.Field> fields = new ArrayList<>();
-		/*
-		 * The timestamp this classification model has been created
+		List<Schema.Field> fields = new ArrayList<>();		
+		/* 
+		 * Append shared field to the classification schema 
 		 */
-		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
-		/*
-		 * The name of this classification model
-		 */
-		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The version of this classification model
-		 */
-		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The algorithm of this classification model
-		 */
-		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The parameters of this classification model; this is a JSON object 
-		 * that contains the parameter set that has been used to train a certain 
-		 * model instance
-		 */
-		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
+		fields.addAll(getSharedFields());
 		/*
 		 * The calculcated metric values for this classification model; 
 		 * currently the following metrics are supported:
@@ -747,46 +772,28 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("weightedRecall", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("weightedFalsePositiveRate", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("weightedTruePositiveRate", Schema.of(Schema.Type.DOUBLE)));		
-		/*
-		 * The fileset name of this classification model; the model itself is persisted
-		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
-		 */
-		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
-		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
 
 		Schema schema = Schema.recordOf(schemaName, fields);
 		return schema;
 
 	}
 
+	/*
+	 * This method defines the metadata schema for clustering
+	 * models; in contrast to the common schema, clustering
+	 * specific metrics are explicitly defined as schema fields
+	 */
 	private static Schema createClusteringSchema() {
 
 		String schemaName = "clusteringSchema";
 		List<Schema.Field> fields = new ArrayList<>();
-		/*
-		 * The timestamp this regression model has been created
+		/* 
+		 * Append shared field to the clustering schema 
 		 */
-		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
+		fields.addAll(getSharedFields());
 		/*
-		 * The name of this regression model
-		 */
-		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The version of this regression model
-		 */
-		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The algorithm of this regression model
-		 */
-		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The parameters of this regression model; this is a JSON object that contains
-		 * the parameter set that has been used to train a certain model instance
-		 */
-		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The calculcated metric values for this clustering model; currently the
-		 * following metrics are supported:
+		 * The calculcated metric values for this clustering model; 
+		 * currently the following metrics are supported:
 		 *  
 		 *  - silhouette_euclidean
 		 *  - silhouette_cosine
@@ -798,46 +805,28 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("silhouette_cosine", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("perplexity", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("likelihood", Schema.of(Schema.Type.DOUBLE)));
-		/*
-		 * The fileset name for this regression model; the model itself is persisted
-		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
-		 */
-		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
-		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
 
 		Schema schema = Schema.recordOf(schemaName, fields);
 		return schema;
 
 	}
 
+	/*
+	 * This method defines the metadata schema for regression
+	 * models; in contrast to the common schema, regression
+	 * specific metrics are explicitly defined as schema fields
+	 */
 	private static Schema createRegressionSchema() {
 
 		String schemaName = "regressionSchema";
 		List<Schema.Field> fields = new ArrayList<>();
-		/*
-		 * The timestamp this regression model has been created
+		/* 
+		 * Append shared field to the regression schema 
 		 */
-		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
+		fields.addAll(getSharedFields());
 		/*
-		 * The name of this regression model
-		 */
-		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The version of this regression model
-		 */
-		fields.add(Schema.Field.of("version", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The algorithm of this regression model
-		 */
-		fields.add(Schema.Field.of("algorithm", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The parameters of this regression model; this is a JSON object that contains
-		 * the parameter set that has been used to train a certain model instance
-		 */
-		fields.add(Schema.Field.of("params", Schema.of(Schema.Type.STRING)));
-		/*
-		 * The calculcated metric values for this regression model; currently the
-		 * following metrics are supported:
+		 * The calculcated metric values for this regression model; 
+		 * currently the following metrics are supported:
 		 *  
 		 * - root mean squared error (rsme) 
 		 * - mean squared error (mse) 
@@ -849,12 +838,6 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("mse", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("mae", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("r2", Schema.of(Schema.Type.DOUBLE)));
-		/*
-		 * The fileset name for this regression model; the model itself is persisted
-		 * leveraging Apache Spark's internal mechanism backed by CDAP's fileset API
-		 */
-		fields.add(Schema.Field.of("fsName", Schema.of(Schema.Type.STRING)));
-		fields.add(Schema.Field.of("fsPath", Schema.of(Schema.Type.STRING)));
 
 		Schema schema = Schema.recordOf(schemaName, fields);
 		return schema;

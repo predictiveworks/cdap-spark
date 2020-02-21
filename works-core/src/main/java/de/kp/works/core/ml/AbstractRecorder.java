@@ -24,6 +24,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import co.cask.cdap.api.dataset.table.Put;
+
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -47,8 +49,28 @@ import co.cask.cdap.api.dataset.table.Row;
 import co.cask.cdap.api.dataset.table.Scanner;
 import co.cask.cdap.api.dataset.table.Table;
 
-public class AbstractModelManager {
+public class AbstractRecorder {
+	/*
+	 * Metadata schemata for different ML model share common fields; 
+	 * this method is used to populate this shared fields
+	 */
+	public Put buildRow(byte[] key, Long timestamp, String name, String version, String fsName, String fsPath, String pack, String stage, String algorithm, String params) {
 
+		Put row = new Put(key)
+				.add("timestamp", timestamp)
+				.add("name", name)
+				.add("version", version)
+				.add("fsName", fsName)
+				.add("fsPath", fsPath)
+				.add("pack", pack)
+				.add("stage", stage)				
+				.add("algorithm", algorithm)
+				.add("params", params);
+				
+		return row;
+		
+	}
+	
 	public Object getModelParam(Table table, String algorithmName, String modelName, String paramName) {
 
 		String strParams = null;
@@ -78,7 +100,7 @@ public class AbstractModelManager {
 		
 	}
 
-	protected String getModelVersion(Table table, String algorithmName, String modelName) {
+	public String getModelVersion(Table table, String algorithmName, String modelName) {
 
 		String strVersion = null;
 
@@ -111,7 +133,7 @@ public class AbstractModelManager {
 
 	}
 
-	protected String getModelFsPath(Table table, String algorithmName, String modelName) {
+	public String getModelFsPath(Table table, String algorithmName, String modelName) {
 
 		String fsPath = null;
 

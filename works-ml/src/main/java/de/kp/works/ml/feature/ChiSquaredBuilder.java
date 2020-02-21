@@ -102,11 +102,13 @@ public class ChiSquaredBuilder extends FeatureSink {
 		 * Store trained StringIndexer model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new ChiSquaredRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new ChiSquaredRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 
@@ -140,10 +142,15 @@ public class ChiSquaredBuilder extends FeatureSink {
 		public String selectorType;
 
 		public ChiSquaredBuilderConfig() {
+			
+			modelStage = "experiment";
+			
 			numTopFeatures = 50;
 			percentile = 0.1;
+			
 			fpr = 0.05;
 			selectorType = "numTopFeatures";
+			
 		}
 	    
 		@Override

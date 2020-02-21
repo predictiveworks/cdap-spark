@@ -28,9 +28,6 @@ public class RecommenderCompute extends BaseCompute {
 
 	private static final long serialVersionUID = 1944699231227314308L;
 
-	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-	}
-
 	/**
 	 * A helper method to compute the output schema in that use cases where an input
 	 * schema is explicitly given

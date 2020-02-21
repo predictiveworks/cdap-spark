@@ -18,35 +18,27 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.feature.PCAModel;
 
-import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.FeatureRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class PCARecorder extends AbstractModelManager {
-
-	private String ALGORITHM_NAME = "PCA";
+public class PCARecorder extends FeatureRecorder {
 
 	public PCAModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
-		Table table = SparkMLManager.getFeatureMeta(context);
+		Table table = SparkMLManager.getFeatureTable(context);
 		
-		return read(fs, table, modelName);
+		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
 		
-	}
-
-	private PCAModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the PCA model
@@ -57,48 +49,28 @@ public class PCARecorder extends AbstractModelManager {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			PCAModel model) throws Exception {
+		
+		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
+
+		/***** ARTIFACTS *****/
+
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
-		Table table = SparkMLManager.getFeatureMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
 
-	public void save(FileSet modelFs, Table modelMeta, String modelName, String modelParams, String modelMetrics,
-			PCAModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal feature fileset
-		 */
-		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the PCA model
-		 * to a model specific file set
-		 */
-		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		/*
-		 * Append model metadata to the metadata table associated with the
-		 * clustering fileset
-		 */
-		String fsName = SparkMLManager.FEATURE_FS;
-		String modelVersion = getModelVersion(modelMeta, ALGORITHM_NAME, modelName);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getFeatureTable(context);
 
-		byte[] key = Bytes.toBytes(ts);
-		modelMeta.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
-
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
-
 
 }

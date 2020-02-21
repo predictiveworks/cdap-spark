@@ -126,13 +126,15 @@ public class ALSSink extends RecommenderSink {
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = RegressorEvaluator.evaluate(predictions, config.ratingCol, predictionCol);
+	    String modelMetrics = RegressorEvaluator.evaluate(predictions, config.ratingCol, predictionCol);
 		/*
 		 * STEP #3: Store trained recommendation model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ALSRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new ALSRecorder().track(context, modelName, modelStage, paramsJson, modelMetrics, model);
 		
 	}
 
@@ -187,6 +189,9 @@ public class ALSSink extends RecommenderSink {
 		
 		public ALSSinkConfig() {
 
+			dataSplit = "70:30";
+			modelStage = "experiment";
+			
 			numUserBlocks = 10;
 			numItemBlocks = 10;
 			

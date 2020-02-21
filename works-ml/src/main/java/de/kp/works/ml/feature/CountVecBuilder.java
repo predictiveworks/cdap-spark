@@ -95,11 +95,13 @@ public class CountVecBuilder extends FeatureSink {
 		CountVectorizerModel model = trainer.fit(source);		
 		Map<String,Object> metrics = new HashMap<>();
 		
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 		
 		String modelName = config.modelName;
-		new CountVecRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new CountVecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 
@@ -124,6 +126,9 @@ public class CountVecBuilder extends FeatureSink {
 		public Integer minTF;
 		
 		public CountVecBuilderConfig() {
+			
+			modelStage = "experiment";
+			
 			minDF = 1;	
 			minTF = 1;
 		}

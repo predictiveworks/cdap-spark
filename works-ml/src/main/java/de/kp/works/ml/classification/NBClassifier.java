@@ -78,7 +78,7 @@ public class NBClassifier extends ClassifierSink {
 		String labelCol = config.labelCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -109,13 +109,15 @@ public class NBClassifier extends ClassifierSink {
 	    model.setPredictionCol(predictionCol);
 
 	    Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = Evaluator.evaluate(predictions, labelCol, predictionCol);
+	    String modelMetrics = Evaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
 		 * STEP #3: Store trained classification model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new NBRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new NBRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -140,6 +142,7 @@ public class NBClassifier extends ClassifierSink {
 		public NBClassifierConfig() {
 
 			dataSplit = "70:30";
+			modelStage = "experiment";
 			
 			modelType = "multinomial";
 			smoothing = 1.0;

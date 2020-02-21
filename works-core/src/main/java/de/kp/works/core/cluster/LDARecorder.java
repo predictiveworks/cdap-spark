@@ -19,74 +19,62 @@ package de.kp.works.core.cluster;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 import org.apache.spark.ml.clustering.*;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractClusteringManager;
-import de.kp.works.core.ml.SparkMLManager;
-/**
- * LDA based clustering is used in works-ml and also 
- * in works-text project
- */
-public class LDARecorder extends AbstractClusteringManager {
 
-	private String ALGORITHM_NAME = "DistributedLDA";
-	
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.ClusterRecorder;
+import de.kp.works.core.ml.SparkMLManager;
+
+/**
+ * LDA based clustering is used in works-ml and also in works-text project
+ */
+public class LDARecorder extends ClusterRecorder {
+
 	public LDAModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
-		
-		return read(fs, table, modelName);
+		Table table = SparkMLManager.getClusteringTable(context);
 
-	}
-	
-	private LDAModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the LDA clustering model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the LDA clustering model from a model
+		 * specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return DistributedLDAModel.load(modelPath);
-		
+
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
-			LDAModel model) throws Exception {
+	public void track(SparkExecutionPluginContext context, String modelName, String modelPack, String modelStage,
+			String modelParams, String modelMetrics, LDAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			LDAModel model) throws IOException {
+		/***** ARTIFACTS *****/
 
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal clustering fileset
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the LDA model
-		 * to a model specific file set
+		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
+		 * model specific file set
 		 */
+		FileSet fs = SparkMLManager.getClusteringFS(context);
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
-		model.save(modelPath);
-		
-		/***** MODEL METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		model.save(modelPath);
+
+		/***** METADATA *****/
+
+		Table table = SparkMLManager.getClusteringTable(context);
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

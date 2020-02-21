@@ -23,13 +23,21 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 
-public class AbstractClusteringManager extends AbstractModelManager {
+public class ClusterRecorder extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	protected void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelParams,
-			String modelMetrics, String fsPath) {
+	protected void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
+			String modelStage, String modelParams, String modelMetrics, String fsPath) {
+
+		String fsName = SparkMLManager.CLUSTERING_FS;
+		String modelVersion = getModelVersion(table, algorithmName, modelName);
+
+		byte[] key = Bytes.toBytes(ts);
+		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+				modelParams);
+
 		/*
 		 * Unpack recommendation metrics to build time series of metric values
 		 */
@@ -40,15 +48,8 @@ public class AbstractClusteringManager extends AbstractModelManager {
 		Double perplexity = (Double) metrics.get("perplexity");
 		Double likelihood = (Double) metrics.get("likelihood");
 
-		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName);
-
-		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", algorithmName).add("params", modelParams)
-				.add("silhouette_euclidean", silhouette_euclidean).add("silhouette_cosine", silhouette_cosine)
-				.add("perplexity", perplexity).add("likelihood", likelihood).add("fsName", fsName)
-				.add("fsPath", fsPath));
+		table.put(row.add("silhouette_euclidean", silhouette_euclidean).add("silhouette_cosine", silhouette_cosine)
+				.add("perplexity", perplexity).add("likelihood", likelihood));
 
 	}
 

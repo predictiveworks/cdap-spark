@@ -19,7 +19,6 @@ package de.kp.works.ml.classification;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.classification.RandomForestClassificationModel;
@@ -27,25 +26,20 @@ import org.apache.spark.ml.classification.RandomForestClassificationModel;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractClassificationManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class RFCRecorder extends AbstractClassificationManager {
-
-	private String ALGORITHM_NAME = "RandomForestClassifier";
+public class RFCRecorder extends ClassifierRecorder {
 
 	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
-		Table table = SparkMLManager.getClassificationMeta(context);
-		
-		return read(fs, table, modelName);
-		
-	}
+		Table table = SparkMLManager.getClassificationTable(context);
 
-	private RandomForestClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
+		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
 
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null)
 			return null;
 		/*
@@ -57,34 +51,30 @@ public class RFCRecorder extends AbstractClassificationManager {
 
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			RandomForestClassificationModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getClassificationFS(context);
-		Table table = SparkMLManager.getClassificationMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			RandomForestClassificationModel model) throws IOException {
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal classification fileset
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the RandomForest model to a model
-		 * specific file set
+		 * Leverage Apache Spark mechanism to write the RandomForest model 
+		 * to a model specific file set
 		 */
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+		
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getClassificationTable(context);
+
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

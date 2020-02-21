@@ -76,7 +76,7 @@ public class DTClassifier extends ClassifierSink {
 		String labelCol = config.labelCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -106,13 +106,15 @@ public class DTClassifier extends ClassifierSink {
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = Evaluator.evaluate(predictions, labelCol, predictionCol);
+	    String modelMetrics = Evaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
 		 * STEP #3: Store trained classification model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new DTCRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new DTCRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

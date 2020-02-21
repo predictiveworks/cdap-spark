@@ -19,7 +19,6 @@ package de.kp.works.ml.classification;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.classification.*;
@@ -27,26 +26,21 @@ import org.apache.spark.ml.classification.*;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractClassificationManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class DTCRecorder extends AbstractClassificationManager {
-
-	private String ALGORITHM_NAME = "DecisionTreeClassifier";
+public class DTCRecorder extends ClassifierRecorder {
 
 	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
-		Table table = SparkMLManager.getClassificationMeta(context);
+		Table table = SparkMLManager.getClassificationTable(context);
 		
-		return read(fs, table, modelName);
-		
-	}
-
-	private DecisionTreeClassificationModel read(FileSet fs, Table table, String modelName) throws IOException {
+		String algorithmName = Algorithms.DECISION_TREE;
 		
 		/* Get the latest fileset path */
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
@@ -57,36 +51,27 @@ public class DTCRecorder extends AbstractClassificationManager {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			DecisionTreeClassificationModel model) throws Exception {
+		
+		String algorithmName = Algorithms.DECISION_TREE;
+
+		/***** ARTIFACTS *****/
+
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
-		Table table = SparkMLManager.getClassificationMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			DecisionTreeClassificationModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal classification fileset
-		 */
-		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the DecisionTreeClassifier model
-		 * to a model specific file set
-		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getClassificationTable(context);
+
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

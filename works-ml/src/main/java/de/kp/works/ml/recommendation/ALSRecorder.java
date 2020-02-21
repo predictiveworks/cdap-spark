@@ -18,7 +18,6 @@ package de.kp.works.ml.recommendation;
  * 
  */
 
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.Map;
@@ -33,73 +32,71 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class ALSRecorder extends AbstractModelManager {
-
-	private String ALGORITHM_NAME = "ALS";
+public class ALSRecorder extends AbstractRecorder {
 
 	private Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
-	
-	public ALSModel read(SparkExecutionPluginContext context,String modelName) throws Exception {
+
+	public ALSModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getRecommendationFS(context);
-		Table table = SparkMLManager.getRecommendationMeta(context);
-		
-		return read(fs, table, modelName);
+		Table table = SparkMLManager.getRecommendationTable(context);
 
-	}
+		String algorithmName = Algorithms.ALS;
 
-	private ALSModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
-		if (fsPath == null) return null;
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		if (fsPath == null)
+			return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the Bisecting KMeans 
-		 * clustering model from a model specific file set
+		 * Leverage Apache Spark mechanism to read the Bisecting KMeans clustering model
+		 * from a model specific file set
 		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return ALSModel.load(modelPath);
-		
+
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
-			ALSModel model) throws Exception {
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams,
+			String modelMetrics, ALSModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getRecommendationFS(context);
-		Table table = SparkMLManager.getRecommendationMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.ALS;
 
-	private void save(FileSet modelFs, Table table, String modelName, String modelParams, String modelMetrics,
-			ALSModel model) throws IOException {
+		/***** ARTIFACTS *****/
 
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal clustering fileset
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the Bisecting KMeans 
-		 * model to a model specific file set
+		 * Leverage Apache Spark mechanism to write the ALS model to a model specific
+		 * file set
 		 */
-		String modelPath = modelFs.getBaseLocation().append(fsPath).toURI().getPath();
+		FileSet fs = SparkMLManager.getRecommendationFS(context);
+
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getRecommendationTable(context);
+
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
-	private void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelParams,
-			String modelMetrics, String fsPath) {
+	private void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
+			String modelStage, String modelParams, String modelMetrics, String fsPath) {
+
+		String fsName = SparkMLManager.RECOMMENDATION_FS;
+		String modelVersion = getModelVersion(table, algorithmName, modelName);
+
+		byte[] key = Bytes.toBytes(ts);
+		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+				modelParams);
+
 		/*
 		 * Unpack regression metrics to build time series of metric values
 		 */
@@ -110,13 +107,7 @@ public class ALSRecorder extends AbstractModelManager {
 		Double mae = (Double) metrics.get("mae");
 		Double r2 = (Double) metrics.get("r2");
 
-		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName);
-
-		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", algorithmName).add("params", modelParams).add("rsme", rsme).add("mse", mse)
-				.add("mae", mae).add("r2", r2).add("fsName", fsName).add("fsPath", fsPath));
+		table.put(row.add("rsme", rsme).add("mse", mse).add("mae", mae).add("r2", r2));
 
 	}
 

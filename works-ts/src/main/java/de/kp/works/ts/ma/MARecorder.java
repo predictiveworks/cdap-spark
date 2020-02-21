@@ -35,8 +35,8 @@ public class MARecorder extends AbstractTimeSeriesManager {
 	
 	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readMA(fs, table, modelName);
 		
@@ -59,8 +59,8 @@ public class MARecorder extends AbstractTimeSeriesManager {
 	
 	public AutoMAModel readAutoMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readAutoMA(fs, table, modelName);
 		
@@ -86,8 +86,8 @@ public class MARecorder extends AbstractTimeSeriesManager {
 	public void trackMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			MovingAverageModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveMA(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -123,8 +123,8 @@ public class MARecorder extends AbstractTimeSeriesManager {
 	public void trackAutoMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			AutoMAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveAutoMA(fs, table, modelName, modelParams, modelMetrics, model);
 		

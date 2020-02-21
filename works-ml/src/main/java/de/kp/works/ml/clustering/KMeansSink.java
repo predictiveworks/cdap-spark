@@ -83,7 +83,7 @@ public class KMeansSink extends ClusterSink {
 		String featuresCol = config.featuresCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -110,13 +110,15 @@ public class KMeansSink extends ClusterSink {
 		 * The KMeans evaluator computes the silhouette coefficent of the computed
 		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
-	    String metricsJson = Evaluator.evaluate(predictions, vectorCol, predictionCol);
+	    String modelMetrics = Evaluator.evaluate(predictions, vectorCol, predictionCol);
 		/*
 		 * STEP #3: Store trained KMeans model including its associated parameters and
 		 * metrics
 		 */
 		String modelName = config.modelName;
-		new KMeansRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new KMeansRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -156,7 +158,8 @@ public class KMeansSink extends ClusterSink {
 
 		public KMeansConfig() {
 
-			referenceName = "KMeansSink";
+			referenceName = "KMeansSink";	    	
+			modelStage = "experiment";
 
 			maxIter = 20;
 			tolerance = 1e-4;

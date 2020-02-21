@@ -66,8 +66,8 @@ public class TsACF extends TimeCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 
-		modelFs = SparkMLManager.getTimeseriesFS(context);
-		modelMeta = SparkMLManager.getTimeseriesMeta(context);
+		modelFs = SparkMLManager.getTimeFS(context);
+		modelMeta = SparkMLManager.getTimesTable(context);
 
 	}
 

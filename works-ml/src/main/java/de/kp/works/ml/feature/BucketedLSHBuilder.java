@@ -92,11 +92,9 @@ public class BucketedLSHBuilder extends FeatureSink {
 
 	@Override
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		BucketedLSHBuilderConfig builderConfig = (BucketedLSHBuilderConfig)config;
 		
-		String featuresCol = builderConfig.inputCol;
-		Map<String, Object> params = builderConfig.getParamsAsMap();
+		String featuresCol = config.inputCol;
+		Map<String, Object> params = config.getParamsAsMap();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -116,11 +114,13 @@ public class BucketedLSHBuilder extends FeatureSink {
 		 * Store trained Bucketed Random Projection LSH model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = builderConfig.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
-		String modelName = builderConfig.modelName;
-		new BucketedLSHRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelName = config.modelName;
+		String modelStage = config.modelStage;
+		
+		new BucketedLSHRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -134,6 +134,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 		public Integer numHashTables;
 		
 		public BucketedLSHBuilderConfig() {
+			modelStage = "experiment";
 			numHashTables = 1;
 		}
 

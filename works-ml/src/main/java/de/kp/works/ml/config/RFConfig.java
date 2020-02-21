@@ -54,6 +54,8 @@ public class RFConfig extends CRConfig {
 	public RFConfig() {
 
 		dataSplit = "70:30";
+		modelStage = "experiment";
+
 		impurity = "gini";
 
 		maxBins = 32;

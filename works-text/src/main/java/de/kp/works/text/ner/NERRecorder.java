@@ -28,17 +28,17 @@ import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class NERRecorder extends AbstractModelManager {
+public class NERRecorder extends AbstractRecorder {
 
 	private String ALGORITHM_NAME = "NER-CRF";
 	
 	public NerCrfModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		FileSet fs = SparkMLManager.getTextFS(context);
+		Table table = SparkMLManager.getTextTable(context);
 	
 		return read(fs, table, modelName);
 		
@@ -60,8 +60,8 @@ public class NERRecorder extends AbstractModelManager {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			NerCrfModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextanalysisFS(context);
-		Table table = SparkMLManager.getTextanalysisMeta(context);
+		FileSet fs = SparkMLManager.getTextFS(context);
+		Table table = SparkMLManager.getTextTable(context);
 		
 		save(fs, table, modelName, modelParams, modelMetrics, model);
 		

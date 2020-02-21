@@ -20,11 +20,11 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
-import de.kp.works.core.ml.AbstractModelManager;
+import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.AutoCorrelationModel;
 
-public class TimeSeriesModelManager extends AbstractModelManager {
+public class TimeSeriesModelManager extends AbstractRecorder {
 
 	/** AUTOCORRELATION FUNCTION **/
 

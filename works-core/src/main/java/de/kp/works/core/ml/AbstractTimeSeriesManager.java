@@ -23,7 +23,7 @@ import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 
-public class AbstractTimeSeriesManager extends AbstractModelManager {
+public class AbstractTimeSeriesManager extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();

@@ -43,7 +43,7 @@ public class LRPredictor extends PredictorCompute {
 	private static final long serialVersionUID = -4919226198000991487L;
 
 	private LRPredictorConfig config;
-	private LogisticRegressionModel classifier;
+	private LogisticRegressionModel model;
 
 	public LRPredictor(LRPredictorConfig config) {
 		this.config = config;
@@ -52,9 +52,9 @@ public class LRPredictor extends PredictorCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
-
-		classifier = new LRRecorder().read(context, config.modelName);
-		if (classifier == null)
+		
+		model = new LRRecorder().read(context, config.modelName);
+		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
 
@@ -63,8 +63,8 @@ public class LRPredictor extends PredictorCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
-
+		config.validate();		
+		
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
 		 * Try to determine input and output schema; if these schemas are not explicitly
@@ -108,10 +108,10 @@ public class LRPredictor extends PredictorCompute {
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
 
-		classifier.setFeaturesCol(vectorCol);
-		classifier.setPredictionCol(predictionCol);
+		model.setFeaturesCol(vectorCol);
+		model.setPredictionCol(predictionCol);
 
-		Dataset<Row> predictions = classifier.transform(vectorset);
+		Dataset<Row> predictions = model.transform(vectorset);
 
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return output;

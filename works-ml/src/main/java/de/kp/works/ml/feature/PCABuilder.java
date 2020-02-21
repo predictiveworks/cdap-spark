@@ -97,11 +97,13 @@ public class PCABuilder extends FeatureSink {
 		 * Store trained PCA model including its associated parameters and
 		 * metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new PCARecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new PCARecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 	
@@ -118,6 +120,10 @@ public class PCABuilder extends FeatureSink {
 		@Macro
 		public Integer k;
 
+		public PCABuilderConfig() {
+			modelStage = "experiment";
+		}
+		
 		public Map<String, Object> getParamsAsMap() {
 
 			Map<String, Object> params = new HashMap<String, Object>();

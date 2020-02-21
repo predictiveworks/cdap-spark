@@ -37,10 +37,8 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.recommender.RecommenderCompute;
-import de.kp.works.core.recommender.RecommenderConfig;
 import de.kp.works.ml.recommendation.ALSConfig;
 import de.kp.works.ml.recommendation.ALSRecorder;
-import de.kp.works.ml.recommendation.ALSSink.ALSSinkConfig;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ALSPredictor")
@@ -71,7 +69,7 @@ public class ALSPredictor extends RecommenderCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		((ALSPredictorConfig) config).validate();
+		config.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -80,7 +78,7 @@ public class ALSPredictor extends RecommenderCompute {
 		 */
 		inputSchema = stageConfigurer.getInputSchema();
 		if (inputSchema != null) {
-			validateSchema(inputSchema, config);
+			validateSchema(inputSchema);
 			/*
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
@@ -92,14 +90,11 @@ public class ALSPredictor extends RecommenderCompute {
 
 	}
 
-	@Override
-	protected void validateSchema(Schema inputSchema, RecommenderConfig config) {
-
-		ALSSinkConfig alsConfig = (ALSSinkConfig) config;
+	public void validateSchema(Schema inputSchema) {
 
 		/** USER COLUMN **/
 
-		Schema.Field userCol = inputSchema.getField(alsConfig.userCol);
+		Schema.Field userCol = inputSchema.getField(config.userCol);
 		if (userCol == null) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The input schema must contain the field that defines the user identifier.",
@@ -113,7 +108,7 @@ public class ALSPredictor extends RecommenderCompute {
 
 		/** ITEM COLUMN **/
 
-		Schema.Field itemCol = inputSchema.getField(alsConfig.itemCol);
+		Schema.Field itemCol = inputSchema.getField(config.itemCol);
 		if (itemCol == null) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The input schema must contain the field that defines the user identifier.",
@@ -136,19 +131,17 @@ public class ALSPredictor extends RecommenderCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		ALSPredictorConfig predictorConfig = (ALSPredictorConfig) config;
+		model.setUserCol(config.userCol);
+		model.setItemCol(config.itemCol);
 
-		model.setUserCol(predictorConfig.userCol);
-		model.setItemCol(predictorConfig.itemCol);
-
-		model.setPredictionCol(predictorConfig.predictionCol);
+		model.setPredictionCol(config.predictionCol);
 		Dataset<Row> predictions = model.transform(source);
 		/*
 		 * Apache Spark describes the predicted ratings as Float; to be compliant with
 		 * CDAP output schema, we transform into Double
 		 */
-		return predictions.withColumn(predictorConfig.predictionCol,
-				col(predictorConfig.predictionCol).cast(DataTypes.DoubleType));
+		return predictions.withColumn(config.predictionCol,
+				col(config.predictionCol).cast(DataTypes.DoubleType));
 
 	}
 

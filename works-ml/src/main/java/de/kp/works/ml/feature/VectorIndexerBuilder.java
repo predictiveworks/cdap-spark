@@ -89,11 +89,13 @@ public class VectorIndexerBuilder extends FeatureSink {
 		 * Store trained StringIndexer model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new VectorIndexerRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new VectorIndexerRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 
@@ -113,6 +115,7 @@ public class VectorIndexerBuilder extends FeatureSink {
 		public Integer maxCategories;
 
 		public VectorIndexerBuilderConfig() {
+			modelStage = "experiment";
 			maxCategories = 20;
 		}
 		

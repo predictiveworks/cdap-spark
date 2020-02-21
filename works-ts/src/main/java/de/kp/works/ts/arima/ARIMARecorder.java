@@ -35,8 +35,8 @@ public class ARIMARecorder extends AbstractTimeSeriesManager {
 	
 	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readARIMA(fs, table, modelName);
 		
@@ -59,8 +59,8 @@ public class ARIMARecorder extends AbstractTimeSeriesManager {
 	
 	public AutoARIMAModel readAutoARIMA(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readAutoARIMA(fs, table, modelName);
 		
@@ -86,8 +86,8 @@ public class ARIMARecorder extends AbstractTimeSeriesManager {
 	public void trackARIMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			ARIMAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveARIMA(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -123,8 +123,8 @@ public class ARIMARecorder extends AbstractTimeSeriesManager {
 	public void trackAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			AutoARIMAModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveAutoARIMA(fs, table, modelName, modelParams, modelMetrics, model);
 		

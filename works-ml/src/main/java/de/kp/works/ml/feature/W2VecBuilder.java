@@ -86,11 +86,13 @@ public class W2VecBuilder extends FeatureSink {
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new W2VecRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new W2VecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 	
@@ -129,6 +131,8 @@ public class W2VecBuilder extends FeatureSink {
 		public Integer maxSentenceLength;
 		
 		public W2VecBuilderConfig() {
+			
+			modelStage = "experiment";
 			
 			maxIter = 1;
 			stepSize = 0.025;

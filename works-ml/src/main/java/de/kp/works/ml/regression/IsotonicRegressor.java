@@ -79,7 +79,7 @@ public class IsotonicRegressor extends RegressorSink {
 		String labelCol = config.labelCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has
 		 * to be built from the featuresCol and that is used for
@@ -110,13 +110,15 @@ public class IsotonicRegressor extends RegressorSink {
 	    model.setPredictionCol(predictionCol);
 
 	    Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = RegressorEvaluator.evaluate(predictions, labelCol, predictionCol);
+	    String modelMetrics = RegressorEvaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new IsotonicRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new IsotonicRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -140,6 +142,7 @@ public class IsotonicRegressor extends RegressorSink {
 		public IsotonicConfig() {
 
 			dataSplit = "70:30";
+			modelStage = "experiment";
 			
 			isotonic = "isotonic";
 			featureIndex = 0;

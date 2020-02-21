@@ -19,7 +19,6 @@ package de.kp.works.ml.regression;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.regression.IsotonicRegressionModel;
@@ -27,25 +26,20 @@ import org.apache.spark.ml.regression.IsotonicRegressionModel;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractRegressionManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.RegressorRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class IsotonicRecorder extends AbstractRegressionManager {
-
-	private String ALGORITHM_NAME = "IsotonicRegressionRegressor";
+public class IsotonicRecorder extends RegressorRecorder {
 
 	public IsotonicRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
-		Table table = SparkMLManager.getRegressionMeta(context);
+		Table table = SparkMLManager.getRegressionTable(context);
 		
-		return read(fs, table, modelName);
+		String algorithmName = Algorithms.ISOTONIC_REGRESSION;
 		
-	}
-
-	private IsotonicRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the IsotonicRegression model
@@ -56,37 +50,28 @@ public class IsotonicRecorder extends AbstractRegressionManager {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			IsotonicRegressionModel model) throws Exception {
+		
+		String algorithmName = Algorithms.ISOTONIC_REGRESSION;
+
+		/***** ARTIFACTS *****/
+
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
-		Table table = SparkMLManager.getRegressionMeta(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			IsotonicRegressionModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal regression fileset
-		 */
-		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the IsotonicRegression model
-		 * to a model specific file set
-		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksML";
+		Table table = SparkMLManager.getRegressionTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 }

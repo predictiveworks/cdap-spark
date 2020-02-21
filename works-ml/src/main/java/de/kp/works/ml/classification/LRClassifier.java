@@ -78,7 +78,7 @@ public class LRClassifier extends ClassifierSink {
 		String labelCol = config.labelCol;
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * The vectorCol specifies the internal column that has to be built from the
 		 * featuresCol and that is used for training purposes
@@ -108,13 +108,15 @@ public class LRClassifier extends ClassifierSink {
 		model.setPredictionCol(predictionCol);
 
 		Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = Evaluator.evaluate(predictions, labelCol, predictionCol);
+	    String modelMetrics = Evaluator.evaluate(predictions, labelCol, predictionCol);
 		/*
 		 * STEP #3: Store trained classification model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new LRRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new LRRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -147,16 +149,19 @@ public class LRClassifier extends ClassifierSink {
 		@Macro
 		public Double tol;
 
+		/*
+		 * The family of the label distribution is set to 'auto', which selects the
+		 * distribution family based on the number of classes:
+		 * 
+		 * numClasses = 1 || numClasses = 2, set to 'binomal' (binary logistic
+		 * regression with pivoting) and otherwise 'multinominal' (softmax logistic
+		 * regression without pivoting)
+		 */
 		public LRClassifierConfig() {
-			/*
-			 * The family of the label distribution is set to 'auto', which selects the
-			 * distribution family based on the number of classes:
-			 * 
-			 * numClasses = 1 || numClasses = 2, set to 'binomal' (binary logistic
-			 * regression with pivoting) and otherwise 'multinominal' (softmax logistic
-			 * regression without pivoting)
-			 */
+
 			dataSplit = "70:30";
+			modelStage = "experiment";
+			
 			maxIter = 20;
 
 			elasticNetParam = 0D;

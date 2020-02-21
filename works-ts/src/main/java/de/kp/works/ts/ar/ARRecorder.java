@@ -37,8 +37,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	
 	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readAR(fs, table, modelName);
 		
@@ -61,8 +61,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	
 	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readAutoAR(fs, table, modelName);
 		
@@ -85,8 +85,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	
 	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readDiffAR(fs, table, modelName);
 		
@@ -109,8 +109,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	
 	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		return readYuleWalker(fs, table, modelName);
 		
@@ -136,8 +136,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	public void trackAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			AutoRegressionModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveAR(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -174,8 +174,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	public void trackAutoAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			AutoARModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveAutoAR(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -211,8 +211,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	public void trackDiffAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			DiffAutoRegressionModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveDiffAR(fs, table, modelName, modelParams, modelMetrics, model);
 		
@@ -248,8 +248,8 @@ public class ARRecorder extends AbstractTimeSeriesManager {
 	public void trackYuleWalker(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
 			ARYuleWalkerModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeseriesFS(context);
-		Table table = SparkMLManager.getTimeseriesMeta(context);
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
 		
 		saveYuleWalker(fs, table, modelName, modelParams, modelMetrics, model);
 		

@@ -131,11 +131,14 @@ public class LDASink extends ClusterSink {
 		 * STEP #3: Store trained LDA model including its associated
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LDARecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		String modelPack = "WorksML";
+		new LDARecorder().track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -163,7 +166,9 @@ public class LDASink extends ClusterSink {
 	    LDAConfig() {
 
 	    		referenceName = "LDASink";
-	    		dataSplit = "90:10";
+	    		
+	    		dataSplit = "90:10";		    	
+    			modelStage = "experiment";
 	    		
 	    		k = 10;
 	    		maxIter = 20;

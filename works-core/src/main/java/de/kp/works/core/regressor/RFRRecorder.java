@@ -18,7 +18,6 @@ package de.kp.works.core.regressor;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.spark.ml.regression.RandomForestRegressionModel;
@@ -26,25 +25,20 @@ import org.apache.spark.ml.regression.RandomForestRegressionModel;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractRegressionManager;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.ml.RegressorRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class RFRRecorder extends AbstractRegressionManager {
-
-	private String ALGORITHM_NAME = "RandomForestRegressor";
+public class RFRRecorder extends RegressorRecorder {
 
 	public RandomForestRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
-		Table table = SparkMLManager.getRegressionMeta(context);
+		Table table = SparkMLManager.getRegressionTable(context);
 		
-		return read(fs, table, modelName);
+		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
 		
-	}
-	
-	private RandomForestRegressionModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the RandomForestRegression model
@@ -55,44 +49,38 @@ public class RFRRecorder extends AbstractRegressionManager {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelPack, String modelStage, String modelParams, String modelMetrics,
 			RandomForestRegressionModel model) throws Exception {
-
-		FileSet fs = SparkMLManager.getRegressionFS(context);
-		Table table = SparkMLManager.getRegressionMeta(context);
 		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			RandomForestRegressionModel model) throws IOException {
+		/***** ARTIFACTS *****/
 
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal regression fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 		/*
-		 * Leverage Apache Spark mechanism to write the RandomForestRegressor model
-		 * to a model specific file set
+		 * Leverage Apache Spark mechanism to write the RandomForest model to a
+		 * model specific file set
 		 */
+		FileSet fs = SparkMLManager.getRegressionFS(context);
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, ALGORITHM_NAME, modelName, modelParams, modelMetrics, fsPath);
-
+		Table table = SparkMLManager.getRegressionTable(context);
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 	public Object getParam(SparkExecutionPluginContext context, String modelName, String paramName) throws Exception {
-		Table table = SparkMLManager.getRegressionMeta(context);
-		return getModelParam(table, ALGORITHM_NAME, modelName, paramName);
+		
+		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
+		
+		Table table = SparkMLManager.getRegressionTable(context);
+		return getModelParam(table, algorithmName, modelName, paramName);
+		
 	}
 
 }

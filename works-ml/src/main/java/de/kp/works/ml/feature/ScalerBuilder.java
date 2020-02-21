@@ -95,8 +95,8 @@ public class ScalerBuilder extends FeatureSink {
 		 * Store trained Word2Vec model including its associated 
 		 * parameters and metrics
 		 */
-		String paramsJson = config.getParamsAsJSON();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
 		
 		String modelType = config.modelType;
 		if (modelType.equals("minmax")) {
@@ -110,7 +110,9 @@ public class ScalerBuilder extends FeatureSink {
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerRecorder().trackMinMaxScaler(context, modelName, paramsJson, metricsJson, model);
+			String modelStage = config.modelStage;
+			
+			new ScalerRecorder().trackMinMaxScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 			
 			
 		} else if (modelType.equals("maxabs")) {
@@ -121,7 +123,9 @@ public class ScalerBuilder extends FeatureSink {
 			MaxAbsScalerModel model = maxAbsScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerRecorder().trackMaxAbsScaler(context, modelName, paramsJson, metricsJson, model);
+			String modelStage = config.modelStage;
+			
+			new ScalerRecorder().trackMaxAbsScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 			
 		} else {
 			
@@ -143,7 +147,9 @@ public class ScalerBuilder extends FeatureSink {
 			StandardScalerModel model = standardScaler.fit(vectorset);
 
 			String modelName = config.modelName;
-			new ScalerRecorder().trackStandardScaler(context, modelName, paramsJson, metricsJson, model);
+			String modelStage = config.modelStage;
+			
+			new ScalerRecorder().trackStandardScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 		}
 	}
@@ -182,6 +188,7 @@ public class ScalerBuilder extends FeatureSink {
 		
 		public ScalerBuilderConfig() {
 			
+			modelStage = "experiment";
 			modelType = "standard";
 			
 			min = 0.0;
