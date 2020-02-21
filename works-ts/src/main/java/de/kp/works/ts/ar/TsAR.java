@@ -33,7 +33,9 @@ import de.kp.works.ts.model.AutoRegressionModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAR")
-@Description("A prediction stage that leverages a trained Apache Spark based AR time series model.")
+@Description("A prediction stage that leverages a trained AutoRegression (AR) time series model. "
+		+ "to look n steps in time ahead. The forecast result is described by a two column output "
+		+ "schema, one column specifies the future points in time, and another the forecasted values.")
 public class TsAR extends ARCompute {
 
 	private static final long serialVersionUID = -4388615366081416402L;
@@ -50,7 +52,7 @@ public class TsAR extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readAR(context, config.modelName);
+		model = new ARRecorder().readAR(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An AutoRegression model with name '%s' does not exist.",
@@ -103,6 +105,7 @@ public class TsAR extends ARCompute {
 		private static final long serialVersionUID = 7633572327423290491L;
 
 		public TsARConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 

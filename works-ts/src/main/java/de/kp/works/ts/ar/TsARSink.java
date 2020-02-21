@@ -40,7 +40,7 @@ import de.kp.works.ts.params.ModelParams;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsARSink")
-@Description("A building stage for an Apache Spark based AR model for time series datasets.")
+@Description("A building stage for an AutoRegression (AR) model for time series datasets.")
 public class TsARSink extends ARSink {
 
 	private static final long serialVersionUID = -1532168373135598066L;
@@ -94,15 +94,17 @@ public class TsARSink extends ARSink {
 		 * and evaluate accuracy of the trained model
 		 */
 	    Dataset<Row> predictions = model.transform(splitted[1]);
-	    String metricsJson = model.evaluate(predictions);
+	    String modelMetrics = model.evaluate(predictions);
 
-	    String paramsJson = config.getParamsAsJSON();
+	    String modelParams = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARRecorder().trackAR(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new ARRecorder().trackAR(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -126,6 +128,7 @@ public class TsARSink extends ARSink {
 		public TsARSinkConfig() {
 
 			timeSplit = "70:30";
+			modelStage = "experiment";
 
 			elasticNetParam = 0.0;
 			regParam = 0.0;

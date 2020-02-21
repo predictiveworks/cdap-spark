@@ -99,15 +99,17 @@ public class TsAutoARIMASink extends ARIMASink {
 		 * and evaluate accuracy of the trained model
 		 */
 	    Dataset<Row> predictions = model.transform(splitted[1]);
-	    String metricsJson = model.evaluate(predictions);
+	    String modelMetrics = model.evaluate(predictions);
 
-	    String paramsJson = config.getParamsAsJSON();
+	    String modelParams = config.getParamsAsJSON();
 		/*
 		 * STEP #3: Store trained regression model including
 		 * its associated parameters and metrics
 		 */		
 		String modelName = config.modelName;
-		new ARIMARecorder().trackAutoARIMA(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new ARIMARecorder().trackAutoARIMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -139,6 +141,7 @@ public class TsAutoARIMASink extends ARIMASink {
 		public TsAutoARIMASinkConfig() {
 
 			timeSplit = "70:30";
+			modelStage = "experiment";
 
 			elasticNetParam = 0.0;
 			regParam = 0.0;

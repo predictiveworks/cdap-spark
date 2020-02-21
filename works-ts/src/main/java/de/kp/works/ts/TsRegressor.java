@@ -90,7 +90,7 @@ public class TsRegressor extends RegressorSink {
 		 * avoid data leakage from neighboring values
 		 */
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		/*
 		 * STEP #1: Split dataset into training & test timeseries
 		 */
@@ -137,10 +137,13 @@ public class TsRegressor extends RegressorSink {
 	    model.setPredictionCol(predictionCol);
 
 	    Dataset<Row> predictions = model.transform(testset);
-	    String metricsJson = RegressorEvaluator.evaluate(predictions, "label", predictionCol);
+	    String modelMetrics = RegressorEvaluator.evaluate(predictions, "label", predictionCol);
 		
 		String modelName = config.modelName;
-		new RFRRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		String modelPack = "WorksTS";
+		new RFRRecorder().track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -156,6 +159,10 @@ public class TsRegressor extends RegressorSink {
 		@Description("The unique name of the time prediction (regression) model.")
 		@Macro
 		public String modelName;
+
+		@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+		@Macro
+		public String modelStage;
 
 		@Description("The split of the dataset into train & test data, e.g. 80:20. Note, this is a split time "
 				+ "and is computed from the total time span (min, max) of the time series. Default is 70:30")
@@ -197,6 +204,8 @@ public class TsRegressor extends RegressorSink {
 		public TsRegressorConfig() {
 
 			timeSplit = "70:30";
+			modelStage = "experiment";
+			
 			timeLag = 20;
 
 			maxBins = 32;

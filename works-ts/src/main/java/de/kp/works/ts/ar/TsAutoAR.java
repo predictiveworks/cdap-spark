@@ -50,7 +50,7 @@ public class TsAutoAR extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readAutoAR(context, config.modelName);
+		model = new ARRecorder().readAutoAR(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto AutoRegression model with name '%s' does not exist.",
@@ -103,6 +103,7 @@ public class TsAutoAR extends ARCompute {
 		private static final long serialVersionUID = 4648547380010541153L;
 
 		public TsAutoARConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 		

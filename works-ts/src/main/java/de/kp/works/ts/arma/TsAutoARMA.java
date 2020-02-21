@@ -52,7 +52,7 @@ public class TsAutoARMA extends ARMACompute {
 		
 		config.validate();
 
-		model = new ARMARecorder().readAutoARMA(context, config.modelName);
+		model = new ARMARecorder().readAutoARMA(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto ARMA model with name '%s' does not exist.",
@@ -105,6 +105,7 @@ public class TsAutoARMA extends ARMACompute {
 		private static final long serialVersionUID = -3952093227734706917L;
 
 		public TsAutoARMAConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 

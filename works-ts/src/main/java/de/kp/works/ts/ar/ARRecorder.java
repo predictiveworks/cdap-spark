@@ -18,13 +18,13 @@ package de.kp.works.ts.ar;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.TimeRecorder;
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.model.AutoARModel;
@@ -35,20 +35,14 @@ public class ARRecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readAR(fs, table, modelName);
+		String algorithmName = Algorithms.AR;
 		
-	}
-		
-	private AutoRegressionModel readAR(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "AR";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoRegression model
@@ -59,20 +53,14 @@ public class ARRecorder extends TimeRecorder {
 		
 	}
 	
-	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readAutoAR(fs, table, modelName);
+		String algorithmName = Algorithms.AUTO_AR;
 		
-	}
-
-	private AutoARModel readAutoAR(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "AutoAR";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoAR model
@@ -83,20 +71,14 @@ public class ARRecorder extends TimeRecorder {
 		
 	}
 	
-	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readDiffAR(fs, table, modelName);
+		String algorithmName = Algorithms.DIFF_AR;
 		
-	}
-
-	private DiffAutoRegressionModel readDiffAR(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "DiffAR";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DiffAutoRegression model
@@ -107,20 +89,14 @@ public class ARRecorder extends TimeRecorder {
 		
 	}
 	
-	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readYuleWalker(fs, table, modelName);
+		String algorithmName = Algorithms.YULE_WALKER;
 		
-	}
-
-	private ARYuleWalkerModel readYuleWalker(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "YuleWalker";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARYuleWalker model
@@ -133,153 +109,100 @@ public class ARRecorder extends TimeRecorder {
 
 	/** WRITE **/
 	
-	public void trackAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoRegressionModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
-		
-		saveAR(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.AR;
 
-		
-	private void saveAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			AutoRegressionModel model) throws IOException {
-		
-		String algorithmName = "AR";
+		/***** ARTIFACTS *****/
 
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the AutoRegression model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 	
-	public void trackAutoAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackAutoAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoARModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
-		
-		saveAutoAR(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveAutoAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			AutoARModel model) throws IOException {
-		
-		String algorithmName = "AutoAR";
+		String algorithmName = Algorithms.AUTO_AR;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the AutoAR model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 	
-	public void trackDiffAR(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackDiffAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			DiffAutoRegressionModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
-		
-		saveDiffAR(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveDiffAR(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			DiffAutoRegressionModel model) throws IOException {
-		
-		String algorithmName = "DiffAR";
+		String algorithmName = Algorithms.DIFF_AR;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the DiffAutoRegression model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 	
-	public void trackYuleWalker(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackYuleWalker(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			ARYuleWalkerModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
-		
-		saveYuleWalker(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveYuleWalker(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			ARYuleWalkerModel model) throws IOException {
-		
-		String algorithmName = "YuleWalker";
+		String algorithmName = Algorithms.YULE_WALKER;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the ARYuleWalker model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 }

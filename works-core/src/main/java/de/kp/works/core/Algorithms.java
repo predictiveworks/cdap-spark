@@ -19,6 +19,23 @@ package de.kp.works.core;
  */
 
 public class Algorithms {
+
+	/** FEATURE ENGINEERING **/
+
+	public final static String BUCKETED_LSH = "BucketedLSH";
+	public final static String CHI_SQUARED = "ChiSquared";
+	public final static String COUNT_VECTORIZER = "CountVectorizer";
+	public final static String MAX_ABS_SCALER = "MaxAbsScaler";
+	public final static String MIN_HASH_LSH = "MinHashLSH";
+	public final static String MIN_MAX_SCALER = "MinMaxScaler";
+	public final static String PRINCIPAL_COMPONENT_ANALYSIS = "PrincipalComponentAnalysis";
+	public final static String STANDARD_SCALER = "StandardScaler";
+	public final static String STRING_INDEXER = "StringIndexer";
+	public final static String TFIDF = "TFIDF";
+	public final static String VECTOR_INDEXER = "VectorIndexer";
+	public final static String WORD2VEC = "Word2Vec";
+	
+	/** MACHINE LEARNING **/
 	
 	public final static String ALS = "ALS";
 	public final static String BISECTING_KMEANS = "BisectingKMeans";
@@ -36,20 +53,19 @@ public class Algorithms {
 	public final static String ONE_VS_REST = "OneVsRest";
 	public final static String RANDOM_FOREST_TREE = "RandomForestTree";
 	public final static String SURVIVAL_AFT_REGRESSION = "SurvivalAFTRegression";
-
-	/** FEATURE ENGINEERING **/
-
-	public final static String BUCKETED_LSH = "BucketedLSH";
-	public final static String CHI_SQUARED = "ChiSquared";
-	public final static String COUNT_VECTORIZER = "CountVectorizer";
-	public final static String MAX_ABS_SCALER = "MaxAbsScaler";
-	public final static String MIN_HASH_LSH = "MinHashLSH";
-	public final static String MIN_MAX_SCALER = "MinMaxScaler";
-	public final static String PRINCIPAL_COMPONENT_ANALYSIS = "PrincipalComponentAnalysis";
-	public final static String STANDARD_SCALER = "StandardScaler";
-	public final static String STRING_INDEXER = "StringIndexer";
-	public final static String TFIDF = "TFIDF";
-	public final static String VECTOR_INDEXER = "VectorIndexer";
-	public final static String WORD2VEC = "Word2Vec";
+	
+	/** TIME SERIES **/
+	
+	public final static String ACF = "ACF";
+	public final static String AR = "AR";
+	public final static String ARIMA = "ARIMA";
+	public final static String ARMA = "ARMA";
+	public final static String MA = "MA";
+	public final static String AUTO_AR = "AutoAR";	
+	public final static String AUTO_ARIMA = "AutoARIMA";	
+	public final static String AUTO_ARMA = "AutoARMA";	
+	public final static String AUTO_MA = "AutoMA";	
+	public final static String DIFF_AR = "DiffAR";
+	public final static String YULE_WALKER = "YuleWalker";
 	
 }

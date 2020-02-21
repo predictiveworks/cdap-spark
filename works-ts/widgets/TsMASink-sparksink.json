@@ -22,6 +22,20 @@
           "name": "timeCol"
         },
         {
+          "widget-type": "select",
+          "label": "Model Stage",
+          "name": "modelStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "stagging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
+        },
+        {
           "widget-type": "textbox",
           "label": "Value Field",
           "name": "valueCol"

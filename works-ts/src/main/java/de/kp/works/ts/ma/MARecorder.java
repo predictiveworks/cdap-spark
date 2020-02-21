@@ -18,13 +18,13 @@ package de.kp.works.ts.ma;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.TimeRecorder;
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.AutoMAModel;
 import de.kp.works.ts.model.MovingAverageModel;
@@ -33,20 +33,14 @@ public class MARecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readMA(fs, table, modelName);
+		String algorithmName = Algorithms.MA;
 		
-	}
-	
-	private MovingAverageModel readMA(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "MA";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MovingAverage model
@@ -57,20 +51,14 @@ public class MARecorder extends TimeRecorder {
 		
 	}
 	
-	public AutoMAModel readAutoMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public AutoMAModel readAutoMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readAutoMA(fs, table, modelName);
+		String algorithmName = Algorithms.AUTO_MA;
 		
-	}
-
-	private AutoMAModel readAutoMA(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "AutoMA";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoMA model
@@ -83,78 +71,52 @@ public class MARecorder extends TimeRecorder {
 
 	/** WRITE **/
 	
-	public void trackMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MovingAverageModel model) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
-		saveMA(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			MovingAverageModel model) throws IOException {
-		
-		String algorithmName = "MA";
+		String algorithmName = Algorithms.MA;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the MovingAverage model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 	
-	public void trackAutoMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackAutoMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoMAModel model) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
-		saveAutoMA(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	public void saveAutoMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			AutoMAModel model) throws IOException {
-		
-		String algorithmName = "AutoMA";
+		String algorithmName = Algorithms.AUTO_MA;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the AutoMA model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 }

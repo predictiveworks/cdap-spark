@@ -31,9 +31,17 @@ public class TimePredictorConfig extends TimeConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	@Description("The name of the field in the output schema that contains the predicted value.")
 	@Macro
 	public String predictionCol;
+	
+	public TimePredictorConfig() {
+		modelStage = "experiment";
+	}
 	
 	public void validate() {
 		super.validate();

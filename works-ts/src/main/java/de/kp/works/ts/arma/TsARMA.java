@@ -52,7 +52,7 @@ public class TsARMA extends ARMACompute {
 		
 		config.validate();
 
-		model = new ARMARecorder().readARMA(context, config.modelName);
+		model = new ARMARecorder().readARMA(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An ARMA model with name '%s' does not exist.",
@@ -105,6 +105,7 @@ public class TsARMA extends ARMACompute {
 		private static final long serialVersionUID = -2565279706592741956L;
 
 		public TsARMAConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 		

@@ -50,7 +50,7 @@ public class TsYuleWalker extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readYuleWalker(context, config.modelName);
+		model = new ARRecorder().readYuleWalker(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Yule Walker AutoRegression model with name '%s' does not exist.",
@@ -105,6 +105,7 @@ public class TsYuleWalker extends ARCompute {
 		private static final long serialVersionUID = -864185065637543716L;
 
 		public TsYuleWalkerConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 

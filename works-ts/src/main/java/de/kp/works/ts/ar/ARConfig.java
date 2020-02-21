@@ -35,6 +35,10 @@ public class ARConfig extends TimeConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	public void validate() {
 		super.validate();
 

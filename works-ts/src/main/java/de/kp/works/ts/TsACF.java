@@ -34,16 +34,13 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.annotation.Name;
 import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimeConfig;
-import de.kp.works.ts.util.TimeSeriesModelManager;
+import de.kp.works.ts.util.ACFRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoCorrelate")
@@ -55,19 +52,8 @@ public class TsACF extends TimeCompute {
 
 	private TsAutoCorrelateConfig config;
 
-	private FileSet modelFs;
-	private Table modelMeta;
-
 	public TsACF(TsAutoCorrelateConfig config) {
 		this.config = config;
-
-	}
-
-	@Override
-	public void initialize(SparkExecutionPluginContext context) throws Exception {
-
-		modelFs = SparkMLManager.getTimeFS(context);
-		modelMeta = SparkMLManager.getTimesTable(context);
 
 	}
 
@@ -101,13 +87,15 @@ public class TsACF extends TimeCompute {
 		AutoCorrelationModel model = computer.fit(source);
 
 		Map<String, Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
-		String paramsJson = computeConfig.getParamsAsJSON();
+		String modelParams = computeConfig.getParamsAsJSON();
 		String modelName = computeConfig.modelName;
 
-		TimeSeriesModelManager manager = new TimeSeriesModelManager();
-		manager.saveACF(modelFs, modelMeta, modelName, paramsJson, metricsJson, model);
+		ACFRecorder manager = new ACFRecorder();
+		
+		String modelStage = config.modelStage;
+		manager.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 		return source;
 
@@ -120,6 +108,10 @@ public class TsACF extends TimeCompute {
 		@Description("The unique name of the ACF dataset.")
 		@Macro
 		public String modelName;
+
+		@Description("The stage of the ACF dataset. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+		@Macro
+		public String modelStage;
 
 		@Description("The maximum lag value. Use this parameter if the ACF is based on a range of lags. Default is 1.")
 		@Macro
@@ -135,6 +127,9 @@ public class TsACF extends TimeCompute {
 		public Double threshold;
 
 		public TsAutoCorrelateConfig() {
+			
+			modelStage = "experiment";
+			
 			maxLag = 1;
 			lagValues = "";
 			threshold = 0.95;

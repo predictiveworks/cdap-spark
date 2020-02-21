@@ -49,7 +49,7 @@ public class TsMA extends MACompute {
 		
 		config.validate();
 
-		model = new MARecorder().readMA(context, config.modelName);
+		model = new MARecorder().readMA(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Moving Average model with name '%s' does not exist.",
@@ -97,6 +97,7 @@ public class TsMA extends MACompute {
 		private static final long serialVersionUID = -4883049931173631393L;
 
 		public TsMAConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 		

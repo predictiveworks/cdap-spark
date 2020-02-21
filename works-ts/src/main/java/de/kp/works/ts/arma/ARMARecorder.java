@@ -18,13 +18,13 @@ package de.kp.works.ts.arma;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.ml.TimeRecorder;
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARMAModel;
 import de.kp.works.ts.model.AutoARMAModel;
@@ -33,20 +33,14 @@ public class ARMARecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readARMA(fs, table, modelName);
+		String algorithmName = Algorithms.ARMA;
 		
-	}
-	
-	private ARMAModel readARMA(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "ARMA";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARMA model
@@ -57,20 +51,14 @@ public class ARMARecorder extends TimeRecorder {
 		
 	}
 	
-	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
-		return readAutoARMA(fs, table, modelName);
+		String algorithmName = Algorithms.AUTO_ARMA;
 		
-	}
-
-	private AutoARMAModel readAutoARMA(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String algorithmName = "AutoARMA";
-		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoARMA model
@@ -83,78 +71,52 @@ public class ARMARecorder extends TimeRecorder {
 
 	/** WRITE **/
 	
-	public void trackARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			ARMAModel model) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
-		saveARMA(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			ARMAModel model) throws IOException {
-		
-		String algorithmName = "ARMA";
+		String algorithmName = Algorithms.ARMA;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the ARMA model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 	
-	public void trackAutoARMA(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void trackAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoARMAModel model) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
-		saveAutoARMA(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
-	
-	private void saveAutoARMA(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			AutoARMAModel model) throws IOException {
-		
-		String algorithmName = "AutoARMA";
+		String algorithmName = Algorithms.AUTO_ARMA;
 
-		/***** MODEL COMPONENTS *****/
+		/***** ARTIFACTS *****/
 
-		/*
-		 * Define the path of this model on CDAP's internal timeseries fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the AutoARMA model
-		 * to a model specific file set
-		 */
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		setMetadata(ts, table, algorithmName, modelName, modelParams, modelMetrics, fsPath);
+		String modelPack = "WorksTS";
+		Table table = SparkMLManager.getTimesTable(context);
 
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 }

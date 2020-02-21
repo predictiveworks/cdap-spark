@@ -52,7 +52,7 @@ public class TsAutoARIMA extends ARIMACompute {
 		
 		config.validate();
 
-		model = new ARIMARecorder().readAutoARIMA(context, config.modelName);
+		model = new ARIMARecorder().readAutoARIMA(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto ARIMA model with name '%s' does not exist.",
@@ -105,6 +105,7 @@ public class TsAutoARIMA extends ARIMACompute {
 		private static final long serialVersionUID = -1122459750687688824L;
 
 		public TsAutoARIMAConfig() {
+			modelStage = "experiment";
 			steps = 1;
 		}
 

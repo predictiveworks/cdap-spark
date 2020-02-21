@@ -57,7 +57,7 @@ public class TsPredictor extends TimeCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-			model = manager.read(context, config.modelName);
+			model = manager.read(context, config.modelName, config.modelStage);
 			if (model == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
