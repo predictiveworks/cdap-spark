@@ -31,14 +31,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class MinHashLSHRecorder extends FeatureRecorder {
 
-	public MinHashLSHModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public MinHashLSHModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 
 		String algorithmName = Algorithms.MIN_HASH_LSH;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinHashLSH model

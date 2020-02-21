@@ -24,12 +24,12 @@ import java.util.Date;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.TimeRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.model.AutoARIMAModel;
 
-public class ARIMARecorder extends AbstractTimeSeriesManager {
+public class ARIMARecorder extends TimeRecorder {
 
 	/** READ **/
 	

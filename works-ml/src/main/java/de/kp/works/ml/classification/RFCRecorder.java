@@ -32,14 +32,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class RFCRecorder extends ClassifierRecorder {
 
-	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
 
 		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

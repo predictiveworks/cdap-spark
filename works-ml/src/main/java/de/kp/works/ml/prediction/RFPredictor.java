@@ -60,14 +60,14 @@ public class RFPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new RFCRecorder().read(context, config.modelName);
+			classifier = new RFCRecorder().read(context, config.modelName, config.modelStage);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new RFRRecorder().read(context, config.modelName);
+			regressor = new RFRRecorder().read(context, config.modelName, config.modelStage);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

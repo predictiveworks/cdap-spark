@@ -69,21 +69,21 @@ public class Scaler extends FeatureCompute {
 
 		if (modelType.equals("maxabs")) {
 
-			maxAbsModel = manager.readMaxAbsScaler(context, config.modelName);
+			maxAbsModel = manager.readMaxAbsScaler(context, config.modelName, config.modelStage);
 			if (maxAbsModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 		
 		} else if (modelType.equals("minmax")) {
 
-			minMaxModel = manager.readMinMaxScaler(context, config.modelName);
+			minMaxModel = manager.readMinMaxScaler(context, config.modelName, config.modelStage);
 			if (minMaxModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 					
 		} else {
 
-			standardModel = manager.readStandardScaler(context, config.modelName);
+			standardModel = manager.readStandardScaler(context, config.modelName, config.modelStage);
 			if (standardModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));

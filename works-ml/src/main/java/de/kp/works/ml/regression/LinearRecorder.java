@@ -32,14 +32,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class LinearRecorder extends RegressorRecorder {
 
-	public LinearRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public LinearRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
 		Table table = SparkMLManager.getRegressionTable(context);
 
 		String algorithmName = Algorithms.LINEAR_REGRESSION;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the LinearRegression model

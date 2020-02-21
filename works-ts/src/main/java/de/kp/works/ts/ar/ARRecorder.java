@@ -24,14 +24,14 @@ import java.util.Date;
 import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractTimeSeriesManager;
+import de.kp.works.core.ml.TimeRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.model.AutoARModel;
 import de.kp.works.ts.model.AutoRegressionModel;
 import de.kp.works.ts.model.DiffAutoRegressionModel;
 
-public class ARRecorder extends AbstractTimeSeriesManager {
+public class ARRecorder extends TimeRecorder {
 
 	/** READ **/
 	

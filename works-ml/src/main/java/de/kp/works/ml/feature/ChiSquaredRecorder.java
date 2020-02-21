@@ -31,14 +31,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class ChiSquaredRecorder extends FeatureRecorder {
 
-	public ChiSqSelectorModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public ChiSqSelectorModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 
 		String algorithmName = Algorithms.CHI_SQUARED;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Chi Squared Selector model

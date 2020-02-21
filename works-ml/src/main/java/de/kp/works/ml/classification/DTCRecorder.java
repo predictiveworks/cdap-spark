@@ -32,7 +32,7 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class DTCRecorder extends ClassifierRecorder {
 
-	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
@@ -40,7 +40,7 @@ public class DTCRecorder extends ClassifierRecorder {
 		String algorithmName = Algorithms.DECISION_TREE;
 		
 		/* Get the latest fileset path */
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model

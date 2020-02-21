@@ -16,6 +16,10 @@ public class PredictorConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	@Description("The name of the field in the input schema that contains the feature vector.")
 	@Macro
 	public String featuresCol;
@@ -23,6 +27,10 @@ public class PredictorConfig extends BaseConfig {
 	@Description("The name of the field in the output schema that contains the predicted label.")
 	@Macro
 	public String predictionCol;
+
+	public PredictorConfig() {
+		modelStage = "experiment";
+	}
 
 	public void validate() {
 

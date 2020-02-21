@@ -31,7 +31,7 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class BucketedLSHRecorder extends FeatureRecorder {
 
-	public BucketedRandomProjectionLSHModel read(SparkExecutionPluginContext context, String modelName)
+	public BucketedRandomProjectionLSHModel read(SparkExecutionPluginContext context, String modelName, String modelStage)
 			throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
@@ -39,7 +39,7 @@ public class BucketedLSHRecorder extends FeatureRecorder {
 
 		String algorithmName = Algorithms.BUCKETED_LSH;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

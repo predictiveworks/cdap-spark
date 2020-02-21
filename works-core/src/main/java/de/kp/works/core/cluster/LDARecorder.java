@@ -34,14 +34,14 @@ import de.kp.works.core.ml.SparkMLManager;
  */
 public class LDARecorder extends ClusterRecorder {
 
-	public LDAModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public LDAModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringTable(context);
 
 		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

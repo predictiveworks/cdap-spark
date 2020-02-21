@@ -61,7 +61,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new GaussianMixtureRecorder().read(context, config.modelName);
+		model = new GaussianMixtureRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -151,6 +151,10 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		@Description("The name of the field in the output schema that contains the probability vector, i.e. the probability for each cluster.")
 		@Macro
 		public String probabilityCol;
+
+		public GaussianMixturePredictorConfig() {
+			super();
+		}
 
 		public void validate() {
 			super.validate();

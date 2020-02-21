@@ -32,14 +32,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class SurvivalRecorder extends RegressorRecorder {
 
-	public AFTSurvivalRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public AFTSurvivalRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
 		Table table = SparkMLManager.getRegressionTable(context);
 
 		String algorithmName = Algorithms.SURVIVAL_AFT_REGRESSION;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AFTSurvivalRegression model

@@ -30,14 +30,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class TFIDFRecorder extends FeatureRecorder {
 
-	public IDFModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public IDFModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.TFIDF;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the IDF model

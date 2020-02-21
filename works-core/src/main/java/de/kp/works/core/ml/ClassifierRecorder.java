@@ -32,7 +32,7 @@ public class ClassifierRecorder extends AbstractRecorder {
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.CLASSIFICATION_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName);
+		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

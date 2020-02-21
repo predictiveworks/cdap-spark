@@ -18,8 +18,6 @@ package de.kp.works.core.recommender;
  * 
  */
 
-import javax.annotation.Nullable;
-
 import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
@@ -32,15 +30,15 @@ public class RecommenderConfig extends BaseConfig {
 	@Description("The unique name of the recommendation model.")
 	@Macro
 	public String modelName;
-	/*
-	 * The model stage is optional for predication plugins 
-	 * as the model name must be unique
-	 */
+
 	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
-	@Nullable
 	public String modelStage;
 
+	public RecommenderConfig() {
+		modelStage = "experiment";
+	}
+	
 	public void validate() {
 		super.validate();
 

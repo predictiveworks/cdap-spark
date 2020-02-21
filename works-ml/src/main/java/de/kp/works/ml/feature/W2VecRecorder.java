@@ -31,14 +31,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class W2VecRecorder extends FeatureRecorder {
 
-	public Word2VecModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.WORD2VEC;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model

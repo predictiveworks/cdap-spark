@@ -31,14 +31,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class GaussianMixtureRecorder extends ClusterRecorder {
 
-	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringTable(context);
 
 		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

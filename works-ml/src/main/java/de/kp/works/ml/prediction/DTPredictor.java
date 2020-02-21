@@ -60,14 +60,14 @@ public class DTPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new DTCRecorder().read(context, config.modelName);
+			classifier = new DTCRecorder().read(context, config.modelName, config.modelStage);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new DTRRecorder().read(context, config.modelName);
+			regressor = new DTRRecorder().read(context, config.modelName, config.modelStage);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));

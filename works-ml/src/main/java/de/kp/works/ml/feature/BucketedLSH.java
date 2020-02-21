@@ -61,7 +61,7 @@ public class BucketedLSH extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new BucketedLSHRecorder().read(context, config.modelName);
+		model = new BucketedLSHRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -152,7 +152,7 @@ public class BucketedLSH extends FeatureCompute {
 	public static class BucketedLSHConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 8801441172298876792L;
-
+		
 		public void validate() {
 			super.validate();
 

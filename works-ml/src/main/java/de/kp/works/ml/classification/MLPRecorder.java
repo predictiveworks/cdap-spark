@@ -32,14 +32,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class MLPRecorder extends ClassifierRecorder {
 
-	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 		
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
 
 		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

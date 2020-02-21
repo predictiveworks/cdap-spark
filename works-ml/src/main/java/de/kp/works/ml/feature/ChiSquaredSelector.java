@@ -57,7 +57,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new ChiSquaredRecorder().read(context, config.modelName);
+		model = new ChiSquaredRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
@@ -135,7 +135,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 	public static class ChiSquaredSelectorConfig extends FeatureConfig {
 
 		private static final long serialVersionUID = 6059733954453473186L;
-
+		
 		public void validate() {
 			super.validate();
 

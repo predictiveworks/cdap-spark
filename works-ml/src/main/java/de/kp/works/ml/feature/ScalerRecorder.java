@@ -43,14 +43,14 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** MIN MAX **/
 
-	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.MIN_MAX_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -87,14 +87,14 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** MAX ABS **/
 
-	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.MAX_ABS_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -131,14 +131,14 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** STANDARD **/
 
-	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 
 		String algorithmName = Algorithms.STANDARD_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Standard Scaler model

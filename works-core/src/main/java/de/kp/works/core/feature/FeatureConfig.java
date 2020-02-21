@@ -30,12 +30,21 @@ import de.kp.works.core.BaseConfig;
 public class FeatureConfig extends BaseConfig {
 
 	private static final long serialVersionUID = -1568798398931701098L;
-
+	/*
+	 * Two different feature stages exist: one stage type is model based,
+	 * and the other is not. These stage types are managed with the same
+	 * configuration but nullable fields 
+	 */
 	@Description("The unique name of the feature model, if this feature transformation requires a trained feature model. "
 			+ "Examples are Count Vectorizer models, Word2Vec models etc.")
 	@Macro
 	@Nullable
 	public String modelName;
+
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	@Nullable
+	public String modelStage;
 
 	@Description("The name of the field in the input schema that contains the features.")
 	@Macro
@@ -44,6 +53,10 @@ public class FeatureConfig extends BaseConfig {
 	@Description("The name of the field in the output schema that contains the transformed features.")
 	@Macro
 	public String outputCol;
+
+	public FeatureConfig() {
+		modelStage = "experiment";
+	}
 
 	public void validate() {
 		super.validate();

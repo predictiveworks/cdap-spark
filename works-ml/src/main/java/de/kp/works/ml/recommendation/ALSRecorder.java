@@ -41,14 +41,14 @@ public class ALSRecorder extends AbstractRecorder {
 	private Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	public ALSModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getRecommendationFS(context);
 		Table table = SparkMLManager.getRecommendationTable(context);
 
 		String algorithmName = Algorithms.ALS;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*
@@ -91,7 +91,7 @@ public class ALSRecorder extends AbstractRecorder {
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName);
+		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

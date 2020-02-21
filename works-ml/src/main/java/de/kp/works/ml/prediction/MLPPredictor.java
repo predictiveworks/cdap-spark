@@ -53,7 +53,7 @@ public class MLPPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		classifier = new MLPRecorder().read(context, config.modelName);
+		classifier = new MLPRecorder().read(context, config.modelName, config.modelStage);
 		if (classifier == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

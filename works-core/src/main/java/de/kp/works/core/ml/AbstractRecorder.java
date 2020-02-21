@@ -100,7 +100,7 @@ public class AbstractRecorder {
 		
 	}
 
-	public String getModelVersion(Table table, String algorithmName, String modelName) {
+	public String getModelVersion(Table table, String algorithmName, String modelName, String modelStage) {
 
 		String strVersion = null;
 
@@ -113,10 +113,16 @@ public class AbstractRecorder {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
-			String name = row.getString("name");
-
-			if (algorithm.equals(algorithmName) && name.equals(modelName)) {
-				strVersion = row.getString("version");
+			if (algorithm.equals(algorithmName)) {
+				
+				String name = row.getString("name");
+				if (name.equals(modelName)) {
+					
+					String stage = row.getString("stage");
+					if (stage.equals(modelStage))
+						strVersion = row.getString("version");
+					
+				}
 			}
 		}
 
@@ -133,7 +139,7 @@ public class AbstractRecorder {
 
 	}
 
-	public String getModelFsPath(Table table, String algorithmName, String modelName) {
+	public String getModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
 
 		String fsPath = null;
 
@@ -146,11 +152,18 @@ public class AbstractRecorder {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
-			String name = row.getString("name");
-
-			if (algorithm.equals(algorithmName) && name.equals(modelName)) {
-				fsPath = row.getString("fsPath");
+			if (algorithm.equals(algorithmName)) {
+				
+				String name = row.getString("name");
+				if (name.equals(modelName)) {
+					
+					String stage = row.getString("stage");
+					if (stage.equals(modelStage))
+						fsPath = row.getString("fsPath");
+					
+				}
 			}
+
 		}
 
 		return fsPath;

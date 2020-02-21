@@ -32,14 +32,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class LRRecorder extends ClassifierRecorder {
 
-	public LogisticRegressionModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public LogisticRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
 		
 		String algorithmName = Algorithms.LOGISTIC_REGRESSION;
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

@@ -31,14 +31,14 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class VectorIndexerRecorder extends FeatureRecorder {
 
-	public VectorIndexerModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public VectorIndexerModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.VECTOR_INDEXER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the VectorIndexer model

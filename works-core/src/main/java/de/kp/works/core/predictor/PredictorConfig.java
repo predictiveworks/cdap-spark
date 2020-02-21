@@ -18,6 +18,8 @@ package de.kp.works.core.predictor;
  * 
  */
 
+import javax.annotation.Nullable;
+
 import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
@@ -34,8 +36,13 @@ public class PredictorConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
+	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+
 	@Description("The type of the model that is used for prediction, either 'classifier' or 'regressor'.")
 	@Macro
+	@Nullable
 	public String modelType;
 
 	@Description("The name of the field in the input schema that contains the feature vector.")
@@ -46,6 +53,10 @@ public class PredictorConfig extends BaseConfig {
 	@Macro
 	public String predictionCol;
 
+	public PredictorConfig() {
+		modelStage = "experiment";
+	}
+	
 	public void validate() {
 
 		if (Strings.isNullOrEmpty(referenceName)) {
