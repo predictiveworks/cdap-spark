@@ -36,8 +36,8 @@ import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
+import de.kp.works.core.BaseConfig;
 import de.kp.works.core.text.TextCompute;
-import de.kp.works.text.pos.BasePOSConfig;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -110,7 +110,7 @@ public class TokenCleaner extends TextCompute {
 
 	}
 
-	public static class TokenCleanerConfig extends BasePOSConfig {
+	public static class TokenCleanerConfig extends BaseConfig {
 
 		private static final long serialVersionUID = 268522139824357779L;
 

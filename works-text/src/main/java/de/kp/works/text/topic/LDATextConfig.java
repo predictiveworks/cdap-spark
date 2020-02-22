@@ -22,10 +22,11 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.BaseConfig;
+
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
-public class LDATextConfig extends BaseConfig {
+public class LDATextConfig extends ModelConfig {
 
 	private static final long serialVersionUID = 1111955201802835050L;
 
@@ -33,9 +34,14 @@ public class LDATextConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The unique name of a trained Word2Vec embedding model.")
+	@Description("The unique name of the trained Word2Vec embedding model.")
 	@Macro
 	public String embeddingName;
+
+	@Description("The stage of the Word2Vec embedding model. Supported values are 'experiment', "
+			+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String embeddingStage;
 
 	@Description(Names.TEXT_COL)
 	@Macro

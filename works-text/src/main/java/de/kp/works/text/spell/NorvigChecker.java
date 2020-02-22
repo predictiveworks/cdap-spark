@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -60,7 +61,7 @@ public class NorvigChecker extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new SpellRecorder().read(context, config.modelName);
+		model = new SpellRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Norvig Spell Checking model with name '%s' does not exist.",
@@ -135,7 +136,7 @@ public class NorvigChecker extends TextCompute {
 
 	}
 
-	public static class SpellCheckerConfig extends SpellConfig {
+	public static class SpellCheckerConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 2295039730979859235L;
 
@@ -152,6 +153,7 @@ public class NorvigChecker extends TextCompute {
 		public Double threshold;
 
 		public SpellCheckerConfig() {
+			modelStage = "experiment";
 			threshold = 0.75;
 		}
 		

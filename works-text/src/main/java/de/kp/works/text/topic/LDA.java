@@ -64,13 +64,13 @@ public class LDA extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LDARecorder().read(context, config.modelName);
+		model = new LDARecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An LDA model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -182,6 +182,10 @@ public class LDA extends TextCompute {
 		}
 		
 		public LDAConfig() {
+			
+			modelStage = "experiment";
+			embeddingStage = "experiment";
+			
 			poolingStrategy = "average";
 			topicStrategy = "vector";
 		}

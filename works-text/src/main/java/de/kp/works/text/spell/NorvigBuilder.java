@@ -40,6 +40,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
+import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("NorvigBuilder")
@@ -74,16 +75,17 @@ public class NorvigBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		NorvigTrainer trainer = new NorvigTrainer();
 		NorvigSweetingModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new SpellRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		new SpellRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -103,7 +105,7 @@ public class NorvigBuilder extends TextSink {
 
 	}
 
-	public static class SpellSinkConfig extends SpellConfig {
+	public static class SpellSinkConfig extends ModelConfig {
 
 		private static final long serialVersionUID = -2584154226923794844L;
 
@@ -116,6 +118,7 @@ public class NorvigBuilder extends TextSink {
 		public String valueDelimiter;
 
 		public SpellSinkConfig() {
+			modelStage = "experiment";
 			valueDelimiter = "\\S+";
 		}
 

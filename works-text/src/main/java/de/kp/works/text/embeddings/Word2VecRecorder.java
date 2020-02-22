@@ -21,42 +21,44 @@ package de.kp.works.text.embeddings;
 import java.io.IOException;
 import java.util.Date;
 
-import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.AbstractRecorder;
+
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.ml.TextRecorder;
+
 import de.kp.works.text.embeddings.Word2VecModel;
 
-public class Word2VecRecorder extends AbstractRecorder {
+public class Word2VecRecorder extends TextRecorder {
 
-	private String ALGORITHM_NAME = "Word2Vec";
 	/**
 	 * The Word2Vec model is used with other builders; as their initializtion
 	 * phase is based on the basic plugin context, we need an extra read method
 	 */
-	public Word2VecModel read(SparkPluginContext context, String modelName) throws Exception {
+	public Word2VecModel read(SparkPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 		Table table = SparkMLManager.getTextTable(context);
 		
-		return read(fs, table, modelName);
+		return read(fs, table, modelName, modelStage);
 	}
 	
-	public Word2VecModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 		Table table = SparkMLManager.getTextTable(context);
 		
-		return read(fs, table, modelName);
+		return read(fs, table, modelName, modelStage);
 	}
 		
-	private Word2VecModel read(FileSet fs, Table table, String modelName) throws IOException {
+	private Word2VecModel read(FileSet fs, Table table, String modelName, String modelStage) throws IOException {
+
+		String algorithmName = Algorithms.WORD2VEC;
 		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
@@ -67,53 +69,35 @@ public class Word2VecRecorder extends AbstractRecorder {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			Word2VecModel model) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextFS(context);
-		Table table = SparkMLManager.getTextTable(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
+		String algorithmName = Algorithms.WORD2VEC;
 
-	public void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			Word2VecModel model) throws IOException {
+		/***** ARTIFACTS *****/
 
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal textanalysis fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
 		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the Word2Vec model
-		 * to a model specific file set
-		 */
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+
+		FileSet fs = SparkMLManager.getTextFS(context);
+
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		/*
-		 * Append model metadata to the metadata table associated with the
-		 * textanalysis fileset
-		 */
-		String fsName = SparkMLManager.TEXTANALYSIS_FS;
-		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
+		String modelPack = "WorksText";
+		Table table = SparkMLManager.getTextTable(context);
 
-		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
-
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 	public Object getParam(Table table, String modelName, String paramName) {
-		return getModelParam(table, ALGORITHM_NAME, modelName, paramName);
+
+		String algorithmName = Algorithms.WORD2VEC;
+		return getModelParam(table, algorithmName, modelName, paramName);
+	
 	}
 
 }

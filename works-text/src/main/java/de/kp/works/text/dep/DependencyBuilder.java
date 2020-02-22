@@ -39,6 +39,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
+import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("DependencyBuilder")
@@ -72,16 +73,18 @@ public class DependencyBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		DepTrainer trainer = new DepTrainer();
 		DependencyParserModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new DependencyRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new DependencyRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 	
@@ -101,7 +104,7 @@ public class DependencyBuilder extends TextSink {
 
 	}
 
-	public static class DependencySinkConfig extends BaseDependencyConfig {
+	public static class DependencySinkConfig extends ModelConfig {
 
 		private static final long serialVersionUID = -2112548496022872235L;
 
@@ -118,6 +121,9 @@ public class DependencyBuilder extends TextSink {
 		public Integer numIter;
 		
 		public DependencySinkConfig() {
+			
+			modelStage = "experiment";
+			
 			format = "conll-u";
 			numIter = 10;
 		}

@@ -54,6 +54,16 @@ public class Algorithms {
 	public final static String RANDOM_FOREST_TREE = "RandomForestTree";
 	public final static String SURVIVAL_AFT_REGRESSION = "SurvivalAFTRegression";
 	
+	/** NATURAL LANGUAGE **/
+
+	public final static String DEPENDENCY_PARSER = "DependencyParser";
+	public final static String LEMMATIZATION = "Lemmatization";
+	public final static String NER_CRF = "CrfNER";
+	public final static String NORVIG = "Norvig";
+	public final static String PART_OF_SPEECH = "PartOfSpeech";
+	public final static String VIVEKN_SENTIMENT = "ViveknSentiment";
+
+	
 	/** TIME SERIES **/
 	
 	public final static String ACF = "ACF";

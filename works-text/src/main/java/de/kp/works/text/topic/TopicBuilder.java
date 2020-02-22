@@ -113,11 +113,13 @@ public class TopicBuilder extends TextSink {
 		 * STEP #3: Store trained LDATopic model including its associated
 		 * parameters and metrics
 		 */
-		String metricsJson = new Gson().toJson(metrics);
-		String paramsJson = config.getParamsAsJSON();
+		String modelMetrics = new Gson().toJson(metrics);
+		String modelParams = config.getParamsAsJSON();
 
 		String modelName = config.modelName;
-		new TopicRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new TopicRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 				
 	}
 	
@@ -160,6 +162,8 @@ public class TopicBuilder extends TextSink {
 		public TopicSinkConfig() {
 
 			dataSplit = "90:10";
+			modelStage = "experiment";
+			
 			vocabSize = 10000;
 			
 			k = 10;

@@ -22,16 +22,13 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.BaseConfig;
+
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
-public class BaseWord2VecConfig extends BaseConfig {
+public class BaseWord2VecConfig extends ModelConfig {
 
 	private static final long serialVersionUID = -2427759073495034110L;
-
-	@Description("The unique name of the Word2Vec embeddings model.")
-	@Macro
-	public String modelName;
 
 	@Description(Names.TEXT_COL)
 	@Macro

@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.pos.Chunker;
 import de.kp.works.text.util.Names;
 
@@ -60,7 +61,7 @@ public class POSChunker extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new POSRecorder().read(context, config.modelName);
+		model = new POSRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech analysis model with name '%s' does not exist.",
@@ -131,7 +132,7 @@ public class POSChunker extends TextCompute {
 
 	}
 
-	public static class POSChunkerConfig extends BasePOSConfig {
+	public static class POSChunkerConfig extends ModelConfig {
 
 		private static final long serialVersionUID = -7335693906960966678L;
 
@@ -152,6 +153,7 @@ public class POSChunker extends TextCompute {
 		private String delimiter;
 		
 		public POSChunkerConfig() {
+			modelStage = "experiment";
 			delimiter = ",";
 		}
 

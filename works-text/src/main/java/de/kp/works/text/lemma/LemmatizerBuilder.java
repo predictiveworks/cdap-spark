@@ -41,6 +41,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
+import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LemmatizerBuilder")
@@ -78,16 +79,18 @@ public class LemmatizerBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		LemmaTrainer trainer = new LemmaTrainer();
 		LemmatizerModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LemmatizerRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new LemmatizerRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -107,7 +110,7 @@ public class LemmatizerBuilder extends TextSink {
 
 	}
 
-	public static class LemmaSinkConfig extends BaseLemmaConfig {
+	public static class LemmaSinkConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 6743392367262183249L;
 
@@ -124,6 +127,9 @@ public class LemmatizerBuilder extends TextSink {
 		public String valueDelimiter;
 
 		public LemmaSinkConfig() {
+			
+			modelStage = "experiment";
+			
 			keyDelimiter = "->";
 			valueDelimiter = "\\S+";
 		}

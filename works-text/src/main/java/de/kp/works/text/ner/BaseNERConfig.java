@@ -22,19 +22,20 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.BaseConfig;
+import de.kp.works.text.config.ModelConfig;
 
-public class BaseNERConfig extends BaseConfig {
+public class BaseNERConfig extends ModelConfig {
 
 	private static final long serialVersionUID = 8733733573014386425L;
-
-	@Description("The unique name of the NER (CRF) model.")
-	@Macro
-	public String modelName;
 
 	@Description("The unique name of the trained Word2Vec embedding model.")
 	@Macro
 	public String embeddingName;
+
+	@Description("The stage of the Word2Vec embedding model. Supported values are 'experiment', "
+			+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String embeddingStage;
 
 	public void validate() {
 		super.validate();

@@ -64,7 +64,7 @@ public class NERBuilder extends TextSink {
 		 */
 		SparkMLManager.createTextanalysisIfNotExists(context);
 
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);		
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -76,16 +76,18 @@ public class NERBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		NERTrainer trainer = new NERTrainer(word2vec);
 		NerCrfModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new NERRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new NERRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -122,6 +124,10 @@ public class NERBuilder extends TextSink {
 		public Integer maxEpochs;
 		
 		public NERSinkConfig() {
+			
+			modelStage = "experiment";
+			embeddingStage = "experiment";
+			
 			minEpochs = 10;
 			maxEpochs = 1000;
 		}

@@ -39,6 +39,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.pos.POSRecorder;
 import de.kp.works.text.util.Names;
 
@@ -63,13 +64,13 @@ public class DependencyParser extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new DependencyRecorder().read(context, config.modelName);
+		model = new DependencyRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Dependency Parser model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		perceptron = new POSRecorder().read(context, config.posName);
+		perceptron = new POSRecorder().read(context, config.posName, config.posStage);
 		if (perceptron == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech model with name '%s' does not exist.",
@@ -138,13 +139,18 @@ public class DependencyParser extends TextCompute {
 
 	}
 
-	public static class DependencyParserConfig extends BaseDependencyConfig {
+	public static class DependencyParserConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 4755283827244455912L;
 
 		@Description("The unique name of trained Part of Speech model.")
 		@Macro
 		public String posName;
+
+		@Description("The stage of the Part of Speech model. Supported values are 'experiment', "
+				+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+		@Macro
+		public String posStage;
 
 		@Description(Names.TEXT_COL)
 		@Macro
@@ -157,6 +163,13 @@ public class DependencyParser extends TextCompute {
 		@Description("The name of the field in the output schema that contains the word dependencies.")
 		@Macro
 		public String dependencyCol;
+		
+		public DependencyParserConfig() {
+			
+			modelStage = "experiment";
+			posStage = "experiment";
+			
+		}
 		
 		public void validate() {
 			super.validate();

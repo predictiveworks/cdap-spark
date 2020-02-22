@@ -16,10 +16,38 @@
           "label": "Model Name",
           "name": "modelName"
         },
-       {
+        {
+          "widget-type": "select",
+          "label": "Model Stage",
+          "name": "modelStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "stagging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
+        },
+        {
           "widget-type": "textbox",
           "label": "Part-of-Speech Name",
           "name": "posName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Part-of-Speech Stage",
+          "name": "posStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "stagging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
         },
         {
           "widget-type": "textbox",

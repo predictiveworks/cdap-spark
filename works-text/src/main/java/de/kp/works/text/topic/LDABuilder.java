@@ -91,7 +91,7 @@ public class LDABuilder extends TextSink {
 		 * Retrieve text analysis specified Word2Vec embedding model for 
 		 * later use in compute
 		 */
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -104,7 +104,7 @@ public class LDABuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		LDATrainer trainer = new LDATrainer(word2vec);
 		Dataset<Row> vectorset = trainer.vectorize(source, config.textCol, params);
@@ -143,10 +143,13 @@ public class LDABuilder extends TextSink {
 		 * STEP #3: Store trained LDA model including its associated
 		 * parameters and metrics
 		 */
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new LDARecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		String modelPack = "WorksText";
+		new LDARecorder().track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -185,6 +188,9 @@ public class LDABuilder extends TextSink {
 		public LDATextSinkConfig() {
 
 			dataSplit = "90:10";
+			modelStage = "experiment";
+			
+			embeddingStage = "experiment";
 			poolingStrategy = "average";
 
 			k = 10;

@@ -40,6 +40,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
+import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("POSBuilder")
@@ -73,16 +74,18 @@ public class POSBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		POSTrainer trainer = new POSTrainer();
 		PerceptronModel model = trainer.train(source, config.lineCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new POSRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new POSRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -102,7 +105,7 @@ public class POSBuilder extends TextSink {
 
 	}
 
-	public static class POSSinkConfig extends BasePOSConfig {
+	public static class POSSinkConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 5634430019806584847L;
 
@@ -119,6 +122,9 @@ public class POSBuilder extends TextSink {
 		public Integer maxIter;
 
 		public POSSinkConfig() {
+			
+			modelStage = "experiment";
+			
 			delimiter = "|";
 			maxIter = 5;
 		}
@@ -137,7 +143,7 @@ public class POSBuilder extends TextSink {
 
 			if (Strings.isNullOrEmpty(lineCol)) {
 				throw new IllegalArgumentException(String.format(
-						"[%s] The name of the field that contains the annotated sentences value must not be empty.",
+						"[%s] The name of the field that contains the annotated sentences must not be empty.",
 						this.getClass().getName()));
 			}
 

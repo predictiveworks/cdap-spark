@@ -1,4 +1,4 @@
-package de.kp.works.text.dep;
+package de.kp.works.text.config;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -24,13 +24,19 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
-public class BaseDependencyConfig extends BaseConfig {
+public class ModelConfig extends BaseConfig {
 
 	private static final long serialVersionUID = 4428302276174692140L;
 
-	@Description("The unique name of the Unlabeled Dependency Parser model.")
+	@Description("The unique name of the natural language model.")
 	@Macro
 	public String modelName;
+
+	@Description("The stage of the natural languge model. Supported values are 'experiment', "
+			+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Macro
+	public String modelStage;
+	
 	public void validate() {
 		super.validate();
 

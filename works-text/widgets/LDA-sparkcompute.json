@@ -16,10 +16,38 @@
           "label": "Model Name",
           "name": "modelName"
         },
-       {
+        {
+          "widget-type": "select",
+          "label": "Model Stage",
+          "name": "modelStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "stagging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
+        },
+        {
           "widget-type": "textbox",
           "label": "Embedding Name",
           "name": "embeddingName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Embedding Stage",
+          "name": "embeddingStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "stagging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
         },
         {
           "widget-type": "textbox",

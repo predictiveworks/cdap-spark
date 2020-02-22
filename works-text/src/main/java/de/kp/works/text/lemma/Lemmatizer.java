@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -66,7 +67,7 @@ public class Lemmatizer extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LemmatizerRecorder().read(context, config.modelName);
+		model = new LemmatizerRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Lemmatization model with name '%s' does not exist.",
@@ -141,7 +142,7 @@ public class Lemmatizer extends TextCompute {
 
 	}
 
-	public static class LemmatizerConfig extends BaseLemmaConfig {
+	public static class LemmatizerConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 2764272986545420558L;
 
@@ -152,6 +153,10 @@ public class Lemmatizer extends TextCompute {
 		@Description(Names.LEMMA_COL)
 		@Macro
 		public String lemmaCol;
+
+		public LemmatizerConfig() {
+			modelStage = "experiment";
+		}
 
 		public void validate() {
 			super.validate();

@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -60,7 +61,7 @@ public class POSTagger extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new POSRecorder().read(context, config.modelName);
+		model = new POSRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-ofSpeech analysis model with name '%s' does not exist.",
@@ -134,7 +135,7 @@ public class POSTagger extends TextCompute {
 
 	}
 
-	public static class POSTaggerConfig extends BasePOSConfig {
+	public static class POSTaggerConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 6046559336809356607L;
 
@@ -145,6 +146,10 @@ public class POSTagger extends TextCompute {
 		@Description("The name of the field in the output schema that contains the mixin of extracted tokens and predicted POS tags.")
 		@Macro
 		public String mixinCol;
+
+		public POSTaggerConfig() {
+			modelStage = "experiment";
+		}
 
 		public void validate() {
 			super.validate();

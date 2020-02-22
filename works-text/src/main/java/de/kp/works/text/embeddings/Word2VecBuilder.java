@@ -71,16 +71,18 @@ public class Word2VecBuilder extends TextSink {
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		Map<String, Object> params = config.getParamsAsMap();
-		String paramsJson = config.getParamsAsJSON();
+		String modelParams = config.getParamsAsJSON();
 		
 		Word2VecTrainer trainer = new Word2VecTrainer();
 		Word2VecModel model = trainer.train(source, config.textCol, params);
 
 		Map<String,Object> metrics = new HashMap<>();
-		String metricsJson = new Gson().toJson(metrics);
+		String modelMetrics = new Gson().toJson(metrics);
 
 		String modelName = config.modelName;
-		new Word2VecRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new Word2VecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 
@@ -130,6 +132,8 @@ public class Word2VecBuilder extends TextSink {
 		public Integer maxSentenceLength;
 	    
 		public Word2VecSinkConfig() {
+			
+			modelStage = "experiment";
 			
 			maxIter = 1;
 			stepSize = 0.025;

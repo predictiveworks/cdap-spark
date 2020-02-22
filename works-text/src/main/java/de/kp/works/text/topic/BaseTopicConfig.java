@@ -23,16 +23,12 @@ import com.google.common.base.Strings;
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 
-import de.kp.works.core.BaseConfig;
+import de.kp.works.text.config.ModelConfig;
 import de.kp.works.text.util.Names;
 
-public class BaseTopicConfig extends BaseConfig {
+public class BaseTopicConfig extends ModelConfig {
 
 	private static final long serialVersionUID = 1111955201802835050L;
-
-	@Description("The unique name of the Topic model.")
-	@Macro
-	public String modelName;
 
 	@Description(Names.TEXT_COL)
 	@Macro

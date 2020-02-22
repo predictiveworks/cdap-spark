@@ -18,35 +18,28 @@ package de.kp.works.text.pos;
  * 
  */
 
-import java.io.IOException;
 import java.util.Date;
 
 import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 
-import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.AbstractRecorder;
+
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.ml.TextRecorder;
 
-public class POSRecorder extends AbstractRecorder {
+public class POSRecorder extends TextRecorder {
 
-	private String ALGORITHM_NAME = "PartOfSpeech";
-
-	public PerceptronModel read(SparkExecutionPluginContext context, String modelName) throws Exception {
+	public PerceptronModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 		Table table = SparkMLManager.getTextTable(context);
 		
-		return read(fs, table, modelName);
+		String algorithmName = Algorithms.PART_OF_SPEECH;
 		
-	}
-
-	public PerceptronModel read(FileSet fs, Table table, String modelName) throws IOException {
-		
-		String fsPath = getModelFsPath(table, ALGORITHM_NAME, modelName);
+		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the PerceptronModel model
@@ -57,53 +50,35 @@ public class POSRecorder extends AbstractRecorder {
 		
 	}
 
-	public void track(SparkExecutionPluginContext context, String modelName, String modelParams, String modelMetrics,
+	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			PerceptronModel model) throws Exception {
+		
+		String algorithmName = Algorithms.PART_OF_SPEECH;
+
+		/***** ARTIFACTS *****/
+
+		Long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTextFS(context);
-		Table table = SparkMLManager.getTextTable(context);
-		
-		save(fs, table, modelName, modelParams, modelMetrics, model);
-		
-	}
 
-	private void save(FileSet fs, Table table, String modelName, String modelParams, String modelMetrics,
-			PerceptronModel model) throws IOException {
-
-		/***** MODEL COMPONENTS *****/
-
-		/*
-		 * Define the path of this model on CDAP's internal textanalysis fileset;
-		 * not, the timestamp within the path ensures that each model of the 
-		 * same name but different version has its own path
-		 */
-		Long ts = new Date().getTime();
-		String fsPath = ALGORITHM_NAME + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the Perceptron model
-		 * to a model specific file set
-		 */
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** MODEL METADATA *****/
+		/***** METADATA *****/
 
-		/*
-		 * Append model metadata to the metadata table associated with the
-		 * textanalysis fileset
-		 */
-		String fsName = SparkMLManager.TEXTANALYSIS_FS;
-		String modelVersion = getModelVersion(table, ALGORITHM_NAME, modelName);
+		String modelPack = "WorksText";
+		Table table = SparkMLManager.getTextTable(context);
 
-		byte[] key = Bytes.toBytes(ts);
-		table.put(new Put(key).add("timestamp", ts).add("name", modelName).add("version", modelVersion)
-				.add("algorithm", ALGORITHM_NAME).add("params", modelParams).add("metrics", modelMetrics)
-				.add("fsName", fsName).add("fsPath", fsPath));
-
+		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		
 	}
 
 	public Object getParam(Table table, String modelName, String paramName) {
-		return getModelParam(table, ALGORITHM_NAME, modelName, paramName);
+
+		String algorithmName = Algorithms.PART_OF_SPEECH;
+		return getModelParam(table, algorithmName, modelName, paramName);
+	
 	}
 
 }

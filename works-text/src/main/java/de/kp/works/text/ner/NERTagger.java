@@ -64,13 +64,14 @@ public class NERTagger extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new NERRecorder().read(context, config.modelName);
+		model = new NERRecorder().read(context, config.modelName, config.modelStage);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A NER (CRF) model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
+
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -161,6 +162,13 @@ public class NERTagger extends TextCompute {
 		@Macro
 		public String nerCol;
 
+		public NERTaggerConfig() {
+			
+			modelStage = "experiment";
+			embeddingStage = "experiment";
+
+		}
+		
 		public Boolean getNormalization() {
 			return (normalization.equals("true")) ? true : false;
 		}

@@ -39,6 +39,7 @@ import co.cask.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.text.TextSink;
+import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("SentimentBuilder")
@@ -95,11 +96,13 @@ public class SentimentBuilder extends TextSink {
 	    SAPredictor predictor = new SAPredictor(model);
 	    Dataset<Row> predictions = predictor.predict(testset, "_text", "predicted");
 	    
-	    String metricsJson = SAEvaluator.evaluate(predictions, "_label", "predicted");    
-		String paramsJson = config.getParamsAsJSON();
+	    String modelMetrics = SAEvaluator.evaluate(predictions, "_label", "predicted");    
+		String modelParams = config.getParamsAsJSON();
 
 		String modelName = config.modelName;
-		new SentimentRecorder().track(context, modelName, paramsJson, metricsJson, model);
+		String modelStage = config.modelStage;
+		
+		new SentimentRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 	
@@ -118,7 +121,7 @@ public class SentimentBuilder extends TextSink {
 
 	}
 
-	public static class SentimentSinkConfig extends BaseSentimentConfig {
+	public static class SentimentSinkConfig extends ModelConfig {
 
 		private static final long serialVersionUID = 7018920867242125687L;
 
@@ -135,7 +138,10 @@ public class SentimentBuilder extends TextSink {
 		public String dataSplit;
 
 		public SentimentSinkConfig() {
+			
 			dataSplit = "70:30";
+			modelStage = "experiment";
+			
 			sentimentDelimiter = "->";
 		}
 
