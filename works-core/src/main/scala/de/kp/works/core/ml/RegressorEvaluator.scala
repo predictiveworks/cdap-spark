@@ -40,7 +40,7 @@ object RegressorEvaluator {
    * - r^2 metric (r2)
    */
   def evaluate(predictions: Dataset[Row], labelCol: String, predictionCol: String): String = {
-
+   
     val metrics = new JHashMap[String, Object]()
 
     evaluator.setLabelCol(labelCol);
