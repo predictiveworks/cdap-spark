@@ -20,8 +20,8 @@ techniques to transform sparse time series data to a series of values uniformly 
 in time. This includes: 
 * Aggregation, 
 * Auto Correlation
-* Interpolation to fill missing
-* Resampling, interpolation to fill missing values and more.
+* Interpolation
+* Resampling
 
 ### Decomposition
 Time series data often carry seasonality pattern and trends and are non-stationary. Differencing
