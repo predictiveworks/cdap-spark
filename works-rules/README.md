@@ -15,4 +15,4 @@ standardized pipeline plugin to apply declarative sets of business rules to deri
 This plugin can be seamless combined with any other of the 200+ code-free plugins.
 
 ## Integration
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-rules/images/works-rules.svg" width="95%" alt="Works Rules">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-rules/images/works-rules.png" width="95%" alt="Works Rules">
