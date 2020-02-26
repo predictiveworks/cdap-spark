@@ -34,4 +34,4 @@ Visual Analytics is supported by the following modules:
 
 ## Background
 
-Interested into more detailed information? [Read here](https://predictiveworks.github.io)
+Interested in more detailed information? [Read here](https://predictiveworks.github.io)
