@@ -1,8 +1,7 @@
 # Works DL
 
-The foundation of Predictive<span class="brand-teal">Works.</span> deep learning support is Intel's
-<a href="https://github.com/intel-analytics/BigDL/">BigDL</a> library. The scope of this library was
-standardized as plugins for Google CDAP data pipelines.
+The foundation of PredictiveWorks. deep learning support is Intel's <a href="https://github.com/intel-analytics/BigDL/">BigDL</a> 
+library. The scope of this library was standardized as plugins for Google CDAP data pipelines.
 
 As a result, deep learning pipeline plugins can be seamlessly combined with all other plugins of **CDAP-Connect** 
 and **CDAP-Spark**.

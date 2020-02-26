@@ -1,95 +1,115 @@
-<p align="center">
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-ml.svg" width="360" alt="Works ML"> 
-</p>
+# Works ML
+PredictiveWorks. externalizes <a href="https://spark.apache.org">Apache Spark ML</a> machine learning
+as standardized plugins, with the ability of seamless combination with any other plugin.
 
-# 
-This project aims to implement the vision of **Visual ML** - Code-free orchestration of data pipelines (or workflow) to respond to machine learning use cases.
+Feature engineering, classification, regression and more can be used via point-and-click selection
+as pipeline components. The focus is on Apache Spark ML v2.1.3 to be compliant with Google CDAP's pipeline
+technology.
 
-**Works ML** integrates [Apache Spark MLlib](https://spark.apache.org/) machine learning library with [Google CDAP](https://cdap.io) and offers approved ML features as plugins for CDAP data pipelines.
+The following machine learning tasks are supported by Works ML plugins:
 
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-ml.png" width="800" alt="Works ML">
+# ML Tasks
 
-The following ML features are supported:
+## Classification
+The classification scope of Apache Spark ML is externalized as standardized model building and
+prediction plugins that share the same technology.
 
-## Feature Engineering
-
-### Conversion
-
-* Binarizer
-* Discrete Cosine
-* Index-to-String
-* Normalizer
-* One Hot Encoder
-* Quantile Discretizer
-* String-to-Index 
-* Vector Assembler
-* Vector Indexer
-
-### Scaling
-
-* Max-Abs Scaler
-* Min-Max Scaler 
-* Standard Scaler 
-
-### Selection
-
-* Chi-Squared Selector  
-
-## Text Processing
-
-* Count Vectorizer
-* Hashing TF
-* Regex Tokenizer
-* TF-IDF
-* Word2Vec
-
-## Machine Learning
-
-### Classification
-
+Trained and retrained classification models are immediately available for production pipelines.
+Supported models & predictions:
 * Decision Tree
-* Gradient-Boosted Trees
+* Gradient-Boosted Tree
 * Logistic Regression
-* Multilayer Perceptron
+* Multi-Layer Perceptron
 * Naive Bayes
 * Random Forest
 
-### Clustering
+## Clustering
+The clustering scope of Apache Spark ML is externalized as standardized model building and
+prediction plugins that share the same technology.
 
+Trained and retrained clustering models are immediately available for production pipelines.
+Supported models & predictions:
 * Bisecting K-Means
 * Gaussian Mixture
 * K-Means
-* LDA
+* Latent Dirichlet Allocation
 
-### Dimensionality Reduction
+## Data Mining
+The data mining scope of Apache Spark ML is externalized as standardized plugin
+components. Supported mining tasks:
+* Frequent Pattern (FP-Growth)
 
-* PCA
+## Feature Engineering
+The feature engineering scope of Apache Spark ML is externalized as standardized
+pipeline plugins that can be seamlessly combined with model building and prediction
+plugins to cover all facets of a machine learning process.
 
-### Recommendation
+PredictiveWorks. complements Apache Spark ML with
+a pipeline plugin for <b>SMOTE Sampling</b> to master imbalanced training sets for
+ML classification tasks. Supported feature engineering tasks:
+* Binarizer
+* Bucketed LSH
+* Bucketizer
+* Chi-Squared Selector
+* Count Vectorizer
+* Discrete Cosine Transformation (DCT)
+* Hashing TF
+* Index to String
+* Min-Hash LSH
+* N-Gram Tokenizer
+* Normalizer
+* One-Hot Encoder
+* Principal Component Analysis (PCA)
+* Quantile Discretizer
+* Scaling
+* SMOTE Sampling
+* String to Index
+* TF-IDF
+* Tokenizer
+* Vector Assembler
+* Vector Indexer
+* Word-to-Vec Embeddings
 
-* ALS
-* SAR
+## Recommendation
+The recommendation scope of Apache Spark ML is externalized as standardized
+model building and prediction plugins that share the same technology.
 
-### Regression
+Trained and retrained recommendation models are immediately available for production pipelines.
+Supported models & predictions:
+* Collaborative Filtering (ALS)
+* Smart Adaptive Recommendations (SAR)
 
-* AFT Survival
+## Regression
+The regression scope of Apache Spark ML is externalized as standardized model building and
+prediction plugins that share the same technology.
+
+Trained and retrained regression models are immediately available for production pipelines.
+Supported models & predictions:
 * Decision Tree
+* Gradient-Boosted Tree
 * Generalized Linear Regression
-* Gradient-Boosted Trees
 * Isotonic Regression
 * Linear Regression
 * Random Forest
+* Survival (AFT)
 
-## Model Tracking
+## SMOTE Sampling
+In machine learning, *imbalanced* datasets are no surprise. If the datasets intended for classification problems
+or other problems related to discrete predictive analytics have an unequal number of samples for different classes,
+then those datasets are said to be imbalanced.
 
-**Model Tracking:** Works ML uses Google CDAP *datasets* to support storing & retrieving of model components and associated metadata such as chosen parameters and model metrics and more. 
+Classes having comparatively fewer instances than others are said to be a minority with respect to the classes having
+a comparatively larger number of the samples (majority). Training ML models with imbalanced datasets often causes the
+models to develop a certain bias towards the majority classes.
 
+The SMOTE algorithm, short for Synthetic Minority Over-sampling Technique, addresses this issue imbalanced classes.
+It is based on nearest neighbors (determined by the Euclidean distance of data points in the feature space).
 
-## Why not use Seahorse Visual Spark?
+The feature values of nearest neighbor samples are used to interpolate synthetic feature values to retrieve a certain
+predefined percentage of additional synthetic samples (over-sampling).cApplying this algorithm to the samples of the
+training datasets that belong to the minority classes finally ends up with a more balanced training set and the removal
+of the model bias.
 
-[Seahorse](https://seahorse.deepsense.ai) is built by [deepsense.ai](https://deepsense.ai) with the aim to create [Apache Spark](https://spark.apache.org) applications in a fast, simple and interactive way - based on a visual editor.
+# Integration
 
->Seahorse is an excellent approach towards **Visual ML**, but it is *limited* to Apache Spark based machine learning. 
-
-**Works ML** is more: It is a member of a family of projects that support **Visual Analytics** based on a standardized plugin approach, from deep learning and machine learning to business rules, SQL queries up to time series analysis and natural language processing.
-
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-ml.svg" width="95%" alt="Works ML">
