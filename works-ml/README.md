@@ -1,4 +1,6 @@
 # Works ML
+
+## Overview
 PredictiveWorks. externalizes <a href="https://spark.apache.org">Apache Spark ML</a> machine learning
 as standardized plugins, with the ability of seamless combination with any other plugin.
 
@@ -8,9 +10,9 @@ technology.
 
 The following machine learning tasks are supported by Works ML plugins:
 
-# ML Tasks
+## ML Tasks
 
-## Classification
+### Classification
 The classification scope of Apache Spark ML is externalized as standardized model building and
 prediction plugins that share the same technology.
 
@@ -23,7 +25,7 @@ Supported models & predictions:
 * Naive Bayes
 * Random Forest
 
-## Clustering
+### Clustering
 The clustering scope of Apache Spark ML is externalized as standardized model building and
 prediction plugins that share the same technology.
 
@@ -34,12 +36,12 @@ Supported models & predictions:
 * K-Means
 * Latent Dirichlet Allocation
 
-## Data Mining
+### Data Mining
 The data mining scope of Apache Spark ML is externalized as standardized plugin
 components. Supported mining tasks:
 * Frequent Pattern (FP-Growth)
 
-## Feature Engineering
+### Feature Engineering
 The feature engineering scope of Apache Spark ML is externalized as standardized
 pipeline plugins that can be seamlessly combined with model building and prediction
 plugins to cover all facets of a machine learning process.
@@ -70,7 +72,7 @@ ML classification tasks. Supported feature engineering tasks:
 * Vector Indexer
 * Word-to-Vec Embeddings
 
-## Recommendation
+### Recommendation
 The recommendation scope of Apache Spark ML is externalized as standardized
 model building and prediction plugins that share the same technology.
 
@@ -79,7 +81,7 @@ Supported models & predictions:
 * Collaborative Filtering (ALS)
 * Smart Adaptive Recommendations (SAR)
 
-## Regression
+### Regression
 The regression scope of Apache Spark ML is externalized as standardized model building and
 prediction plugins that share the same technology.
 
@@ -93,7 +95,7 @@ Supported models & predictions:
 * Random Forest
 * Survival (AFT)
 
-## SMOTE Sampling
+### SMOTE Sampling
 In machine learning, *imbalanced* datasets are no surprise. If the datasets intended for classification problems
 or other problems related to discrete predictive analytics have an unequal number of samples for different classes,
 then those datasets are said to be imbalanced.
@@ -110,6 +112,6 @@ predefined percentage of additional synthetic samples (over-sampling).cApplying 
 training datasets that belong to the minority classes finally ends up with a more balanced training set and the removal
 of the model bias.
 
-# Integration
+## Integration
 
 <img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-ml/images/works-ml.svg" width="95%" alt="Works ML">
