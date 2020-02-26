@@ -1,14 +1,13 @@
-<p align="center">
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/images/works-dl.svg" width="360" alt="Works DL"> 
-</p>
+# Works DL
 
-# 
-This project aims to implement the vision of **Visual DL** - Code-free orchestration of data pipelines (or workflow) to respond to deep learning use cases.
+The foundation of Predictive<span class="brand-teal">Works.</span> deep learning support is Intel's
+<a href="https://github.com/intel-analytics/BigDL/">BigDL</a> library. The scope of this library was
+standardized as plugins for Google CDAP data pipelines.
 
->Do not reinvent the wheel again
+As a result, deep learning pipeline plugins can be seamlessly combined with all other plugins of **CDAP-Connect** 
+and **CDAP-Spark**.
 
-**Works DL** is based on Intel's [Analytics Zoo](https://github.com/intel-analytics/analytics-zoo) and makes distributed deep learning available as [CDAP](https://cdap.io) data pipeline plugins. It leverages Apache Spark DataFrame & ML Pipeline support that ships with BigDL v0.10.0 for integration purposes.
+The current version of <b>Works DL</b> is actually part of the commercial portfolio of Dr. Krusche & Partner.
+It is planned to open-source this library until mids of 2020.
 
-Model building and prediction stages can be mixed with other plugins from **CDAP-Spark** plugin foundation.
-
-<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-dl/images/works-dl.png" width="800" alt="Works DL">
+<img src="https://github.com/predictiveworks/cdap-spark/blob/master/works-dl/images/works-dl.svg" width="95%" alt="Works DL">
