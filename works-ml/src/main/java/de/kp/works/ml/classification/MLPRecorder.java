@@ -32,14 +32,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class MLPRecorder extends ClassifierRecorder {
 
-	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
 
 		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
+		
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

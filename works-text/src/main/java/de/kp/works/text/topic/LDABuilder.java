@@ -89,9 +89,10 @@ public class LDABuilder extends TextSink {
 		SparkMLManager.createClusteringIfNotExists(context);
 		/*
 		 * Retrieve text analysis specified Word2Vec embedding model for 
-		 * later use in compute
+		 * later use in compute, Word2Vec model do not have any metrics, 
+		 * i.e. there is no model option: always the latest model is used
 		 */
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

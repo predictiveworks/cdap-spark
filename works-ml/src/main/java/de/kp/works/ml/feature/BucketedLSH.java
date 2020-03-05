@@ -61,7 +61,11 @@ public class BucketedLSH extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new BucketedLSHRecorder().read(context, config.modelName, config.modelStage);
+		/*
+		 * Bucketed LSH models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		model = new BucketedLSHRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

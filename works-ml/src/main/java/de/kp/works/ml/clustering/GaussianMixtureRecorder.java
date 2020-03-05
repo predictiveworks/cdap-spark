@@ -31,14 +31,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class GaussianMixtureRecorder extends ClusterRecorder {
 
-	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringTable(context);
 
 		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
+		
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

@@ -32,15 +32,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class DTCRecorder extends ClassifierRecorder {
 
-	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		Table table = SparkMLManager.getClassificationTable(context);
 		
 		String algorithmName = Algorithms.DECISION_TREE;
 		
-		/* Get the latest fileset path */
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model

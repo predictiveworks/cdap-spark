@@ -31,14 +31,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class MinHashLSHRecorder extends FeatureRecorder {
 
-	public MinHashLSHModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public MinHashLSHModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 
 		String algorithmName = Algorithms.MIN_HASH_LSH;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinHashLSH model

@@ -23,20 +23,34 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.model.ModelScanner;
 import de.kp.works.ts.AutoCorrelationModel;
 
 public class ACFRecorder extends AbstractRecorder {
 
 	/** AUTOCORRELATION FUNCTION **/
 
-	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.ACF;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoCorrelation model
@@ -71,11 +85,18 @@ public class ACFRecorder extends AbstractRecorder {
 
 	}
 
+	private String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+		
+		ModelScanner scanner = new ModelScanner();
+		return scanner.bestTime(table, algorithmName, modelName, modelStage);
+
+	}
+
 	private void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.TIMESERIES_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
+		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

@@ -64,13 +64,21 @@ public class NERTagger extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new NERRecorder().read(context, config.modelName, config.modelStage);
+		/*
+		 * Named Entity models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		model = new NERRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A NER (CRF) model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
+		/*
+		 * Word2Vec models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
 
 		if (word2vec == null)
 			throw new IllegalArgumentException(

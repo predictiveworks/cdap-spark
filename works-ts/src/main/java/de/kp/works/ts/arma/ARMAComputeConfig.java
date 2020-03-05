@@ -20,10 +20,15 @@ package de.kp.works.ts.arma;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.Params;
 
 public class ARMAComputeConfig extends ARMAConfig {
 
 	private static final long serialVersionUID = 1480887003709020169L;
+
+	@Description(Params.MODEL_OPTION)
+	@Macro
+	public String modelOption;
 
 	@Description("The positive number of discrete time steps to look ahead. Default is 1.")
 	@Macro

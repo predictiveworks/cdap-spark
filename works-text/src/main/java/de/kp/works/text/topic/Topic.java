@@ -33,6 +33,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.Params;
 import de.kp.works.core.text.TextCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -54,7 +55,7 @@ public class Topic extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new TopicRecorder().read(context, config.modelName, config.modelStage);
+		model = new TopicRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Topic model with name '%s' does not exist.",
@@ -145,6 +146,10 @@ public class Topic extends TextCompute {
 	public static class TopicConfig extends BaseTopicConfig {
 
 		private static final long serialVersionUID = 5771186427389043634L;
+
+		@Description(Params.MODEL_OPTION)
+		@Macro
+		public String modelOption;
 		
 		@Description("The indicator to determine whether to retrieve document-topic or topic-term description. "
 				+ "Supported values are 'document-topic' and 'topic-term'. Default is 'document-topic'.")
@@ -152,8 +157,12 @@ public class Topic extends TextCompute {
 		public String topicStrategy;
 		
 		public TopicConfig() {
+			
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+			
 			topicStrategy = "document-topic";
+			
 		}
 		
 	}

@@ -38,6 +38,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.Params;
 import de.kp.works.core.cluster.LDARecorder;
 import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.embeddings.Word2VecRecorder;
@@ -64,13 +65,17 @@ public class LDA extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LDARecorder().read(context, config.modelName, config.modelStage);
+		model = new LDARecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An LDA model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage);
+		/*
+		 * Word2Vec models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -162,6 +167,10 @@ public class LDA extends TextCompute {
 	public static class LDAConfig extends LDATextConfig {
 
 		private static final long serialVersionUID = 3012205481027114331L;
+
+		@Description(Params.MODEL_OPTION)
+		@Macro
+		public String modelOption;
 		
 		@Description("The indicator to determine whether the trained LDA model is used to predict a topic label or vector. "
 				+ "Supported values are 'label' & 'vector'. Default is 'vector'.")
@@ -183,7 +192,9 @@ public class LDA extends TextCompute {
 		
 		public LDAConfig() {
 			
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+
 			embeddingStage = "experiment";
 			
 			poolingStrategy = "average";

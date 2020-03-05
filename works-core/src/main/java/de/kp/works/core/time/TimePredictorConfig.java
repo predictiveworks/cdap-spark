@@ -22,6 +22,7 @@ import com.google.common.base.Strings;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.Params;
 
 public class TimePredictorConfig extends TimeConfig {
 
@@ -35,11 +36,16 @@ public class TimePredictorConfig extends TimeConfig {
 	@Macro
 	public String modelStage;
 
+	@Description(Params.MODEL_OPTION)
+	@Macro
+	public String modelOption;
+
 	@Description("The name of the field in the output schema that contains the predicted value.")
 	@Macro
 	public String predictionCol;
 	
 	public TimePredictorConfig() {
+		modelOption = BEST_MODEL;
 		modelStage = "experiment";
 	}
 	

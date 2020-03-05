@@ -132,16 +132,16 @@ public class BucketedLSHBuilder extends FeatureSink {
 				+ "Higher values for this parameter lead to a reduced false negative rate, at the expense of added computational complexity. Default is 1.")
 		@Macro
 		public Integer numHashTables;
-		
-		public BucketedLSHBuilderConfig() {
-			modelStage = "experiment";
-			numHashTables = 1;
-		}
 
 		@Description("The length of each hash bucket, a larger bucket lowers the false negative rate. The number of buckets will be "
 				+ "'(max L2 norm of input vectors) / bucketLength'.")
 		@Macro
 		public Double bucketLength;
+		
+		public BucketedLSHBuilderConfig() {
+			modelStage = "experiment";
+			numHashTables = 1;
+		}
 		
 		@Override
 		public Map<String, Object> getParamsAsMap() {

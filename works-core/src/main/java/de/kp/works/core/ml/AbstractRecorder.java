@@ -100,7 +100,7 @@ public class AbstractRecorder {
 		
 	}
 
-	public String getModelVersion(Table table, String algorithmName, String modelName, String modelStage) {
+	public String getLatestModelVersion(Table table, String algorithmName, String modelName, String modelStage) {
 
 		String strVersion = null;
 
@@ -139,7 +139,7 @@ public class AbstractRecorder {
 
 	}
 
-	public String getModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+	public String getLatestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
 
 		String fsPath = null;
 

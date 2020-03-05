@@ -52,7 +52,7 @@ public class TsAR extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readAR(context, config.modelName, config.modelStage);
+		model = new ARRecorder().readAR(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An AutoRegression model with name '%s' does not exist.",
@@ -105,8 +105,12 @@ public class TsAR extends ARCompute {
 		private static final long serialVersionUID = 7633572327423290491L;
 
 		public TsARConfig() {
+
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+			
 			steps = 1;
+
 		}
 
 		public void validate() {

@@ -36,6 +36,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.Params;
 import de.kp.works.core.recommender.RecommenderCompute;
 import de.kp.works.ml.recommendation.ALSConfig;
 import de.kp.works.ml.recommendation.ALSRecorder;
@@ -58,7 +59,7 @@ public class ALSPredictor extends RecommenderCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((ALSConfig) config).validate();
 
-		model = new ALSRecorder().read(context, config.modelName, config.modelStage);
+		model = new ALSRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A recommendation model with name '%s' does not exist.",
@@ -153,6 +154,14 @@ public class ALSPredictor extends RecommenderCompute {
 		@Macro
 		public String predictionCol;
 
+		@Description(Params.MODEL_OPTION)
+		@Macro
+		public String modelOption;
+		
+		public ALSPredictorConfig() {
+			modelOption = BEST_MODEL;
+		}
+		
 		public void validate() {
 			super.validate();
 

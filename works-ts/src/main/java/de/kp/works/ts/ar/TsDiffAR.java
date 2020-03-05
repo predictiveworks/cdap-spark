@@ -50,7 +50,7 @@ public class TsDiffAR extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readDiffAR(context, config.modelName, config.modelStage);
+		model = new ARRecorder().readDiffAR(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Differencing AutoRegression model with name '%s' does not exist.",
@@ -103,8 +103,12 @@ public class TsDiffAR extends ARCompute {
 		private static final long serialVersionUID = -8352931460177951709L;
 
 		public TsDiffARConfig() {
+
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+			
 			steps = 1;
+			
 		}
 
 		public void validate() {

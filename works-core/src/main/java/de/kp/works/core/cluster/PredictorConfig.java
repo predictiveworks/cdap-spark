@@ -6,6 +6,7 @@ import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
 import co.cask.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseConfig;
+import de.kp.works.core.Params;
 import de.kp.works.core.SchemaUtil;
 
 public class PredictorConfig extends BaseConfig {
@@ -20,6 +21,10 @@ public class PredictorConfig extends BaseConfig {
 	@Macro
 	public String modelStage;
 
+	@Description(Params.MODEL_OPTION)
+	@Macro
+	public String modelOption;
+
 	@Description("The name of the field in the input schema that contains the feature vector.")
 	@Macro
 	public String featuresCol;
@@ -29,6 +34,7 @@ public class PredictorConfig extends BaseConfig {
 	public String predictionCol;
 
 	public PredictorConfig() {
+		modelOption = BEST_MODEL;
 		modelStage = "experiment";
 	}
 

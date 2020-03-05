@@ -53,7 +53,7 @@ public class IsotonicPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		regressor = new IsotonicRecorder().read(context, config.modelName, config.modelStage);
+		regressor = new IsotonicRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (regressor == null)
 			throw new IllegalArgumentException(String.format("[%s] A regressor model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

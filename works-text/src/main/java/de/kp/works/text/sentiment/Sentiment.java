@@ -36,7 +36,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-
+import de.kp.works.core.Params;
 import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.config.ModelConfig;
 
@@ -59,7 +59,7 @@ public class Sentiment extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((SentimentConfig) config).validate();
 
-		model = new SentimentRecorder().read(context, config.modelName, config.modelStage);
+		model = new SentimentRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A sentiment analysis model with name '%s' does not exist.",
@@ -138,6 +138,10 @@ public class Sentiment extends TextCompute {
 
 		private static final long serialVersionUID = -7796809782922479970L;
 
+		@Description(Params.MODEL_OPTION)
+		@Macro
+		public String modelOption;
+
 		@Description("The name of the field in the input schema that contains the document.")
 		@Macro
 		public String textCol;
@@ -147,6 +151,7 @@ public class Sentiment extends TextCompute {
 		public String predictionCol;
 
 		public SentimentConfig() {
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
 		}
 		public void validate() {

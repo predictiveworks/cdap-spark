@@ -50,7 +50,7 @@
       "properties": [
         {
           "widget-type": "textbox",
-          "label": "Topics",
+          "label": "Clusters",
           "name": "k"
         },
 

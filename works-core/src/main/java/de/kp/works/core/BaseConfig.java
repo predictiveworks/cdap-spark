@@ -36,6 +36,9 @@ public class BaseConfig extends PluginConfig {
 
 	private static final long serialVersionUID = 1290979476413023858L;
 
+	protected static final String BEST_MODEL = "best";
+	protected static final String LATEST_MODEL = "latest";
+
 	@Name(Constants.Reference.REFERENCE_NAME)
 	@Description(Constants.Reference.REFERENCE_NAME_DESCRIPTION)
 	public String referenceName;

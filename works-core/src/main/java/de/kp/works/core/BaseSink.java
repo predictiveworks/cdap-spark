@@ -35,6 +35,9 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 	protected Schema inputSchema;
 	protected Schema outputSchema;
 
+	protected String BEST_MODEL = "best";
+	protected String LATEST_MODEL = "latest";
+
 	public void validateSchema(Schema inputSchema) {
 	}
 

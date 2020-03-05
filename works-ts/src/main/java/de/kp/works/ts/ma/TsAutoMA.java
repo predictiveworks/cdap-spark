@@ -50,7 +50,7 @@ public class TsAutoMA extends MACompute {
 		
 		config.validate();
 
-		model = new MARecorder().readAutoMA(context, config.modelName, config.modelStage);
+		model = new MARecorder().readAutoMA(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An Auto Moving Average model with name '%s' does not exist.",
@@ -103,8 +103,12 @@ public class TsAutoMA extends MACompute {
 		private static final long serialVersionUID = 2817976143588383896L;
 
 		public TsAutoMAConfig() {
+			
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+			
 			steps = 1;
+			
 		}
 		public void validate() {
 			super.validate();

@@ -53,7 +53,7 @@ public class LRPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 		
-		model = new LRRecorder().read(context, config.modelName, config.modelStage);
+		model = new LRRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

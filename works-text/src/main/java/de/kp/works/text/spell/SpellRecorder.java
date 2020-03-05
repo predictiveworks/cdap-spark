@@ -32,14 +32,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class SpellRecorder extends TextRecorder {
 
-	public NorvigSweetingModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public NorvigSweetingModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 		Table table = SparkMLManager.getTextTable(context);
 		
 		String algorithmName = Algorithms.NORVIG;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the NorvigSweeting model

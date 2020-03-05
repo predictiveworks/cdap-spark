@@ -52,7 +52,7 @@ public class TsARIMA extends ARIMACompute {
 		
 		config.validate();
 
-		model = new ARIMARecorder().readARIMA(context, config.modelName, config.modelStage);
+		model = new ARIMARecorder().readARIMA(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An ARIMA model with name '%s' does not exist.",
@@ -105,8 +105,12 @@ public class TsARIMA extends ARIMACompute {
 		private static final long serialVersionUID = -4483518955647431101L;
 
 		public TsARIMAConfig() {
+			
+			modelOption = BEST_MODEL;
 			modelStage = "experiment";
+			
 			steps = 1;
+			
 		}
 
 		public void validate() {

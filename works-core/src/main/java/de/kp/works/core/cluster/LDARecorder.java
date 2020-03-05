@@ -34,14 +34,27 @@ import de.kp.works.core.ml.SparkMLManager;
  */
 public class LDARecorder extends ClusterRecorder {
 
-	public LDAModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public LDAModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getClusteringFS(context);
 		Table table = SparkMLManager.getClusteringTable(context);
 
 		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+		
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*

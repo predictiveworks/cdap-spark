@@ -32,14 +32,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class IsotonicRecorder extends RegressorRecorder {
 
-	public IsotonicRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public IsotonicRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
 		Table table = SparkMLManager.getRegressionTable(context);
 		
 		String algorithmName = Algorithms.ISOTONIC_REGRESSION;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the IsotonicRegression model

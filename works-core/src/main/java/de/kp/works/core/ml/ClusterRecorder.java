@@ -22,17 +22,25 @@ import com.google.gson.reflect.TypeToken;
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.model.ModelScanner;
 
 public class ClusterRecorder extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
+	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+		
+		ModelScanner scanner = new ModelScanner();
+		return scanner.bestCluster(table, algorithmName, modelName, modelStage);
+
+	}
+
 	protected void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.CLUSTERING_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
+		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

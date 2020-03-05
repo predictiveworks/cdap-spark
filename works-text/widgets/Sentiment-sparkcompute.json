@@ -26,6 +26,18 @@
           }
         },
         {
+          "widget-type": "select",
+          "label": "Model Variant",
+          "name": "modelOption",
+          "widget-attributes": {
+            "values": [
+              "best",
+              "latest"
+            ],
+            "default": "latest"
+          }
+        },
+        {
           "widget-type": "textbox",
           "label": "Model Name",
           "name": "modelName"

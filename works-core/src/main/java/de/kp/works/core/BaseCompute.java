@@ -41,6 +41,9 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	protected Schema inputSchema;
 	protected Schema outputSchema;
 
+	protected static final String BEST_MODEL = "best";
+	protected static final String LATEST_MODEL = "latest";
+	
 	public BaseCompute() {
 	}
 

@@ -20,10 +20,15 @@ package de.kp.works.ts.arima;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.Params;
 
 public class ARIMAComputeConfig extends ARIMAConfig {
 
 	private static final long serialVersionUID = 8844644617570325922L;
+
+	@Description(Params.MODEL_OPTION)
+	@Macro
+	public String modelOption;
 
 	@Description("The positive number of discrete time steps to look ahead. Default is 1.")
 	@Macro

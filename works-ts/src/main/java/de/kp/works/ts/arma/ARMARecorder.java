@@ -33,14 +33,27 @@ public class ARMARecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.ARMA;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARMA model
@@ -51,14 +64,27 @@ public class ARMARecorder extends TimeRecorder {
 		
 	}
 	
-	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.AUTO_ARMA;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoARMA model

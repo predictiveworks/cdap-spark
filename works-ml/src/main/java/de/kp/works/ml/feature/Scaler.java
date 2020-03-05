@@ -66,24 +66,27 @@ public class Scaler extends FeatureCompute {
 
 		ScalerRecorder manager = new ScalerRecorder();
 		String modelType = config.modelType;
-
+		/*
+		 * Scaler models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
 		if (modelType.equals("maxabs")) {
 
-			maxAbsModel = manager.readMaxAbsScaler(context, config.modelName, config.modelStage);
+			maxAbsModel = manager.readMaxAbsScaler(context, config.modelName, config.modelStage, LATEST_MODEL);
 			if (maxAbsModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 		
 		} else if (modelType.equals("minmax")) {
 
-			minMaxModel = manager.readMinMaxScaler(context, config.modelName, config.modelStage);
+			minMaxModel = manager.readMinMaxScaler(context, config.modelName, config.modelStage, LATEST_MODEL);
 			if (minMaxModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));
 					
 		} else {
 
-			standardModel = manager.readStandardScaler(context, config.modelName, config.modelStage);
+			standardModel = manager.readStandardScaler(context, config.modelName, config.modelStage, LATEST_MODEL);
 			if (standardModel == null)
 				throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 						this.getClass().getName(), config.modelName));

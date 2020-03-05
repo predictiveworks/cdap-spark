@@ -20,10 +20,15 @@ package de.kp.works.ts.ma;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Macro;
+import de.kp.works.core.Params;
 
 public class MAComputeConfig extends MAConfig {
 
 	private static final long serialVersionUID = -5338587757903361929L;
+
+	@Description(Params.MODEL_OPTION)
+	@Macro
+	public String modelOption;
 
 	@Description("The positive number of discrete time steps to look ahead. Default is 1.")
 	@Macro

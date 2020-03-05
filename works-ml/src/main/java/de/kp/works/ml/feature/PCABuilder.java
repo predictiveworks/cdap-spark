@@ -118,7 +118,7 @@ public class PCABuilder extends FeatureSink {
 		
 		@Description("The positive number of principle components.")
 		@Macro
-		public Integer k;
+		public Integer numComp;
 
 		public PCABuilderConfig() {
 			modelStage = "experiment";
@@ -127,7 +127,7 @@ public class PCABuilder extends FeatureSink {
 		public Map<String, Object> getParamsAsMap() {
 
 			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("k", k);
+			params.put("numComp", numComp);
 
 			return params;
 
@@ -136,7 +136,7 @@ public class PCABuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 
-			if (k < 1) {
+			if (numComp < 1) {
 				throw new IllegalArgumentException(String.format("[%s] The number of principal components must be greater than 0.",
 						this.getClass().getName()));
 			}

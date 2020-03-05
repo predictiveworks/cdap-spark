@@ -33,14 +33,27 @@ public class ARIMARecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.ARIMA;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARIMA model
@@ -51,14 +64,27 @@ public class ARIMARecorder extends TimeRecorder {
 		
 	}
 	
-	public AutoARIMAModel readAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public AutoARIMAModel readAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.AUTO_ARIMA;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoARIMA model

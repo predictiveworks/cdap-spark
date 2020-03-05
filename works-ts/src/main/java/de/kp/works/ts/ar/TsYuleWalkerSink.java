@@ -109,6 +109,13 @@ public class TsYuleWalkerSink extends ARSink {
 	}
 
 	public static class TsYuleWalkerSinkConfig extends ARConfig {
+		/*
+		 * Consistency hint: YuleWalker does not use the common
+		 * AR parameters:
+		 * 
+		 * fitIntercept, standardization, elasticNetParam and
+		 * regParam
+		 */
 
 		private static final long serialVersionUID = 8806382396675615715L;
 

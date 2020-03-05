@@ -31,14 +31,27 @@ import de.kp.works.core.ml.SparkMLManager;
 
 public class W2VecRecorder extends FeatureRecorder {
 
-	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.WORD2VEC;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model

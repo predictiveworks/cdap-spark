@@ -43,14 +43,27 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** MIN MAX **/
 
-	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.MIN_MAX_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -87,14 +100,27 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** MAX ABS **/
 
-	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 		
 		String algorithmName = Algorithms.MAX_ABS_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -131,14 +157,27 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	/** STANDARD **/
 
-	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 		Table table = SparkMLManager.getFeatureTable(context);
 
 		String algorithmName = Algorithms.STANDARD_SCALER;
 		
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
 		if (fsPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Standard Scaler model

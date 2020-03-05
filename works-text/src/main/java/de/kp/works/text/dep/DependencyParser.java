@@ -63,14 +63,21 @@ public class DependencyParser extends TextCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
-
-		model = new DependencyRecorder().read(context, config.modelName, config.modelStage);
+		/*
+		 * Dependency parser models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		model = new DependencyRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Dependency Parser model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		perceptron = new POSRecorder().read(context, config.posName, config.posStage);
+		/*
+		 * Part-of-Speech models do not have any metrics, i.e. there
+		 * is no model option: always the latest model is used
+		 */
+		perceptron = new POSRecorder().read(context, config.posName, config.posStage, LATEST_MODEL);
 		if (perceptron == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech model with name '%s' does not exist.",

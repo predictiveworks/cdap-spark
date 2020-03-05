@@ -35,20 +35,41 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.model.ModelScanner;
 
 public class ALSRecorder extends AbstractRecorder {
 
 	private Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage) throws Exception {
+	private String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+		
+		ModelScanner scanner = new ModelScanner();
+		return scanner.bestRecommender(table, algorithmName, modelName, modelStage);
+
+	}
+
+	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
 		FileSet fs = SparkMLManager.getRecommendationFS(context);
 		Table table = SparkMLManager.getRecommendationTable(context);
 
 		String algorithmName = Algorithms.ALS;
+		
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*
@@ -91,7 +112,7 @@ public class ALSRecorder extends AbstractRecorder {
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
+		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

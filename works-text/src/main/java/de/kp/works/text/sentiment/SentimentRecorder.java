@@ -35,21 +35,35 @@ import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.AbstractRecorder;
 import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.model.ModelScanner;
 
 public class SentimentRecorder extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	public ViveknSentimentModel read(SparkExecutionPluginContext context, String modelName, String modelStage)
+	public ViveknSentimentModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption)
 			throws Exception {
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 		Table table = SparkMLManager.getTextTable(context);
 
 		String algorithmName = Algorithms.VIVEKN_SENTIMENT;
+		
+		String fsPath = null;
+		switch (modelOption) {
+		case "best" : {
+			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
 
-		String fsPath = getModelFsPath(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			return null;
 		/*
@@ -86,6 +100,12 @@ public class SentimentRecorder extends AbstractRecorder {
 		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
+	private String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+		
+		ModelScanner scanner = new ModelScanner();
+		return scanner.bestText(table, algorithmName, modelName, modelStage);
+
+	}	
 	/*
 	 * HINT: This metadata setting implicitly extends the text analysis schema;
 	 * CDAP supports this feature, but this change must recognized by the model
@@ -95,7 +115,7 @@ public class SentimentRecorder extends AbstractRecorder {
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.TEXTANALYSIS_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
+		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

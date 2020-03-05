@@ -104,8 +104,8 @@ public class ScalerBuilder extends FeatureSink {
 			MinMaxScaler minMaxScaler = new MinMaxScaler();
 			minMaxScaler.setInputCol("_input");
 		
-			minMaxScaler.setMin(config.min);
-			minMaxScaler.setMax(config.max);
+			minMaxScaler.setMin(config.lowerBound);
+			minMaxScaler.setMax(config.upperBound);
 			
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
 
@@ -166,13 +166,13 @@ public class ScalerBuilder extends FeatureSink {
 				+ "restricted to the model type 'minmax'. Default is 0.0.")
 		@Macro
 		@Nullable
-		public Double min;
+		public Double lowerBound;
 		
 		@Description("The upper bound of the feature range after transformation. This parameter is "
 				+ "restricted to the model type 'minmax'. Default is 1.0.")
 		@Macro
 		@Nullable
-		public Double max;
+		public Double upperBound;
 
 		@Description("Indicator to determine whether to center the data with mean before scaling. "
 				+ "This parameter applies to the model type 'standard'. Default is 'false'.")
@@ -191,8 +191,8 @@ public class ScalerBuilder extends FeatureSink {
 			modelStage = "experiment";
 			modelType = "standard";
 			
-			min = 0.0;
-			max = 1.0;
+			lowerBound = 0.0;
+			upperBound = 1.0;
 			
 			withMean = "false";
 			withStd  = "true";
@@ -205,8 +205,8 @@ public class ScalerBuilder extends FeatureSink {
 			Map<String, Object> params = new HashMap<>();
 			params.put("modelType", modelType);
 
-			params.put("min", min);
-			params.put("max", max);
+			params.put("lowerBound", lowerBound);
+			params.put("upperBound", upperBound);
 
 			params.put("withMean", withMean);
 			params.put("withStd", withStd);
@@ -218,7 +218,7 @@ public class ScalerBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 			
-			if (modelType.equals("minmax") && min > max) {
+			if (modelType.equals("minmax") && lowerBound > upperBound) {
 				throw new IllegalArgumentException(String
 						.format("[%s] The lower bound must be smaller or equal than the upper one.", this.getClass().getName()));
 			}

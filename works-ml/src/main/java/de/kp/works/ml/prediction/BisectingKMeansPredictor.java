@@ -53,7 +53,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new BisectingKMeansRecorder().read(context, config.modelName, config.modelStage);
+		model = new BisectingKMeansRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));

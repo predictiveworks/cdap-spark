@@ -16,14 +16,22 @@ package de.kp.works.core.ml;
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.model.ModelScanner;
 
 public class FeatureRecorder extends AbstractRecorder {
+
+	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+		
+		ModelScanner scanner = new ModelScanner();
+		return scanner.bestFeature(table, algorithmName, modelName, modelStage);
+
+	}
 
 	protected void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.FEATURE_FS;
-		String modelVersion = getModelVersion(table, algorithmName, modelName, modelStage);
+		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

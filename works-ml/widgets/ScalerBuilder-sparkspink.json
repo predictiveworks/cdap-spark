@@ -56,7 +56,7 @@
         {
           "widget-type": "textbox",
           "label": "Lower Bound",
-          "name": "min",
+          "name": "lowerBound",
           "widget-attributes": {
             "default": "0.0"
           }
@@ -64,7 +64,7 @@
         {
           "widget-type": "textbox",
           "label": "Upper Bound",
-          "name": "max",
+          "name": "upperBound",
           "widget-attributes": {
             "default": "1.0"
           }

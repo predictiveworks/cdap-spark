@@ -1,4 +1,4 @@
-package de.kp.works.ts.ar;
+package de.kp.works.core;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,28 +18,8 @@ package de.kp.works.ts.ar;
  * 
  */
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import de.kp.works.core.Params;
+public class Params {
 
-public class ARComputeConfig extends ARConfig {
-
-	private static final long serialVersionUID = 5066243286557332820L;
-
-	@Description(Params.MODEL_OPTION)
-	@Macro
-	public String modelOption;
-
-	@Description("The positive number of discrete time steps to look ahead. Default is 1.")
-	@Macro
-	public Integer steps;
-	
-	public void validate() {
-		super.validate();
-
-		if (steps < 1)
-			throw new IllegalArgumentException(String.format(
-					"[%s] The number of time steps to look ahead must be positive.", this.getClass().getName()));
-	
-	}
+	public static final String MODEL_OPTION = "An indicator to determine which model variant is used for predictions. "
+			+ "Supported values are 'best' and 'latest'. Default is 'best'.";
 }
