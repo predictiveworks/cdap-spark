@@ -48,6 +48,7 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Row;
 import co.cask.cdap.api.dataset.table.Scanner;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.Names;
 
 public class AbstractRecorder {
 	/*
@@ -57,11 +58,11 @@ public class AbstractRecorder {
 	public Put buildRow(byte[] key, Long timestamp, String name, String version, String fsName, String fsPath, String pack, String stage, String algorithm, String params) {
 
 		Put row = new Put(key)
-				.add("timestamp", timestamp)
+				.add(Names.TIMESTAMP, timestamp)
 				.add("name", name)
 				.add("version", version)
 				.add("fsName", fsName)
-				.add("fsPath", fsPath)
+				.add(Names.FS_PATH, fsPath)
 				.add("pack", pack)
 				.add("stage", stage)				
 				.add("algorithm", algorithm)

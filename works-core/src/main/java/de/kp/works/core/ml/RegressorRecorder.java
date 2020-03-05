@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelScanner;
 
 public class RegressorRecorder extends AbstractRecorder {
@@ -51,12 +52,12 @@ public class RegressorRecorder extends AbstractRecorder {
 		 */
 		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
 
-		Double rsme = (Double) metrics.get("rsme");
-		Double mse = (Double) metrics.get("mse");
-		Double mae = (Double) metrics.get("mae");
-		Double r2 = (Double) metrics.get("r2");
+		Double rsme = (Double) metrics.get(Names.RSME);
+		Double mse = (Double) metrics.get(Names.MSE);
+		Double mae = (Double) metrics.get(Names.MAE);
+		Double r2 = (Double) metrics.get(Names.R2);
 
-		table.put(row.add("rsme", rsme).add("mse", mse).add("mae", mae).add("r2", r2));
+		table.put(row.add(Names.RSME, rsme).add(Names.MSE, mse).add(Names.MAE, mae).add(Names.R2, r2));
 
 	}
 }

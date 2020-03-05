@@ -22,6 +22,7 @@ import com.google.gson.reflect.TypeToken;
 import co.cask.cdap.api.common.Bytes;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelScanner;
 
 public class ClusterRecorder extends AbstractRecorder {
@@ -51,13 +52,13 @@ public class ClusterRecorder extends AbstractRecorder {
 		 */
 		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
 
-		Double silhouette_euclidean = (Double) metrics.get("silhouette_euclidean");
-		Double silhouette_cosine = (Double) metrics.get("silhouette_cosine");
-		Double perplexity = (Double) metrics.get("perplexity");
-		Double likelihood = (Double) metrics.get("likelihood");
+		Double silhouette_euclidean = (Double) metrics.get(Names.SILHOUETTE_EUCLDIAN);
+		Double silhouette_cosine = (Double) metrics.get(Names.SILHOUETTE_COSINE);
+		Double perplexity = (Double) metrics.get(Names.PERPLEXITY);
+		Double likelihood = (Double) metrics.get(Names.LIKELIHOOD);
 
-		table.put(row.add("silhouette_euclidean", silhouette_euclidean).add("silhouette_cosine", silhouette_cosine)
-				.add("perplexity", perplexity).add("likelihood", likelihood));
+		table.put(row.add(Names.SILHOUETTE_EUCLDIAN, silhouette_euclidean).add(Names.SILHOUETTE_COSINE, silhouette_cosine)
+				.add(Names.PERPLEXITY, perplexity).add(Names.LIKELIHOOD, likelihood));
 
 	}
 

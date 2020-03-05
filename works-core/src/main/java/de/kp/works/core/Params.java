@@ -19,7 +19,7 @@ package de.kp.works.core;
  */
 
 public class Params {
-
+	
 	public static final String MODEL_OPTION = "An indicator to determine which model variant is used for predictions. "
 			+ "Supported values are 'best' and 'latest'. Default is 'best'.";
 }
