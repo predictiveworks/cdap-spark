@@ -37,4 +37,6 @@ public class Names {
 	public static final String FS_PATH = "fsPath";
 	public static final String TIMESTAMP = "timestamp";
 	
+	public static final String LLT_BUCKETS = "LLT-Buckets";
+	
 }

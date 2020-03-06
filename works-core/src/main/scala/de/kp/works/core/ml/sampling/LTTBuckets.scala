@@ -46,9 +46,9 @@ trait LTTBucketsParams extends Params {
   final val yCol = new Param[String](this, "yCol",
       "Name of the dependent value field", (value:String) => true)
  
-  def setxCol(value:String): this.type = set(xCol, value)
+  def setXCol(value:String): this.type = set(xCol, value)
  
-  def setyCol(value:String): this.type = set(yCol, value)
+  def setYCol(value:String): this.type = set(yCol, value)
     
   final val sampleSize: Param[Int] = new Param[Int](this, "sampleSize",
       "The size of the downsampled dataset.", (v: Int) => ParamValidators.gt(2)(v))

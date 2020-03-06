@@ -26,7 +26,7 @@ import scala.collection.JavaConversions._
 object ModelFinder {
 
   def findClassifier(algoName: String, metrics: JList[ClassifierMetric]): String = {
-    var fsPath = null
+    var fsPath: String = null
     fsPath
   }
 
@@ -68,7 +68,7 @@ object ModelFinder {
   }
 
   def findRegressor(algoName: String, metrics: JList[RegressorMetric]): String = {
-    var fsPath = null
+    var fsPath: String = null
     fsPath
 
   }

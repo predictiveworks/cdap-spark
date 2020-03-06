@@ -1,0 +1,56 @@
+{
+"metadata": {"spec-version": "1.5"},
+
+"display-name": "TimeChart",
+ "configuration-groups": [
+    {
+      "label": "Basic Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Table Name",
+          "name": "tableName"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time-to-Live",
+          "name": "ttl"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Time Field",
+          "name": "timeCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Value Field",
+          "name": "valueCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Data Size",
+          "name": "limit",
+          "widget-attributes": {
+            "default": "1000"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Sampling Method",
+          "name": "sampling",
+          "widget-attributes": {
+            "values": [
+              "LLT-Buckets"
+            ],
+            "default": "LLT-Buckets"
+          }
+        }
+      ]
+    }
+  ]
+}

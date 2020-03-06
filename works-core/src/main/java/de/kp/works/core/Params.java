@@ -20,6 +20,21 @@ package de.kp.works.core;
 
 public class Params {
 	
-	public static final String MODEL_OPTION = "An indicator to determine which model variant is used for predictions. "
+	public static final String CHART_LIMIT = "The maximum number of data points taken into account "
+			+ "to generate charts from. Default value is 1000.";
+	
+	public static final String CHART_SAMPLING = "The sampling method to consistently reduce the number "
+			+ "of data points to generate charts from. Supported values are 'LLT-Buckets'. Default is 'LLT-Buckets'.";
+	
+	public static final String MODEL_OPTION = "An indicator to determine which model variant is used "
+			+ "for predictions. "
 			+ "Supported values are 'best' and 'latest'. Default is 'best'.";
+	
+	public static final String TIME_COL = "The name of the field that contains the timestamp.";
+	
+	public static final String TTL = "The Time-to-Live (TTL) property governs how long the time series data will "
+			+ "be persisted in the specified table. TTL is configured as the maximum age (in seconds) that data "
+			+ "should be retained. Default is 15 minutes, i.e. TTL = 900.";
+	
+	public static final String VALUE_COL = "The name of the field that contains the feature value.";
 }
