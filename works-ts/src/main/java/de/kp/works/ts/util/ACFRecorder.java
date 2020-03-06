@@ -88,7 +88,11 @@ public class ACFRecorder extends AbstractRecorder {
 	private String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
 		
 		ModelScanner scanner = new ModelScanner();
-		return scanner.bestTime(table, algorithmName, modelName, modelStage);
+		String fsPath = scanner.bestTime(table, algorithmName, modelName, modelStage);
+		if (fsPath == null)
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+		
+		return fsPath;
 
 	}
 

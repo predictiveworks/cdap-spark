@@ -23,7 +23,11 @@ public class FeatureRecorder extends AbstractRecorder {
 	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
 		
 		ModelScanner scanner = new ModelScanner();
-		return scanner.bestFeature(table, algorithmName, modelName, modelStage);
+		String fsPath = scanner.bestFeature(table, algorithmName, modelName, modelStage);
+		if (fsPath == null)
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+		
+		return fsPath;
 
 	}
 

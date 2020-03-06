@@ -33,7 +33,11 @@ public class RegressorRecorder extends AbstractRecorder {
 	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
 		
 		ModelScanner scanner = new ModelScanner();
-		return scanner.bestRegressor(table, algorithmName, modelName, modelStage);
+		String fsPath = scanner.bestRegressor(table, algorithmName, modelName, modelStage);
+		if (fsPath == null)
+			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+		
+		return fsPath;
 
 	}
 

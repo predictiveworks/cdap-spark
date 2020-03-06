@@ -61,7 +61,7 @@ public class ModelScanner {
 
 		}
 
-		fsPath = new ModelFinder().findClassifier(algoName, metrics);
+		fsPath = ModelFinder.findClassifier(algoName, metrics);
 		return fsPath;
 
 	}
@@ -97,7 +97,7 @@ public class ModelScanner {
 
 		}
 		
-		fsPath = new ModelFinder().findCluster(algoName, metrics);
+		fsPath = ModelFinder.findCluster(algoName, metrics);
 		return fsPath;
 		
 	}
@@ -161,7 +161,7 @@ public class ModelScanner {
 
 		}
 		
-		fsPath = new ModelFinder().findRegressor(algoName, metrics);
+		fsPath = ModelFinder.findRegressor(algoName, metrics);
 		return fsPath;
 		
 	}
