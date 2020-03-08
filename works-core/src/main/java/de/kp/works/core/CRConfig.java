@@ -97,7 +97,7 @@ public class CRConfig extends BaseConfig {
 					.format("[%s] The input schema must contain the field that defines the label value.", this.getClass().getName()));
 		}
 
-		Schema.Type labelType = labelField.getSchema().getType();
+		Schema.Type labelType = getNonNullIfNullable(labelField.getSchema()).getType();
 		/*
 		 * The label must be a numeric data type (double, float, int, long), which then
 		 * is casted to Double (see classification trainer)

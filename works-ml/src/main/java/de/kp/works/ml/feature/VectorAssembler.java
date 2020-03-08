@@ -231,7 +231,9 @@ public class VectorAssembler extends FeatureCompute {
 			for (String column: columns) {
 
 				Schema.Field field = inputSchema.getField(column);
-				Schema.Type fieldType = field.getSchema().getType();
+				Schema fieldSchema = getNonNullIfNullable(field.getSchema());
+				
+				Schema.Type fieldType = fieldSchema.getType();
 				
 				/* Check whether the provided field is a numeric field */
 				if (!SchemaUtil.isNumericType(fieldType)) {
@@ -242,7 +244,7 @@ public class VectorAssembler extends FeatureCompute {
 								String.format("[%s] The field that defines the input must be either NUMERIC or an ARRAY.", this.getClass().getName()));
 					}
 
-					Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+					Schema.Type fieldCompType = getNonNullIfNullable(fieldSchema.getComponentSchema()).getType();
 					if (!SchemaUtil.isNumericType(fieldCompType)) {
 						throw new IllegalArgumentException(
 								String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));

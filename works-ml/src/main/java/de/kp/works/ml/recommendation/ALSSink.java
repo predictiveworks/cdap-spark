@@ -300,7 +300,7 @@ public class ALSSink extends RecommenderSink {
 						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
 			}
 			
-			Schema.Type userType = userField.getSchema().getType();
+			Schema.Type userType = getNonNullIfNullable(userField.getSchema()).getType();
 			if (SchemaUtil.isNumericType(userType) == false) {
 				throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
 			}
@@ -313,7 +313,7 @@ public class ALSSink extends RecommenderSink {
 						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
 			}
 			
-			Schema.Type itemType = itemField.getSchema().getType();
+			Schema.Type itemType = getNonNullIfNullable(itemField.getSchema()).getType();
 			if (SchemaUtil.isNumericType(itemType) == false) {
 				throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
 			}
@@ -326,7 +326,7 @@ public class ALSSink extends RecommenderSink {
 						"[%s] The input schema must contain the field that defines the user identifier.", this.getClass().getName()));
 			}
 			
-			Schema.Type ratingType = ratingField.getSchema().getType();
+			Schema.Type ratingType = getNonNullIfNullable(ratingField.getSchema()).getType();
 			if (SchemaUtil.isNumericType(ratingType) == false) {
 				throw new IllegalArgumentException("The data type of the rating field must be NUMERIC.");
 			}

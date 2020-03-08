@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 
 import co.cask.cdap.api.annotation.Description;
 import co.cask.cdap.api.annotation.Name;
+import co.cask.cdap.api.data.schema.Schema;
 import co.cask.cdap.api.plugin.PluginConfig;
 import co.cask.hydrator.common.Constants;
 
@@ -84,6 +85,10 @@ public class BaseConfig extends PluginConfig {
 					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
 		}
 
+	}
+
+	public static Schema getNonNullIfNullable(Schema schema) {
+		return schema.isNullable() ? schema.getNonNullable() : schema;
 	}
 
 }

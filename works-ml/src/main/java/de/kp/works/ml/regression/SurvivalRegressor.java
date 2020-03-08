@@ -210,7 +210,7 @@ public class SurvivalRegressor extends RegressorSink {
 						.format("[%s] The input schema must contain the field that defines the censor value.",  this.getClass().getName()));		
 			}
 
-			Schema.Type censorType = censorField.getSchema().getType();
+			Schema.Type censorType = getNonNullIfNullable(censorField.getSchema()).getType();
 
 			if (SchemaUtil.isNumericType(censorType) == false) {
 				throw new IllegalArgumentException("The data type of the censor field must be numeric.");

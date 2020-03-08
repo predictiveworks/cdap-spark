@@ -45,4 +45,8 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 		throw new Exception("[ERROR] Not implemented");
 	}
 
+	public static Schema getNonNullIfNullable(Schema schema) {
+		return schema.isNullable() ? schema.getNonNullable() : schema;
+	}
+
 }

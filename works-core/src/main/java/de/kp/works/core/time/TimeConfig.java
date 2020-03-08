@@ -65,7 +65,7 @@ public class TimeConfig extends BaseConfig {
 					"[%s] The input schema must contain the field that defines the time value.", this.getClass().getName()));
 		}
 
-		Schema.Type timeType = timeField.getSchema().getType();
+		Schema.Type timeType = getNonNullIfNullable(timeField.getSchema()).getType();
 		if (SchemaUtil.isTimeType(timeType) == false) {
 			throw new IllegalArgumentException("The data type of the time value field must be LONG.");
 		}
@@ -78,7 +78,7 @@ public class TimeConfig extends BaseConfig {
 					.format("[%s] The input schema must contain the field that defines the value.", this.getClass().getName()));
 		}
 
-		Schema.Type valueType = valueField.getSchema().getType();
+		Schema.Type valueType = getNonNullIfNullable(valueField.getSchema()).getType();
 		/*
 		 * The value must be a numeric data type (double, float, int, long), which then
 		 * is casted to Double (see classification trainer)

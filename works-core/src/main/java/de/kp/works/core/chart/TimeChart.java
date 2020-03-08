@@ -211,7 +211,7 @@ public class TimeChart extends ChartSink {
 						"[%s] The input schema must contain the field that defines the timestamp.", this.getClass().getName()));
 			}
 
-			Schema.Type timeType = timeField.getSchema().getType();
+			Schema.Type timeType = getNonNullIfNullable(timeField.getSchema()).getType();
 			if (SchemaUtil.isTimeType(timeType) == false) {
 				throw new IllegalArgumentException("The data type of the time value field must be LONG.");
 			}
@@ -223,7 +223,7 @@ public class TimeChart extends ChartSink {
 				throw new IllegalArgumentException(String
 						.format("[%s] The input schema must contain the specified field: %s.", this.getClass().getName(), valueCol));
 			}
-			Schema.Type valueType = valueField.getSchema().getType();
+			Schema.Type valueType = getNonNullIfNullable(valueField.getSchema()).getType();
 			/*
 			 * The value must be a numeric data type (double, float, int, long), which then
 			 * is casted to Double

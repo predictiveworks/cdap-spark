@@ -103,105 +103,31 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	}
 	
 	protected Boolean isNumericType(Schema.Type dataType) {
-		switch (dataType) {
-		case ARRAY:
-		case BOOLEAN:
-		case BYTES:
-		case MAP:
-		case NULL:
-		case RECORD:
-		case ENUM:
-		case STRING:
-		case UNION:
-			return false;
-		case DOUBLE:
-		case FLOAT:
-		case INT:
-		case LONG:
-			return true;
-
-		default:
-			return false;
-		}
-
+		return SchemaUtil.isNumericType(dataType);
 	}
 
 	protected void isArrayOfDouble(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the model input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.DOUBLE)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a DOUBLE.", this.getClass().getName()));
-		}
-		
+		SchemaUtil.isArrayOfDouble(inputSchema, fieldName);
 	}
 
 	protected void isArrayOfNumeric(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!isNumericType(fieldCompType)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));
-		}
-		
+		SchemaUtil.isArrayOfNumeric(inputSchema, fieldName);
 	}
 
 	protected void isArrayOfString(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.ARRAY)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be an ARRAY.", this.getClass().getName()));
-		}
-
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
-		if (!fieldCompType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The data type of the input field components must be a STRING.", this.getClass().getName()));
-		}
-		
+		SchemaUtil.isArrayOfString(inputSchema, fieldName);
 	}
 
 	protected void isNumeric(String fieldName) {
-
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!isNumericType(fieldType)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be NUMERIC.", this.getClass().getName()));
-		}
-
+		SchemaUtil.isNumeric(inputSchema, fieldName);
 	}
 
 	protected void isString(String fieldName) {
+		SchemaUtil.isString(inputSchema, fieldName);
+	}
 
-		Schema.Field field = inputSchema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
-
-		if (!fieldType.equals(Schema.Type.STRING)) {
-			throw new IllegalArgumentException(
-					String.format("[%s] The field that defines the input must be a STRING.", this.getClass().getName()));
-		}
-
+	protected static Schema getNonNullIfNullable(Schema schema) {
+		return schema.isNullable() ? schema.getNonNullable() : schema;
 	}
 	
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {

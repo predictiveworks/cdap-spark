@@ -102,7 +102,7 @@ public class ALSPredictor extends RecommenderCompute {
 							this.getClass().getName()));
 		}
 
-		Schema.Type userType = userCol.getSchema().getType();
+		Schema.Type userType = getNonNullIfNullable(userCol.getSchema()).getType();
 		if (isNumericType(userType) == false) {
 			throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
 		}
@@ -116,7 +116,7 @@ public class ALSPredictor extends RecommenderCompute {
 							this.getClass().getName()));
 		}
 
-		Schema.Type itemType = itemCol.getSchema().getType();
+		Schema.Type itemType = getNonNullIfNullable(itemCol.getSchema()).getType();
 		if (isNumericType(itemType) == false) {
 			throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
 		}

@@ -66,9 +66,93 @@ object ModelFinder {
     fsPath
 
   }
-
+  /*
+   * This method finds the best model by taking all registered
+   * regression metrics (rsme, mae, mse and r2) into account.
+   * 
+   * Each metric value is compared with the respective best 
+   * (minimum or maximum value) and scaled with the maximum.
+   * 
+   * The resulting scaled deviation errors are summed into 
+   * a single value and the best model is determined from
+   * the minimum value of the summed error
+   */
   def findRegressor(algoName: String, metrics: JList[RegressorMetric]): String = {
+    
     var fsPath: String = null
+    /*
+     * STEP #1: Determine the minimum and maximum values 
+     * for each metric metric to build normalized metric 
+     * values
+     */
+    val (rsme_min, rsme_max) = {
+
+      val rsme = metrics.map(_.rsme).toArray
+      (rsme.min, rsme.max)
+
+    }
+    
+    val (mae_min, mae_max) = {
+
+      val mae = metrics.map(_.mae).toArray
+      (mae.min, mae.max)
+
+       
+    }
+    
+    val (mse_min, mse_max) = {
+
+      val mse = metrics.map(_.mse).toArray
+      (mse.min, mse.max)
+
+       
+    }
+    
+    val (r2_min, r2_max) = {
+
+      val r2 = metrics.map(_.r2).toArray
+      (r2.min, r2.max)
+
+       
+    }
+    /*
+     * STEP #2: Normalize and aggregate each metric
+     * value and build sum of normalize metric 
+     */
+    val scaled = metrics.map(metric => {
+      
+      /* RSME: The smallest scaled deviation from the 
+       * minimum value is best  
+       */
+      val rsme = 
+        if (rsme_max == 0D) 0D else Math.abs((rsme_min - metric.rsme) / rsme_max)
+      
+      /* MAE: The smallest scaled deviation from the 
+       * minimum value is best  
+       */
+      val mae = 
+        if (mae_max == 0D) 0D else Math.abs((mae_min - metric.mae) / mae_max)
+      
+      /* MSE: The smallest scaled deviation from the 
+       * minimum value is best  
+       */
+      val mse = 
+        if (mse_max == 0D) 0D else Math.abs((mse_min - metric.mse) / mse_max)
+      
+      /* R2: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val r2 = 
+        if (r2_max == 0D) 0D else Math.abs((r2_min - metric.r2) /r2_max)
+       
+      val err = rsme + mae + mse + r2
+      (metric.fsPath, err)
+      
+    }).toArray
+         
+    val minimum = scaled.sortBy(_._2).head
+    fsPath = minimum._1
+    
     fsPath
 
   }

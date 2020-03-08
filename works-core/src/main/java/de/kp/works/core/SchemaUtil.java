@@ -97,14 +97,16 @@ public class SchemaUtil {
 	public static void isArrayOfDouble(Schema schema, String fieldName) {
 
 		Schema.Field field = schema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
+		Schema fieldSchema = getNonNullIfNullable(field.getSchema());
+
+		Schema.Type fieldType = fieldSchema.getType();
 
 		if (!fieldType.equals(Schema.Type.ARRAY)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The field that defines the model input must be an ARRAY.", SchemaUtil.class.getName()));
 		}
 
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		Schema.Type fieldCompType = getNonNullIfNullable(fieldSchema.getComponentSchema()).getType();
 		if (!fieldCompType.equals(Schema.Type.DOUBLE)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The data type of the input field components must be a DOUBLE.", SchemaUtil.class.getName()));
@@ -115,14 +117,16 @@ public class SchemaUtil {
 	public static void isArrayOfNumeric(Schema schema, String fieldName) {
 
 		Schema.Field field = schema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
+		Schema fieldSchema = getNonNullIfNullable(field.getSchema());
+
+		Schema.Type fieldType = fieldSchema.getType();
 
 		if (!fieldType.equals(Schema.Type.ARRAY)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The field that defines the model input must be an ARRAY.", SchemaUtil.class.getName()));
 		}
 
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		Schema.Type fieldCompType = getNonNullIfNullable(fieldSchema.getComponentSchema()).getType();
 		if (!isNumericType(fieldCompType)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The data type of the input field components must be NUMERIC.", SchemaUtil.class.getName()));
@@ -133,14 +137,16 @@ public class SchemaUtil {
 	public static void isArrayOfString(Schema schema, String fieldName) {
 
 		Schema.Field field = schema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
+		Schema fieldSchema = getNonNullIfNullable(field.getSchema());
+
+		Schema.Type fieldType = fieldSchema.getType();
 
 		if (!fieldType.equals(Schema.Type.ARRAY)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The field that defines the model input must be an ARRAY.", SchemaUtil.class.getName()));
 		}
 
-		Schema.Type fieldCompType = field.getSchema().getComponentSchema().getType();
+		Schema.Type fieldCompType = getNonNullIfNullable(fieldSchema.getComponentSchema()).getType();
 		if (!fieldCompType.equals(Schema.Type.STRING)) {
 			throw new IllegalArgumentException(String.format(
 					"[%s] The data type of the input field components must be a STRING.", SchemaUtil.class.getName()));
@@ -151,7 +157,7 @@ public class SchemaUtil {
 	public static void isNumeric(Schema schema, String fieldName) {
 
 		Schema.Field field = schema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
+		Schema.Type fieldType = getNonNullIfNullable(field.getSchema()).getType();
 
 		if (!isNumericType(fieldType)) {
 			throw new IllegalArgumentException(String.format("[%s] The field that defines the input must be NUMERIC.",
@@ -163,13 +169,17 @@ public class SchemaUtil {
 	public static void isString(Schema schema, String fieldName) {
 
 		Schema.Field field = schema.getField(fieldName);
-		Schema.Type fieldType = field.getSchema().getType();
+		Schema.Type fieldType = getNonNullIfNullable(field.getSchema()).getType();
 
 		if (!fieldType.equals(Schema.Type.STRING)) {
 			throw new IllegalArgumentException(String.format("[%s] The field that defines the input must be a STRING.",
 					SchemaUtil.class.getName()));
 		}
 
+	}
+
+	public static Schema getNonNullIfNullable(Schema schema) {
+		return schema.isNullable() ? schema.getNonNullable() : schema;
 	}
 
 }
