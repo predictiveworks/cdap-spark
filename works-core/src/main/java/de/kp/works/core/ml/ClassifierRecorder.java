@@ -31,12 +31,12 @@ public class ClassifierRecorder extends AbstractRecorder {
 	}.getType();
 
 	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
-		
+
 		ModelScanner scanner = new ModelScanner();
 		String fsPath = scanner.bestClassifier(table, algorithmName, modelName, modelStage);
 		if (fsPath == null)
 			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-		
+
 		return fsPath;
 
 	}
@@ -58,16 +58,15 @@ public class ClassifierRecorder extends AbstractRecorder {
 
 		Double accuracy = (Double) metrics.get(Names.ACCURACY);
 		Double f1 = (Double) metrics.get(Names.F1);
-		Double hammingLoss = (Double) metrics.get(Names.HAMMING_LOSS);
 		Double weightedFMeasure = (Double) metrics.get(Names.WEIGHTED_FMEASURE);
 		Double weightedPrecision = (Double) metrics.get(Names.WEIGHTED_PRECISION);
 		Double weightedRecall = (Double) metrics.get(Names.WEIGHTED_RECALL);
 		Double weightedFalsePositiveRate = (Double) metrics.get(Names.WEIGHTED_FALSE_POSITIVE);
 		Double weightedTruePositiveRate = (Double) metrics.get(Names.WEIGHTED_TRUE_POSITIVE);
 
-		table.put(row.add(Names.ACCURACY, accuracy).add(Names.F1, f1).add(Names.HAMMING_LOSS, hammingLoss)
-				.add(Names.WEIGHTED_FMEASURE, weightedFMeasure).add(Names.WEIGHTED_PRECISION, weightedPrecision)
-				.add(Names.WEIGHTED_RECALL, weightedRecall).add(Names.WEIGHTED_FALSE_POSITIVE, weightedFalsePositiveRate)
+		table.put(row.add(Names.ACCURACY, accuracy).add(Names.F1, f1).add(Names.WEIGHTED_FMEASURE, weightedFMeasure)
+				.add(Names.WEIGHTED_PRECISION, weightedPrecision).add(Names.WEIGHTED_RECALL, weightedRecall)
+				.add(Names.WEIGHTED_FALSE_POSITIVE, weightedFalsePositiveRate)
 				.add(Names.WEIGHTED_TRUE_POSITIVE, weightedTruePositiveRate));
 
 	}

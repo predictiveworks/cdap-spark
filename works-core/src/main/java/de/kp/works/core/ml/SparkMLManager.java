@@ -24,6 +24,7 @@ import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.api.dataset.table.TableProperties;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import de.kp.works.core.Names;
 
 /**
  * [SparkMLManager] defines the entry point for Apache Spark based model
@@ -757,21 +758,19 @@ public class SparkMLManager {
 		 * 
 	     * - accuracy
 		 * - f1
-		 * - hammingLoss
 		 * - weightedFMeasure
 		 * - weightedPrecision
 		 * - weightedRecall
 		 * - weightedFalsePositiveRate
 		 * - weightedTruePositiveRate
  		 */
-		fields.add(Schema.Field.of("accuracy", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("f1", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("hammingLoss", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("weightedFMeasure", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("weightedPrecision", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("weightedRecall", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("weightedFalsePositiveRate", Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of("weightedTruePositiveRate", Schema.of(Schema.Type.DOUBLE)));		
+		fields.add(Schema.Field.of(Names.ACCURACY, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.F1, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.WEIGHTED_FMEASURE, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.WEIGHTED_PRECISION, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.WEIGHTED_RECALL, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.WEIGHTED_FALSE_POSITIVE, Schema.of(Schema.Type.DOUBLE)));
+		fields.add(Schema.Field.of(Names.WEIGHTED_TRUE_POSITIVE, Schema.of(Schema.Type.DOUBLE)));		
 
 		Schema schema = Schema.recordOf(schemaName, fields);
 		return schema;

@@ -24,6 +24,8 @@ import com.google.gson.Gson
 import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
 import org.apache.spark.sql._
 
+import de.kp.works.core.Names
+
 object Evaluator {
   /*
    * Reference to Apache Spark classification evaluator
@@ -38,12 +40,12 @@ object Evaluator {
    * 
    * - accuracy
    * - f1: weighted averaged f-measure
-   * - hammingLoss
+   * - hammingLoss (not supported yet)
    * - weightedFMeasure
    * - weightedPrecision
    * - weightedRecall
    * - weightedFalsePositiveRate
-   * - weightedTruePositiveRate
+   * - weightedTruePositiveRate = weightedRecall
    *
 	 */  
   def evaluate(predictions: Dataset[Row], labelCol: String, predictionCol: String): String = {
@@ -54,14 +56,13 @@ object Evaluator {
     evaluator.setPredictionCol(predictionCol);
 
     val metricNames = List(
-      "accuracy",      
-      "f1",
-      "hammingLoss",
-      "weightedFMeasure",
-      "weightedPrecision",
-      "weightedRecall",
-      "weightedFalsePositiveRate",
-      "weightedTruePositiveRate")
+      Names.ACCURACY,      
+      Names.F1,
+      Names.WEIGHTED_FMEASURE,
+      Names.WEIGHTED_PRECISION,
+      Names.WEIGHTED_RECALL,
+      Names.WEIGHTED_FALSE_POSITIVE,
+      Names.WEIGHTED_TRUE_POSITIVE)
     
     metricNames.foreach(metricName => {
 

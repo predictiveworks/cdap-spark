@@ -17,7 +17,6 @@ public class Names {
 
 	public static final String ACCURACY = "accuracy";
 	public static final String F1 = "f1";
-	public static final String HAMMING_LOSS = "hammingLoss";
 	public static final String WEIGHTED_FMEASURE = "weightedFMeasure";
 	public static final String WEIGHTED_PRECISION = "weightedPrecision";
 	public static final String WEIGHTED_RECALL = "weightedRecall";

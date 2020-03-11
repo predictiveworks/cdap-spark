@@ -28,6 +28,7 @@ import co.cask.cdap.etl.api.PipelineConfigurer;
 import co.cask.cdap.etl.api.StageConfigurer;
 import co.cask.cdap.etl.api.batch.SparkCompute;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.ts.ForecastAssembler;
 import de.kp.works.ts.model.MovingAverageModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -74,7 +75,7 @@ public class TsMA extends MACompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the prediction column
 			 */
-			outputSchema = getOutputSchema(config.timeCol, config.valueCol);
+			outputSchema = getOutputSchema(config.timeCol, config.valueCol, STATUS_FIELD);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -88,7 +89,8 @@ public class TsMA extends MACompute {
 		model.setTimeCol(config.timeCol);
 		model.setValueCol(config.valueCol);
 
-		return model.forecast(source, config.steps);
+		ForecastAssembler assembler = new ForecastAssembler(config.timeCol, config.valueCol, STATUS_FIELD);
+		return assembler.assemble(source,model.forecast(source, config.steps));
 		
 	}
 

@@ -27,7 +27,6 @@ public class ClassifierMetric {
 	public Long ts;
 	public Double accuracy;
 	public Double f1;
-	public Double hammingLoss;
 	public Double weightedFMeasure;
 	public Double weightedPrecision;
 	public Double weightedRecall;
@@ -42,7 +41,6 @@ public class ClassifierMetric {
 		accuracy = row.getDouble(Names.ACCURACY);
 		f1 = row.getDouble(Names.F1);
 		
-		hammingLoss = row.getDouble(Names.HAMMING_LOSS);
 		weightedFMeasure = row.getDouble(Names.WEIGHTED_FMEASURE);
 		
 		weightedPrecision = row.getDouble(Names.WEIGHTED_PRECISION);

@@ -84,7 +84,7 @@ public class TimeConfig extends BaseConfig {
 		 * is casted to Double (see classification trainer)
 		 */
 		if (SchemaUtil.isNumericType(valueType) == false) {
-			throw new IllegalArgumentException("The data type of the value field must be MUMERIC.");
+			throw new IllegalArgumentException("The data type of the value field must be NUMERIC.");
 		}
 	}
 	

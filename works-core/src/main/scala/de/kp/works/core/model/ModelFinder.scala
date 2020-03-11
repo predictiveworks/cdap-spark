@@ -19,15 +19,94 @@ package de.kp.works.core.model
  */
 
 import java.util.{ List => JList }
-import de.kp.works.core.Algorithms
+import de.kp.works.core.{Algorithms, Names}
 
 import scala.collection.JavaConversions._
 
-object ModelFinder {
-
+object ModelFinder extends MinMaxFinder {
+  
+  /*
+   * This method finds the best model by taking all registered
+   * classifier metrics into account.
+   * 
+   * Each metric value is compared with the respective best 
+   * (minimum or maximum value) and scaled with the maximum.
+   * 
+   * The resulting scaled deviation errors are summed into 
+   * a single value and the best model is determined from
+   * the minimum value of the summed error
+   */
   def findClassifier(algoName: String, metrics: JList[ClassifierMetric]): String = {
     var fsPath: String = null
+    /*
+     * STEP #1: Determine the minimum and maximum values 
+     * for each metric metric to build normalized metric 
+     * values
+     */
+    val (accuracy_min, accuracy_max) = classifierMinMax(Names.ACCURACY, metrics)
+
+    val (f1_min, f1_max) = classifierMinMax(Names.F1, metrics)    
+    val (weightedFMeasure_min, weightedFMeasure_max) = classifierMinMax(Names.WEIGHTED_FMEASURE, metrics)
+    
+    val (weightedPrecision_min, weightedPrecision_max) = classifierMinMax(Names.WEIGHTED_PRECISION, metrics)
+    val (weightedRecall_min, weightedRecall_max) = classifierMinMax(Names.WEIGHTED_RECALL, metrics)    
+    /* 
+     * Weighted TPR is equivalent to WeightedRecall and must not
+     * be counted twice
+     */
+    val (weightedFPR_min, weightedFPR_max) = classifierMinMax(Names.WEIGHTED_FALSE_POSITIVE, metrics)
+    /*
+     * STEP #2: Normalize and aggregate each metric
+     * value and build sum of normalize metric 
+     */
+    val scaled = metrics.map(metric => {
+      
+      /* ACCURACY: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val accuracy = 
+        if (accuracy_max == 0D) 0D else Math.abs((accuracy_max - metric.accuracy) / accuracy_max)
+        
+      /* F1: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val f1 = 
+        if (f1_max == 0D) 0D else Math.abs((f1_max - metric.f1) / f1_max)
+
+      /* WEIGHTED F1: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val weightedFMeasure = 
+        if (weightedFMeasure_max == 0D) 0D else Math.abs((weightedFMeasure_max - metric.weightedFMeasure) / weightedFMeasure_max)
+ 
+      /* WEIGHTED PRECISION: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val weightedPrecision = 
+        if (weightedPrecision_max == 0D) 0D else Math.abs((weightedPrecision_max - metric.weightedPrecision) / weightedPrecision_max)
+ 
+      /* WEIGHTED RECALL: The smallest scaled deviation from the 
+       * maximum value is best  
+       */
+      val weightedRecall = 
+        if (weightedRecall_max == 0D) 0D else Math.abs((weightedRecall_max - metric.weightedRecall) / weightedRecall_max)
+ 
+      /* WEIGHTED FPR: The smallest scaled deviation from the 
+       * minimum value is best  
+       */
+      val weightedFPR = 
+        if (weightedFPR_max == 0D) 0D else Math.abs((weightedFPR_max - metric.weightedFalsePositiveRate) / weightedFPR_max)
+        
+      val err = accuracy + f1 + weightedFMeasure + weightedPrecision + weightedRecall + weightedFPR
+      (metric.fsPath, err)
+      
+    }).toArray
+             
+    val minimum = scaled.sortBy(_._2).head
+    fsPath = minimum._1
+    
     fsPath
+    
   }
 
   def findCluster(algoName: String, metrics: JList[ClusterMetric]): String = {
@@ -85,36 +164,10 @@ object ModelFinder {
      * for each metric metric to build normalized metric 
      * values
      */
-    val (rsme_min, rsme_max) = {
-
-      val rsme = metrics.map(_.rsme).toArray
-      (rsme.min, rsme.max)
-
-    }
-    
-    val (mae_min, mae_max) = {
-
-      val mae = metrics.map(_.mae).toArray
-      (mae.min, mae.max)
-
-       
-    }
-    
-    val (mse_min, mse_max) = {
-
-      val mse = metrics.map(_.mse).toArray
-      (mse.min, mse.max)
-
-       
-    }
-    
-    val (r2_min, r2_max) = {
-
-      val r2 = metrics.map(_.r2).toArray
-      (r2.min, r2.max)
-
-       
-    }
+    val (mae_min, mae_max)   = regressorMinMax(Names.MAE, metrics)    
+    val (mse_min, mse_max)   = regressorMinMax(Names.MSE, metrics)    
+    val (r2_min, r2_max)     = regressorMinMax(Names.R2, metrics)
+    val (rsme_min, rsme_max) = regressorMinMax(Names.RSME, metrics)    
     /*
      * STEP #2: Normalize and aggregate each metric
      * value and build sum of normalize metric 

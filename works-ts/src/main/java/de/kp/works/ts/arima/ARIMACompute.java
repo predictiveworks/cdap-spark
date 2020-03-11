@@ -28,13 +28,16 @@ public class ARIMACompute extends TimeCompute {
 
 	private static final long serialVersionUID = -7730710866668784701L;
 
-	protected Schema getOutputSchema(String timeField, String valueField) {
+	protected static final String STATUS_FIELD = "status";
+
+	protected Schema getOutputSchema(String timeField, String valueField, String statusField) {
 
 		List<Schema.Field> fields = new ArrayList<>();
 		
 		fields.add(Schema.Field.of(timeField, Schema.of(Schema.Type.LONG)));
 		fields.add(Schema.Field.of(valueField, Schema.of(Schema.Type.DOUBLE)));
 		
+		fields.add(Schema.Field.of(statusField, Schema.of(Schema.Type.STRING)));
 		return Schema.recordOf("timeseries.forecast", fields);
 
 	}

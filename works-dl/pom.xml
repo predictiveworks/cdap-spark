@@ -34,21 +34,20 @@
 
   <properties>
 
-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-	  <maven.compiler.source>1.8</maven.compiler.source>
-  	  <maven.compiler.target>1.8</maven.compiler.target>
-     <encoding>UTF-8</encoding>
+	<maven.compiler.source>1.8</maven.compiler.source>
+  	<maven.compiler.target>1.8</maven.compiler.target>
+    <encoding>UTF-8</encoding>
 
-     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <app.parents>system:cdap-data-pipeline[5.1.1,5.1.1],system:cdap-data-streams[5.1.1,5.1.1]</app.parents>
+    <main.basedir>${project.basedir}</main.basedir>
 
-     <app.parents>system:cdap-data-pipeline[5.1.1,5.1.1],system:cdap-data-streams[5.1.1,5.1.1]</app.parents>
-     <main.basedir>${project.basedir}</main.basedir>
+    <docs.dir>docs</docs.dir>
+    <widgets.dir>widgets</widgets.dir>
 
-     <docs.dir>docs</docs.dir>
-     <widgets.dir>widgets</widgets.dir>
-
-     <cdap.version>5.1.1</cdap.version>    
+    <cdap.version>5.1.1</cdap.version>
+    <bigdl.version>0.10.0</bigdl.version>    
 
   </properties>
 
@@ -66,7 +65,7 @@
     <dependency>
       <groupId>com.intel.analytics.bigdl</groupId>
       <artifactId>bigdl-SPARK_2.1</artifactId>
-      <version>0.10.0</version>
+      <version>${bigdl.version}</version>
     </dependency>  
   </dependencies>
    
