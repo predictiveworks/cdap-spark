@@ -137,9 +137,41 @@ object ModelFinder extends MinMaxFinder {
         if (maximum._2 > 0) fsPath = maximum._1
        
       }
-      case Algorithms.LATENT_DIRICHLET_ALLOCATION => {
-      }
+      case Algorithms.LATENT_DIRICHLET_ALLOCATION => {  
+        /*
+         * STEP #1: Determine the minimum and maximum values 
+         * for each metric metric to build normalized metric 
+         * values
+         */
+        val (likelihood_min, likelihood_max) = clusterMinMax(Names.LIKELIHOOD, metrics)
+        val (perplexity_min, perplexity_max) = clusterMinMax(Names.PERPLEXITY, metrics)    
+        /*
+         * STEP #2: Normalize and aggregate each metric
+         * value and build sum of normalize metric 
+         */
+        val scaled = metrics.map(metric => {
+         
+          /* LIKELIHOOD: The smallest scaled deviation from the 
+           * minimum value is best  
+           */
+          val likelihood = 
+            if (likelihood_max == 0D) 0D else Math.abs((likelihood_min - metric.likelihood) / likelihood_max)
+         
+          /* PERPLEXITY: The smallest scaled deviation from the 
+           * minimum value is best  
+           */
+          val perplexity = 
+            if (perplexity_max == 0D) 0D else Math.abs((perplexity_min - metric.perplexity) / perplexity_max)
+       
+          val err = likelihood + perplexity
+          (metric.fsPath, err)
 
+        }).toArray
+         
+        val minimum = scaled.sortBy(_._2).head
+        fsPath = minimum._1
+          
+      }
     }
 
     fsPath

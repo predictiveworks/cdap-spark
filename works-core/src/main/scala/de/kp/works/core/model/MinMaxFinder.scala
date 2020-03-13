@@ -73,7 +73,29 @@ trait MinMaxFinder {
     }
     
   }
+  
+  def clusterMinMax(metric:String, metrics:JList[ClusterMetric]):(Double, Double) = {
     
+    metric match {
+      
+      case Names.LIKELIHOOD => {
+        
+        val values = metrics.map(_.likelihood).toArray
+        return (values.min, values.max)
+        
+      }
+      
+      case Names.PERPLEXITY => {
+       
+        val values = metrics.map(_.perplexity).toArray
+        return (values.min, values.max)
+         
+      }
+      case _ => throw new IllegalArgumentException("Unknown cluster metric detected.")      
+    }
+    
+  }
+  
   def regressorMinMax(metric:String, metrics:JList[RegressorMetric]): (Double, Double) = {
     
     metric match {

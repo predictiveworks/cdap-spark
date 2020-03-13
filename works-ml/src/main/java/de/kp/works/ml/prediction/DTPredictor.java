@@ -42,7 +42,11 @@ import de.kp.works.ml.regression.DTRRecorder;
 @Description("A prediction stage that leverages a trained Apache Spark ML Decision Tree classifier or regressor model. "
 		+ "The model type parameter determines whether this stage predicts from a classifier or regressor model.")
 public class DTPredictor extends PredictorCompute {
-
+	/*
+	 * In case of categories or classes that are described by String, this predictor
+	 * stage has to be followed by a StringIndexer feature stage to transform Double
+	 * labels back into Strings.
+	 */
 	private static final long serialVersionUID = 4611875710426366606L;
 
 	private DTPredictorConfig config;
@@ -57,7 +61,7 @@ public class DTPredictor extends PredictorCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
-
+		
 		if (config.modelType.equals("classifier")) {
 
 			classifier = new DTCRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
