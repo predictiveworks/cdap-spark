@@ -62,11 +62,21 @@
 	</dependency>
  
     <!-- https://mvnrepository.com/artifact/com.intel.analytics.bigdl/bigdl-SPARK -->
+    
+    <!-- 
     <dependency>
       <groupId>com.intel.analytics.bigdl</groupId>
       <artifactId>bigdl-SPARK_2.1</artifactId>
       <version>${bigdl.version}</version>
-    </dependency>  
+    </dependency>
+    -->
+<!-- https://mvnrepository.com/artifact/com.intel.analytics.zoo/analytics-zoo-bigdl_0.10.0-spark -->
+<dependency>
+    <groupId>com.intel.analytics.zoo</groupId>
+    <artifactId>analytics-zoo-bigdl_0.10.0-spark_2.1.1</artifactId>
+    <version>0.7.0</version>
+</dependency>
+      
   </dependencies>
    
   <build>

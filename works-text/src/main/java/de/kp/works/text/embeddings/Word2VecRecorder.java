@@ -39,46 +39,29 @@ public class Word2VecRecorder extends TextRecorder {
 	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextFS(context);
-		Table table = SparkMLManager.getTextTable(context);
-		
-		return read(fs, table, modelName, modelStage, modelOption);
-	}
-	
-	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTextFS(context);
-		Table table = SparkMLManager.getTextTable(context);
-		
-		return read(fs, table, modelName, modelStage, modelOption);
-	}
-		
-	private Word2VecModel read(FileSet fs, Table table, String modelName, String modelStage, String modelOption) throws Exception {
-
 		String algorithmName = Algorithms.WORD2VEC;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return Word2VecModel.load(modelPath);
-		
+
+	}
+	
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String algorithmName = Algorithms.WORD2VEC;
+
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
+		/*
+		 * Leverage Apache Spark mechanism to read the Word2Vec model
+		 * from a model specific file set
+		 */
+		return Word2VecModel.load(modelPath);
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,

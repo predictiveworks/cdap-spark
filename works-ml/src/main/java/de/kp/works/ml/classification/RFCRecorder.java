@@ -34,32 +34,14 @@ public class RFCRecorder extends ClassifierRecorder {
 
 	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		FileSet fs = SparkMLManager.getClassificationFS(context);
-		Table table = SparkMLManager.getClassificationTable(context);
-
 		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null)
-			return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the RandomForest model from a model
 		 * specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return RandomForestClassificationModel.load(modelPath);
 
 	}

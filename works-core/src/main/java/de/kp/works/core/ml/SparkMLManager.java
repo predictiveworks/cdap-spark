@@ -685,6 +685,14 @@ public class SparkMLManager {
 		 */
 		fields.add(Schema.Field.of("timestamp", Schema.of(Schema.Type.LONG)));
 		/*
+		 * The unique identifier of a certain machine intelligence
+		 * model; this identifier is is used as a model reference
+		 * for each computed prediction. 
+		 * 
+		 * This enables to build a common predictive graph
+		 */
+		fields.add(Schema.Field.of("id", Schema.of(Schema.Type.STRING)));		
+		/*
 		 * The name of a certain ML model
 		 */
 		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));

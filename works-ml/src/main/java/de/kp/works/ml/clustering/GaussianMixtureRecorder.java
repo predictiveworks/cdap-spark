@@ -33,32 +33,14 @@ public class GaussianMixtureRecorder extends ClusterRecorder {
 
 	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		Table table = SparkMLManager.getClusteringTable(context);
-
 		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null)
-			return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the GaussianMixture clustering model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return GaussianMixtureModel.load(modelPath);
 
 	}

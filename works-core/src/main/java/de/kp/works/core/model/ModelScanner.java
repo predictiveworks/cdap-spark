@@ -28,9 +28,7 @@ import de.kp.works.core.Algorithms;
 
 public class ModelScanner {
 
-	public String bestClassifier(Table table, String algoName, String modelName, String modelStage) {
-
-		String fsPath = null;
+	public ModelProfile bestClassifier(Table table, String algoName, String modelName, String modelStage) {
 		/*
 		 * All classifiers are evaluated leveraging the same evaluator, i.e. no
 		 * distinction between different algorithms is requied
@@ -61,14 +59,11 @@ public class ModelScanner {
 
 		}
 
-		fsPath = ModelFinder.findClassifier(algoName, metrics);
-		return fsPath;
+		return ModelFinder.findClassifier(algoName, metrics);
 
 	}
 
-	public String bestCluster(Table table, String algoName, String modelName, String modelStage) {
-
-		String fsPath = null;
+	public ModelProfile bestCluster(Table table, String algoName, String modelName, String modelStage) {
 
 		List<ClusterMetric> metrics = new ArrayList<>();
 		Row row;
@@ -97,39 +92,28 @@ public class ModelScanner {
 
 		}
 		
-		fsPath = ModelFinder.findCluster(algoName, metrics);
-		return fsPath;
+		return ModelFinder.findCluster(algoName, metrics);
 		
 	}
 
-	public String bestFeature(Table table, String algoName, String modelName, String modelStage) {
-		/*
-		 * Feature models do not have any evaluation metric assign
-		 */
-		throw new IllegalArgumentException("Determine the best feature model is not supported.");
-
+	public ModelProfile bestFeature(Table table, String algoName, String modelName, String modelStage) {
+		return null;
 	}
 
-	public String bestRecommender(Table table, String algoName, String modelName, String modelStage) {
+	public ModelProfile bestRecommender(Table table, String algoName, String modelName, String modelStage) {
 
-		String fsPath = null;
 		switch (algoName) {
 		case Algorithms.ALS: {
-			fsPath = bestRegressor(table, algoName, modelName, modelStage);
-			break;
+			return bestRegressor(table, algoName, modelName, modelStage);
 		}
 		default:
-			throw new IllegalArgumentException(
-					String.format("Searching for the best recommender model is not supported for : %s.", algoName));
+			return null;
 		}
-
-		return fsPath;
 
 	}
 
-	public String bestRegressor(Table table, String algoName, String modelName, String modelStage) {
+	public ModelProfile bestRegressor(Table table, String algoName, String modelName, String modelStage) {
 
-		String fsPath = null;
 		/*
 		 * All regressors are evaluated leveraging the same evaluator, i.e. no
 		 * distinction between different algorithms is requied
@@ -161,35 +145,28 @@ public class ModelScanner {
 
 		}
 		
-		fsPath = ModelFinder.findRegressor(algoName, metrics);
-		return fsPath;
+		return ModelFinder.findRegressor(algoName, metrics);
 		
 	}
 
-	public String bestText(Table table, String algoName, String modelName, String modelStage) {
+	public ModelProfile bestText(Table table, String algoName, String modelName, String modelStage) {
 
-		String fsPath = null;
 		switch (algoName) {
 
 		case Algorithms.VIVEKN_SENTIMENT: {
-			fsPath = bestRegressor(table, algoName, modelName, modelStage);
-			break;
+			return bestRegressor(table, algoName, modelName, modelStage);
 		}
 		default:
-			throw new IllegalArgumentException(
-					String.format("Searching for best natural language model is not supported for : %s.", algoName));
+			return null;
 		}
 
-		return fsPath;
 	}
 
-	public String bestTime(Table table, String algoName, String modelName, String modelStage) {
+	public ModelProfile bestTime(Table table, String algoName, String modelName, String modelStage) {
 
-		String fsPath = null;
 		switch (algoName) {
 		case Algorithms.ACF: {
-			throw new IllegalArgumentException(
-					String.format("Searching for best time series model is not supported for : %s.", algoName));
+			return null;
 		}
 		case Algorithms.AR:
 		case Algorithms.ARIMA:
@@ -202,14 +179,11 @@ public class ModelScanner {
 		case Algorithms.MA:
 		case Algorithms.RANDOM_FOREST_TREE:
 		case Algorithms.YULE_WALKER: {
-			fsPath = bestRegressor(table, algoName, modelName, modelStage);
-			break;
+			return bestRegressor(table, algoName, modelName, modelStage);
 		}
 		default:
-			throw new IllegalArgumentException(
-					String.format("Searching for best time series model is not supported for : %s.", algoName));
+			return null;
 		}
 
-		return fsPath;
 	}
 }

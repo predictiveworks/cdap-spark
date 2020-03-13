@@ -36,125 +36,57 @@ public class ARRecorder extends TimeRecorder {
 	/** READ **/
 	
 	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.AR;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoRegression model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return AutoRegressionModel.load(modelPath);
 		
 	}
 	
 	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.AUTO_AR;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoAR model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return AutoARModel.load(modelPath);
 		
 	}
 	
 	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.DIFF_AR;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DiffAutoRegression model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return DiffAutoRegressionModel.load(modelPath);
 		
 	}
 	
 	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.YULE_WALKER;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARYuleWalker model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return ARYuleWalkerModel.load(modelPath);
 		
 	}

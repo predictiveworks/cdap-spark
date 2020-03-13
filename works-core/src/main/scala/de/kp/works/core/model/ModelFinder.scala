@@ -36,8 +36,8 @@ object ModelFinder extends MinMaxFinder {
    * a single value and the best model is determined from
    * the minimum value of the summed error
    */
-  def findClassifier(algoName: String, metrics: JList[ClassifierMetric]): String = {
-    var fsPath: String = null
+  def findClassifier(algoName: String, metrics: JList[ClassifierMetric]): ModelProfile = {
+    
     /*
      * STEP #1: Determine the minimum and maximum values 
      * for each metric metric to build normalized metric 
@@ -98,20 +98,17 @@ object ModelFinder extends MinMaxFinder {
         if (weightedFPR_max == 0D) 0D else Math.abs((weightedFPR_max - metric.weightedFalsePositiveRate) / weightedFPR_max)
         
       val err = accuracy + f1 + weightedFMeasure + weightedPrecision + weightedRecall + weightedFPR
-      (metric.fsPath, err)
+      (metric.fsPath, metric.id, err)
       
     }).toArray
              
-    val minimum = scaled.sortBy(_._2).head
-    fsPath = minimum._1
-    
-    fsPath
+    val minimum = scaled.sortBy(_._3).head
+    new ModelProfile(minimum._1, minimum._2)
     
   }
 
-  def findCluster(algoName: String, metrics: JList[ClusterMetric]): String = {
+  def findCluster(algoName: String, metrics: JList[ClusterMetric]): ModelProfile = {
 
-    var fsPath:String = null
     algoName match {
       case 
       Algorithms.BISECTING_KMEANS | 
@@ -131,10 +128,10 @@ object ModelFinder extends MinMaxFinder {
 			   * euclidean distance to determine the best cluster model
 			   */
         val ary = metrics
-          .map(metric => (metric.fsPath, metric.silhouette_euclidean)).toArray
+          .map(metric => (metric.fsPath, metric.id, metric.silhouette_euclidean)).toArray
          
-        val maximum = ary.sortBy(_._2).last
-        if (maximum._2 > 0) fsPath = maximum._1
+        val maximum = ary.sortBy(_._3).last    
+        new ModelProfile(maximum._1, maximum._2)
        
       }
       case Algorithms.LATENT_DIRICHLET_ALLOCATION => {  
@@ -164,17 +161,15 @@ object ModelFinder extends MinMaxFinder {
             if (perplexity_max == 0D) 0D else Math.abs((perplexity_min - metric.perplexity) / perplexity_max)
        
           val err = likelihood + perplexity
-          (metric.fsPath, err)
+          (metric.fsPath, metric.id, err)
 
         }).toArray
          
-        val minimum = scaled.sortBy(_._2).head
-        fsPath = minimum._1
+        val minimum = scaled.sortBy(_._3).head
+        new ModelProfile(minimum._1, minimum._2)
           
       }
     }
-
-    fsPath
 
   }
   /*
@@ -188,9 +183,8 @@ object ModelFinder extends MinMaxFinder {
    * a single value and the best model is determined from
    * the minimum value of the summed error
    */
-  def findRegressor(algoName: String, metrics: JList[RegressorMetric]): String = {
+  def findRegressor(algoName: String, metrics: JList[RegressorMetric]): ModelProfile = {
     
-    var fsPath: String = null
     /*
      * STEP #1: Determine the minimum and maximum values 
      * for each metric metric to build normalized metric 
@@ -231,14 +225,12 @@ object ModelFinder extends MinMaxFinder {
         if (r2_max == 0D) 0D else Math.abs((r2_min - metric.r2) /r2_max)
        
       val err = rsme + mae + mse + r2
-      (metric.fsPath, err)
+      (metric.fsPath, metric.id, err)
       
     }).toArray
          
-    val minimum = scaled.sortBy(_._2).head
-    fsPath = minimum._1
-    
-    fsPath
+    val minimum = scaled.sortBy(_._3).head
+    new ModelProfile(minimum._1, minimum._2)
 
   }
 

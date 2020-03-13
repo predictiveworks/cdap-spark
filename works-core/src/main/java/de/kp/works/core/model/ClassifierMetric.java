@@ -19,10 +19,11 @@ import de.kp.works.core.Names;
 
 public class ClassifierMetric {
 	/*
-	 * The target variable of the model scan to 
+	 * The target variables of the model scan to 
 	 * determine the best classifier model
 	 */
 	public String fsPath;
+	public String id;
 	
 	public Long ts;
 	public Double accuracy;
@@ -36,6 +37,8 @@ public class ClassifierMetric {
 	public void fromRow(Row row) {
 		
 		fsPath = row.getString(Names.FS_PATH);
+		id = row.getString(Names.ID);
+
 		ts = row.getLong(Names.TIMESTAMP);
 
 		accuracy = row.getDouble(Names.ACCURACY);

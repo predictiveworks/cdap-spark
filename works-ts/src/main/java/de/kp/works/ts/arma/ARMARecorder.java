@@ -34,63 +34,29 @@ public class ARMARecorder extends TimeRecorder {
 	/** READ **/
 	
 	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.ARMA;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARMA model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return ARMAModel.load(modelPath);
 		
 	}
 	
 	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		FileSet fs = SparkMLManager.getTimeFS(context);
-		Table table = SparkMLManager.getTimesTable(context);
 		
 		String algorithmName = Algorithms.AUTO_ARMA;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoARMA model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return AutoARMAModel.load(modelPath);
 		
 	}

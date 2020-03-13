@@ -18,10 +18,11 @@ import de.kp.works.core.Names;
 
 public class RegressorMetric {
 	/*
-	 * The target variable of the model scan to 
+	 * The target variables of the model scan to 
 	 * determine the best classifier model
 	 */
 	public String fsPath;
+	public String id;
 	
 	public Long ts;
 
@@ -37,6 +38,8 @@ public class RegressorMetric {
 	public void fromRow(Row row) {
 		
 		fsPath = row.getString(Names.FS_PATH);
+		id = row.getString(Names.ID);
+		
 		ts = row.getLong(Names.TIMESTAMP);
 
 		rsme = row.getDouble(Names.RSME);

@@ -20,8 +20,12 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import co.cask.cdap.api.common.Bytes;
+import co.cask.cdap.api.dataset.lib.FileSet;
 import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
+import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.model.ModelProfile;
 import de.kp.works.core.model.ModelScanner;
 
 public class TimeRecorder extends AbstractRecorder {
@@ -29,14 +33,38 @@ public class TimeRecorder extends AbstractRecorder {
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	protected String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
+	public String getModelPath(SparkExecutionPluginContext context, String algorithmName, String modelName, String modelStage, String modelOption) throws Exception {
+
+		FileSet fs = SparkMLManager.getTimeFS(context);
+		Table table = SparkMLManager.getTimesTable(context);
+		
+		switch (modelOption) {
+		case "best" : {
+			profile = getBestModelProfile(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		case "latest" : {
+			profile = getLatestModelProfile(table, algorithmName, modelName, modelStage);
+			break;
+		}
+		default:
+			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
+		if (profile.fsPath == null) return null;
+		return fs.getBaseLocation().append(profile.fsPath).toURI().getPath();
+		
+	}
+	
+	protected ModelProfile getBestModelProfile(Table table, String algorithmName, String modelName, String modelStage) {
 		
 		ModelScanner scanner = new ModelScanner();
-		String fsPath = scanner.bestTime(table, algorithmName, modelName, modelStage);
-		if (fsPath == null)
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
+
+		ModelProfile profile = scanner.bestTime(table, algorithmName, modelName, modelStage);
+		if (profile == null)
+			profile = getLatestModelProfile(table, algorithmName, modelName, modelStage);
 		
-		return fsPath;
+		return profile;
 
 	}
 
@@ -50,18 +78,22 @@ public class TimeRecorder extends AbstractRecorder {
 		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
 				modelParams);
 
-		/*
-		 * Unpack regression metrics to build time series of metric values
-		 */
-		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
-
-		Double rsme = (Double) metrics.get("rsme");
-		Double mse = (Double) metrics.get("mse");
-		Double mae = (Double) metrics.get("mae");
-		Double r2 = (Double) metrics.get("r2");
-
-		table.put(row.add("rsme", rsme).add("mse", mse).add("mae", mae).add("r2", r2));
-
+		if (algorithmName.equals(Algorithms.ACF)) {
+			table.put(row.add("metrics", modelMetrics));
+			
+		} else {
+			/*
+			 * Unpack regression metrics to build time series of metric values
+			 */
+			Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
+	
+			Double rsme = (Double) metrics.get("rsme");
+			Double mse = (Double) metrics.get("mse");
+			Double mae = (Double) metrics.get("mae");
+			Double r2 = (Double) metrics.get("r2");
+	
+			table.put(row.add("rsme", rsme).add("mse", mse).add("mae", mae).add("r2", r2));
+		}
 	}
 
 }

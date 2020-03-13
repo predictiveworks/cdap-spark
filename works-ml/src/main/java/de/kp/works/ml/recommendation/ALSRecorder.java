@@ -33,54 +33,24 @@ import co.cask.cdap.api.dataset.table.Put;
 import co.cask.cdap.api.dataset.table.Table;
 import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.AbstractRecorder;
+import de.kp.works.core.ml.RecommenderRecorder;
 import de.kp.works.core.ml.SparkMLManager;
-import de.kp.works.core.model.ModelScanner;
 
-public class ALSRecorder extends AbstractRecorder {
+public class ALSRecorder extends RecommenderRecorder {
 
 	private Type metricsType = new TypeToken<Map<String, Object>>() {
 	}.getType();
 
-	private String getBestModelFsPath(Table table, String algorithmName, String modelName, String modelStage) {
-		
-		ModelScanner scanner = new ModelScanner();
-		String fsPath = scanner.bestRecommender(table, algorithmName, modelName, modelStage);
-		if (fsPath == null)
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-		
-		return fsPath;
-
-	}
-
 	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		FileSet fs = SparkMLManager.getRecommendationFS(context);
-		Table table = SparkMLManager.getRecommendationTable(context);
-
 		String algorithmName = Algorithms.ALS;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null)
-			return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Bisecting KMeans clustering model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return ALSModel.load(modelPath);
 
 	}

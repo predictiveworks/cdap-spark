@@ -33,31 +33,14 @@ public class DependencyRecorder extends TextRecorder {
 
 	public DependencyParserModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		FileSet fs = SparkMLManager.getTextFS(context);
-		Table table = SparkMLManager.getTextTable(context);
-
 		String algorithmName = Algorithms.DEPENDENCY_PARSER;
-		
-		String fsPath = null;
-		switch (modelOption) {
-		case "best" : {
-			fsPath = getBestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		case "latest" : {
-			fsPath = getLatestModelFsPath(table, algorithmName, modelName, modelStage);
-			break;
-		}
-		default:
-			throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
-		}
 
-		if (fsPath == null) return null;
+		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DependencyParser model
 		 * from a model specific file set
 		 */
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		return (DependencyParserModel)DependencyParserModel.load(modelPath);
 		
 	}
