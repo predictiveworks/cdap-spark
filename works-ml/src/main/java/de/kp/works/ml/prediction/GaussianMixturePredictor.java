@@ -61,10 +61,21 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new GaussianMixtureRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+		GaussianMixtureRecorder recorder = new GaussianMixtureRecorder();
+		/* 
+		 * STEP #1: Retrieve the trained clustering model
+		 * that refers to the provide name, stage and option
+		 */
+		model = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
+
+		/* 
+		 * STEP #2: Retrieve the profile of the trained
+		 * clustering model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -82,8 +93,9 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		if (inputSchema != null) {
 			validateSchema(inputSchema);
 			/*
-			 * In cases where the input schema is explicitly provided, we determine the
-			 * output schema by explicitly adding the prediction column
+			 * In cases where the input schema is explicitly provided, we determine 
+			 * the output schema by explicitly adding the prediction & probability 
+			 * column; also the annotation column is added
 			 */
 			outputSchema = getOutputSchema(inputSchema, config.predictionCol, config.probabilityCol);
 			stageConfigurer.setOutputSchema(outputSchema);
@@ -99,6 +111,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of(probabilityField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
 		
+		fields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
@@ -135,7 +148,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		Dataset<Row> predictions = MLUtils.devectorize(model.transform(vectorset), "_probability", probabilityCol);
 
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return output;
+		return annotate(output);
 
 	}
 

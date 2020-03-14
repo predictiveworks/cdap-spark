@@ -40,9 +40,21 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	 */
 	protected Schema inputSchema;
 	protected Schema outputSchema;
-
+	/*
+	 * The model options supported to either determine the
+	 * 'best' or the 'latest' model: 
+	 * 
+	 * The best model is computed as that model with the 
+	 * smallest sum deviation computed from its deviations
+	 * from the best available metric values.  
+	 */
 	protected static final String BEST_MODEL = "best";
 	protected static final String LATEST_MODEL = "latest";
+	/*
+	 * The name of the column that is used to annotate the
+	 * model profile to each prediction result 
+	 */
+	protected static final String ANNOTATION_COL = "annotation";
 	
 	public BaseCompute() {
 	}

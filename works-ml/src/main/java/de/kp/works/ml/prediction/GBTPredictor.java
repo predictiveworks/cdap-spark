@@ -61,17 +61,39 @@ public class GBTPredictor extends PredictorCompute {
 
 		if (config.modelType.equals("classifier")) {
 
-			classifier = new GBCRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+			GBCRecorder recorder = new GBCRecorder();
+			/* 
+			 * STEP #1: Retrieve the trained classification model
+			 * that refers to the provide name, stage and option
+			 */
+			classifier = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 			if (classifier == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A classifier model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
 
+			/* 
+			 * STEP #2: Retrieve the profile of the trained
+			 * classification model for subsequent annotation
+			 */
+			profile = recorder.getProfile();
+
 		} else if (config.modelType.equals("regressor")) {
 
-			regressor = new GBRRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+			GBRRecorder recorder = new GBRRecorder();
+			/* 
+			 * STEP #1: Retrieve the trained regression model
+			 * that refers to the provide name, stage and option
+			 */
+			regressor = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
+
+			/* 
+			 * STEP #2: Retrieve the profile of the trained
+			 * regression model for subsequent annotation
+			 */
+			profile = recorder.getProfile();
 
 		} else
 			throw new IllegalArgumentException(
@@ -143,9 +165,12 @@ public class GBTPredictor extends PredictorCompute {
 			predictions = regressor.transform(vectorset);
 
 		}
-
+		/*
+		 * Remove intermediate vector column from predictions
+		 * and annotate each prediction with the model profile
+		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return output;
+		return annotate(output);
 
 	}
 

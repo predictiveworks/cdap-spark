@@ -59,11 +59,22 @@ public class ALSPredictor extends RecommenderCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((ALSConfig) config).validate();
 
-		model = new ALSRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+		ALSRecorder recorder = new ALSRecorder();
+		/* 
+		 * STEP #1: Retrieve the trained recommendation model
+		 * that refers to the provide name, stage and option
+		 */
+		model = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A recommendation model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
+
+		/* 
+		 * STEP #2: Retrieve the profile of the trained
+		 * recommendation model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -141,8 +152,8 @@ public class ALSPredictor extends RecommenderCompute {
 		 * Apache Spark describes the predicted ratings as Float; to be compliant with
 		 * CDAP output schema, we transform into Double
 		 */
-		return predictions.withColumn(config.predictionCol,
-				col(config.predictionCol).cast(DataTypes.DoubleType));
+		return annotate(predictions.withColumn(config.predictionCol,
+				col(config.predictionCol).cast(DataTypes.DoubleType)));
 
 	}
 

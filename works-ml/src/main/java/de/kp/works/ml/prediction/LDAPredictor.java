@@ -57,10 +57,21 @@ public class LDAPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LDARecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+		LDARecorder recorder = new LDARecorder();
+		/* 
+		 * STEP #1: Retrieve the trained clustering model
+		 * that refers to the provide name, stage and option
+		 */
+		model = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A clustering model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
+
+		/* 
+		 * STEP #2: Retrieve the profile of the trained
+		 * clustering model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -133,9 +144,12 @@ public class LDAPredictor extends PredictorCompute {
 		 *
 		 */		
 		Dataset<Row> predictions = MLUtils.devectorize(model.transform(vectorset), vectorCol, predictionCol);
-
+		/*
+		 * Remove intermediate vector column from predictions
+		 * and annotate each prediction with the model profile
+		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return output;
+		return annotate(output);
 
 	}
 

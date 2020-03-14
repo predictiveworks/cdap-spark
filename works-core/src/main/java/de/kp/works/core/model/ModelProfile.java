@@ -21,10 +21,10 @@ package de.kp.works.core.model;
 public class ModelProfile {
 
 	public String fsPath;
-	public String modelId;
+	public String id;
 	
-	public ModelProfile(String fsPath, String modelId) {
+	public ModelProfile(String fsPath, String id) {
 		this.fsPath = fsPath;
-		this.modelId = modelId;
+		this.id = id;
 	}
 }
