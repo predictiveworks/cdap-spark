@@ -18,13 +18,59 @@ package de.kp.works.core.time;
  * 
  */
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.functions;
+
+import com.google.gson.Gson;
+
 import co.cask.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseCompute;
+import de.kp.works.core.model.ModelProfile;
 
 public class TimeCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -1433147745214918467L;
+	/*
+	 * Retrieving the time model that matches the user-defined model options
+	 * (either best or latest) also determines the model profile; this profile 
+	 * is used to assign the unique model identifier to each forecast result
+	 */
+	protected ModelProfile profile;
+	/*
+	 * The status field describes whether a certain observation
+	 * is forecasted or measured
+	 */
+	protected static final String STATUS_FIELD = "status";
 
 	protected Schema inputSchema;
+	/**
+	 * A helper method to enrich a prediction result
+	 * with model profile metadata
+	 */
+	protected Dataset<Row> annotate(Dataset<Row> predictions) {
+		
+		String annotation = profileToGson();
+		return predictions.withColumn(ANNOTATION_COL, functions.lit(annotation));
+
+	}
+	/*
+	 * The current implementation is restricted to
+	 * annotate the unique model identifier
+	 */
+	protected String profileToGson() {
+
+		Map<String, Object> model = new HashMap<>();
+		model.put("id", profile.id);
+
+		Map<String, Object> annotation = new HashMap<>();
+		annotation.put("model", model);
+
+	    return new Gson().toJson(annotation);
+
+	}
 
 }

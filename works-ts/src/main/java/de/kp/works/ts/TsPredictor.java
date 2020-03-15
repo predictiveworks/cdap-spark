@@ -45,9 +45,9 @@ public class TsPredictor extends TimeCompute {
 	private static final long serialVersionUID = 3141012240338918366L;
 
 	private TsPredictorConfig config;
-
-	private RandomForestRegressionModel model;
-	private RFRRecorder manager;
+	private RFRRecorder recorder;
+	
+	private RandomForestRegressionModel regressor;
 
 	public TsPredictor(TsPredictorConfig config) {
 		this.config = config;
@@ -57,10 +57,21 @@ public class TsPredictor extends TimeCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-			model = manager.read(context, config.modelName, config.modelStage, config.modelOption);
-			if (model == null)
+			recorder = new RFRRecorder();
+			/* 
+			 * STEP #1: Retrieve the trained regression model
+			 * that refers to the provide name, stage and option
+			 */
+			regressor = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
+			if (regressor == null)
 				throw new IllegalArgumentException(String
 						.format("[%s] A regressor model with name '%s' does not exist.", this.getClass().getName(), config.modelName));
+
+			/* 
+			 * STEP #2: Retrieve the profile of the trained
+			 * regression model for subsequent annotation
+			 */
+			profile = recorder.getProfile();
 
 	}
 
@@ -99,7 +110,7 @@ public class TsPredictor extends TimeCompute {
 		 * Retrieve time lag from model metadata to leverage
 		 * the same number of features when trained the model
 		 */
-		Integer timeLag = (Integer)manager.getParam(context, config.modelName, "timeLag");
+		Integer timeLag = (Integer)recorder.getParam(context, config.modelName, "timeLag");
 		/*
 		 * Vectorization of the provided dataset
 		 */		
@@ -113,13 +124,16 @@ public class TsPredictor extends TimeCompute {
 		/*
 		 * Leverage trained Random Forest regressor model
 		 */
-		model.setFeaturesCol("features");
-		model.setPredictionCol(config.predictionCol);
+		regressor.setFeaturesCol("features");
+		regressor.setPredictionCol(config.predictionCol);
 
-		Dataset<Row> predictions = model.transform(vectorset);	    
-
+		Dataset<Row> predictions = regressor.transform(vectorset);	    
+		/*
+		 * Remove intermediate features column from predictions
+		 * and annotate each prediction with the model profile
+		 */
 		Dataset<Row> output = predictions.drop("features");
-		return output;
+		return annotate(output);
 
 	}
 	

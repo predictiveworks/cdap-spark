@@ -52,11 +52,22 @@ public class TsYuleWalker extends ARCompute {
 		
 		config.validate();
 
-		model = new ARRecorder().readYuleWalker(context, config.modelName, config.modelStage, config.modelOption);
+		ARRecorder recorder = new ARRecorder();
+		/* 
+		 * STEP #1: Retrieve the trained regression model
+		 * that refers to the provide name, stage and option
+		 */
+		model = recorder.readYuleWalker(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Yule Walker AutoRegression model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
+
+		/* 
+		 * STEP #2: Retrieve the profile of the trained
+		 * regression model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -94,7 +105,7 @@ public class TsYuleWalker extends ARCompute {
 		model.setValueCol(computeConfig.valueCol);
 
 		ForecastAssembler assembler = new ForecastAssembler(config.timeCol, config.valueCol, STATUS_FIELD);
-		return assembler.assemble(source,model.forecast(source, config.steps));
+		return annotate(assembler.assemble(source,model.forecast(source, config.steps)));
 		
 	}
 

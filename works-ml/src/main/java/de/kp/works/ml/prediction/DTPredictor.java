@@ -157,7 +157,7 @@ public class DTPredictor extends PredictorCompute {
 		Dataset<Row> predictions = null;
 
 		if (config.modelType.equals("classifier")) {
-
+			
 			classifier.setFeaturesCol(vectorCol);
 			classifier.setPredictionCol(predictionCol);
 
