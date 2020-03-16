@@ -18,9 +18,6 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.IDFModel;
 import org.apache.spark.sql.Dataset;
@@ -51,25 +48,32 @@ public class TFIDF extends FeatureCompute {
 	private TFIDFConfig config;
 	
 	private IDFModel model;
-	private TFIDFRecorder manager;
+	private TFIDFRecorder recorder;
 
 	public TFIDF(TFIDFConfig config) {
 		this.config = config;
-		this.manager = new TFIDFRecorder();
+		this.recorder = new TFIDFRecorder();
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
-
 		/*
-		 * TFIDF models do not have any metrics, i.e. there
-		 * is no model option: always the latest model is used
+		 * STEP #1: Retrieve the trained feature model that refers 
+		 * to the provide name, stage and option. TFIDF models do 
+		 * not have any metrics, i.e. there is no model option: 
+		 * always the latest model is used
 		 */
-		model = manager.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = recorder.read(context, config.modelName, config.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
+
+		/*
+		 * STEP #2: Retrieve the profile of the trained feature 
+		 * model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -91,7 +95,7 @@ public class TFIDF extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.outputCol);
+			outputSchema = getArrayOutputSchema(inputSchema, config.outputCol, Schema.Type.DOUBLE);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -117,7 +121,7 @@ public class TFIDF extends FeatureCompute {
 		 * Determine number of features from TF-IDF model
 		 * metadata information
 		 */
-		Integer numFeatures = (Integer)manager.getParam(context, config.modelName, "numFeatures");
+		Integer numFeatures = (Integer)recorder.getParam(context, config.modelName, "numFeatures");
 		transformer.setNumFeatures(numFeatures);
 
 		Dataset<Row> transformedTF = transformer.transform(source);
@@ -132,22 +136,9 @@ public class TFIDF extends FeatureCompute {
 		Dataset<Row> transformed = model.transform(transformedTF).drop("_features");		
 
 		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
-		return output;
+		return annotate(output, FEATURE_TYPE);
 
 	}
-
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	public Schema getOutputSchema(Schema inputSchema, String outputField) {
-
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
-		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
-
-	}	
 	
 	public static class TFIDFConfig extends FeatureConfig {
 

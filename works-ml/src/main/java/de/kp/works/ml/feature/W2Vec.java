@@ -18,9 +18,6 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.spark.ml.feature.Word2VecModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -57,14 +54,23 @@ public class W2Vec extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
+		W2VecRecorder recorder = new W2VecRecorder();
 		/*
-		 * Word2Vec models do not have any metrics, i.e. there
-		 * is no model option: always the latest model is used
+		 * STEP #1: Retrieve the trained feature model that refers 
+		 * to the provide name, stage and option. Word2Vec models do 
+		 * not have any metrics, i.e. there is no model option: 
+		 * always the latest model is used
 		 */
-		model = new W2VecRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = recorder.read(context, config.modelName, config.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
+
+		/*
+		 * STEP #2: Retrieve the profile of the trained feature 
+		 * model for subsequent annotation
+		 */
+		profile = recorder.getProfile();
 
 	}
 
@@ -86,7 +92,7 @@ public class W2Vec extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.outputCol);
+			outputSchema = getArrayOutputSchema(inputSchema, config.outputCol, Schema.Type.DOUBLE);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -117,22 +123,9 @@ public class W2Vec extends FeatureCompute {
 		Dataset<Row> transformed = model.transform(source);
 
 		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
-		return output;
+		return annotate(output, FEATURE_TYPE);
 
 	}
-
-	/**
-	 * A helper method to compute the output schema in that use cases where an input
-	 * schema is explicitly given
-	 */
-	public Schema getOutputSchema(Schema inputSchema, String outputField) {
-
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
-		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
-		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);
-
-	}	
 
 	public static class W2VecConfig extends FeatureConfig {
 

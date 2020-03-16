@@ -31,7 +31,15 @@ public class ModelProfile {
 	 */
 	public Double trustability;
 	
-	public ModelProfile() {}
+	public ModelProfile() {
+		/*
+		 * The default trustability is set to 1.0. This value
+		 * is used for models that were not (or could not be)
+		 * evaluated. 
+		 */
+		trustability = 1.0;
+		
+	}
 	
 	public ModelProfile setId(String id) {
 		this.id = id;
