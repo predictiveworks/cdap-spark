@@ -46,12 +46,12 @@ public class GBTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4445941695722336690L;
 
-	private GBTPredictorConfig config;
+	private PredictorConfig config;
 
 	private GBTClassificationModel classifier;
 	private GBTRegressionModel regressor;
 
-	public GBTPredictor(GBTPredictorConfig config) {
+	public GBTPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -170,23 +170,15 @@ public class GBTPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		
+		String annotationType = config.modelType.equals("classifier") ? CLASSIFIER_TYPE : REGRESSOR_TYPE;
+		return annotate(output, annotationType);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class GBTPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = 8253356507092880481L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

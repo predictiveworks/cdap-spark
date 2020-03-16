@@ -45,18 +45,19 @@ public class RFPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -566627767807912994L;
 
-	private RFPredictorConfig config;
+	private PredictorConfig config;
 
 	private RandomForestClassificationModel classifier;
 	private RandomForestRegressionModel regressor;
 
-	public RFPredictor(RFPredictorConfig config) {
+	public RFPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((RFPredictorConfig)config).validate();
+
+		config.validate();
 
 		if (config.modelType.equals("classifier")) {
 			
@@ -170,23 +171,15 @@ public class RFPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		
+		String annotationType = config.modelType.equals("classifier") ? CLASSIFIER_TYPE : REGRESSOR_TYPE;
+		return annotate(output, annotationType);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class RFPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = 7210199521231877169L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

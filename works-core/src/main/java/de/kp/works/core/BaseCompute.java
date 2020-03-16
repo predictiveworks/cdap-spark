@@ -145,4 +145,5 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 		throw new Exception("[BaseCompute] Not implemented");
 	}
+	
 }

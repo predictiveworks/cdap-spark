@@ -101,9 +101,27 @@ object ModelFinder extends MinMaxFinder {
       (metric.fsPath, metric.id, err)
       
     }).toArray
-             
-    val minimum = scaled.sortBy(_._3).head
-    new ModelProfile(minimum._1, minimum._2)
+    /*
+     * Determine the best model as that model that has the 
+     * lowest aggregated metric value             
+     */
+    val sorted = scaled.sortBy(_._3)
+    val best = sorted.head
+    /*
+     * Each model is described by a 'trustability' value that
+     * normalizes the aggregated metric value
+     */
+    val min = best._3
+    val max = sorted.last._3
+    
+    val trust = if (max == 0D) 1D else (1 - min / max)
+    
+    val profile = new ModelProfile()
+      .setId(best._2)
+      .setPath(best._1)
+      .setTrustability(trust)
+
+    profile
     
   }
 
@@ -114,24 +132,57 @@ object ModelFinder extends MinMaxFinder {
       Algorithms.BISECTING_KMEANS | 
       Algorithms.GAUSSIAN_MIXTURE | 
       Algorithms.KMEANS => {
+         /*
+         * STEP #1: Determine the minimum and maximum values 
+         * for each metric metric to build normalized metric 
+         * values
+         */
+        val (cosine_min, cosine_max) = clusterMinMax(Names.SILHOUETTE_COSINE, metrics)
+        val (euclidean_min, euclidean_max) = clusterMinMax(Names.SILHOUETTE_EUCLDIAN, metrics)    
         /*
-			   * This cluster algorithms are evaluated using the silhouette measure
-			 	 * provided by Apache Spark ML:
-			   *
-			   * The Silhouette is a measure for the validation of the consistency
-			   * within clusters. It ranges between 1 and -1, where a value close
-			   * to 1 means that the points in a cluster are close to the other points
-			   * in the same cluster and far from the points of the other clusters.
-			   *
-			   * In order to find the best model instance, we therefore look for
-			   * the maximum value. The current implementation is limited to the
-			   * euclidean distance to determine the best cluster model
-			   */
-        val ary = metrics
-          .map(metric => (metric.fsPath, metric.id, metric.silhouette_euclidean)).toArray
+         * STEP #2: Normalize and aggregate each metric
+         * value and build sum of normalize metric 
+         */
+        val scaled = metrics.map(metric => {
          
-        val maximum = ary.sortBy(_._3).last    
-        new ModelProfile(maximum._1, maximum._2)
+          /* COSINE: The smallest scaled deviation from the 
+           * maximum value is best  
+           */
+          val cosine = 
+            if (cosine_max == 0D) 0D else Math.abs((cosine_max - metric.silhouette_cosine) / cosine_max)
+         
+          /* EUCLIDEAN: The smallest scaled deviation from the 
+           * maximum value is best  
+           */
+          val euclidean = 
+            if (euclidean_max == 0D) 0D else Math.abs((euclidean_max - metric.silhouette_euclidean) / euclidean_max)
+       
+          val err = cosine + euclidean
+          (metric.fsPath, metric.id, err)
+
+        }).toArray
+        
+        /*
+         * Determine the best model as that model that has the 
+         * lowest aggregated metric value             
+         */
+        val sorted = scaled.sortBy(_._3)
+        val best = sorted.head
+        /*
+         * Each model is described by a 'trustability' value that
+         * normalizes the aggregated metric value
+         */
+        val min = best._3
+        val max = sorted.last._3
+        
+        val trust = if (max == 0D) 1D else (1 - min / max)
+        
+        val profile = new ModelProfile()
+          .setId(best._2)
+          .setPath(best._1)
+          .setTrustability(trust)
+    
+        profile
        
       }
       case Algorithms.LATENT_DIRICHLET_ALLOCATION => {  
@@ -164,9 +215,29 @@ object ModelFinder extends MinMaxFinder {
           (metric.fsPath, metric.id, err)
 
         }).toArray
-         
-        val minimum = scaled.sortBy(_._3).head
-        new ModelProfile(minimum._1, minimum._2)
+        
+        /*
+         * Determine the best model as that model that has the 
+         * lowest aggregated metric value             
+         */
+        val sorted = scaled.sortBy(_._3)
+        val best = sorted.head
+        /*
+         * Each model is described by a 'trustability' value that
+         * normalizes the aggregated metric value
+         */
+        val min = best._3
+        val max = sorted.last._3
+        
+        val trust = if (max == 0D) 1D else (1 - min / max)
+        
+        val profile = new ModelProfile()
+          .setId(best._2)
+          .setPath(best._1)
+          .setTrustability(trust)
+    
+        profile
+    
           
       }
     }
@@ -228,9 +299,29 @@ object ModelFinder extends MinMaxFinder {
       (metric.fsPath, metric.id, err)
       
     }).toArray
-         
-    val minimum = scaled.sortBy(_._3).head
-    new ModelProfile(minimum._1, minimum._2)
+    
+    /*
+     * Determine the best model as that model that has the 
+     * lowest aggregated metric value             
+     */
+    val sorted = scaled.sortBy(_._3)
+    val best = sorted.head
+    /*
+     * Each model is described by a 'trustability' value that
+     * normalizes the aggregated metric value
+     */
+    val min = best._3
+    val max = sorted.last._3
+    
+    val trust = if (max == 0D) 1D else (1 - min / max)
+    
+    val profile = new ModelProfile()
+      .setId(best._2)
+      .setPath(best._1)
+      .setTrustability(trust)
+
+      profile
+    
 
   }
 

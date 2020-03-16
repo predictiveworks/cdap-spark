@@ -91,6 +91,21 @@ trait MinMaxFinder {
         return (values.min, values.max)
          
       }
+            
+      case Names.SILHOUETTE_COSINE => {
+       
+        val values = metrics.map(_.silhouette_cosine).toArray
+        return (values.min, values.max)
+         
+      }
+            
+      case Names.SILHOUETTE_EUCLDIAN => {
+       
+        val values = metrics.map(_.silhouette_euclidean).toArray
+        return (values.min, values.max)
+         
+      }
+
       case _ => throw new IllegalArgumentException("Unknown cluster metric detected.")      
     }
     

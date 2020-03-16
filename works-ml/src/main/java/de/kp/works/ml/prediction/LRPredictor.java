@@ -42,10 +42,10 @@ public class LRPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -4919226198000991487L;
 
-	private LRPredictorConfig config;
-	private LogisticRegressionModel model;
+	private PredictorConfig config;
+	private LogisticRegressionModel classifier;
 
-	public LRPredictor(LRPredictorConfig config) {
+	public LRPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -58,8 +58,8 @@ public class LRPredictor extends PredictorCompute {
 		 * STEP #1: Retrieve the trained classification model
 		 * that refers to the provide name, stage and option
 		 */
-		model = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
-		if (model == null)
+		classifier = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
+		if (classifier == null)
 			throw new IllegalArgumentException(String.format("[%s] A classifier model with name '%s' does not exist.",
 					this.getClass().getName(), config.modelName));
 
@@ -119,32 +119,22 @@ public class LRPredictor extends PredictorCompute {
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
 
-		model.setFeaturesCol(vectorCol);
-		model.setPredictionCol(predictionCol);
+		classifier.setFeaturesCol(vectorCol);
+		classifier.setPredictionCol(predictionCol);
 
-		Dataset<Row> predictions = model.transform(vectorset);
+		Dataset<Row> predictions = classifier.transform(vectorset);
 		/*
 		 * Remove intermediate vector column from predictions
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, CLASSIFIER_TYPE);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class LRPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

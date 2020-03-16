@@ -133,7 +133,7 @@ public class TsPredictor extends TimeCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop("features");
-		return annotate(output);
+		return annotate(output, REGRESSOR_TYPE);
 
 	}
 	
@@ -152,8 +152,17 @@ public class TsPredictor extends TimeCompute {
 			} else
 				outfields.add(field);
 		}
-		
+
 		outfields.add(Schema.Field.of(config.predictionCol, Schema.of(Schema.Type.DOUBLE)));
+		/* 
+		 * Check whether the input schema already has an 
+		 * annotation field defined; the predictor stage
+		 * may not be the first stage that annotates model
+		 * specific metadata 
+		 */
+		if (inputSchema.getField(ANNOTATION_COL) == null)
+			outfields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));
+		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", outfields);
 
 	}

@@ -42,10 +42,10 @@ public class MLPPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7257380193353979238L;
 
-	private MLPPredictorConfig config;
+	private PredictorConfig config;
 	private MultilayerPerceptronClassificationModel classifier;
 
-	public MLPPredictor(MLPPredictorConfig config) {
+	public MLPPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -129,23 +129,13 @@ public class MLPPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, CLASSIFIER_TYPE);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class MLPPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

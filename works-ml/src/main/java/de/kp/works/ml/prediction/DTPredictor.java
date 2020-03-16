@@ -49,7 +49,7 @@ public class DTPredictor extends PredictorCompute {
 	 */
 	private static final long serialVersionUID = 4611875710426366606L;
 
-	private DTPredictorConfig config;
+	private PredictorConfig config;
 	/*
 	 * Reference to an Apache Spark ML classification or regression model that 
 	 * is used to predict a label (class) from the provided feature vector 
@@ -57,7 +57,7 @@ public class DTPredictor extends PredictorCompute {
 	private DecisionTreeClassificationModel classifier;
 	private DecisionTreeRegressionModel regressor;
 	
-	public DTPredictor(DTPredictorConfig config) {
+	public DTPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -176,7 +176,9 @@ public class DTPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		
+		String annotationType = config.modelType.equals("classifier") ? CLASSIFIER_TYPE : REGRESSOR_TYPE;
+		return annotate(output, annotationType);
 
 	}
 
@@ -185,13 +187,4 @@ public class DTPredictor extends PredictorCompute {
 		config.validateSchema(inputSchema);
 	}
 
-	public static class DTPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = 7210199521231877169L;
-
-		public void validate() {
-			super.validate();
-
-		}
-	}
 }

@@ -18,7 +18,9 @@ package de.kp.works.core.predictor;
  * 
  */
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +30,7 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import co.cask.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseCompute;
@@ -36,6 +39,16 @@ import de.kp.works.core.model.ModelProfile;
 public class PredictorCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -3397323077600081423L;
+
+	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {
+	}.getType();
+	/*
+	 * The annotation type supported by this predictor stage
+	 */
+	protected static final String CLASSIFIER_TYPE = "classifier";
+	protected static final String CLUSTER_TYPE = "cluster";
+	protected static final String REGRESSOR_TYPE = "regressor";
+
 	/*
 	 * Retrieving the prediction model that matches the user-defined model options
 	 * (either best or latest) also determines the model profile; this profile is
@@ -55,9 +68,16 @@ public class PredictorCompute extends BaseCompute {
 	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
 
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
-		
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));
+		
+		/* 
+		 * Check whether the input schema already has an 
+		 * annotation field defined; the predictor stage
+		 * may not be the first stage that annotates model
+		 * specific metadata 
+		 */
+		if (inputSchema.getField(ANNOTATION_COL) == null)
+			fields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
@@ -66,25 +86,80 @@ public class PredictorCompute extends BaseCompute {
 	 * A helper method to enrich a prediction result
 	 * with model profile metadata
 	 */
-	protected Dataset<Row> annotate(Dataset<Row> predictions) {
+	protected Dataset<Row> annotate(Dataset<Row> predictions, String annonType) {
 		
-		String annotation = profileToGson();
+		List<Map<String, Object>> annonItems = new ArrayList<>();
+		/*
+		 * STEP #1: The annotation column is an internal column
+		 * with a pre-defined internal column name. A predictor
+		 * stage may not be the first (or last) stage to enrich
+		 * a certain result with model specific information
+		 */
+		if (hasColumn(predictions, ANNOTATION_COL)) {
+			/*
+			 * The current implementation enriches each row
+			 * with the same annotation; we therefore extract
+			 * them from the fist column
+			 */
+			Integer index = predictions.schema().fieldIndex(ANNOTATION_COL);
+
+			String annotation = predictions.first().getString(index);			
+			annonItems.addAll(annonToList(annotation));
+			
+		}
+		/*
+		 * STEP #2: Compute annotation for the current model
+		 * and add to the list of existing annotations
+		 */
+		annonItems.add(annotateProfile(annonType));
+		/*
+		 * STEP #3: Serialize annotation and enrich each row
+		 * with specified annotations
+		 */
+		String annotation = new Gson().toJson(annonItems);		
 		return predictions.withColumn(ANNOTATION_COL, functions.lit(annotation));
 
 	}
+	
+	protected Boolean hasColumn(Dataset<Row> dataset, String column) {
+
+		try {
+			List<String> columns = Arrays.asList(dataset.columns());
+			return columns.contains(column);
+			
+		} catch(Exception e) {
+			return false;
+		}
+
+	}
+	
+	protected List<Map<String,Object>> annonToList(String annotation) {
+		return new Gson().fromJson(annotation, annotationType);
+	}
+	
 	/*
 	 * The current implementation is restricted to
-	 * annotate the unique model identifier
+	 * annotate the unique model identifier and the
+	 * model trustability
 	 */
-	protected String profileToGson() {
+	protected Map<String,Object> annotateProfile(String annonType) {
 
 		Map<String, Object> model = new HashMap<>();
+		/*
+		 * Model properties that are currently used
+		 */
 		model.put("id", profile.id);
+		model.put("trust", profile.trustability);
+		/*
+		 * Model type identifies one of the registry
+		 * tables that are managed by PredictiveWorks
+		 */
+		model.put("type", annonType);
 
 		Map<String, Object> annotation = new HashMap<>();
 		annotation.put("model", model);
 
-	    return new Gson().toJson(annotation);
+	    return annotation;
 
 	}
 }

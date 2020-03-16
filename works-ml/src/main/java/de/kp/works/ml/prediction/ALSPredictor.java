@@ -60,9 +60,9 @@ public class ALSPredictor extends RecommenderCompute {
 		((ALSConfig) config).validate();
 
 		ALSRecorder recorder = new ALSRecorder();
-		/* 
-		 * STEP #1: Retrieve the trained recommendation model
-		 * that refers to the provide name, stage and option
+		/*
+		 * STEP #1: Retrieve the trained recommendation model that refers to the provide
+		 * name, stage and option
 		 */
 		model = recorder.read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
@@ -70,9 +70,9 @@ public class ALSPredictor extends RecommenderCompute {
 					String.format("[%s] A recommendation model with name '%s' does not exist.",
 							this.getClass().getName(), config.modelName));
 
-		/* 
-		 * STEP #2: Retrieve the profile of the trained
-		 * recommendation model for subsequent annotation
+		/*
+		 * STEP #2: Retrieve the profile of the trained recommendation model for
+		 * subsequent annotation
 		 */
 		profile = recorder.getProfile();
 
@@ -147,13 +147,14 @@ public class ALSPredictor extends RecommenderCompute {
 		model.setItemCol(config.itemCol);
 
 		model.setPredictionCol(config.predictionCol);
-		Dataset<Row> predictions = model.transform(source);
-		/*
-		 * Apache Spark describes the predicted ratings as Float; to be compliant with
-		 * CDAP output schema, we transform into Double
-		 */
-		return annotate(predictions.withColumn(config.predictionCol,
-				col(config.predictionCol).cast(DataTypes.DoubleType)));
+		Dataset<Row> predictions = model.transform(source)
+				/*
+				 * Apache Spark describes the predicted ratings as Float; to be compliant with
+				 * CDAP output schema, we transform into Double
+				 */
+				.withColumn(config.predictionCol, col(config.predictionCol).cast(DataTypes.DoubleType));
+
+		return annotate(predictions, RECOMMENDER_TYPE);
 
 	}
 
@@ -168,11 +169,11 @@ public class ALSPredictor extends RecommenderCompute {
 		@Description(Params.MODEL_OPTION)
 		@Macro
 		public String modelOption;
-		
+
 		public ALSPredictorConfig() {
 			modelOption = BEST_MODEL;
 		}
-		
+
 		public void validate() {
 			super.validate();
 

@@ -129,7 +129,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, CLUSTER_TYPE);
 
 	}
 

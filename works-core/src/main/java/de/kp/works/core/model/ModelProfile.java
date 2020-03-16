@@ -22,9 +22,30 @@ public class ModelProfile {
 
 	public String fsPath;
 	public String id;
+	/*
+	 * This is a factor between [0, 1] with is best value at 1.
+	 * It is derived from the normalized sum metric:
+	 * 
+	 * 				1 -  min / max
+	 * 
+	 */
+	public Double trustability;
 	
-	public ModelProfile(String fsPath, String id) {
-		this.fsPath = fsPath;
+	public ModelProfile() {}
+	
+	public ModelProfile setId(String id) {
 		this.id = id;
+		return this;
+	}
+	
+	public ModelProfile setPath(String fsPath) {
+		this.fsPath = fsPath;
+		return this;
+	}
+	public ModelProfile setTrustability(Double trustability) {
+
+		this.trustability = trustability;
+		return this;
+		
 	}
 }

@@ -53,58 +53,51 @@ import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelProfile;
 
 public class AbstractRecorder {
-	
+
 	protected ModelProfile profile;
-	
+
 	public ModelProfile getProfile() {
 		return profile;
 	}
+
 	/*
-	 * Metadata schemata for different ML model share common fields; 
-	 * this method is used to populate this shared fields
+	 * Metadata schemata for different ML model share common fields; this method is
+	 * used to populate this shared fields
 	 */
-	public Put buildRow(byte[] key, Long timestamp, String name, String version, String fsName, String fsPath, String pack, String stage, String algorithm, String params) {
+	public Put buildRow(byte[] key, Long timestamp, String name, String version, String fsName, String fsPath,
+			String pack, String stage, String algorithm, String params) {
 		/*
-		 * Build unique model identifier from all information
-		 * that is available for a certain model
+		 * Build unique model identifier from all information that is available for a
+		 * certain model
 		 */
 		String mid = null;
 		try {
-			String[] parts = {
-					String.valueOf(timestamp), name, version, fsName, fsPath, pack, stage, algorithm, params
-			};
-		      
+			String[] parts = { String.valueOf(timestamp), name, version, fsName, fsPath, pack, stage, algorithm,
+					params };
+
 			String serialized = String.join("|", parts);
-		    mid = MessageDigest.getInstance("MD5").digest(serialized.getBytes()).toString();
+			mid = MessageDigest.getInstance("MD5").digest(serialized.getBytes()).toString();
 
 		} catch (Exception e) {
 			mid = String.valueOf(timestamp);
-			
+
 		}
-		
-		Put row = new Put(key)
-				.add(Names.TIMESTAMP, timestamp)
-				.add("id", mid)
-				.add("name", name)
-				.add("version", version)
-				.add("fsName", fsName)
-				.add(Names.FS_PATH, fsPath)
-				.add("pack", pack)
-				.add("stage", stage)				
-				.add("algorithm", algorithm)
-				.add("params", params);
-				
+
+		Put row = new Put(key).add(Names.TIMESTAMP, timestamp).add("id", mid).add("name", name).add("version", version)
+				.add("fsName", fsName).add(Names.FS_PATH, fsPath).add("pack", pack).add("stage", stage)
+				.add("algorithm", algorithm).add("params", params);
+
 		return row;
-		
+
 	}
-	
+
 	public Object getModelParam(Table table, String algorithmName, String modelName, String paramName) {
 
 		String strParams = null;
 		Row row;
 		/*
-		 * Scan through all baseline models and determine the latest params of the
-		 * model with the same name
+		 * Scan through all baseline models and determine the latest params of the model
+		 * with the same name
 		 */
 		Scanner rows = table.scan(null, null);
 		while ((row = rows.next()) != null) {
@@ -116,15 +109,16 @@ public class AbstractRecorder {
 				strParams = row.getString("params");
 			}
 		}
-		
+
 		if (strParams == null)
 			return null;
 
-		Type paramsType = new TypeToken<Map<String, Object>>(){}.getType();
+		Type paramsType = new TypeToken<Map<String, Object>>() {
+		}.getType();
 		Map<String, Object> params = new Gson().fromJson(strParams, paramsType);
-		
+
 		return params.get(paramName);
-		
+
 	}
 
 	public String getLatestModelVersion(Table table, String algorithmName, String modelName, String modelStage) {
@@ -141,14 +135,14 @@ public class AbstractRecorder {
 
 			String algorithm = row.getString("algorithm");
 			if (algorithm.equals(algorithmName)) {
-				
+
 				String name = row.getString("name");
 				if (name.equals(modelName)) {
-					
+
 					String stage = row.getString("stage");
 					if (stage.equals(modelStage))
 						strVersion = row.getString("version");
-					
+
 				}
 			}
 		}
@@ -172,28 +166,27 @@ public class AbstractRecorder {
 
 		Row row;
 		/*
-		 * Scan through all baseline models and determine the latest 
-		 * fileset path 
+		 * Scan through all baseline models and determine the latest fileset path
 		 */
 		Scanner rows = table.scan(null, null);
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
 			if (algorithm.equals(algorithmName)) {
-				
+
 				String name = row.getString("name");
 				if (name.equals(modelName)) {
-					
+
 					String stage = row.getString("stage");
 					if (stage.equals(modelStage))
-						profile = new ModelProfile(row.getString("fsPath"), row.getString("id"));
-					
+						profile = new ModelProfile().setId(row.getString("id")).setPath(row.getString("fsPath"));
+
 				}
 			}
 
 		}
 
 		return profile;
-		
+
 	}
 }

@@ -42,10 +42,10 @@ public class LinearPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -1443274244219761815L;
 
-	private LinearPredictorConfig config;
+	private PredictorConfig config;
 	private LinearRegressionModel regressor;
 
-	public LinearPredictor(LinearPredictorConfig config) {
+	public LinearPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -127,23 +127,13 @@ public class LinearPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, REGRESSOR_TYPE);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class LinearPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

@@ -42,10 +42,10 @@ public class SurvivalPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4611875710426366606L;
 
-	private AFTSurvivalPredictorConfig config;
+	private PredictorConfig config;
 	private AFTSurvivalRegressionModel regressor;
 
-	public SurvivalPredictor(AFTSurvivalPredictorConfig config) {
+	public SurvivalPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -129,7 +129,7 @@ public class SurvivalPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, REGRESSOR_TYPE);
 
 	}
 
@@ -138,13 +138,4 @@ public class SurvivalPredictor extends PredictorCompute {
 		config.validateSchema(inputSchema);
 	}
 
-	public static class AFTSurvivalPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = 7210199521231877169L;
-
-		public void validate() {
-			super.validate();
-
-		}
-	}
 }

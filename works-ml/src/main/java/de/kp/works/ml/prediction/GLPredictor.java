@@ -42,11 +42,11 @@ public class GLPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4505262483800490605L;
 
-	private GLPredictorConfig config;
+	private PredictorConfig config;
 
 	private GeneralizedLinearRegressionModel regressor;
 
-	public GLPredictor(GLPredictorConfig config) {
+	public GLPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -128,23 +128,13 @@ public class GLPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, REGRESSOR_TYPE);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class GLPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }

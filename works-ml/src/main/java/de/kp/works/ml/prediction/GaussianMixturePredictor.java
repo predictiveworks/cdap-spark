@@ -109,9 +109,16 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of(probabilityField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
-		
-		fields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));		
+		fields.add(Schema.Field.of(probabilityField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));		
+		/* 
+		 * Check whether the input schema already has an 
+		 * annotation field defined; the predictor stage
+		 * may not be the first stage that annotates model
+		 * specific metadata 
+		 */
+		if (inputSchema.getField(ANNOTATION_COL) == null)
+			fields.add(Schema.Field.of(ANNOTATION_COL, Schema.of(Schema.Type.STRING)));
+
 		return Schema.recordOf(inputSchema.getRecordName() + ".predicted", fields);
 
 	}
@@ -148,7 +155,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		Dataset<Row> predictions = MLUtils.devectorize(model.transform(vectorset), "_probability", probabilityCol);
 
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, CLUSTER_TYPE);
 
 	}
 

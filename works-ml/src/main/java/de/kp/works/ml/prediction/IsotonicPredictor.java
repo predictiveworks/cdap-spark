@@ -42,10 +42,10 @@ public class IsotonicPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -4791418353475612212L;
 
-	private IsotonicPredictorConfig config;
+	private PredictorConfig config;
 	private IsotonicRegressionModel regressor;
 
-	public IsotonicPredictor(IsotonicPredictorConfig config) {
+	public IsotonicPredictor(PredictorConfig config) {
 		this.config = config;
 	}
 
@@ -127,23 +127,13 @@ public class IsotonicPredictor extends PredictorCompute {
 		 * and annotate each prediction with the model profile
 		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
-		return annotate(output);
+		return annotate(output, REGRESSOR_TYPE);
 
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		config.validateSchema(inputSchema);
-	}
-
-	public static class IsotonicPredictorConfig extends PredictorConfig {
-
-		private static final long serialVersionUID = -3792791640714779280L;
-
-		public void validate() {
-			super.validate();
-
-		}
 	}
 
 }
