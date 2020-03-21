@@ -110,7 +110,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 
 	}
 
-	public void validateSchema(Schema inputSchema) {
+ 	public void validateSchema(Schema inputSchema) {
 		
 	}
 	

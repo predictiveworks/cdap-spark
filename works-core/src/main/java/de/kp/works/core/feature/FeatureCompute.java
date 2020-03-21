@@ -25,23 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
-import org.apache.spark.sql.types.StructType;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import co.cask.cdap.api.data.format.StructuredRecord;
 import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.api.spark.sql.DataFrames;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
-import de.kp.works.core.SessionHelper;
 import de.kp.works.core.model.ModelProfile;
 
 public class FeatureCompute extends BaseCompute {
@@ -61,53 +52,6 @@ public class FeatureCompute extends BaseCompute {
 	 * used to assign the unique model identifier to each prediction result
 	 */
 	protected ModelProfile profile;
-	
-	@Override
-	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
-			throws Exception {
-
-		JavaSparkContext jsc = context.getSparkContext();
-		/*
-		 * In case of an empty input the input is immediately returned without any
-		 * furthr processing
-		 */
-		if (input.isEmpty()) {
-			return input;
-		}
-		/*
-		 * Determine input schema: first, check whether the input schema is already
-		 * provided by a previous initializing or preparing step
-		 */
-		if (inputSchema == null) {
-
-			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema);
-
-		}
-
-		SparkSession session = new SparkSession(jsc.sc());
-
-		/*
-		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
-		 */
-		StructType structType = DataFrames.toDataType(inputSchema);
-		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
-
-		/*
-		 * STEP #2: Compute source with underlying Scala library and derive the output
-		 * schema dynamically from the computed dataset
-		 */
-		Dataset<Row> output = compute(context, rows);
-		if (outputSchema == null) {
-			outputSchema = DataFrames.toSchema(output.schema());
-		}
-		/*
-		 * STEP #3: Transform Dataset<Row> into JavaRDD<StructuredRecord>
-		 */
-		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(output, outputSchema);
-		return records;
-
-	}
 
 	/**
 	 * A helper method to compute the output schema in that use cases 
