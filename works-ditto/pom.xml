@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+ ~ Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ ~
+ ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ ~ use this file except in compliance with the License. You may obtain a copy of
+ ~ the License at
+ ~
+ ~ http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing, software
+ ~ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ ~ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ ~ License for the specific language governing permissions and limitations under
+ ~ the License.
+ ~
+ ~ @author Stefan Krusche, Dr. Krusche & Partner PartG
+ ~
+
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.kp.works</groupId>
+    <artifactId>cdap-spark</artifactId>
+    <version>0.3.0</version>
+	<relativePath>../pom.xml</relativePath>
+  </parent>
+
+  <artifactId>works-ditto</artifactId>
+  <packaging>jar</packaging>
+
+  <properties>
+    <ditto.version>1.0.0</ditto.version>
+  </properties>
+
+  <dependencies>
+
+	<!-- apache spark dependencies -->
+
+    <dependency>
+      <groupId>org.apache.spark</groupId>
+      <artifactId>spark-streaming_2.11</artifactId>
+      <version>${spark.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+	<!-- eclipse ditto dependencies -->
+
+    <dependency>
+      <groupId>org.eclipse.ditto</groupId>
+      <artifactId>ditto-client</artifactId>
+      <version>${ditto.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <name>Works Ditto</name>
+  <description>Apache Spark Streaming for Eclipse Ditto</description>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+      	<!-- scala maven -->
+        <plugin>
+          <groupId>net.alchim31.maven</groupId>
+          <artifactId>scala-maven-plugin</artifactId>
+          <version>3.4.4</version>
+          <configuration>
+            <args>
+              <arg>-target:jvm-1.8</arg>
+            </args>
+          </configuration>
+          <executions>
+            <execution>
+              <id>scala-compile-first</id>
+              <phase>process-resources</phase>
+              <goals>
+                <goal>add-source</goal>
+                <goal>compile</goal>
+              </goals>
+            </execution>
+            <execution>
+              <id>scala-test-compile</id>
+              <!-- Needs to be before the test-compile phase -->
+              <phase>process-test-resources</phase>
+              <goals>
+                <goal>testCompile</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+	  </plugins>
+	 </pluginManagement>
+
+	 <plugins>
+    	   <!-- scala maven -->
+       <plugin>
+         <groupId>net.alchim31.maven</groupId>
+         <artifactId>scala-maven-plugin</artifactId>
+         <executions>
+           <execution>
+             <id>scala-compile-first</id>
+             <phase>process-resources</phase>
+             <goals>
+               <goal>add-source</goal>
+               <goal>compile</goal>
+             </goals>
+           </execution>
+           <execution>
+             <id>scala-test-compile</id>
+             <phase>process-test-resources</phase>
+             <goals>
+               <goal>testCompile</goal>
+             </goals>
+           </execution>
+         </executions>
+       </plugin>
+	 </plugins>
+
+  </build>
+
+  <organization>
+  	<name>Dr. Krusche &amp; Partner PartG</name>
+  	<url>https://www.dr-kruscheundpartner.de</url>
+  </organization>
+
+</project>
