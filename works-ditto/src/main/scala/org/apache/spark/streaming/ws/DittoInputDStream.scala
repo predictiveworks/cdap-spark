@@ -37,7 +37,6 @@ import org.eclipse.ditto.model.base.json.JsonSchemaVersion
 import com.google.gson.Gson
 import com.neovisionaries.ws.client.WebSocket
 
-
 class DittoInputDStream(
     ssc_ : StreamingContext,
     properties: Properties,

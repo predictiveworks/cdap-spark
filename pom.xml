@@ -128,5 +128,6 @@
   	<module>works-dl</module>
   	<module>works-ts</module>
   	<module>works-text</module>
+  	<module>works-ditto</module>
   </modules>
 </project>

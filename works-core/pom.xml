@@ -33,10 +33,6 @@
   <artifactId>works-core</artifactId>
   <packaging>jar</packaging>
 
-  <properties>
-    <ditto.version>1.0.0</ditto.version>
-  </properties>
-
   <dependencies>
 	
 	<!-- apache spark dependencies -->
@@ -46,15 +42,7 @@
       <artifactId>spark-mllib_2.11</artifactId>
       <version>${spark.version}</version>
     </dependency>
-
-	<!-- eclipse ditto dependencies -->
-
-    <dependency>
-      <groupId>org.eclipse.ditto</groupId>
-      <artifactId>ditto-client</artifactId>
-      <version>${ditto.version}</version>
-    </dependency>
-    
+   
   </dependencies>
 
   <name>Works Core</name>
