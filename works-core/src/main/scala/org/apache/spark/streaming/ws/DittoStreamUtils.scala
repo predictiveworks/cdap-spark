@@ -1,4 +1,4 @@
-package org.apache.spark.stream.ws
+package org.apache.spark.streaming.ws
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -17,6 +17,8 @@ package org.apache.spark.stream.ws
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
+import java.util.Properties;
+
 import org.apache.spark.storage.StorageLevel
 
 import org.apache.spark.streaming.StreamingContext
@@ -24,16 +26,28 @@ import org.apache.spark.streaming.dstream.InputDStream
 
 import org.apache.spark.streaming.api.java.{JavaInputDStream, JavaStreamingContext}
 
-object WSStreamUtils {
+object DittoStreamUtils {
   
-   def createDirectStream(jssc: JavaStreamingContext): JavaInputDStream[String] = {
-     new JavaInputDStream(createDirectStream(jssc.ssc))
-  }
+   def createDirectStream(
+       jssc: JavaStreamingContext,
+       properties: Properties,
+       storageLevel: StorageLevel): JavaInputDStream[String] = {
+     
+     new JavaInputDStream(createDirectStream(jssc.ssc, properties, storageLevel))
+  
+   }
 
-   private def createDirectStream(ssc: StreamingContext): InputDStream[String] =  {
-     null;
+   private def createDirectStream(
+       ssc: StreamingContext, 
+       properties: Properties,
+       storageLevel: StorageLevel): InputDStream[String] =  {
+   
+     new DittoInputDStream(ssc, properties, storageLevel)
      
    }
    
-   
 }
+
+    
+    
+    
