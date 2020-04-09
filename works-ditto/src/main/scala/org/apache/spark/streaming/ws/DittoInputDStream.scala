@@ -142,6 +142,9 @@ class DittoReceiver(
         client.twin().registerForThingChanges(DittoUtils.DITTO_THING_CHANGES_HANDLER, 
             new java.util.function.Consumer[ThingChange] {
               override def accept(change:ThingChange):Unit = {
+                
+                // TIME STAMPE & ACTION
+                
                 /*
                  * Transform change into Option[String] and 
                  * send for message handler
@@ -161,10 +164,14 @@ class DittoReceiver(
       val flag = properties.getProperty(DittoUtils.DITTO_FEATURES_CHANGES)
       if (flag == "true") {
         
-        /* Register features changes */
+        /* 
+         * Register feature set changes of all things, as we currently 
+         * do not support the provisioning of a certain thing 
+         */
         client.twin().registerForFeaturesChanges(DittoUtils.DITTO_FEATURES_CHANGES_HANDLER,
             new java.util.function.Consumer[FeaturesChange] {
               override def accept(change:FeaturesChange):Unit = {
+                
                 /*
                  * Transform change into Option[String] and 
                  * send for message handler
@@ -179,15 +186,17 @@ class DittoReceiver(
     }
     
     if (properties.containsKey(DittoUtils.DITTO_FEATURE_CHANGES)) {
-      
+      /*
+       * Register for all feature changes of all things
+       */
       val flag = properties.getProperty(DittoUtils.DITTO_FEATURE_CHANGES)
       if (flag == "true") {
         
         /* Register feature changes */
         client.twin().registerForFeatureChanges(DittoUtils.DITTO_FEATURE_CHANGES_HANDLER,
             new java.util.function.Consumer[FeatureChange] {
-              override def accept(change:FeatureChange):Unit = {
-                /*
+              override def accept(change:FeatureChange):Unit = {                
+               /*
                  * Transform change into Option[String] and 
                  * send for message handler
                  */
