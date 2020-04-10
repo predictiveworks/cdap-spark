@@ -45,14 +45,14 @@ object DittoGson {
      */
     if (entity.getFeatures.isPresent() == false) return null
     
+    /* Name and namespace of thing */    
+    val (name, namespace) = getNameNS(entity.getEntityId)  
+   
     val gson = new JsonObject()
     
     /* Timestamp of change */
     val ts = getTime(change)
     gson.addProperty("timestamp", ts)
-    
-    /* Name and namespace of thing */    
-    val (name, namespace) = getNameNS(entity.getEntityId)  
     
     gson.addProperty("name", name)
     gson.addProperty("namespace", namespace)
@@ -65,7 +65,50 @@ object DittoGson {
     gson.getAsString
 
   }
- 
+    
+  def features2Gson(change: FeaturesChange): String = {
+    
+    val gson = new JsonObject()
+    
+    /* Timestamp of change */
+    val ts = getTime(change)
+    gson.addProperty("timestamp", ts)
+    
+    val features = features2Gson(change.getFeatures)
+    gson.add("features", features)
+    
+    gson.toString
+    
+  }
+    
+  def feature2Gson(change: FeatureChange): String = {
+    
+    val gson = new JsonObject()
+    
+    /* Timestamp of change */
+    val ts = getTime(change)
+    gson.addProperty("timestamp", ts)
+
+    val feature = change.getFeature    
+    
+    /* Feature identifier */
+    val gFeature = new JsonObject()      
+    gFeature.addProperty("id", feature.getId)
+     
+    /* Properties */
+    if (feature.getProperties.isPresent()) {
+      
+      val properties = properties2Gson(feature.getProperties.get)
+      gFeature.add("properties", properties)
+      
+    } else
+      gFeature.add("properties", new JsonArray())
+      
+    gson.add("feature", gFeature)
+    gson.toString
+    
+  }
+  
   def features2Gson(features: Features): JsonArray = {
     
     val gFeatures = new JsonArray()
@@ -96,7 +139,7 @@ object DittoGson {
     gFeatures
     
   }
-  
+
   private def properties2Gson(properties:FeatureProperties):JsonArray = {
     
     val gProperties = new JsonArray()

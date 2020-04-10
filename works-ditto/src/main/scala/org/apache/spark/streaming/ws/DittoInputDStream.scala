@@ -33,6 +33,7 @@ import org.eclipse.ditto.client.messaging._
 
 import org.eclipse.ditto.model.base.common.HttpStatusCode;
 import org.eclipse.ditto.model.base.json.JsonSchemaVersion
+import org.eclipse.ditto.model.things._
 
 import com.google.gson.Gson
 import com.neovisionaries.ws.client.WebSocket
@@ -133,54 +134,96 @@ class DittoReceiver(
 
   private def registerForTwinEvents() {
     
+    val twin = client.twin()
+    /*
+     * Check whether a certain thing identifier is provided to 
+     * restrict events to a certain thing
+     */
+    val thingId = if (properties.containsKey(DittoUtils.DITTO_THING_ID)) {
+      ThingId.of(properties.getProperty(DittoUtils.DITTO_THING_ID))
+
+    } else null
+    /*
+     * Check whether a certain feature identifier is provided to 
+     * restrict events to a certain feature
+     */
+    val featureId = if (properties.containsKey(DittoUtils.DITTO_FEATURE_ID)) {
+      properties.getProperty(DittoUtils.DITTO_FEATURE_ID)
+
+    } else null
+      
+    /***** THING CHANGES *****/
+    
     if (properties.containsKey(DittoUtils.DITTO_THING_CHANGES)) {
       
       val flag = properties.getProperty(DittoUtils.DITTO_THING_CHANGES)
       if (flag == "true") {
-        
-        /* Register for thing changes */
-        client.twin().registerForThingChanges(DittoUtils.DITTO_THING_CHANGES_HANDLER, 
-            new java.util.function.Consumer[ThingChange] {
-              override def accept(change:ThingChange):Unit = {
-                
-                val gson = DittoGson.thing2Gson(change)
-                if (gson != null) store(gson)
 
-              }
-           }) 
+        val consumer = new java.util.function.Consumer[ThingChange] {
+          override def accept(change:ThingChange):Unit = {
+            
+            val gson = DittoGson.thing2Gson(change)
+            if (gson != null) store(gson)
+
+          }
+        }
+        
+        val handler = DittoUtils.DITTO_THING_CHANGES_HANDLER
+        
+        if (thingId == null) {
+
+          /* Register for changes of all things */
+          twin.registerForThingChanges(handler, consumer) 
+         
+        } else {
+
+          /* Register for changes of thing with thingId */
+          twin.forId(thingId).registerForThingChanges(handler, consumer) 
+          
+        }
         
       }
       
     }
+      
+    /***** FEATURES CHANGES *****/
     
     if (properties.containsKey(DittoUtils.DITTO_FEATURES_CHANGES)) {
       
       val flag = properties.getProperty(DittoUtils.DITTO_FEATURES_CHANGES)
       if (flag == "true") {
         
-        /* 
-         * Register feature set changes of all things, as we currently 
-         * do not support the provisioning of a certain thing 
-         */
-        client.twin().registerForFeaturesChanges(DittoUtils.DITTO_FEATURES_CHANGES_HANDLER,
-            new java.util.function.Consumer[FeaturesChange] {
-              override def accept(change:FeaturesChange):Unit = {
-                  
-//                /* Timestamp of change */
-//                val ts = getTime(change)
-//                 
-//                /*
-//                 * Transform change into Option[String] and 
-//                 * send for message handler
-//                 */
-//                val features = change.getFeatures
-//                store(new Gson().toJson(features))
-
-               }         
-          })
+        val consumer = new java.util.function.Consumer[FeaturesChange] {
+          override def accept(change:FeaturesChange):Unit = {
+                
+            val gson = DittoGson.features2Gson(change)
+            store(gson)
+              
+          }
+        }
+        
+        val handler = DittoUtils.DITTO_FEATURES_CHANGES_HANDLER
+        
+        if (thingId == null) {
+          /* 
+           * Register feature set changes of all things, as we currently 
+           * do not support the provisioning of a certain thing 
+           */
+          twin.registerForFeaturesChanges(handler, consumer)
+          
+        } else {
+          /* 
+           * Register feature set changes of all things, as we currently 
+           * do not support the provisioning of a certain thing 
+           */
+          twin.forId(thingId).registerForFeaturesChanges(handler, consumer)
+          
+        }
       }
       
     }
+      
+    /***** FEATURE CHANGES *****/
     
     if (properties.containsKey(DittoUtils.DITTO_FEATURE_CHANGES)) {
       /*
@@ -189,23 +232,35 @@ class DittoReceiver(
       val flag = properties.getProperty(DittoUtils.DITTO_FEATURE_CHANGES)
       if (flag == "true") {
         
-        /* Register feature changes */
-        client.twin().registerForFeatureChanges(DittoUtils.DITTO_FEATURE_CHANGES_HANDLER,
-            new java.util.function.Consumer[FeatureChange] {
-              override def accept(change:FeatureChange):Unit = {                
+        val consumer = new java.util.function.Consumer[FeatureChange] {
+          override def accept(change:FeatureChange):Unit = {                
+                    
+            val gson = DittoGson.feature2Gson(change)
+            store(new Gson().toJson(gson))   
                   
-//                /* Timestamp of change */
-//                val ts = getTime(change)
-//
-//                /*
-//                 * Transform change into Option[String] and 
-//                 * send for message handler
-//                 */
-//                 val feature = change.getFeature
-//                 store(new Gson().toJson(feature))   
-                
-              }         
-          })
+          }         
+        }
+        
+        val handler = DittoUtils.DITTO_FEATURE_CHANGES_HANDLER
+        
+        if (thingId != null) {
+          
+          if (featureId != null) {
+            twin.registerForFeatureChanges(handler, featureId, consumer)
+
+          } else
+            twin.registerForFeatureChanges(handler, consumer)
+          
+        } else {
+          
+          if (featureId != null)
+            twin.forId(thingId).registerForFeatureChanges(handler, featureId, consumer)
+          
+          else 
+            twin.forId(thingId).registerForFeatureChanges(handler, consumer)
+          
+        }
+       
       }
       
     }

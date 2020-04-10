@@ -30,6 +30,8 @@ object DittoUtils {
   val DITTO_THING_NAME = "ditto.thing.name"
   val DITTO_THING_NAMESPACE = "ditto.thing.namespace"
 
+  val DITTO_FEATURE_ID = "ditto.feature.id"
+  
   /** BASIC AUTHENTICATION **/
   
   val DITTO_USER = "ditto.user"
