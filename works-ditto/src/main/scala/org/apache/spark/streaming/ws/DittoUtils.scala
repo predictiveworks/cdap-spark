@@ -21,7 +21,14 @@ package org.apache.spark.streaming.ws
 object DittoUtils {
   
   val DITTO_ENDPOINT = "ditto.endpoint"
-  val DITTO_NAMESPACE = "ditto.namespace"
+  
+  /** THING **/
+  
+  /* namespace:name */
+  val DITTO_THING_ID = "ditto.thing.id"
+
+  val DITTO_THING_NAME = "ditto.thing.name"
+  val DITTO_THING_NAMESPACE = "ditto.thing.namespace"
 
   /** BASIC AUTHENTICATION **/
   

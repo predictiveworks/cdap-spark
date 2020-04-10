@@ -17,7 +17,7 @@ package org.apache.spark.streaming.ws
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import java.util.Properties;
+import java.util.{Optional, Properties}
 
 import org.apache.spark.storage.StorageLevel
 
@@ -130,7 +130,7 @@ class DittoReceiver(
     registerForLiveMessages()
     
   }
-  
+
   private def registerForTwinEvents() {
     
     if (properties.containsKey(DittoUtils.DITTO_THING_CHANGES)) {
@@ -143,14 +143,8 @@ class DittoReceiver(
             new java.util.function.Consumer[ThingChange] {
               override def accept(change:ThingChange):Unit = {
                 
-                // TIME STAMPE & ACTION
-                
-                /*
-                 * Transform change into Option[String] and 
-                 * send for message handler
-                 */
-                val thing = change.getThing
-                if (thing.isPresent()) store(new Gson().toJson(thing.get))
+                val gson = DittoGson.thing2Gson(change)
+                if (gson != null) store(gson)
 
               }
            }) 
@@ -171,13 +165,16 @@ class DittoReceiver(
         client.twin().registerForFeaturesChanges(DittoUtils.DITTO_FEATURES_CHANGES_HANDLER,
             new java.util.function.Consumer[FeaturesChange] {
               override def accept(change:FeaturesChange):Unit = {
-                
-                /*
-                 * Transform change into Option[String] and 
-                 * send for message handler
-                 */
-                val features = change.getFeatures
-                store(new Gson().toJson(features))
+                  
+//                /* Timestamp of change */
+//                val ts = getTime(change)
+//                 
+//                /*
+//                 * Transform change into Option[String] and 
+//                 * send for message handler
+//                 */
+//                val features = change.getFeatures
+//                store(new Gson().toJson(features))
 
                }         
           })
@@ -196,12 +193,17 @@ class DittoReceiver(
         client.twin().registerForFeatureChanges(DittoUtils.DITTO_FEATURE_CHANGES_HANDLER,
             new java.util.function.Consumer[FeatureChange] {
               override def accept(change:FeatureChange):Unit = {                
-               /*
-                 * Transform change into Option[String] and 
-                 * send for message handler
-                 */
-                 val feature = change.getFeature
-                 store(new Gson().toJson(feature))               
+                  
+//                /* Timestamp of change */
+//                val ts = getTime(change)
+//
+//                /*
+//                 * Transform change into Option[String] and 
+//                 * send for message handler
+//                 */
+//                 val feature = change.getFeature
+//                 store(new Gson().toJson(feature))   
+                
               }         
           })
       }
@@ -230,7 +232,7 @@ class DittoReceiver(
              */
             val payload = message.getPayload
             if (payload.isPresent()) {
-              
+             
               store(payload.get)
               message.reply().statusCode(HttpStatusCode.OK).send()
              
