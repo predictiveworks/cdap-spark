@@ -22,6 +22,7 @@ import java.util.Optional
 import com.google.gson._
 
 import org.eclipse.ditto.client.changes._
+import org.eclipse.ditto.client.live.messages.RepliableMessage
 import org.eclipse.ditto.json
 import org.eclipse.ditto.model.things._
 
@@ -105,6 +106,37 @@ object DittoGson {
       gFeature.add("properties", new JsonArray())
       
     gson.add("feature", gFeature)
+    gson.toString
+    
+  }
+  
+  def message2Gson(message:RepliableMessage[String, Any]): String = {
+    
+    val gson = new JsonObject()
+    
+    val payload = message.getPayload
+    if (payload.isPresent() == false) return null
+    
+    val content = payload.get
+
+    /* Timestamp of the message */    
+    val ts = {
+       if (message.getTimestamp.isPresent) {
+         message.getTimestamp.get.toInstant().toEpochMilli()
+         
+       } else
+         new java.util.Date().getTime()
+    }
+
+    gson.addProperty("timestamp", ts)
+    
+    /* Name and namespace of thing */   
+    gson.addProperty("name", message.getThingEntityId.getName)
+    gson.addProperty("namespace", message.getThingEntityId.getNamespace)
+    
+    gson.addProperty("subject", message.getSubject)
+    gson.addProperty("payload", content)
+    
     gson.toString
     
   }

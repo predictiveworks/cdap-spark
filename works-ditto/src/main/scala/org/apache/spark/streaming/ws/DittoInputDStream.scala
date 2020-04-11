@@ -286,18 +286,16 @@ class DittoReceiver(
         
         val consumer = new java.util.function.Consumer[RepliableMessage[String, Any]] {
           override def accept(message:RepliableMessage[String, Any]) {
-            /*
-             * Transform message into Option[String] and 
-             * send for message handler
-             */
-            val payload = message.getPayload
-            if (payload.isPresent()) {
-             
-              store(payload.get)
+
+            val gson = DittoGson.message2Gson(message)
+            if (gson != null) {
+            
+              store(gson)
               message.reply().statusCode(HttpStatusCode.OK).send()
              
             } else {
               message.reply().statusCode(HttpStatusCode.NO_CONTENT).send()
+
             }
             
           }
