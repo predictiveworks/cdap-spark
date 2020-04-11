@@ -268,18 +268,23 @@ class DittoReceiver(
   }
   
   private def registerForLiveMessages() {
+
+    val live = client.live()
+    /*
+     * Check whether a certain thing identifier is provided to 
+     * restrict events to a certain thing
+     */
+    val thingId = if (properties.containsKey(DittoUtils.DITTO_THING_ID)) {
+      ThingId.of(properties.getProperty(DittoUtils.DITTO_THING_ID))
+
+    } else null
         
     if (properties.containsKey(DittoUtils.DITTO_LIVE_MESSAGES)) {
       
       val flag = properties.getProperty(DittoUtils.DITTO_LIVE_MESSAGES)
       if (flag == "true") {
         
-        /* 
-         * Register for all messages of all things and provide
-         * payload as String
-         */
-        client.live().registerForMessage(DittoUtils.DITTO_LIVE_MESSAGES, "*", classOf[String], 
-        new java.util.function.Consumer[RepliableMessage[String, Any]] {
+        val consumer = new java.util.function.Consumer[RepliableMessage[String, Any]] {
           override def accept(message:RepliableMessage[String, Any]) {
             /*
              * Transform message into Option[String] and 
@@ -296,7 +301,18 @@ class DittoReceiver(
             }
             
           }
-        })
+        }
+        
+        val handler = DittoUtils.DITTO_LIVE_MESSAGES
+        
+        if (thingId != null) {
+          live.forId(thingId).registerForMessage(handler, "*", classOf[String], consumer)
+          
+        } else {
+          live.registerForMessage(handler, "*", classOf[String], consumer)
+          
+        }
+        
       }
 
     }
