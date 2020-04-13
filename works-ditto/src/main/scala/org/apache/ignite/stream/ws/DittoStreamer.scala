@@ -1,4 +1,4 @@
-package org.apache.spark.streaming.ws
+package org.apache.ignite.stream.ws
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -17,90 +17,46 @@ package org.apache.spark.streaming.ws
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import java.util.{Optional, Properties}
 
-import org.apache.spark.storage.StorageLevel
+import org.apache.ignite.stream.StreamAdapter
+import org.apache.ignite.IgniteLogger
 
-import org.apache.spark.streaming.StreamingContext
-import org.apache.spark.streaming.dstream._
-import org.apache.spark.streaming.receiver.Receiver
+import org.apache.ignite.internal.util.{GridArgumentCheck => A}
 
 import org.eclipse.ditto.client.{DittoClient, DittoClients}
 import org.eclipse.ditto.client.changes._
+import org.eclipse.ditto.client.configuration._
 import org.eclipse.ditto.client.live.messages.RepliableMessage
 import org.eclipse.ditto.client.messaging._
 
 import org.eclipse.ditto.model.base.common.HttpStatusCode;
+import org.eclipse.ditto.model.base.json.JsonSchemaVersion
 import org.eclipse.ditto.model.things._
 
 import com.google.gson.Gson
+import com.neovisionaries.ws.client.WebSocket
+
 import de.kp.works.ditto._
 
-class DittoInputDStream(
-    ssc_ : StreamingContext,
-    properties: Properties,
-    storageLevel: StorageLevel) extends ReceiverInputDStream[String](ssc_) {
-  
-  override def name: String = s"Web socket stream [$id]"
-  
-  def getReceiver(): Receiver[String] = {
-    new DittoReceiver(properties, storageLevel)
-  }
-
-}
-
-class DittoReceiver(
-    properties: Properties,
-    storageLevel: StorageLevel) extends Receiver[String](storageLevel) {
+class DittoStreamer[K,V](properties:java.util.Properties) extends StreamAdapter[String, K, V] {streamer =>
 
   private var client:DittoClient = _
+  private var log: IgniteLogger = _
   
-  def onStop() {
+  /** Start streamer  */
 
-    if (client != null) {
-      
-      /** CHANGE EVENTS **/
-      
-      client.twin().suspendConsumption()
-
-      if (properties.containsKey(DittoUtils.DITTO_THING_CHANGES)) {
-      
-        val flag = properties.getProperty(DittoUtils.DITTO_THING_CHANGES)
-        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_THING_CHANGES_HANDLER)
-      
-      }
-      if (properties.containsKey(DittoUtils.DITTO_FEATURES_CHANGES)) {
-      
-        val flag = properties.getProperty(DittoUtils.DITTO_FEATURES_CHANGES)
-        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_FEATURES_CHANGES_HANDLER)
-      
-      }
-      if (properties.containsKey(DittoUtils.DITTO_FEATURE_CHANGES)) {
-      
-        val flag = properties.getProperty(DittoUtils.DITTO_FEATURE_CHANGES)
-        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_FEATURE_CHANGES_HANDLER)
-      
-      }
-       
-      /** LIVE MESSAGES **/
-      
-      client.live().suspendConsumption()
-        
-      if (properties.containsKey(DittoUtils.DITTO_LIVE_MESSAGES)) {
-      
-        val flag = properties.getProperty(DittoUtils.DITTO_LIVE_MESSAGES)
-        if (flag == "true") client.live().deregister(DittoUtils.DITTO_LIVE_MESSAGES_HANDLER)
-      
-      }
-      
-      client.destroy()
-      
-    }
-
-  }
-
-  def onStart() {    
+  def start():Unit = {
+    
+    A.notNull(getStreamer(), "streamer")
+    A.notNull(getIgnite(), "ignite")
+    
+    A.ensure(!(getSingleTupleExtractor() == null && getMultipleTupleExtractor() == null), 
+        "tuple extractor missing")
+    A.ensure(getSingleTupleExtractor() == null || getMultipleTupleExtractor() == null,
+        "cannot provide both single and multiple tuple extractor")
      
+    log = getIgnite().log()
+    
     /*
      * Build Ditto websocket client
      */
@@ -124,10 +80,10 @@ class DittoReceiver(
      */
     client.twin().startConsumption().get() // EVENTS
     client.live().startConsumption().get() // MESSAGES
-    
+     
     registerForTwinEvents()
     registerForLiveMessages()
-    
+   
   }
 
   private def registerForTwinEvents() {
@@ -314,5 +270,53 @@ class DittoReceiver(
     }
 
   }
+
+  private def store(message: String): Unit = {
+    this.addMessage(message)
+  }
   
+  def stop():Unit = {
+
+    if (client != null) {
+      
+      /** CHANGE EVENTS **/
+      
+      client.twin().suspendConsumption()
+
+      if (properties.containsKey(DittoUtils.DITTO_THING_CHANGES)) {
+      
+        val flag = properties.getProperty(DittoUtils.DITTO_THING_CHANGES)
+        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_THING_CHANGES_HANDLER)
+      
+      }
+      if (properties.containsKey(DittoUtils.DITTO_FEATURES_CHANGES)) {
+      
+        val flag = properties.getProperty(DittoUtils.DITTO_FEATURES_CHANGES)
+        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_FEATURES_CHANGES_HANDLER)
+      
+      }
+      if (properties.containsKey(DittoUtils.DITTO_FEATURE_CHANGES)) {
+      
+        val flag = properties.getProperty(DittoUtils.DITTO_FEATURE_CHANGES)
+        if (flag == "true") client.twin().deregister(DittoUtils.DITTO_FEATURE_CHANGES_HANDLER)
+      
+      }
+       
+      /** LIVE MESSAGES **/
+      
+      client.live().suspendConsumption()
+        
+      if (properties.containsKey(DittoUtils.DITTO_LIVE_MESSAGES)) {
+      
+        val flag = properties.getProperty(DittoUtils.DITTO_LIVE_MESSAGES)
+        if (flag == "true") client.live().deregister(DittoUtils.DITTO_LIVE_MESSAGES_HANDLER)
+      
+      }
+      
+      client.destroy()
+      
+    }
+    
+  }
+
 }

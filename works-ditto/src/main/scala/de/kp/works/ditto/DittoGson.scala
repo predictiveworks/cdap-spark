@@ -1,4 +1,4 @@
-package org.apache.spark.streaming.ws
+package de.kp.works.ditto
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,9 +18,7 @@ package org.apache.spark.streaming.ws
  * 
  */
 import java.util.Optional
-
 import com.google.gson._
-
 import org.eclipse.ditto.client.changes._
 import org.eclipse.ditto.client.live.messages.RepliableMessage
 import org.eclipse.ditto.json
@@ -90,7 +88,7 @@ object DittoGson {
     val ts = getTime(change)
     gson.addProperty("timestamp", ts)
 
-    val feature = change.getFeature    
+    val feature = change.getFeature   
     
     /* Feature identifier */
     val gFeature = new JsonObject()      

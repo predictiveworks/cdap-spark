@@ -1,4 +1,4 @@
-package org.apache.spark.streaming.ws
+package de.kp.works.ditto
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *

@@ -35,6 +35,8 @@
 
   <properties>
     <ditto.version>1.0.0</ditto.version>
+    <ignite.version>2.7.6</ignite.version>       
+    
   </properties>
 
   <dependencies>
@@ -55,6 +57,15 @@
       <artifactId>ditto-client</artifactId>
       <version>${ditto.version}</version>
     </dependency>
+
+	<!-- ignite core dependencies -->
+
+	  <dependency>
+	    <groupId>org.apache.ignite</groupId>
+	    <artifactId>ignite-core</artifactId>
+	    <version>${ignite.version}</version>
+	    <scope>provided</scope>
+	  </dependency>
 
   </dependencies>
 
