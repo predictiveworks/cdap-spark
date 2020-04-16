@@ -281,17 +281,19 @@ object DittoGson {
       val name = names.next
       val value = obj.getValue(name)
       
-      gson.addProperty("name", name.toString)
+      val inner = new JsonObject();
       if (value.isPresent) {
         
-        value2Gson(gson, value.get)
+        value2Gson(inner, value.get)
         
       } else {
         
-        gson.addProperty("type", "NULL")
-        gson.add("value", new JsonNull())
+        inner.addProperty("type", "NULL")
+        inner.add("value", new JsonNull())
         
       }
+      
+      gson.add(name.toString, inner)
       
     }
     
