@@ -34,6 +34,10 @@ import org.eclipse.ditto.model.base.common.HttpStatusCode;
 import org.eclipse.ditto.model.things._
 
 import com.google.gson.Gson
+
+import de.kp.works.ditto.DittoGson;
+import de.kp.works.ditto.DittoHelper;
+import de.kp.works.ditto.DittoUtils;
 import de.kp.works.ditto._
 
 class DittoInputDStream(

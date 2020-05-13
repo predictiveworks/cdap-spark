@@ -1,4 +1,4 @@
-package de.kp.works.stream.x509
+package de.kp.works.stream.creds
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *

@@ -30,6 +30,7 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream._
 import org.apache.spark.streaming.receiver.Receiver
 
+import de.kp.works.stream.creds._
 /**
  * Input stream that exposes subscribe messages from a Mqtt Broker.
  * Uses eclipse paho as MqttClient http://www.eclipse.org/paho/
@@ -39,8 +40,7 @@ import org.apache.spark.streaming.receiver.Receiver
  * @param topic              topic name Array to subscribe to
  * @param storageLevel       RDD storage level.
  * @param clientId           ClientId to use for the mqtt connection
- * @param username           Username for authentication to the mqtt publisher
- * @param password           Password for authentication to the mqtt publisher
+ * @param credentials        User credentials for authentication to the mqtt publisher
  * @param cleanSession       Sets the mqtt cleanSession parameter
  * @param qos                Quality of service to use for the topic subscriptions
  * @param connectionTimeout  Connection timeout for the mqtt connection
@@ -53,8 +53,7 @@ class MqttInputDStream(
     topics: Array[String],
     storageLevel: StorageLevel,
     clientId: Option[String] = None,
-    username: Option[String] = None,
-    password: Option[String] = None,
+    credentials: Option[Credentials] = None,
     cleanSession: Option[Boolean] = None,
     qos: Option[Int] = None,
     connectionTimeout: Option[Int] = None,
@@ -65,7 +64,7 @@ class MqttInputDStream(
   override def name: String = s"MQTT stream [$id]"
 
   def getReceiver(): Receiver[MqttResult] = {
-    new MqttReceiver(brokerUrl, topics, storageLevel, clientId, username, password, cleanSession,
+    new MqttReceiver(brokerUrl, topics, storageLevel, clientId, credentials, cleanSession,
       qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }
 }
@@ -75,8 +74,7 @@ class MqttReceiver(
     topics: Array[String],
     storageLevel: StorageLevel,
     clientId: Option[String],
-    username: Option[String],
-    password: Option[String],
+    credentials: Option[Credentials] = None,
     cleanSession: Option[Boolean],
     qos: Option[Int],
     connectionTimeout: Option[Int],
@@ -92,13 +90,40 @@ class MqttReceiver(
 
     /* Initialize mqtt parameters */
     val options = new MqttConnectOptions()
-    if (username.isDefined && password.isDefined) {
-      
-      options.setUserName(username.get)
-      options.setPassword(password.get.toCharArray)
     
+    if (credentials.isDefined) {
+      
+      val creds = credentials.get
+      if (creds.isInstanceOf[BasicCredentials]) {
+        
+        val basicCreds = creds.asInstanceOf[BasicCredentials]
+
+        options.setUserName(basicCreds.username)
+        options.setPassword(basicCreds.password.toCharArray)
+
+        options.setSocketFactory(basicCreds.getSSLSocketFactory)
+
+      }
+    
+      if (creds.isInstanceOf[X509Credentials]) {
+
+        val x509Creds = creds.asInstanceOf[X509Credentials]
+        options.setSocketFactory(x509Creds.getSSLSocketFactory)
+
+      }
+
+      if (creds.isInstanceOf[PEMX509Credentials]) {
+        
+        val pemX509Creds = creds.asInstanceOf[PEMX509Credentials]
+        options.setSocketFactory(pemX509Creds.getSSLSocketFactory)
+
+      }
+      
     }
+    
+    
     options.setCleanSession(cleanSession.getOrElse(true))
+    
     if (connectionTimeout.isDefined) {
       options.setConnectionTimeout(connectionTimeout.get)
     }
