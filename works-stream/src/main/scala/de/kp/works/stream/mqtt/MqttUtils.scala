@@ -94,9 +94,14 @@ object MqttUtils {
       keepAliveInterval: Int,
       mqttVersion: Int
     ): JavaReceiverInputDStream[MqttResult] = {
-    
+    /*
+     * The client identifier user for the MQTT connection
+     * is an optional parameter
+     */
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, brokerUrl, topics, storageLevel, Option(clientId),
+    
+    createStream(jssc.ssc, brokerUrl, topics, storageLevel, client,
         Option(credentials), Option(cleanSession), Option(qos),
         Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
   }
@@ -125,10 +130,15 @@ object MqttUtils {
       keepAliveInterval: Int,
       mqttVersion: Int
     ): JavaReceiverInputDStream[MqttResult] = {
-    
+    /*
+     * The client identifier user for the MQTT connection
+     * is an optional parameter
+     */
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    
     createStream(jssc.ssc, brokerUrl, topics, StorageLevel.MEMORY_AND_DISK_SER_2,
-      Option(clientId), Option(credentials), Option(cleanSession), Option(qos),
+      client, Option(credentials), Option(cleanSession), Option(qos),
       Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
       
   }
@@ -141,7 +151,7 @@ object MqttUtils {
    * @param credentials  User credentials for authentication to the mqtt publisher
    * @param cleanSession Sets the mqtt cleanSession parameter
    */
-  def createPairedStream(
+  def createStream(
       jssc: JavaStreamingContext,
       brokerUrl: String,
       topics: Array[String],
@@ -149,10 +159,15 @@ object MqttUtils {
       credentials: Credentials,
       cleanSession: Boolean
       ): JavaReceiverInputDStream[MqttResult] = {
-    
+    /*
+     * The client identifier user for the MQTT connection
+     * is an optional parameter
+     */
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    
     createStream(jssc.ssc, brokerUrl, topics, StorageLevel.MEMORY_AND_DISK_SER_2,
-      Option(clientId), Option(credentials), Option(cleanSession), None,
+      client, Option(credentials), Option(cleanSession), None,
       None, None, None)
       
   }
