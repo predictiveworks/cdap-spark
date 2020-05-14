@@ -164,9 +164,7 @@ class MqttReceiver(
 
       override def messageArrived(topic: String, message: MqttMessage) {
         
-        val payload = new String(message.getPayload(), StandardCharsets.UTF_8)
-        val result = new MqttResult(topic, payload)
-        
+        val result = new MqttResult(topic, message.getPayload())
         store(result)
         
       }

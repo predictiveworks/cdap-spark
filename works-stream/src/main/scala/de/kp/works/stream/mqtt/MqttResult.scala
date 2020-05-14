@@ -18,4 +18,4 @@ package de.kp.works.stream.mqtt
  * 
  */
 
-class MqttResult(val topic: String, val payload: String) {}
+class MqttResult(val topic: String, val payload: Array[Byte]) {}
