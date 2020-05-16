@@ -38,6 +38,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     
     <bouncycastle.version>1.52</bouncycastle.version>
+    <hivemq.version>1.2.0</hivemq.version>
     <paho.client.version>1.2.2</paho.client.version>
 
     <spark.version>2.1.3</spark.version>
@@ -79,6 +80,13 @@
       <artifactId>bcpkix-jdk15on</artifactId>
       <version>${bouncycastle.version}</version>
     </dependency>
+
+	<!-- HiveMQ (MQTT) dependencies -->
+	<dependency>
+    	  <groupId>com.hivemq</groupId>
+      <artifactId>hivemq-mqtt-client</artifactId>
+      <version>${hivemq.version}</version>
+	</dependency>
 
   </dependencies>
 

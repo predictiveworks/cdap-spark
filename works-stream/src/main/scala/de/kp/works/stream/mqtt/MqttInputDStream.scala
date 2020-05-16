@@ -32,8 +32,30 @@ import org.apache.spark.streaming.receiver.Receiver
 
 import de.kp.works.stream.creds._
 /**
- * Input stream that exposes subscribe messages from a Mqtt Broker.
- * Uses eclipse paho as MqttClient http://www.eclipse.org/paho/
+ * MQTT v3.1 & MQTT v3.1.1
+ * 
+ * 
+ * This input stream uses the Eclipse Paho MqttClient (http://www.eclipse.org/paho/).
+ * 
+ * Eclipse Paho is an umbrella project for several MQTT and MQTT-SN client implementations. 
+ * This project was one of the first open source MQTT client implementations available and 
+ * is actively maintained by a huge community. 
+ * 
+ * Paho features a Java client which is suited for embedded use, Android applications and 
+ * Java applications in general. The initial code base was donated to Eclipse by IBM in 2012.
+ * 
+ * The Eclipse Paho Java client is rock-solid and is used by a broad range of companies from 
+ * different industries around the world to connect to MQTT brokers. 
+ * 
+ * The synchronous/blocking API of Paho makes it easy to implement the applications MQTT logic 
+ * in a clean and concise way while the asynchronous API gives the application developer full 
+ * control for high-performance MQTT clients that need to handle high throughput. 
+ * 
+ * The Paho API is highly callback based and allows to hook in custom business logic to different 
+ * events, e.g. when a message is received or when the connection to the broker was lost. 
+ * 
+ * Paho supports all MQTT features and a secure communication with the MQTT Broker is possible 
+ * via TLS.
  * 
  * @param _ssc               Spark Streaming StreamingContext
  * @param brokerUrl          Url of remote mqtt publisher
@@ -119,6 +141,13 @@ class MqttReceiver(
 
       }
       
+      if (creds.isInstanceOf[SSLCredentials]) {
+         
+        val sslCreds = creds.asInstanceOf[SSLCredentials]
+        options.setSocketFactory(sslCreds.getSSLSocketFactory)
+       
+      }
+      
     }
     
     
@@ -131,6 +160,18 @@ class MqttReceiver(
     if (keepAliveInterval.isDefined) {
       options.setKeepAliveInterval(keepAliveInterval.get)
     }
+    
+    /*
+     * Connect with MQTT 3.1 or MQTT 3.1.1
+     * 
+     * Depending which MQTT broker you are using, you may want to explicitely 
+     * connect with a specific MQTT version.
+     * 
+     * By default, Paho tries to connect with MQTT 3.1.1 and falls back to 
+     * MQTT 3.1 if it’s not possible to connect with 3.1.1.
+     * 
+     * We therefore do not specify a certain MQTT version.
+     */
     
     if (mqttVersion.isDefined) {
       options.setMqttVersion(mqttVersion.get)
@@ -146,7 +187,13 @@ class MqttReceiver(
    */
   def onStart() {
 
-    /* Set up persistence for messages */
+    /* 						MESSAGE PERSISTENCE
+     * 
+     * Since we don’t want to persist the state of pending 
+     * QoS messages and the persistent session, we are just 
+     * using a in-memory persistence. A file-based persistence 
+     * is used by default.
+     */
     val persistence = new MemoryPersistence()
 
     /* Initializing Mqtt Client specifying brokerUrl, clientID and MqttClientPersistance */
