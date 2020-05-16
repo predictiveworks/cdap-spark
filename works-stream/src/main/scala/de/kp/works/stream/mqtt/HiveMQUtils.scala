@@ -26,10 +26,150 @@ import org.apache.spark.streaming.api.java.{JavaDStream, JavaReceiverInputDStrea
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 
 import de.kp.works.stream.creds._
+import de.kp.works.stream.ssl._
 
 object HiveMQUtils {
   
   /********** JAVA **********/
+  
+  /**
+   * Storage level of the data will be the default 
+   * StorageLevel.MEMORY_AND_DISK_SER_2.
+   *
+   * @param jssc      		JavaStreamingContext object
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    createStream(jssc, StorageLevel.MEMORY_AND_DISK_SER_2, mqttTopic,mqttHost, mqttPort)
+    
+  }
+  /**
+   * @param jssc      		JavaStreamingContext object
+   * @param storageLevel  RDD storage level.
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      storageLevel: StorageLevel,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort)
+    
+  }
+  
+  /**
+   * @param jssc      		JavaStreamingContext object
+   * @param storageLevel  RDD storage level.
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   * @param mqttVersion   MQTT version (either 3 or 5)
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      storageLevel: StorageLevel,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int,
+      mqttVersion: Int      
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, None, None, None, Option(mqttVersion))
+    
+  }
+  
+  /**
+   * @param jssc      		JavaStreamingContext object
+   * @param storageLevel  RDD storage level.
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   * @param mqttQoS       Quality of service to use for the topic subscription
+   * @param mqttVersion   MQTT version (either 3 or 5)
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      storageLevel: StorageLevel,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int,
+      mqttQoS: Int,      
+      mqttVersion: Int      
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, None, None, Option(mqttQoS), Option(mqttVersion))
+    
+  }
+  
+  /**
+   * @param jssc      		JavaStreamingContext object
+   * @param storageLevel  RDD storage level.
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   * @param mqttCreds     Application security (username & password)
+   * @param mqttQoS       Quality of service to use for the topic subscription
+   * @param mqttVersion   MQTT version (either 3 or 5)
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      storageLevel: StorageLevel,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int,
+      mqttCreds: Credentials,
+      mqttQoS: Int,      
+      mqttVersion: Int      
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, Option(mqttCreds), None, Option(mqttQoS), Option(mqttVersion))
+    
+  }
+  
+  /**
+   * @param jssc      		JavaStreamingContext object
+   * @param storageLevel  RDD storage level.
+   * @param mqttTopic     MQTT topic to listen to
+   * @param mqttHost      Host of the MQTT broker
+   * @param mqttPort      Port of the MQTT broker
+   * @param mqttCreds     Application security (username & password)
+   * @param mqttSsl       Transport security
+   * @param mqttQoS       Quality of service to use for the topic subscription
+   * @param mqttVersion   MQTT version (either 3 or 5)
+   */
+  def createStream(
+      jssc: JavaStreamingContext,
+      storageLevel: StorageLevel,
+      mqttTopic: String,
+      mqttHost: String,
+      mqttPort: Int,
+      mqttCreds: Credentials,
+      mqttSsl: SSLOptions,
+      mqttQoS: Int,      
+      mqttVersion: Int      
+    ): JavaReceiverInputDStream[MqttResult] = {
+    
+    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, Option(mqttCreds), Option(mqttSsl), Option(mqttQoS), Option(mqttVersion))
+    
+  }
 
   
   /********** SCALA **********/
@@ -37,9 +177,13 @@ object HiveMQUtils {
   /**
    * @param ssc           StreamingContext object
    * @param storageLevel  RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param mqttTopic     MQTT topic to listen to
    * @param mqttHost      Host of the MQTT broker
    * @param mqttPort      Port of the MQTT broker
-   * @param topics        Array of topic names to subscribe to
+   * @param mqttCreds     Application security (username & password)
+   * @param mqttSsl       Transport security
+   * @param mqttQoS       Quality of service to use for the topic subscription
+   * @param mqttVersion   MQTT version (either 3 or 5)
    */
   def createStream(
       ssc: StreamingContext,
@@ -47,9 +191,12 @@ object HiveMQUtils {
       mqttTopic: String,
       mqttHost: String,
       mqttPort: Int,
-      topics: Array[String]
+      mqttCreds: Option[Credentials] = None,
+      mqttSsl: Option[SSLOptions] = None,
+      mqttQoS: Option[Int] = None,
+      mqttVersion: Option[Int] = None          
     ): ReceiverInputDStream[MqttResult] = {
-    new HiveMQInputDStream(ssc, storageLevel, mqttTopic, mqttHost, mqttPort)
+    new HiveMQInputDStream(ssc, storageLevel, mqttTopic, mqttHost, mqttPort, mqttCreds, mqttSsl, mqttQoS, mqttVersion)
   }
   
 }

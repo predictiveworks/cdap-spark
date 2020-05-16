@@ -36,7 +36,7 @@ class SSLOptions(
 	val truststoreFile:       Option[String] = None, 
 	val truststoreType:       Option[String] = None, 
 	val truststorePassword:   Option[String] = None,  
-	val  truststoreAlgorithm: Option[String] = None,
+	val truststoreAlgorithm:  Option[String] = None,
   
   val cipherSuites: Option[Array[String]]) {
 
@@ -74,6 +74,27 @@ class SSLOptions(
   }
 
   def getTrustManagerFactory: TrustManagerFactory = {
+
+    try {
+
+      if (verifyHttps == false)
+        return null
+      
+      val tsFile = truststoreFile.get
+      val tsType = truststoreType.get
+      
+      val tsPass = truststorePassword.get
+      val tsAlgo = truststoreAlgorithm.get
+      
+      SslUtil.getTrustManagerFactory(tsFile, tsType, tsPass, tsAlgo)
+
+    } catch {
+
+      case t: Throwable =>
+        /* Do nothing */
+        null
+    }
+    
     null
   }
 }

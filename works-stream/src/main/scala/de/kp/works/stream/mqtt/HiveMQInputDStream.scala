@@ -61,14 +61,15 @@ class HiveMQInputDStream(
     /*
      * Transport security
      */
-    mqttSSL: Option[SSLOptions] = None,
+    mqttSsl: Option[SSLOptions] = None,
+    mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
     )  extends ReceiverInputDStream[MqttResult](_ssc) {
  
     override def name: String = s"HiveMQ stream [$id]"
  
     def getReceiver(): Receiver[MqttResult] = {
-      new HiveMQReceiver(storageLevel, mqttTopic, mqttHost, mqttPort, mqttCreds, mqttSSL, mqttVersion)
+      new HiveMQReceiver(storageLevel, mqttTopic, mqttHost, mqttPort, mqttCreds, mqttSsl, mqttQoS, mqttVersion)
     }
     
 }
@@ -85,7 +86,8 @@ class HiveMQReceiver(
     /*
      * Transport security
      */
-    mqttSSL: Option[SSLOptions],
+    mqttSsl: Option[SSLOptions],
+    mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
     ) extends Receiver[MqttResult](storageLevel) {
 
@@ -134,7 +136,7 @@ class HiveMQReceiver(
           
         /* Transport layer security */
         
-        val sslConfig = getMqttSslConfig
+        val sslConfig = getmqttSslConfig
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
@@ -231,7 +233,7 @@ class HiveMQReceiver(
           
         /* Transport layer security */
         
-        val sslConfig = getMqttSslConfig
+        val sslConfig = getmqttSslConfig
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
@@ -318,11 +320,11 @@ class HiveMQReceiver(
     }
     
     /* Transport layer security */
-    private def getMqttSslConfig: MqttClientSslConfig = {
+    private def getmqttSslConfig: MqttClientSslConfig = {
   
-        if (mqttSSL.isDefined) {
+        if (mqttSsl.isDefined) {
           
-          val sslOptions = mqttSSL.get
+          val sslOptions = mqttSsl.get
           val builder = MqttClientSslConfig.builder()
           
           /* CipherSuites */

@@ -67,14 +67,10 @@ public class SslUtil {
 	}
 
 	public static TrustManagerFactory getTrustManagerFactory(String truststoreFile, String truststoreType,
-			String truststorePassword, String truststoreAlgorithm, Boolean verifyHttps)
+			String truststorePassword, String truststoreAlgorithm)
 			throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
 
 		TrustManagerFactory factory = null;
-		if (!verifyHttps) {
-			return factory;
-		}
-
 		KeyStore trustStore = SslUtil.loadKeystore(truststoreFile, truststoreType, truststorePassword);
 
 		if (trustStore != null) {
