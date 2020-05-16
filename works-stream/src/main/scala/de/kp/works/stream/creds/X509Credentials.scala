@@ -24,15 +24,17 @@ import java.security._
 import java.security.cert.X509Certificate
 
 class X509Credentials(  
+  val username:String,
+  val password:String,    
   val caCert:X509Certificate,
   val cert:X509Certificate,
   val privateKey:PrivateKey, 
-  val password:Option[String] = None) extends Credentials {
+  val keyPass:Option[String] = None) extends Credentials {
   
   def getSSLSocketFactory:SSLSocketFactory = {
     
     /* Delegate to [CertificateUtil] */
-    CertificateUtil.getSSLSocketFactory(caCert,cert,privateKey,password)
+    CertificateUtil.getSSLSocketFactory(caCert,cert,privateKey,keyPass)
 
   }
   

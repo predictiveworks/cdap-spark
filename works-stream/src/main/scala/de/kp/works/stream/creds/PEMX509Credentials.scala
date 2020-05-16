@@ -21,13 +21,15 @@ package de.kp.works.stream.creds
 import javax.net.ssl.SSLSocketFactory
 
 class PEMX509Credentials(
+  val username:String,
+  val password:String,    
   val caCrtFile:String,
   val crtFile:String,
   val keyFile:String, 
-  val password:Option[String] = None) extends Credentials {
+  val keyPass:Option[String] = None) extends Credentials {
   
   def getSSLSocketFactory:SSLSocketFactory = {
-    CertificateUtil.getSSLSocketFactoryFromFiles(caCrtFile,crtFile,keyFile,password)
+    CertificateUtil.getSSLSocketFactoryFromFiles(caCrtFile,crtFile,keyFile,keyPass)
   }
   
 }

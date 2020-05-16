@@ -24,9 +24,6 @@ class BasicCredentials(
     val username:String,
     val password:String) extends Credentials {
   
-  def getSSLSocketFactory:SSLSocketFactory = {
-    /* Delegate to [CertificateUtil] */
-    CertificateUtil.getSSLSocketFactory()
-  }
+  def getSSLSocketFactory:SSLSocketFactory = null
   
 }
