@@ -26,10 +26,10 @@ class PEMX509Credentials(
   val caCrtFile:String,
   val crtFile:String,
   val keyFile:String, 
-  val keyPass:Option[String] = None) extends Credentials {
+  val keyPass:String) extends Credentials {
   
   def getSSLSocketFactory:SSLSocketFactory = {
-    CertificateUtil.getSSLSocketFactoryFromFiles(caCrtFile,crtFile,keyFile,keyPass)
+    CertificateUtil.getSSLSocketFactoryFromFiles(caCrtFile,crtFile,keyFile,Option(keyPass))
   }
   
 }

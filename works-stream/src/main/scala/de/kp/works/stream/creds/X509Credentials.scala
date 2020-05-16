@@ -29,12 +29,12 @@ class X509Credentials(
   val caCert:X509Certificate,
   val cert:X509Certificate,
   val privateKey:PrivateKey, 
-  val keyPass:Option[String] = None) extends Credentials {
+  val keyPass:String) extends Credentials {
   
   def getSSLSocketFactory:SSLSocketFactory = {
     
     /* Delegate to [CertificateUtil] */
-    CertificateUtil.getSSLSocketFactory(caCert,cert,privateKey,keyPass)
+    CertificateUtil.getSSLSocketFactory(caCert,cert,privateKey,Option(keyPass))
 
   }
   

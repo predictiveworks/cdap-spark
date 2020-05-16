@@ -24,6 +24,9 @@ class BasicCredentials(
     val username:String,
     val password:String) extends Credentials {
   
+  /*
+   * We use the same trait for all 
+   */
   def getSSLSocketFactory:SSLSocketFactory = null
   
 }

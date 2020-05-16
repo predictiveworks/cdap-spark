@@ -28,14 +28,14 @@ object CredentialsBuilder {
     }
     
     def createPEMX509(username:String, password:String, caCrtFile:String, crtFile:String, 
-        keyFile:String, keyPass:Option[String] = None):PEMX509Credentials = {
+        keyFile:String, keyPass:String):PEMX509Credentials = {
 
       new PEMX509Credentials(username, password, caCrtFile, crtFile, keyFile, keyPass)  
     
     }
 
     def createX509(username:String, password:String, caCert: X509Certificate, cert:X509Certificate, 
-        privateKey:PrivateKey, keyPass:Option[String] = None):X509Credentials = {
+        privateKey:PrivateKey, keyPass:String):X509Credentials = {
       
       new X509Credentials(username, password, caCert, cert, privateKey, keyPass)
     
