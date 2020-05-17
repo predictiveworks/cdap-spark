@@ -19,11 +19,14 @@ package de.kp.works.stream.mqtt
  */
 
 import java.nio.charset.StandardCharsets
+import java.util.Properties
 
 import com.google.gson;
 
 import org.eclipse.paho.client.mqttv3._
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+
+import org.eclipse.paho.client.mqttv3.internal.security.SSLSocketFactoryFactory
 
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
@@ -123,13 +126,15 @@ class MqttReceiver(
         options.setUserName(basicCreds.username)
         options.setPassword(basicCreds.password.toCharArray)
 
-        options.setSocketFactory(basicCreds.getSSLSocketFactory)
-
       }
     
       if (creds.isInstanceOf[X509Credentials]) {
 
         val x509Creds = creds.asInstanceOf[X509Credentials]
+        
+        options.setUserName(x509Creds.username)
+        options.setPassword(x509Creds.password.toCharArray)
+        
         options.setSocketFactory(x509Creds.getSSLSocketFactory)
 
       }
@@ -137,6 +142,10 @@ class MqttReceiver(
       if (creds.isInstanceOf[PEMX509Credentials]) {
         
         val pemX509Creds = creds.asInstanceOf[PEMX509Credentials]
+       
+        options.setUserName(pemX509Creds.username)
+        options.setPassword(pemX509Creds.password.toCharArray)
+         
         options.setSocketFactory(pemX509Creds.getSSLSocketFactory)
 
       }
@@ -144,13 +153,16 @@ class MqttReceiver(
       if (creds.isInstanceOf[SSLCredentials]) {
          
         val sslCreds = creds.asInstanceOf[SSLCredentials]
+        
+        options.setUserName(sslCreds.username)
+        options.setPassword(sslCreds.password.toCharArray)
+        
         options.setSocketFactory(sslCreds.getSSLSocketFactory)
        
       }
       
     }
-    
-    
+
     options.setCleanSession(cleanSession.getOrElse(true))
     
     if (connectionTimeout.isDefined) {
@@ -240,5 +252,5 @@ class MqttReceiver(
     client.subscribe(topics, quality)
 
   }
-  
+
 }

@@ -22,7 +22,7 @@ import java.util.UUID
 import java.nio.charset.Charset
 
 import com.hivemq.client.mqtt._
-import com.hivemq.client.mqtt.datatypes.MqttTopicFilter
+import com.hivemq.client.mqtt.datatypes._
 
 import com.hivemq.client.mqtt.mqtt3._
 import com.hivemq.client.mqtt.mqtt3.message.auth._
@@ -136,7 +136,7 @@ class HiveMQReceiver(
           
         /* Transport layer security */
         
-        val sslConfig = getmqttSslConfig
+        val sslConfig = getMqttSslConfig
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
@@ -233,7 +233,7 @@ class HiveMQReceiver(
           
         /* Transport layer security */
         
-        val sslConfig = getmqttSslConfig
+        val sslConfig = getMqttSslConfig
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
@@ -303,6 +303,7 @@ class HiveMQReceiver(
               client
                 .subscribeWith()
                 .topicFilter(mqttTopic)
+                .qos(getMqttQoS)
                 .callback(mqtt5Callback)
                 .send()
                 .whenComplete(onSubscription)
@@ -319,8 +320,36 @@ class HiveMQReceiver(
 
     }
     
+    private def getMqttQoS: MqttQos = {
+      
+      var qos = mqttQoS.getOrElse(1);
+      qos match {
+        case 0 => {
+          /*
+           * QoS for at most once delivery according to the 
+           * capabilities of the underlying network.
+           */
+          MqttQos.AT_MOST_ONCE
+        }
+        case 1 => {
+          /*
+           * QoS for ensuring at least once delivery.
+           */
+          MqttQos.AT_LEAST_ONCE
+        }
+        case 2 => {
+          /*
+           * QoS for ensuring exactly once delivery.
+           */
+          MqttQos.EXACTLY_ONCE
+        }
+        case _ => throw new RuntimeException(s"Quality of Service '${qos}' is not supported.")
+      }
+      
+    }
+    
     /* Transport layer security */
-    private def getmqttSslConfig: MqttClientSslConfig = {
+    private def getMqttSslConfig: MqttClientSslConfig = {
   
         if (mqttSsl.isDefined) {
           

@@ -28,16 +28,90 @@ import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.google.common.base.Strings;
 
 public class SslUtil {
 
-	public static KeyManagerFactory getKeyManagerFactory(String keystoreFile, String keystoreType, String keystorePassword,
-			String keystoreAlgorithm) throws CertificateException, NoSuchAlgorithmException, KeyStoreException,
-			IOException, UnrecoverableKeyException {
+	private static final String TLS_VERSION = "TLSv1.2";
+
+	/**
+	 * Build a SSLSocketFactory without Key & Trust Managers;
+	 * the TLS version is set to the default version
+	 */
+	public static SSLSocketFactory getPlainSslSocketFactory() throws Exception {
+		return getPlainSslSocketFactory(TLS_VERSION);
+	}
+
+	public static SSLSocketFactory getPlainSslSocketFactory(String tlsVersion) throws Exception {
+
+		SSLContext sslContext = SSLContext.getInstance(tlsVersion);
+		sslContext.init(null, null, null);
+
+		return sslContext.getSocketFactory();
+
+	}
+
+	public static SSLSocketFactory getSslSocketFactory(String keystoreFile, String keystoreType,
+			String keystorePassword, String keystoreAlgorithm) throws Exception {
+
+		return getSslSocketFactory(keystoreFile, keystoreType, keystorePassword, keystoreAlgorithm, TLS_VERSION);
+
+	}
+
+	public static SSLSocketFactory getSslSocketFactory(String keystoreFile, String keystoreType,
+			String keystorePassword, String keystoreAlgorithm, String tlsVersion) throws Exception {
+
+		SSLContext sslContext = SSLContext.getInstance(tlsVersion);
+
+		/* Build Key Managers */
+		KeyManager[] keyManagers = null;
+
+		keyManagers = getKeyManagerFactory(keystoreFile, keystoreType, keystorePassword, keystoreAlgorithm)
+				.getKeyManagers();
+
+		sslContext.init(keyManagers, null, null);
+		return sslContext.getSocketFactory();
+
+	}
+	
+	public static SSLSocketFactory getSslSocketFactory(String keystoreFile, String keystoreType,
+			String keystorePassword, String keystoreAlgorithm, String truststoreFile, String truststoreType,
+			String truststorePassword, String truststoreAlgorithm, String tlsVersion) throws Exception {
+
+		SSLContext sslContext = SSLContext.getInstance(tlsVersion);
+		
+		/* Build Key Managers */
+		KeyManager[] keyManagers = null;
+
+		KeyManagerFactory keyManagerFactory = getKeyManagerFactory(keystoreFile, keystoreType, keystorePassword, keystoreAlgorithm);
+		if (keyManagerFactory != null)
+			keyManagers = keyManagerFactory.getKeyManagers();
+
+		/* Build Trust Managers */
+		TrustManager[] trustManagers = null;
+		
+		TrustManagerFactory trustManagerFactory = getTrustManagerFactory(truststoreFile, truststoreType, truststorePassword, truststoreAlgorithm);
+		if (trustManagerFactory != null)
+			trustManagers = trustManagerFactory.getTrustManagers();
+		
+		
+		sslContext.init(keyManagers, trustManagers, null);
+		return sslContext.getSocketFactory();
+
+	}
+
+	/***** KEY MANAGER FACTORY *****/
+
+	public static KeyManagerFactory getKeyManagerFactory(String keystoreFile, String keystoreType,
+			String keystorePassword, String keystoreAlgorithm) throws CertificateException, NoSuchAlgorithmException,
+			KeyStoreException, IOException, UnrecoverableKeyException {
 
 		KeyStore keystore = loadKeystore(keystoreFile, keystoreType, keystorePassword);
 		/*
@@ -66,6 +140,8 @@ public class SslUtil {
 
 	}
 
+	/***** TRUST MANAGER FACTORY *****/
+
 	public static TrustManagerFactory getTrustManagerFactory(String truststoreFile, String truststoreType,
 			String truststorePassword, String truststoreAlgorithm)
 			throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException {
@@ -91,15 +167,6 @@ public class SslUtil {
 	/**
 	 * Load a Java KeyStore loacted at keystoreFile of keystoreType and
 	 * keystorePassword
-	 * 
-	 * @param keystoreFile
-	 * @param keystoreType
-	 * @param keystorePassword
-	 * @return
-	 * @throws IOException
-	 * @throws CertificateException
-	 * @throws NoSuchAlgorithmException
-	 * @throws KeyStoreException
 	 */
 	public static KeyStore loadKeystore(String keystoreFile, String keystoreType, String keystorePassword)
 			throws IOException, CertificateException, NoSuchAlgorithmException, KeyStoreException {
