@@ -18,7 +18,7 @@ package de.kp.works.stream.mqtt
  * 
  */
 
-import java.util.UUID
+import java.util.{Date, UUID}
 import java.nio.charset.Charset
 
 import com.hivemq.client.mqtt._
@@ -101,8 +101,11 @@ class HiveMQReceiver(
       
       def accept(publish: Mqtt3Publish):Unit = {
         
+        /* Timestamp when the message arrives */
+        val timestamp = new Date().getTime
+        
         val payload = publish.getPayloadAsBytes
-        val result = new MqttResult(mqttTopic, payload)
+        val result = new MqttResult(timestamp, mqttTopic, payload)
         
         store(result)
         
@@ -114,8 +117,11 @@ class HiveMQReceiver(
       
       def accept(publish: Mqtt5Publish):Unit = {
         
+        /* Timestamp when the message arrives */
+        val timestamp = new Date().getTime
+        
         val payload = publish.getPayloadAsBytes
-        val result = new MqttResult(mqttTopic, payload)
+        val result = new MqttResult(timestamp, mqttTopic, payload)
         
         store(result)
         

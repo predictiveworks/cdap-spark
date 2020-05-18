@@ -19,7 +19,7 @@ package de.kp.works.stream.mqtt
  */
 
 import java.nio.charset.StandardCharsets
-import java.util.Properties
+import java.util.Date
 
 import com.google.gson;
 
@@ -222,8 +222,11 @@ class MqttReceiver(
     val callback = new MqttCallback() {
 
       override def messageArrived(topic: String, message: MqttMessage) {
-        
-        val result = new MqttResult(topic, message.getPayload())
+
+        /* Timestamp when the message arrives */
+        val timestamp = new Date().getTime
+        val result = new MqttResult(timestamp, topic, message.getPayload())
+
         store(result)
         
       }
