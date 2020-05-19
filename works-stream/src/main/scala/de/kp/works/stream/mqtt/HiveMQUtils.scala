@@ -25,7 +25,6 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.api.java.{JavaDStream, JavaReceiverInputDStream, JavaStreamingContext}
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 
-import de.kp.works.stream.creds._
 import de.kp.works.stream.ssl._
 
 object HiveMQUtils {
@@ -124,36 +123,6 @@ object HiveMQUtils {
       mqttPort: Int,
       mqttUser: String,
       mqttPass: String,
-      mqttQoS: Int,      
-      mqttVersion: Int      
-    ): JavaReceiverInputDStream[MqttResult] = {
-    
-    implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, mqttUser, mqttPass, None, Option(mqttQoS), Option(mqttVersion))
-    
-  }
-  
-  /**
-   * @param jssc      		JavaStreamingContext object
-   * @param storageLevel  RDD storage level.
-   * @param mqttTopic     MQTT topic to listen to
-   * @param mqttHost      Host of the MQTT broker
-   * @param mqttPort      Port of the MQTT broker
-   * @param mqttUser			 Name of the mqtt user
-   * @param mqttPass      Password of the mqtt user
-   * @param mqttCreds     Application security (username & password)
-   * @param mqttQoS       Quality of service to use for the topic subscription
-   * @param mqttVersion   MQTT version (either 3 or 5)
-   */
-  def createStream(
-      jssc: JavaStreamingContext,
-      storageLevel: StorageLevel,
-      mqttTopic: String,
-      mqttHost: String,
-      mqttPort: Int,
-      mqttUser: String,
-      mqttPass: String,
-      mqttCreds: Credentials,
       mqttQoS: Int,      
       mqttVersion: Int      
     ): JavaReceiverInputDStream[MqttResult] = {

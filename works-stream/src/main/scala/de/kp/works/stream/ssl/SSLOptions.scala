@@ -18,15 +18,16 @@ package de.kp.works.stream.ssl
  *
  */
 
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
+import java.security._
+import java.security.cert.X509Certificate
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl._
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 class SSLOptions(
 
+  val tlsVersion: String = "TLS",  
+    
   /* KEY STORE */
   val keystoreFile: Option[String] = None,
   val keystoreType: Option[String] = None,
@@ -34,18 +35,21 @@ class SSLOptions(
   val keystoreAlgorithm: Option[String] = None,
 
   /* TRUST STORE */
-  val verifyHttps: Boolean,
 
   val truststoreFile: Option[String] = None,
   val truststoreType: Option[String] = None,
   val truststorePassword: Option[String] = None,
   val truststoreAlgorithm: Option[String] = None,
 
+  /* CERTIFICATES */
+  
   val caCert: Option[X509Certificate] = None,
   val cert: Option[X509Certificate] = None,
   val privateKey: Option[PrivateKey] = None,
   val privateKeyPass: Option[String] = None,
 
+  /* CERTIFICATES FILES */
+  
   val caCertFile: Option[String] = None,
   val certFile: Option[String] = None,
   val privateKeyFile: Option[String] = None, 
@@ -71,6 +75,21 @@ class SSLOptions(
 
   }
 
+  def getSslSocketFactory: SSLSocketFactory = {
+    
+		Security.addProvider(new BouncyCastleProvider())
+
+		val keyManagerFactory = getKeyManagerFactory
+		val trustManagerFactory = getTrustManagerFactory
+
+		val sslContext = SSLContext.getInstance(tlsVersion)
+		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null)
+
+		return sslContext.getSocketFactory()
+    
+  }
+
+  
   def getKeyManagerFactory: KeyManagerFactory = {
 
     try {

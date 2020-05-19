@@ -46,7 +46,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 import org.slf4j.{Logger, LoggerFactory}
 
-import de.kp.works.stream.creds._
 import de.kp.works.stream.ssl._
 
 import scala.collection.JavaConversions._

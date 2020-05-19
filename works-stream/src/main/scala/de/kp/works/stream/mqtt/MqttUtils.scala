@@ -25,7 +25,7 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.api.java.{ JavaDStream, JavaReceiverInputDStream, JavaStreamingContext }
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 
-import de.kp.works.stream.creds._
+import de.kp.works.stream.ssl._
 
 object MqttUtils {
 
@@ -82,8 +82,8 @@ object MqttUtils {
    * @param topics            Array of topic names to subscribe to
    * @param userName			     Name of the mqtt user
    * @param userPass          Password of the mqtt user
+ 	 * @param sslOptions        SSL authentication
    * @param clientId          ClientId to use for the mqtt connection
-   * @param credentials       User credentials for authentication to the mqtt publisher
    * @param cleanSession      Sets the mqtt cleanSession parameter
    * @param qos               Quality of service to use for the topic subscription
    * @param connectionTimeout Connection timeout for the mqtt connection
@@ -96,9 +96,9 @@ object MqttUtils {
     brokerUrl: String,
     topics: Array[String],
     userName: String,
-    userPass: String,    
+    userPass: String,   
+    sslOptions: SSLOptions,
     clientId: String,
-    credentials: Credentials,
     cleanSession: Boolean,
     qos: Int,
     connectionTimeout: Int,
@@ -111,8 +111,8 @@ object MqttUtils {
     val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
 
-    createStream(jssc.ssc, storageLevel, brokerUrl, topics, userName, userPass, client,
-      Option(credentials), Option(cleanSession), Option(qos),
+    createStream(jssc.ssc, storageLevel, brokerUrl, topics, userName, userPass, Option(sslOptions), client,
+      Option(cleanSession), Option(qos),
       Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
   }
 
@@ -122,8 +122,8 @@ object MqttUtils {
    * @param topics            Array of topic names to subscribe to
    * @param userName			     Name of the mqtt user
    * @param userPass          Password of the mqtt user
+ 	 * @param sslOptions        SSL authentication
    * @param clientId          ClientId to use for the mqtt connection
-   * @param credentials       User credentials for authentication to the mqtt publisher
    * @param cleanSession      Sets the mqtt cleanSession parameter
    * @param qos               Quality of service to use for the topic subscription
    * @param connectionTimeout Connection timeout for the mqtt connection
@@ -136,8 +136,8 @@ object MqttUtils {
     topics: Array[String],
     userName: String,
     userPass: String,
+    sslOptions: SSLOptions,
     clientId: String,
-    credentials: Credentials,
     cleanSession: Boolean,
     qos: Int,
     connectionTimeout: Int,
@@ -151,7 +151,7 @@ object MqttUtils {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
 
     createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2, brokerUrl, topics, userName, userPass,
-      client, Option(credentials), Option(cleanSession), Option(qos),
+      Option(sslOptions), client, Option(cleanSession), Option(qos),
       Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
 
   }
@@ -162,6 +162,7 @@ object MqttUtils {
    * @param topics       Array of topic names to subscribe to
    * @param userName			Name of the mqtt user
    * @param userPass     Password of the mqtt user
+ 	 * @param sslOptions   SSL authentication
    * @param clientId     ClientId to use for the mqtt connection
    * @param credentials  User credentials for authentication to the mqtt publisher
    * @param cleanSession Sets the mqtt cleanSession parameter
@@ -172,8 +173,8 @@ object MqttUtils {
     topics: Array[String],
     userName: String,
     userPass: String,
+    sslOptions: SSLOptions,
     clientId: String,
-    credentials: Credentials,
     cleanSession: Boolean,
     qos: Int): JavaReceiverInputDStream[MqttResult] = {
     /*
@@ -184,7 +185,7 @@ object MqttUtils {
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
 
     createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2, brokerUrl, topics,
-      userName, userPass, client, Option(credentials), Option(cleanSession), Option(qos),
+      userName, userPass, Option(sslOptions), client, Option(cleanSession), Option(qos),
       None, None, None)
 
   }
@@ -216,6 +217,7 @@ object MqttUtils {
    * @param topics            Array of topic names to subscribe to
    * @param userName					 Name of the mqtt user
    * @param userPass          Password of the mqtt user
+ 	 * @param sslOptions        SSL authentication
    * @param clientId          ClientId to use for the mqtt connection
    * @param credentials       User credentials for authentication to the mqtt publisher
    * @param cleanSession      Sets the mqtt cleanSession parameter
@@ -231,14 +233,14 @@ object MqttUtils {
     topics: Array[String],
     userName: String,
     userPass: String,
+    sslOptions: Option[SSLOptions],
     clientId: Option[String],
-    credentials: Option[Credentials],
     cleanSession: Option[Boolean],
     qos: Option[Int],
     connectionTimeout: Option[Int],
     keepAliveInterval: Option[Int],
     mqttVersion: Option[Int]): ReceiverInputDStream[MqttResult] = {
-    new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass, clientId, credentials,
+    new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass, sslOptions, clientId,
       cleanSession, qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }
 
