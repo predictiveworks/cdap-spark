@@ -20,6 +20,8 @@ package de.kp.works.stream.mqtt
 
 import java.util.{Date, UUID}
 import java.nio.charset.Charset
+
+import java.security.MessageDigest
 import java.security.Security
 
 import com.hivemq.client.mqtt._
@@ -81,15 +83,15 @@ class HiveMQReceiver(
     mqttPort: Int,
     mqttUser: String,
     mqttPass: String,
-    /*
-     * Transport security
-     */
     mqttSsl: Option[SSLOptions],
     mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
     ) extends Receiver[MqttResult](storageLevel) {
 
     	private final val LOG = LoggerFactory.getLogger(classOf[HiveMQReceiver])
+
+    private val UTF8 = Charset.forName("UTF-8")        
+    private val MD5 = MessageDigest.getInstance("MD5")
 
     /* 
      * Set up callback for MqttClient. This needs to happen before
@@ -98,13 +100,25 @@ class HiveMQReceiver(
     private val mqtt3Callback = new java.util.function.Consumer[Mqtt3Publish] {
       
       def accept(publish: Mqtt3Publish):Unit = {
-        
+
         /* Timestamp when the message arrives */
         val timestamp = new Date().getTime
+        val seconds = timestamp / 1000
         
         val payload = publish.getPayloadAsBytes
-        val result = new MqttResult(timestamp, mqttTopic, payload)
         
+        /* Parse plain byte message */
+			  val json = new String(payload, UTF8);
+
+        val serialized = Seq(mqttTopic, payload).mkString("|")
+        val digest = MD5.digest(serialized.getBytes).toString
+       
+			  val tokens = mqttTopic.split("\\/").toList
+			  
+			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+			  val dimension = tokens.last
+          
+        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
         store(result)
         
       }
@@ -114,13 +128,25 @@ class HiveMQReceiver(
     private val mqtt5Callback = new java.util.function.Consumer[Mqtt5Publish] {
       
       def accept(publish: Mqtt5Publish):Unit = {
-        
+
         /* Timestamp when the message arrives */
         val timestamp = new Date().getTime
+        val seconds = timestamp / 1000
         
         val payload = publish.getPayloadAsBytes
-        val result = new MqttResult(timestamp, mqttTopic, payload)
         
+        /* Parse plain byte message */
+			  val json = new String(payload, UTF8);
+
+        val serialized = Seq(mqttTopic, payload).mkString("|")
+        val digest = MD5.digest(serialized.getBytes).toString
+       
+			  val tokens = mqttTopic.split("\\/").toList
+			  
+			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+			  val dimension = tokens.last
+          
+        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
         store(result)
         
       }

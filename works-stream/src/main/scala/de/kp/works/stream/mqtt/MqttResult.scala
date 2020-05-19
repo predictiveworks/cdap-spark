@@ -18,4 +18,37 @@ package de.kp.works.stream.mqtt
  * 
  */
 
-class MqttResult(val timestamp: Long, val topic: String, val payload: Array[Byte]) {}
+class MqttResult(
+    /* The timestamp in milli seconds 
+     * the message arrived 
+     */
+    val timestamp: Long,
+    /* The timestamp in seconds the
+     * message arrived
+     */
+    val seconds: Long,
+    /* The MQTT topic of the message 
+     */
+    val topic: String,
+    /* The payload of this message
+     */    
+    val payload: Array[Byte],
+    /* The MD5 digest of topic and payload
+     * to identify duplicate messages
+     */
+    val digest: String,
+    /* The [String] representation of the
+     * payload
+     */
+    val json: String,
+    /* The context of the message, i.e. all
+     * topic levels except the last one as
+     * MD5 digest
+     */
+    val context: String,
+    /* The lowest topic level, which describes
+     * semantic meaning of message
+     */
+    val dimension: String) {
+  
+}

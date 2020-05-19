@@ -18,7 +18,8 @@ package de.kp.works.stream.mqtt
  * 
  */
 
-import java.nio.charset.StandardCharsets
+import java.nio.charset.Charset
+import java.security.MessageDigest
 import java.util.Date
 
 import com.google.gson;
@@ -167,6 +168,9 @@ class MqttReceiver(
    */
   def onStart() {
 
+    val UTF8 = Charset.forName("UTF-8")        
+    val MD5 = MessageDigest.getInstance("MD5")
+
     /* 						MESSAGE PERSISTENCE
      * 
      * Since we don’t want to persist the state of pending 
@@ -193,8 +197,22 @@ class MqttReceiver(
 
         /* Timestamp when the message arrives */
         val timestamp = new Date().getTime
-        val result = new MqttResult(timestamp, topic, message.getPayload())
+        val seconds = timestamp / 1000
+        
+        val payload = message.getPayload()
+        
+        /* Parse plain byte message */
+			  val json = new String(payload, UTF8);
 
+        val serialized = Seq(topic, payload).mkString("|")
+        val digest = MD5.digest(serialized.getBytes).toString
+       
+			  val tokens = topic.split("\\/").toList
+			  
+			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+			  val dimension = tokens.last
+       
+        val result = new MqttResult(timestamp, seconds, topic, payload, digest, json, context, dimension)
         store(result)
         
       }
