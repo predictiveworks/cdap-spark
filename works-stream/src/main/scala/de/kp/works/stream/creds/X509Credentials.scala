@@ -24,8 +24,6 @@ import java.security._
 import java.security.cert.X509Certificate
 
 class X509Credentials(  
-  val username:String,
-  val password:String,    
   val caCert:X509Certificate,
   val cert:X509Certificate,
   val privateKey:PrivateKey, 

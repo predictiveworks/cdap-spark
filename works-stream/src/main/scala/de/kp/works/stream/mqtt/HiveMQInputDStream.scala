@@ -20,6 +20,7 @@ package de.kp.works.stream.mqtt
 
 import java.util.{Date, UUID}
 import java.nio.charset.Charset
+import java.security.Security
 
 import com.hivemq.client.mqtt._
 import com.hivemq.client.mqtt.datatypes._
@@ -41,6 +42,8 @@ import org.apache.spark.streaming.StreamingContext
 import org.apache.spark.streaming.dstream._
 import org.apache.spark.streaming.receiver.Receiver
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider
+
 import org.slf4j.{Logger, LoggerFactory}
 
 import de.kp.works.stream.creds._
@@ -54,10 +57,8 @@ class HiveMQInputDStream(
     mqttTopic: String,
     mqttHost: String,
     mqttPort: Int,  
-    /*
-     * User authentication	
-     */
-    mqttCreds: Option[Credentials] = None,
+    mqttUser: String,
+    mqttPass: String,
     /*
      * Transport security
      */
@@ -69,7 +70,7 @@ class HiveMQInputDStream(
     override def name: String = s"HiveMQ stream [$id]"
  
     def getReceiver(): Receiver[MqttResult] = {
-      new HiveMQReceiver(storageLevel, mqttTopic, mqttHost, mqttPort, mqttCreds, mqttSsl, mqttQoS, mqttVersion)
+      new HiveMQReceiver(storageLevel, mqttTopic, mqttHost, mqttPort, mqttUser, mqttPass, mqttSsl, mqttQoS, mqttVersion)
     }
     
 }
@@ -79,10 +80,8 @@ class HiveMQReceiver(
     mqttTopic: String,
     mqttHost: String,
     mqttPort: Int,
-    /*
-     * User authentication	
-     */
-    mqttCreds: Option[Credentials],
+    mqttUser: String,
+    mqttPass: String,
     /*
      * Transport security
      */
@@ -146,24 +145,14 @@ class HiveMQReceiver(
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
-           
-        if (mqttCreds.isDefined) {
-      
-          val creds = mqttCreds.get
-          if (creds.isInstanceOf[BasicCredentials]) {
         
-            val basicCreds = creds.asInstanceOf[BasicCredentials]
-            val simpleAuth = Mqtt3SimpleAuth
-              .builder()
-              .username(basicCreds.username)
-              .password(basicCreds.password.getBytes(Charset.forName("UTF-8")))
-              .build()
-              
-            builder.simpleAuth(simpleAuth)
-
-          }
-      
-        }
+        val simpleAuth = Mqtt3SimpleAuth
+          .builder()
+          .username(mqttUser)
+          .password(mqttPass.getBytes(Charset.forName("UTF-8")))
+          .build()
+          
+        builder.simpleAuth(simpleAuth)
        
         /***** CONNECT & SUBSCRIBE *****/
           
@@ -243,24 +232,14 @@ class HiveMQReceiver(
         if (sslConfig != null) builder.sslConfig(sslConfig)
           
         /* Application layer security */
-        
-        if (mqttCreds.isDefined) {
-      
-          val creds = mqttCreds.get
-          if (creds.isInstanceOf[BasicCredentials]) {
-        
-            val basicCreds = creds.asInstanceOf[BasicCredentials]
-            val simpleAuth = Mqtt5SimpleAuth
-              .builder()
-              .username(basicCreds.username)
-              .password(basicCreds.password.getBytes(Charset.forName("UTF-8")))
-              .build()
-              
-            builder.simpleAuth(simpleAuth)
 
-          }
+        val simpleAuth = Mqtt5SimpleAuth
+          .builder()
+          .username(mqttUser)
+          .password(mqttPass.getBytes(Charset.forName("UTF-8")))
+          .build()
           
-        }
+        builder.simpleAuth(simpleAuth)
        
         /***** CONNECT & SUBSCRIBE *****/
           
@@ -358,6 +337,8 @@ class HiveMQReceiver(
     private def getMqttSslConfig: MqttClientSslConfig = {
   
         if (mqttSsl.isDefined) {
+
+		      Security.addProvider(new BouncyCastleProvider())
           
           val sslOptions = mqttSsl.get
           val builder = MqttClientSslConfig.builder()

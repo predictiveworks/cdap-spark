@@ -64,6 +64,8 @@ import de.kp.works.stream.creds._
  * @param brokerUrl          Url of remote mqtt publisher
  * @param topic              topic name Array to subscribe to
  * @param storageLevel       RDD storage level.
+ * @param userName					 Name of the mqtt user
+ * @param userPass          Password of the mqtt user
  * @param clientId           ClientId to use for the mqtt connection
  * @param credentials        User credentials for authentication to the mqtt publisher
  * @param cleanSession       Sets the mqtt cleanSession parameter
@@ -74,9 +76,11 @@ import de.kp.works.stream.creds._
  */
 class MqttInputDStream(
     _ssc: StreamingContext,
+    storageLevel: StorageLevel,
     brokerUrl: String,
     topics: Array[String],
-    storageLevel: StorageLevel,
+    userName: String,
+    userPass: String,
     clientId: Option[String] = None,
     credentials: Option[Credentials] = None,
     cleanSession: Option[Boolean] = None,
@@ -89,15 +93,17 @@ class MqttInputDStream(
   override def name: String = s"MQTT stream [$id]"
 
   def getReceiver(): Receiver[MqttResult] = {
-    new MqttReceiver(brokerUrl, topics, storageLevel, clientId, credentials, cleanSession,
+    new MqttReceiver(storageLevel, brokerUrl, topics, userName, userPass, clientId, credentials, cleanSession,
       qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }
 }
 
 class MqttReceiver(
+    storageLevel: StorageLevel,
     brokerUrl: String,
     topics: Array[String],
-    storageLevel: StorageLevel,
+    userName: String,
+    userPass: String,
     clientId: Option[String],
     credentials: Option[Credentials] = None,
     cleanSession: Option[Boolean],
@@ -115,25 +121,18 @@ class MqttReceiver(
 
     /* Initialize mqtt parameters */
     val options = new MqttConnectOptions()
+
+    /* User authentication */
+    options.setUserName(userName)
+    options.setPassword(userPass.toCharArray)
     
     if (credentials.isDefined) {
       
       val creds = credentials.get
-      if (creds.isInstanceOf[BasicCredentials]) {
-        
-        val basicCreds = creds.asInstanceOf[BasicCredentials]
-
-        options.setUserName(basicCreds.username)
-        options.setPassword(basicCreds.password.toCharArray)
-
-      }
     
       if (creds.isInstanceOf[X509Credentials]) {
 
         val x509Creds = creds.asInstanceOf[X509Credentials]
-        
-        options.setUserName(x509Creds.username)
-        options.setPassword(x509Creds.password.toCharArray)
         
         options.setSocketFactory(x509Creds.getSSLSocketFactory)
 
@@ -142,9 +141,6 @@ class MqttReceiver(
       if (creds.isInstanceOf[PEMX509Credentials]) {
         
         val pemX509Creds = creds.asInstanceOf[PEMX509Credentials]
-       
-        options.setUserName(pemX509Creds.username)
-        options.setPassword(pemX509Creds.password.toCharArray)
          
         options.setSocketFactory(pemX509Creds.getSSLSocketFactory)
 
@@ -153,9 +149,6 @@ class MqttReceiver(
       if (creds.isInstanceOf[SSLCredentials]) {
          
         val sslCreds = creds.asInstanceOf[SSLCredentials]
-        
-        options.setUserName(sslCreds.username)
-        options.setPassword(sslCreds.password.toCharArray)
         
         options.setSocketFactory(sslCreds.getSSLSocketFactory)
        

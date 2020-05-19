@@ -18,25 +18,38 @@ package de.kp.works.stream.ssl
  *
  */
 
+import java.security.PrivateKey;
+import java.security.cert.X509Certificate;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 class SSLOptions(
-  
-    /* KEY STORE */
-  val keystoreFile:         String,
-  val keystoreType:         String,
-  val keystorePassword:     String,
-  val keystoreAlgorithm:    String,
-  
+
+  /* KEY STORE */
+  val keystoreFile: Option[String] = None,
+  val keystoreType: Option[String] = None,
+  val keystorePassword: Option[String] = None,
+  val keystoreAlgorithm: Option[String] = None,
+
   /* TRUST STORE */
-  val verifyHttps:          Boolean,
-  
-	val truststoreFile:       Option[String] = None, 
-	val truststoreType:       Option[String] = None, 
-	val truststorePassword:   Option[String] = None,  
-	val truststoreAlgorithm:  Option[String] = None,
+  val verifyHttps: Boolean,
+
+  val truststoreFile: Option[String] = None,
+  val truststoreType: Option[String] = None,
+  val truststorePassword: Option[String] = None,
+  val truststoreAlgorithm: Option[String] = None,
+
+  val caCert: Option[X509Certificate] = None,
+  val cert: Option[X509Certificate] = None,
+  val privateKey: Option[PrivateKey] = None,
+  val privateKeyPass: Option[String] = None,
+
+  val caCertFile: Option[String] = None,
+  val certFile: Option[String] = None,
+  val privateKeyFile: Option[String] = None, 
+  val privateKeyFilePass: Option[String] = None,
   
   val cipherSuites: Option[Array[String]]) {
 
@@ -51,9 +64,10 @@ class SSLOptions(
   }
 
   def getHostnameVerifier: HostnameVerifier = {
-
-    /* No hostname verification */
-    NoopHostnameVerifier.INSTANCE
+    /*
+     * Use https hostname verification.
+     */
+    null
 
   }
 
@@ -61,9 +75,37 @@ class SSLOptions(
 
     try {
 
-      SslUtil.getKeyManagerFactory(keystoreFile, keystoreType, 
-          keystorePassword, keystoreAlgorithm)
+      if (keystoreFile.isDefined && keystoreType.isDefined && keystorePassword.isDefined && keystoreAlgorithm.isDefined) {
+        /*
+         * SSL authentication based on an existing key store
+         */
+        val ksFile = keystoreFile.get
+        val ksType = keystoreType.get
 
+        val ksPass = keystorePassword.get
+        val ksAlgo = keystoreAlgorithm.get
+
+        SslUtil.getStoreKeyManagerFactory(ksFile, ksType, ksPass, ksAlgo)
+
+      } else if (cert.isDefined && privateKey.isDefined && privateKeyPass.isDefined) {
+        /*
+         * SSL authentication based on a provided client certificate,
+         * private key and associated password; the certificate will 
+         * be added to a newly created key store
+         */
+        SslUtil.getCertKeyManagerFactory(cert.get, privateKey.get, privateKeyPass.get)
+        
+      } else if (certFile.isDefined && privateKeyFile.isDefined && privateKeyFilePass.isDefined) {
+        /*
+         * SSL authentication based on a provided client certificate file,
+         * private key file and associated password; the certificate will 
+         * be added to a newly created key store
+         */        
+        SslUtil.getCertFileKeyManagerFactory(certFile.get, privateKeyFile.get, privateKeyFilePass.get)
+
+      } else 
+        throw new Exception("Failed to retrieve KeyManager factory.")
+      
     } catch {
 
       case t: Throwable =>
@@ -77,16 +119,36 @@ class SSLOptions(
 
     try {
 
-      if (verifyHttps == false)
-        return null
+      if (truststoreFile.isDefined && truststoreType.isDefined && truststorePassword.isDefined && truststoreAlgorithm.isDefined) {
+        /*
+         * SSL authentication based on an existing trust store
+         */
+        val tsFile = truststoreFile.get
+        val tsType = truststoreType.get
+
+        val tsPass = truststorePassword.get
+        val tsAlgo = truststoreAlgorithm.get
+
+        SslUtil.getStoreTrustManagerFactory(tsFile, tsType, tsPass, tsAlgo)
+        
+      } else if (caCert.isDefined) {
+        /*
+         * SSL authentication based on a provided CA certificate;
+         * this certificate will be added to a newly created trust
+         * store
+         */
+        SslUtil.getCertTrustManagerFactory(caCert.get)
+
+      } else if (caCertFile.isDefined) {
+        /*
+         * SSL authentication based on a provided CA certificate file;
+         * the certificate is loaded and will be added to a newly created 
+         * trust store
+         */
+        SslUtil.getCertFileTrustManagerFactory(caCertFile.get)
       
-      val tsFile = truststoreFile.get
-      val tsType = truststoreType.get
-      
-      val tsPass = truststorePassword.get
-      val tsAlgo = truststoreAlgorithm.get
-      
-      SslUtil.getTrustManagerFactory(tsFile, tsType, tsPass, tsAlgo)
+      } else 
+        throw new Exception("Failed to retrieve TrustManager factory.")
 
     } catch {
 
@@ -94,7 +156,7 @@ class SSLOptions(
         /* Do nothing */
         null
     }
-    
+
     null
   }
 }

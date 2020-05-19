@@ -13,66 +13,75 @@ package de.kp.works.stream.mqtt
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
- * 
+ *
  */
 
 import scala.reflect.ClassTag
 
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.streaming.StreamingContext
-import org.apache.spark.streaming.api.java.{JavaDStream, JavaReceiverInputDStream, JavaStreamingContext}
+import org.apache.spark.streaming.api.java.{ JavaDStream, JavaReceiverInputDStream, JavaStreamingContext }
 import org.apache.spark.streaming.dstream.ReceiverInputDStream
 
 import de.kp.works.stream.creds._
 
 object MqttUtils {
 
-  /********** JAVA **********/
-  
+/********** JAVA **********/
+
   /**
-   * Storage level of the data will be the default 
+   * Storage level of the data will be the default
    * StorageLevel.MEMORY_AND_DISK_SER_2.
    *
    * @param jssc      JavaStreamingContext object
-   * @param brokerUrl Url of remote MQTT publisher
+   * @param brokerUrl Url of remote mqtt publisher
    * @param topics    Array of topic names to subscribe to
+   * @param userName	 Name of the mqtt user
+   * @param userPass  Password of the mqtt user
+   * 
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      brokerUrl: String,
-      topics: Array[String]
-    ): JavaReceiverInputDStream[MqttResult] = {
-    
+    jssc: JavaStreamingContext,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String): JavaReceiverInputDStream[MqttResult] = {
+
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, brokerUrl, topics)
-    
+    createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2,brokerUrl, topics, userName, userPass)
+
   }
 
   /**
    * @param jssc         JavaStreamingContext object
-   * @param brokerUrl    Url of remote MQTT publisher
-   * @param topics       Array of topic names to subscribe to
    * @param storageLevel RDD storage level.
+   * @param brokerUrl    Url of remote mqtt publisher
+   * @param topics       Array of topic names to subscribe to
+   * @param userName			Name of the mqtt user
+   * @param userPass     Password of the mqtt user
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      storageLevel: StorageLevel
-    ): JavaReceiverInputDStream[MqttResult] = {
-    
+    jssc: JavaStreamingContext,
+    storageLevel: StorageLevel,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String): JavaReceiverInputDStream[MqttResult] = {
+
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, brokerUrl, topics, storageLevel)
-  
+    createStream(jssc.ssc, storageLevel, brokerUrl, topics, userName, userPass)
+
   }
 
   /**
    * @param jssc              JavaStreamingContext object
-   * @param brokerUrl         Url of remote MQTT publisher
-   * @param topics            Array of topic names to subscribe to
    * @param storageLevel      RDD storage level.
+   * @param brokerUrl         Url of remote mqtt publisher
+   * @param topics            Array of topic names to subscribe to
+   * @param userName			     Name of the mqtt user
+   * @param userPass          Password of the mqtt user
    * @param clientId          ClientId to use for the mqtt connection
    * @param credentials       User credentials for authentication to the mqtt publisher
    * @param cleanSession      Sets the mqtt cleanSession parameter
@@ -82,34 +91,37 @@ object MqttUtils {
    * @param mqttVersion       Version to use for the mqtt connection
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      storageLevel: StorageLevel,
-      clientId: String,
-      credentials: Credentials,
-      cleanSession: Boolean,
-      qos: Int,
-      connectionTimeout: Int,
-      keepAliveInterval: Int,
-      mqttVersion: Int
-    ): JavaReceiverInputDStream[MqttResult] = {
+    jssc: JavaStreamingContext,
+    storageLevel: StorageLevel,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String,    
+    clientId: String,
+    credentials: Credentials,
+    cleanSession: Boolean,
+    qos: Int,
+    connectionTimeout: Int,
+    keepAliveInterval: Int,
+    mqttVersion: Int): JavaReceiverInputDStream[MqttResult] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
      */
-    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    
-    createStream(jssc.ssc, brokerUrl, topics, storageLevel, client,
-        Option(credentials), Option(cleanSession), Option(qos),
-        Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
+
+    createStream(jssc.ssc, storageLevel, brokerUrl, topics, userName, userPass, client,
+      Option(credentials), Option(cleanSession), Option(qos),
+      Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
   }
 
   /**
    * @param jssc              JavaStreamingContext object
-   * @param brokerUrl         Url of remote MQTT publisher
+   * @param brokerUrl         Url of remote mqtt publisher
    * @param topics            Array of topic names to subscribe to
+   * @param userName			     Name of the mqtt user
+   * @param userPass          Password of the mqtt user
    * @param clientId          ClientId to use for the mqtt connection
    * @param credentials       User credentials for authentication to the mqtt publisher
    * @param cleanSession      Sets the mqtt cleanSession parameter
@@ -119,103 +131,114 @@ object MqttUtils {
    * @param mqttVersion       Version to use for the mqtt connection
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      clientId: String,
-      credentials: Credentials,
-      cleanSession: Boolean,
-      qos: Int,
-      connectionTimeout: Int,
-      keepAliveInterval: Int,
-      mqttVersion: Int
-    ): JavaReceiverInputDStream[MqttResult] = {
+    jssc: JavaStreamingContext,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String,
+    clientId: String,
+    credentials: Credentials,
+    cleanSession: Boolean,
+    qos: Int,
+    connectionTimeout: Int,
+    keepAliveInterval: Int,
+    mqttVersion: Int): JavaReceiverInputDStream[MqttResult] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
      */
-    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    
-    createStream(jssc.ssc, brokerUrl, topics, StorageLevel.MEMORY_AND_DISK_SER_2,
+
+    createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2, brokerUrl, topics, userName, userPass,
       client, Option(credentials), Option(cleanSession), Option(qos),
       Option(connectionTimeout), Option(keepAliveInterval), Option(mqttVersion))
-      
+
   }
 
   /**
    * @param jssc         JavaStreamingContext object
-   * @param brokerUrl    Url of remote MQTT publisher
+   * @param brokerUrl    Url of remote mqtt publisher
    * @param topics       Array of topic names to subscribe to
+   * @param userName			Name of the mqtt user
+   * @param userPass     Password of the mqtt user
    * @param clientId     ClientId to use for the mqtt connection
    * @param credentials  User credentials for authentication to the mqtt publisher
    * @param cleanSession Sets the mqtt cleanSession parameter
    */
   def createStream(
-      jssc: JavaStreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      clientId: String,
-      credentials: Credentials,
-      cleanSession: Boolean
-      ): JavaReceiverInputDStream[MqttResult] = {
+    jssc: JavaStreamingContext,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String,
+    clientId: String,
+    credentials: Credentials,
+    cleanSession: Boolean,
+    qos: Int): JavaReceiverInputDStream[MqttResult] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
      */
-    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)    
+    val client = if (clientId == null || clientId.isEmpty) None else Option(clientId)
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    
-    createStream(jssc.ssc, brokerUrl, topics, StorageLevel.MEMORY_AND_DISK_SER_2,
-      client, Option(credentials), Option(cleanSession), None,
+
+    createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2, brokerUrl, topics,
+      userName, userPass, client, Option(credentials), Option(cleanSession), Option(qos),
       None, None, None)
-      
+
   }
 
-  /********** SCALA **********/
-  
+/********** SCALA **********/
+
   /**
    * @param ssc           StreamingContext object
+   * @param storageLevel  RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
    * @param brokerUrl     Url of remote MQTT publisher
    * @param topics        Array of topic names to subscribe to
-   * @param storageLevel  RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param userName			 Name of the mqtt user
+   * @param userPass      Password of the mqtt user
    */
   def createStream(
-      ssc: StreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      storageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK_SER_2
-    ): ReceiverInputDStream[MqttResult] = {
-    new MqttInputDStream(ssc, brokerUrl, topics, storageLevel)
+    ssc: StreamingContext,
+    storageLevel: StorageLevel = StorageLevel.MEMORY_AND_DISK_SER_2,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String): ReceiverInputDStream[MqttResult] = {
+    new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass)
   }
 
- /**
-  * @param ssc               StreamingContext object
-  * @param brokerUrl         Url of remote MQTT publisher
-  * @param topics            Array of topic names to subscribe to
-  * @param storageLevel      RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
-  * @param clientId          ClientId to use for the mqtt connection
-  * @param credentials       User credentials for authentication to the mqtt publisher
-  * @param cleanSession      Sets the mqtt cleanSession parameter
-  * @param qos               Quality of service to use for the topic subscription
-  * @param connectionTimeout Connection timeout for the mqtt connection
-  * @param keepAliveInterval Keepalive interal for the mqtt connection
-  * @param mqttVersion       Version to use for the mqtt connection
-  */
+  /**
+   * @param ssc               StreamingContext object
+   * @param storageLevel      RDD storage level. Defaults to StorageLevel.MEMORY_AND_DISK_SER_2.
+   * @param brokerUrl         Url of remote MQTT publisher
+   * @param topics            Array of topic names to subscribe to
+   * @param userName					 Name of the mqtt user
+   * @param userPass          Password of the mqtt user
+   * @param clientId          ClientId to use for the mqtt connection
+   * @param credentials       User credentials for authentication to the mqtt publisher
+   * @param cleanSession      Sets the mqtt cleanSession parameter
+   * @param qos               Quality of service to use for the topic subscription
+   * @param connectionTimeout Connection timeout for the mqtt connection
+   * @param keepAliveInterval Keepalive interal for the mqtt connection
+   * @param mqttVersion       Version to use for the mqtt connection
+   */
   def createStream(
-      ssc: StreamingContext,
-      brokerUrl: String,
-      topics: Array[String],
-      storageLevel: StorageLevel,
-      clientId: Option[String],
-      credentials: Option[Credentials],
-      cleanSession: Option[Boolean],
-      qos: Option[Int],
-      connectionTimeout: Option[Int],
-      keepAliveInterval: Option[Int],
-      mqttVersion: Option[Int]
-    ): ReceiverInputDStream[MqttResult] = {
-    new MqttInputDStream(ssc, brokerUrl, topics, storageLevel, clientId, credentials,
+    ssc: StreamingContext,
+    storageLevel: StorageLevel,
+    brokerUrl: String,
+    topics: Array[String],
+    userName: String,
+    userPass: String,
+    clientId: Option[String],
+    credentials: Option[Credentials],
+    cleanSession: Option[Boolean],
+    qos: Option[Int],
+    connectionTimeout: Option[Int],
+    keepAliveInterval: Option[Int],
+    mqttVersion: Option[Int]): ReceiverInputDStream[MqttResult] = {
+    new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass, clientId, credentials,
       cleanSession, qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }
 
