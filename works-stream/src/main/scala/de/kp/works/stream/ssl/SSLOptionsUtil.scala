@@ -29,7 +29,7 @@ object SSLOptionsUtil {
     keystoreFile: String,
     keystoreType: String,
     keystorePassword: String,
-    keystoreAlgorithm: String) {
+    keystoreAlgorithm: String):SSLOptions = {
 
     new SSLOptions(
       keystoreFile = Option(keystoreFile),
@@ -43,7 +43,7 @@ object SSLOptionsUtil {
     keystoreType: String,
     keystorePassword: String,
     keystoreAlgorithm: String,
-    cipherSuites: List[String]) {
+    cipherSuites: List[String]):SSLOptions = {
 
     new SSLOptions(
       keystoreFile = Option(keystoreFile),
@@ -61,7 +61,7 @@ object SSLOptionsUtil {
     truststoreFile: String,
     truststoreType: String,
     truststorePassword: String,
-    truststoreAlgorithm: String) {
+    truststoreAlgorithm: String):SSLOptions = {
 
     new SSLOptions(
       keystoreFile = Option(keystoreFile),
@@ -83,7 +83,7 @@ object SSLOptionsUtil {
     truststoreType: String,
     truststorePassword: String,
     truststoreAlgorithm: String,
-    cipherSuites: List[String]) {
+    cipherSuites: List[String]):SSLOptions = {
 
     new SSLOptions(
       keystoreFile = Option(keystoreFile),
@@ -103,7 +103,7 @@ object SSLOptionsUtil {
     caCert: X509Certificate,
     cert: X509Certificate,
     privateKey: PrivateKey,
-    privateKeyPass: String) {
+    privateKeyPass: String):SSLOptions = {
 
     new SSLOptions(
       caCert = Option(caCert),
@@ -118,7 +118,7 @@ object SSLOptionsUtil {
     cert: X509Certificate,
     privateKey: PrivateKey,
     privateKeyPass: String,
-    cipherSuites: List[String]) {
+    cipherSuites: List[String]):SSLOptions = {
 
     new SSLOptions(
       caCert = Option(caCert),
@@ -135,7 +135,7 @@ object SSLOptionsUtil {
     caCertFile: String,
     certFile: String,
     privateKeyFile: String,
-    privateKeyFilePass: String) {
+    privateKeyFilePass: String):SSLOptions = {
 
     new SSLOptions(
       caCertFile = Option(caCertFile),
@@ -150,7 +150,7 @@ object SSLOptionsUtil {
     certFile: String,
     privateKeyFile: String,
     privateKeyFilePass: String,
-    cipherSuites: List[String]) {
+    cipherSuites: List[String]):SSLOptions = {
 
     new SSLOptions(
       caCertFile = Option(caCertFile),
