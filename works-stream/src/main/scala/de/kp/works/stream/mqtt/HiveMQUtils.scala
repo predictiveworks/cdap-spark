@@ -157,8 +157,10 @@ object HiveMQUtils {
       mqttVersion: Int      
     ): JavaReceiverInputDStream[MqttResult] = {
     
+    val sslOptions = if (mqttSsl == null) None else Option(mqttSsl)
+    
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
-    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, mqttUser, mqttPass, Option(mqttSsl), Option(mqttQoS), Option(mqttVersion))
+    createStream(jssc.ssc, storageLevel, mqttTopic,mqttHost, mqttPort, mqttUser, mqttPass, sslOptions, Option(mqttQoS), Option(mqttVersion))
     
   }
 
