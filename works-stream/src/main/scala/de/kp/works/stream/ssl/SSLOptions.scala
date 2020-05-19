@@ -55,7 +55,7 @@ class SSLOptions(
   val privateKeyFile: Option[String] = None, 
   val privateKeyFilePass: Option[String] = None,
   
-  val cipherSuites: Option[Array[String]]) {
+  val cipherSuites: Option[Array[String]] = None) {
 
   def getCipherSuites: List[String] = {
 
