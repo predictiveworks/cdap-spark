@@ -204,7 +204,7 @@ class MqttReceiver(
         /* Parse plain byte message */
 			  val json = new String(payload, UTF8);
 
-        val serialized = Seq(topic, payload).mkString("|")
+        val serialized = Seq(topic, json).mkString("|")
         val digest = MD5.digest(serialized.getBytes).toString
        
 			  val tokens = topic.split("\\/").toList

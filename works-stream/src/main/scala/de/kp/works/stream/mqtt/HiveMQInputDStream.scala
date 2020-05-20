@@ -110,7 +110,7 @@ class HiveMQReceiver(
         /* Parse plain byte message */
 			  val json = new String(payload, UTF8);
 
-        val serialized = Seq(mqttTopic, payload).mkString("|")
+        val serialized = Seq(mqttTopic, json).mkString("|")
         val digest = MD5.digest(serialized.getBytes).toString
        
 			  val tokens = mqttTopic.split("\\/").toList
@@ -138,7 +138,7 @@ class HiveMQReceiver(
         /* Parse plain byte message */
 			  val json = new String(payload, UTF8);
 
-        val serialized = Seq(mqttTopic, payload).mkString("|")
+        val serialized = Seq(mqttTopic, json).mkString("|")
         val digest = MD5.digest(serialized.getBytes).toString
        
 			  val tokens = mqttTopic.split("\\/").toList
