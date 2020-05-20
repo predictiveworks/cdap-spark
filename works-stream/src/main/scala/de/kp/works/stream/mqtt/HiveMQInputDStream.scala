@@ -93,6 +93,28 @@ class HiveMQReceiver(
     private val UTF8 = Charset.forName("UTF-8")        
     private val MD5 = MessageDigest.getInstance("MD5")
 
+    private def expose(payload: Array[Byte]): Unit = {
+
+        /* Timestamp when the message arrives */
+        val timestamp = new Date().getTime
+        val seconds = timestamp / 1000
+       
+        /* Parse plain byte message */
+			  val json = new String(payload, UTF8);
+
+        val serialized = Seq(mqttTopic, json).mkString("|")
+        val digest = MD5.digest(serialized.getBytes).toString
+       
+			  val tokens = mqttTopic.split("\\/").toList
+			  
+			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+			  val dimension = tokens.last
+          
+        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
+        store(result)
+     	  
+    	}
+    
     /* 
      * Set up callback for MqttClient. This needs to happen before
      * connecting or subscribing, otherwise messages may be lost
@@ -100,27 +122,10 @@ class HiveMQReceiver(
     private val mqtt3Callback = new java.util.function.Consumer[Mqtt3Publish] {
       
       def accept(publish: Mqtt3Publish):Unit = {
-
-        /* Timestamp when the message arrives */
-        val timestamp = new Date().getTime
-        val seconds = timestamp / 1000
-        
-        val payload = publish.getPayloadAsBytes
-        
-        /* Parse plain byte message */
-			  val json = new String(payload, UTF8);
-
-        val serialized = Seq(mqttTopic, json).mkString("|")
-        val digest = MD5.digest(serialized.getBytes).toString
        
-			  val tokens = mqttTopic.split("\\/").toList
-			  
-			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
-			  val dimension = tokens.last
-          
-        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
-        store(result)
-        
+        val payload = publish.getPayloadAsBytes
+        if (payload != null) expose(payload)
+         
       }
       
     }
@@ -128,27 +133,10 @@ class HiveMQReceiver(
     private val mqtt5Callback = new java.util.function.Consumer[Mqtt5Publish] {
       
       def accept(publish: Mqtt5Publish):Unit = {
-
-        /* Timestamp when the message arrives */
-        val timestamp = new Date().getTime
-        val seconds = timestamp / 1000
-        
-        val payload = publish.getPayloadAsBytes
-        
-        /* Parse plain byte message */
-			  val json = new String(payload, UTF8);
-
-        val serialized = Seq(mqttTopic, json).mkString("|")
-        val digest = MD5.digest(serialized.getBytes).toString
        
-			  val tokens = mqttTopic.split("\\/").toList
-			  
-			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
-			  val dimension = tokens.last
-          
-        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
-        store(result)
-        
+        val payload = publish.getPayloadAsBytes
+        if (payload != null) expose(payload)
+         
       }
       
     }

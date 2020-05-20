@@ -200,20 +200,30 @@ class MqttReceiver(
         val seconds = timestamp / 1000
         
         val payload = message.getPayload()
-        
-        /* Parse plain byte message */
-			  val json = new String(payload, UTF8);
+        if (payload == null) {
+          
+          /* Do nothing */
+          
+        } else {
 
-        val serialized = Seq(topic, json).mkString("|")
-        val digest = MD5.digest(serialized.getBytes).toString
-       
-			  val tokens = topic.split("\\/").toList
-			  
-			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
-			  val dimension = tokens.last
-       
-        val result = new MqttResult(timestamp, seconds, topic, payload, digest, json, context, dimension)
-        store(result)
+          /* Serialize plain byte message */
+  			    val json = new String(payload, UTF8);
+  
+  			    /* Extract metadata from topic and
+  			     * serialized payload
+  			     */
+          val serialized = Seq(topic, json).mkString("|")
+          val digest = MD5.digest(serialized.getBytes).toString
+         
+  			    val tokens = topic.split("\\/").toList
+  			  
+  			    val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+  			    val dimension = tokens.last
+         
+          val result = new MqttResult(timestamp, seconds, topic, payload, digest, json, context, dimension)
+          store(result)
+          
+        }
         
       }
 
