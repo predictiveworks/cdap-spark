@@ -14,3 +14,4 @@ MQTT streaming supports real-time events streams originating from MQTT brokers. 
 
 For specialized use cases, e.g. in the automotive industry, also the **HiveMQ** client for v3 and v5 is supported.
 
+MQTT messages are enriched with semantic and temporal meta information to enable early correlation of MQTT events.

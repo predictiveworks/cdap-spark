@@ -93,7 +93,7 @@ class HiveMQReceiver(
     private val UTF8 = Charset.forName("UTF-8")        
     private val MD5 = MessageDigest.getInstance("MD5")
 
-    private def expose(payload: Array[Byte]): Unit = {
+    private def expose(qos: Int, duplicate: Boolean, retained: Boolean, payload: Array[Byte]): Unit = {
 
         /* Timestamp when the message arrives */
         val timestamp = new Date().getTime
@@ -110,7 +110,7 @@ class HiveMQReceiver(
 			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
 			  val dimension = tokens.last
           
-        val result = new MqttResult(timestamp, seconds, mqttTopic, payload, digest, json, context, dimension)
+        val result = new MqttResult(timestamp, seconds, mqttTopic, qos, duplicate, retained, payload, digest, json, context, dimension)
         store(result)
      	  
     	}
@@ -124,7 +124,16 @@ class HiveMQReceiver(
       def accept(publish: Mqtt3Publish):Unit = {
        
         val payload = publish.getPayloadAsBytes
-        if (payload != null) expose(payload)
+        if (payload != null) {
+
+          val qos = publish.getQos.ordinal();
+          /* NOT SUPPORTED */
+          val duplicate = false
+          val retained = publish.isRetain()
+          
+          expose(qos, duplicate, retained, payload)
+          
+        }
          
       }
       
@@ -135,7 +144,16 @@ class HiveMQReceiver(
       def accept(publish: Mqtt5Publish):Unit = {
        
         val payload = publish.getPayloadAsBytes
-        if (payload != null) expose(payload)
+        if (payload != null) {
+          
+          val qos = publish.getQos.ordinal();
+          /* NOT SUPPORTED */
+          val duplicate = false
+          val retained = publish.isRetain()
+          
+          expose(qos, duplicate, retained, payload)
+          
+        }
          
       }
       

@@ -206,6 +206,11 @@ class MqttReceiver(
           
         } else {
 
+          val qos = message.getQos
+          
+          val duplicate = message.isDuplicate()
+          val retained = message.isRetained()
+          
           /* Serialize plain byte message */
   			    val json = new String(payload, UTF8);
   
@@ -220,7 +225,7 @@ class MqttReceiver(
   			    val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
   			    val dimension = tokens.last
          
-          val result = new MqttResult(timestamp, seconds, topic, payload, digest, json, context, dimension)
+          val result = new MqttResult(timestamp, seconds, topic, qos, duplicate, retained, payload, digest, json, context, dimension)
           store(result)
           
         }

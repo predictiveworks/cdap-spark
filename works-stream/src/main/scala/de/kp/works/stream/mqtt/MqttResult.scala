@@ -30,6 +30,17 @@ class MqttResult(
     /* The MQTT topic of the message 
      */
     val topic: String,
+    /* The quality of service of the message
+     */
+    val qos: Int,
+    /* Indicates whether or not this message might be a
+     * duplicate of one which has already been received.
+     */
+    val duplicate: Boolean,
+    /* Indicates whether or not this message should be/was 
+     * retained by the server.
+     */
+    val retained: Boolean,
     /* The payload of this message
      */    
     val payload: Array[Byte],
