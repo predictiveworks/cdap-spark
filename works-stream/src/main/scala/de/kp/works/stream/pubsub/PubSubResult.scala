@@ -22,7 +22,7 @@ case class PubSubResult(
   
     val ackId: String,
     val publishTime: String,
-    val attributes: Map[String, String],
+    val attributes: java.util.Map[String, String],
     val data : Array[Byte]
 
 )

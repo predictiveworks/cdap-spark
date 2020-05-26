@@ -109,11 +109,17 @@ class PubSubReceiver(
               .map(m => {
 
                 val message = m.getMessage
+                /*
+                 * Convert to a HashMap because com.google.api.client.util.ArrayMap 
+                 * is not serializable.
+                 */
+                val attributes = new java.util.HashMap[String,String]()
+                attributes.putAll(message.getAttributes)
                 
                 PubSubResult(
                     ackId = m.getAckId, 
                     publishTime = message.getPublishTime, 
-                    attributes = message.getAttributes.asScala.toMap, 
+                    attributes = attributes, 
                     data = message.decodeData()
                 )
 
