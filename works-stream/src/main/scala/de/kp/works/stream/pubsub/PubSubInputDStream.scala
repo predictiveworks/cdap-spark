@@ -117,7 +117,7 @@ class PubSubReceiver(
                 attributes.putAll(message.getAttributes)
                 
                 PubSubResult(
-                    ackId = m.getAckId, 
+                    id = message.getMessageId,
                     publishTime = message.getPublishTime, 
                     attributes = attributes, 
                     data = message.decodeData()

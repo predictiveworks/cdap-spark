@@ -20,7 +20,7 @@ package de.kp.works.stream.pubsub
 
 case class PubSubResult(
   
-    val ackId: String,
+    val id: String,
     val publishTime: String,
     val attributes: java.util.Map[String, String],
     val data : Array[Byte]
