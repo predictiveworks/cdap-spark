@@ -47,7 +47,7 @@ object MqttUtils {
     brokerUrl: String,
     topics: Array[String],
     userName: String,
-    userPass: String): JavaReceiverInputDStream[MqttResult] = {
+    userPass: String): JavaReceiverInputDStream[MqttEvent] = {
 
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
     createStream(jssc.ssc, StorageLevel.MEMORY_AND_DISK_SER_2,brokerUrl, topics, userName, userPass)
@@ -68,7 +68,7 @@ object MqttUtils {
     brokerUrl: String,
     topics: Array[String],
     userName: String,
-    userPass: String): JavaReceiverInputDStream[MqttResult] = {
+    userPass: String): JavaReceiverInputDStream[MqttEvent] = {
 
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
     createStream(jssc.ssc, storageLevel, brokerUrl, topics, userName, userPass)
@@ -103,7 +103,7 @@ object MqttUtils {
     qos: Int,
     connectionTimeout: Int,
     keepAliveInterval: Int,
-    mqttVersion: Int): JavaReceiverInputDStream[MqttResult] = {
+    mqttVersion: Int): JavaReceiverInputDStream[MqttEvent] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
@@ -142,7 +142,7 @@ object MqttUtils {
     qos: Int,
     connectionTimeout: Int,
     keepAliveInterval: Int,
-    mqttVersion: Int): JavaReceiverInputDStream[MqttResult] = {
+    mqttVersion: Int): JavaReceiverInputDStream[MqttEvent] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
@@ -176,7 +176,7 @@ object MqttUtils {
     sslOptions: SSLOptions,
     clientId: String,
     cleanSession: Boolean,
-    qos: Int): JavaReceiverInputDStream[MqttResult] = {
+    qos: Int): JavaReceiverInputDStream[MqttEvent] = {
     /*
      * The client identifier user for the MQTT connection
      * is an optional parameter
@@ -206,7 +206,7 @@ object MqttUtils {
     brokerUrl: String,
     topics: Array[String],
     userName: String,
-    userPass: String): ReceiverInputDStream[MqttResult] = {
+    userPass: String): ReceiverInputDStream[MqttEvent] = {
     new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass)
   }
 
@@ -239,7 +239,7 @@ object MqttUtils {
     qos: Option[Int],
     connectionTimeout: Option[Int],
     keepAliveInterval: Option[Int],
-    mqttVersion: Option[Int]): ReceiverInputDStream[MqttResult] = {
+    mqttVersion: Option[Int]): ReceiverInputDStream[MqttEvent] = {
     new MqttInputDStream(ssc, storageLevel, brokerUrl, topics, userName, userPass, sslOptions, clientId,
       cleanSession, qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }

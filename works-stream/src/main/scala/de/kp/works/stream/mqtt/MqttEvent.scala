@@ -18,7 +18,7 @@ package de.kp.works.stream.mqtt
  * 
  */
 
-class MqttResult(
+class MqttEvent (
     /* The timestamp in milli seconds 
      * the message arrived 
      */
@@ -60,6 +60,22 @@ class MqttResult(
     /* The lowest topic level, which describes
      * semantic meaning of message
      */
-    val dimension: String) {
+    val dimension: String) extends Serializable {
   
+    def copy():MqttEvent = {
+
+      new MqttEvent(
+        timestamp,
+        seconds,
+        topic,
+        qos,
+        duplicate,
+        retained,
+        payload,
+        digest,
+        json,
+        context,
+        dimension)
+      
+    }
 }

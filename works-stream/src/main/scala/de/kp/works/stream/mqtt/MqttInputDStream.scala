@@ -91,11 +91,11 @@ class MqttInputDStream(
     connectionTimeout: Option[Int] = None,
     keepAliveInterval: Option[Int] = None,
     mqttVersion: Option[Int] = None
-  ) extends ReceiverInputDStream[MqttResult](_ssc) {
+  ) extends ReceiverInputDStream[MqttEvent](_ssc) {
 
   override def name: String = s"MQTT stream [$id]"
 
-  def getReceiver(): Receiver[MqttResult] = {
+  def getReceiver(): Receiver[MqttEvent] = {
     new MqttReceiver(storageLevel, brokerUrl, topics, userName, userPass, sslOptions, clientId, cleanSession,
       qos, connectionTimeout, keepAliveInterval, mqttVersion)
   }
@@ -114,7 +114,7 @@ class MqttReceiver(
     connectionTimeout: Option[Int],
     keepAliveInterval: Option[Int],
     mqttVersion: Option[Int]
-  ) extends Receiver[MqttResult](storageLevel) {
+  ) extends Receiver[MqttEvent](storageLevel) {
 
   def onStop() {
 
@@ -225,7 +225,7 @@ class MqttReceiver(
   			    val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
   			    val dimension = tokens.last
          
-          val result = new MqttResult(timestamp, seconds, topic, qos, duplicate, retained, payload, digest, json, context, dimension)
+          val result = new MqttEvent(timestamp, seconds, topic, qos, duplicate, retained, payload, digest, json, context, dimension)
           store(result)
           
         }

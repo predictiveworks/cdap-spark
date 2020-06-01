@@ -49,7 +49,7 @@ object HiveMQUtils {
       mqttPort: Int,
       mqttUser: String,
       mqttPass: String      
-    ): JavaReceiverInputDStream[MqttResult] = {
+    ): JavaReceiverInputDStream[MqttEvent] = {
     
     createStream(jssc, StorageLevel.MEMORY_AND_DISK_SER_2, mqttTopic,mqttHost, mqttPort, mqttUser, mqttPass)
     
@@ -71,7 +71,7 @@ object HiveMQUtils {
       mqttPort: Int,
       mqttUser: String,
       mqttPass: String
-    ): JavaReceiverInputDStream[MqttResult] = {
+    ): JavaReceiverInputDStream[MqttEvent] = {
     
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
     createStream(jssc.ssc, storageLevel, mqttTopics,mqttHost, mqttPort, mqttUser, mqttPass)
@@ -97,7 +97,7 @@ object HiveMQUtils {
       mqttUser: String,
       mqttPass: String,
       mqttVersion: Int      
-    ): JavaReceiverInputDStream[MqttResult] = {
+    ): JavaReceiverInputDStream[MqttEvent] = {
     
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
     createStream(jssc.ssc, storageLevel, mqttTopics,mqttHost, mqttPort, mqttUser, mqttPass, None, None, Option(mqttVersion))
@@ -125,7 +125,7 @@ object HiveMQUtils {
       mqttPass: String,
       mqttQoS: Int,      
       mqttVersion: Int      
-    ): JavaReceiverInputDStream[MqttResult] = {
+    ): JavaReceiverInputDStream[MqttEvent] = {
     
     implicitly[ClassTag[AnyRef]].asInstanceOf[ClassTag[String]]
     createStream(jssc.ssc, storageLevel, mqttTopics,mqttHost, mqttPort, mqttUser, mqttPass, None, Option(mqttQoS), Option(mqttVersion))
@@ -155,7 +155,7 @@ object HiveMQUtils {
       mqttSsl: SSLOptions,
       mqttQoS: Int,      
       mqttVersion: Int      
-    ): JavaReceiverInputDStream[MqttResult] = {
+    ): JavaReceiverInputDStream[MqttEvent] = {
     
     val sslOptions = if (mqttSsl == null) None else Option(mqttSsl)
     
@@ -190,8 +190,8 @@ object HiveMQUtils {
       mqttSsl: Option[SSLOptions] = None,
       mqttQoS: Option[Int] = None,
       mqttVersion: Option[Int] = None          
-    ): ReceiverInputDStream[MqttResult] = {
+    ): ReceiverInputDStream[MqttEvent] = {
     new HiveMQInputDStream(ssc, storageLevel, mqttTopics, mqttHost, mqttPort, mqttUser, mqttPass, mqttSsl, mqttQoS, mqttVersion)
   }
-  
+
 }

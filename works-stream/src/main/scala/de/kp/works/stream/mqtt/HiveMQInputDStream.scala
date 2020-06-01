@@ -66,14 +66,14 @@ class HiveMQInputDStream(
     mqttSsl: Option[SSLOptions] = None,
     mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
-    )  extends ReceiverInputDStream[MqttResult](_ssc) {
+    )  extends ReceiverInputDStream[MqttEvent](_ssc) {
  
     override def name: String = s"HiveMQ stream [$id]"
     /*
      * Gets the receiver object that will be sent to the 
      * worker nodes to receive data.
      */
-    def getReceiver(): Receiver[MqttResult] = {
+    def getReceiver(): Receiver[MqttEvent] = {
       new HiveMQReceiver(storageLevel, mqttTopics, mqttHost, mqttPort, mqttUser, mqttPass, mqttSsl, mqttQoS, mqttVersion)
     }
     
@@ -89,7 +89,7 @@ class HiveMQReceiver(
     mqttSsl: Option[SSLOptions],
     mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
-    ) extends Receiver[MqttResult](storageLevel) {
+    ) extends Receiver[MqttEvent](storageLevel) {
 
     	private final val LOG = LoggerFactory.getLogger(classOf[HiveMQReceiver])
 
@@ -118,7 +118,7 @@ class HiveMQReceiver(
 			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
 			  val dimension = tokens.last
           
-        val result = new MqttResult(timestamp, seconds, mqttTopic, qos, duplicate, retained, payload, digest, json, context, dimension)
+        val result = new MqttEvent(timestamp, seconds, mqttTopic, qos, duplicate, retained, payload, digest, json, context, dimension)
         store(result)
      	  
     	}
