@@ -28,10 +28,12 @@ import com.hivemq.client.mqtt.datatypes._
 import com.hivemq.client.mqtt.mqtt3._
 import com.hivemq.client.mqtt.mqtt3.message.auth._
 import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish
 
 import com.hivemq.client.mqtt.mqtt5._
 import com.hivemq.client.mqtt.mqtt5.message.auth._
 import com.hivemq.client.mqtt.mqtt5.message.connect.connack.Mqtt5ConnAck
+import com.hivemq.client.mqtt.mqtt5.message.publish.Mqtt5Publish
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.slf4j.{Logger, LoggerFactory}
@@ -39,7 +41,7 @@ import org.slf4j.{Logger, LoggerFactory}
 import de.kp.works.stream.ssl._
 import scala.collection.JavaConversions._
 
-object HiveMQClient {
+object HiveMQClientBuilder {
   
   def build(
     mqttTopic: String,
@@ -82,6 +84,23 @@ object HiveMQClient {
     build(mqttTopic, mqttHost, mqttPort, mqttUser, mqttPass, Option(mqttSsl), Option(mqttQoS), None)
     
   }
+ 
+  def build(
+    mqttTopic: String,
+    mqttHost: String,
+    mqttPort: Int,  
+    mqttUser: String,
+    mqttPass: String,
+    /*
+     * Transport security
+     */
+    mqttSsl: SSLOptions,
+    mqttQoS: Int,
+    mqttVersion: Int): HiveMQClient = {
+    
+    build(mqttTopic, mqttHost, mqttPort, mqttUser, mqttPass, Option(mqttSsl), Option(mqttQoS), Option(mqttVersion))
+    
+  }
   
   def build(
     mqttTopic: String,
@@ -116,12 +135,105 @@ class HiveMQClient(
     mqttVersion: Option[Int] = None) {
 
     	private final val LOG = LoggerFactory.getLogger(classOf[HiveMQClient])
+    private val UTF8 = Charset.forName("UTF-8")        
 
     	private var connected:Boolean = false
     	
     private var mqtt3Client: Mqtt3AsyncClient = null
     private var mqtt5Client: Mqtt5AsyncClient = null
 
+    private val onMqtt3Connect = new java.util.function.BiConsumer[Mqtt3ConnAck, Throwable] {
+      
+      def accept(connAck: Mqtt3ConnAck, throwable: Throwable):Unit = {
+        
+        /* Error handling */
+        if (throwable != null) {
+          /*
+           * In case of an error, the respective message is log,
+           * but streaming is continued
+           */
+          LOG.error(throwable.getLocalizedMessage)
+          
+        } else {
+          
+          LOG.info("Connecting to HiveMQ Broker successfull")
+          connected = true
+
+        }
+      }
+    
+    }
+    	
+    private val onMqtt3Publish = new java.util.function.BiConsumer[Mqtt3Publish, Throwable] {
+      
+      def accept(mqtt3Publish: Mqtt3Publish, throwable: Throwable):Unit = {
+        
+        /* Error handling */
+        if (throwable != null) {
+          /*
+           * In case of an error, the respective message is log,
+           * but streaming is continued
+           */
+          LOG.error(throwable.getLocalizedMessage)
+          
+        } else {
+          
+          LOG.info("Publishing to HiveMQ Broker successfull")
+
+        }
+      }
+    
+    }
+
+    /*
+     * Define the connection callback, and, in case of a 
+     * successful connection, continue to subscribe to
+     * an MQTT topic
+     */        
+    private val onMqtt5Connect = new java.util.function.BiConsumer[Mqtt5ConnAck, Throwable] {
+      
+      def accept(connAck: Mqtt5ConnAck, throwable: Throwable):Unit = {
+        
+        /* Error handling */
+        if (throwable != null) {
+          /*
+           * In case of an error, the respective message is log,
+           * but streaming is continued
+           */
+          LOG.error(throwable.getLocalizedMessage)
+          
+        } else {
+          
+          LOG.info("Connecting to HiveMQ Broker successfull")
+          connected = true
+
+        }
+      }
+    
+    }
+    	
+    private val onMqtt5Publish = new java.util.function.BiConsumer[Mqtt5Publish, Throwable] {
+      
+      def accept(mqtt5Publish: Mqtt5Publish, throwable: Throwable):Unit = {
+        
+        /* Error handling */
+        if (throwable != null) {
+          /*
+           * In case of an error, the respective message is log,
+           * but streaming is continued
+           */
+          LOG.error(throwable.getLocalizedMessage)
+          
+        } else {
+          
+          LOG.info("Publishing to HiveMQ Broker successfull")
+
+        }
+      }
+    
+    }
+    
+    
     def connect: Unit = {
       /*
        * HiveMQ supports MQTT version 5 as well as version 3;
@@ -136,17 +248,20 @@ class HiveMQClient(
   
     	}
 
-    def publish: Unit = {
+    def publish(message: String): Unit = {
+      
+      val payload = message.getBytes(UTF8)
+      
       /*
        * HiveMQ supports MQTT version 5 as well as version 3;
        * default is version 3
        */
       val version = mqttVersion.getOrElse(3)
       if (version == 3)
-          publishToMqtt3
+          publishToMqtt3(payload)
           
       else
-          publishToMqtt5
+          publishToMqtt5(payload)
   
     	}
     
@@ -173,7 +288,7 @@ class HiveMQClient(
         val simpleAuth = Mqtt3SimpleAuth
           .builder()
           .username(mqttUser)
-          .password(mqttPass.getBytes(Charset.forName("UTF-8")))
+          .password(mqttPass.getBytes(UTF8))
           .build()
           
         builder.simpleAuth(simpleAuth)
@@ -181,14 +296,27 @@ class HiveMQClient(
         /***** CONNECT *****/
           
         mqtt3Client = builder.buildAsync()
+        
+        mqtt3Client
+         .connectWith()
+         .send()
+         .whenComplete(onMqtt3Connect)
+
+    	}
+    
+    	private def publishToMqtt3(payload: Array[Byte]):Unit = {
+    	  
+    	  if (connected == false || mqtt3Client == null) {
+    	    throw new Exception("No connection to HiveMQ server established")
+    	  }
         /*
          * Define the connection callback, and, in case of a 
          * successful connection, continue to subscribe to
          * an MQTT topic
          */        
-        val onConnection = new java.util.function.BiConsumer[Mqtt3ConnAck, Throwable] {
+        val onPublish = new java.util.function.BiConsumer[Mqtt3Publish, Throwable] {
           
-          def accept(connAck: Mqtt3ConnAck, throwable: Throwable):Unit = {
+          def accept(mqtt3Publish: Mqtt3Publish, throwable: Throwable):Unit = {
             
             /* Error handling */
             if (throwable != null) {
@@ -200,27 +328,20 @@ class HiveMQClient(
               
             } else {
               
-              LOG.info("Connecting to HiveMQ Broker successfull")
-              connected = true
+              LOG.info("Publishing to HiveMQ Broker successfull")
 
             }
           }
         
         }
-        
-        mqtt3Client
-         .connectWith()
-         .send()
-         .whenComplete(onConnection)
 
-    	}
-    
-    	private def publishToMqtt3:Unit = {
-    	  
-    	  if (connected == false || mqtt3Client == null) {
-    	    throw new Exception("No connection to HiveMQ server established")
-    	  }
-    	  
+    	  mqtt3Client.publishWith()
+        .topic(mqttTopic)
+        .payload(payload)
+        .qos(getMqttQoS)
+        .send()
+        .whenComplete(onPublish)
+        
     	}
     	
     	/***** MQTT 5 *****/
@@ -246,49 +367,21 @@ class HiveMQClient(
         val simpleAuth = Mqtt5SimpleAuth
           .builder()
           .username(mqttUser)
-          .password(mqttPass.getBytes(Charset.forName("UTF-8")))
+          .password(mqttPass.getBytes(UTF8))
           .build()
           
         builder.simpleAuth(simpleAuth)
        
         /***** CONNECT *****/
-          
-        mqtt5Client = builder.buildAsync()
-        /*
-         * Define the connection callback, and, in case of a 
-         * successful connection, continue to subscribe to
-         * an MQTT topic
-         */        
-        val onConnection = new java.util.function.BiConsumer[Mqtt5ConnAck, Throwable] {
-          
-          def accept(connAck: Mqtt5ConnAck, throwable: Throwable):Unit = {
-            
-            /* Error handling */
-            if (throwable != null) {
-              /*
-               * In case of an error, the respective message is log,
-               * but streaming is continued
-               */
-              LOG.error(throwable.getLocalizedMessage)
-              
-            } else {
-              
-              LOG.info("Connecting to HiveMQ Broker successfull")
-              connected = true
-
-            }
-          }
-        
-        }
         
         mqtt5Client
          .connectWith()
          .send()
-         .whenComplete(onConnection)
+         .whenComplete(onMqtt5Connect)
 
     	}
     
-    	private def publishToMqtt5:Unit = {
+    	private def publishToMqtt5(payload: Array[Byte]):Unit = {
     	  
     	  if (connected == false || mqtt5Client == null) {
     	    throw new Exception("No connection to HiveMQ server established")

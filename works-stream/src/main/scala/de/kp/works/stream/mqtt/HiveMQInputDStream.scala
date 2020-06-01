@@ -55,7 +55,7 @@ import scala.collection.JavaConversions._
 class HiveMQInputDStream(
     _ssc: StreamingContext,
     storageLevel: StorageLevel,
-    mqttTopic: String,
+    mqttTopics: Array[String],
     mqttHost: String,
     mqttPort: Int,  
     mqttUser: String,
@@ -69,16 +69,19 @@ class HiveMQInputDStream(
     )  extends ReceiverInputDStream[MqttResult](_ssc) {
  
     override def name: String = s"HiveMQ stream [$id]"
- 
+    /*
+     * Gets the receiver object that will be sent to the 
+     * worker nodes to receive data.
+     */
     def getReceiver(): Receiver[MqttResult] = {
-      new HiveMQReceiver(storageLevel, mqttTopic, mqttHost, mqttPort, mqttUser, mqttPass, mqttSsl, mqttQoS, mqttVersion)
+      new HiveMQReceiver(storageLevel, mqttTopics, mqttHost, mqttPort, mqttUser, mqttPass, mqttSsl, mqttQoS, mqttVersion)
     }
     
 }
 
 class HiveMQReceiver(
     storageLevel: StorageLevel,
-    mqttTopic: String,
+    mqttTopics: Array[String],
     mqttHost: String,
     mqttPort: Int,
     mqttUser: String,
@@ -92,7 +95,12 @@ class HiveMQReceiver(
 
     private val UTF8 = Charset.forName("UTF-8")        
     private val MD5 = MessageDigest.getInstance("MD5")
-
+    /*
+     * The HiveMQ clients support a single topic; the receiver interface,
+     * howevere, accept a list of topics to increase use flexibility
+     */
+    private val mqttTopic = getMqttTopic
+    
     private def expose(qos: Int, duplicate: Boolean, retained: Boolean, payload: Array[Byte]): Unit = {
 
         /* Timestamp when the message arrives */
@@ -333,6 +341,64 @@ class HiveMQReceiver(
          .connectWith()
          .send()
          .whenComplete(onConnection)
+
+    }
+    /*
+     * This method evaluates the provided topics and
+     * joins them into a single topic for connecting
+     * and subscribung to the HiveMQ clients
+     */
+    private def getMqttTopic: String = {
+      
+      if (mqttTopics.isEmpty)
+        throw new Exception("The topics must not be empty.")
+       
+      if (mqttTopics.length == 1)
+         mqttTopics(0)
+         
+      else {
+        
+        /*
+         * We expect a set of topics that differ at
+         * the lowest level only
+         */
+        var levels = 0
+        var head = ""
+        
+        mqttTopics.foreach(topic => {
+                
+			    val tokens = topic.split("\\/").toList
+			    
+			    /* Validate levels */
+			    val length = tokens.length
+			    if (levels == 0) levels = length
+			    
+			    if (levels != length) 
+			      throw new Exception("Supported MQTT topics must have the same levels.")
+			    
+			    /* Validate head */
+			    val init = tokens.init.mkString
+			    if (head.isEmpty) head = init
+			    
+			    if (head != init)
+			      throw new Exception("Supported MQTT topics must have the same head.")
+			    
+        })
+        /*
+         * Merge MQTT topics with the same # of levels
+         * into a single topic by replacing the lowest
+         * level with a placeholder '#'
+         */
+        val topic = {
+          
+          val tokens = mqttTopics(0).split("\\/").init ++ Array("#")
+          tokens.mkString("/")
+          
+        }
+        
+        topic
+        
+      }
 
     }
     
