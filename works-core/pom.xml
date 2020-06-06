@@ -51,6 +51,7 @@
   <build>
     <pluginManagement>
       <plugins>
+      
       	<!-- scala maven -->
         <plugin>
           <groupId>net.alchim31.maven</groupId>

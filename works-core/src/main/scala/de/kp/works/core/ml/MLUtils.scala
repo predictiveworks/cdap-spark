@@ -23,7 +23,6 @@ import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
 import scala.collection.mutable.WrappedArray
-import scala.reflect.api.materializeTypeTag
 
 object MLUtils {
       
