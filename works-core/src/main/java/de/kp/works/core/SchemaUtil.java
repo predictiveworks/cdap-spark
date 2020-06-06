@@ -18,7 +18,7 @@ package de.kp.works.core;
  * 
  */
 
-import co.cask.cdap.api.data.schema.Schema;
+import io.cdap.cdap.api.data.schema.Schema;
 
 public class SchemaUtil {
 

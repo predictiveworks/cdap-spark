@@ -18,8 +18,8 @@ package de.kp.works.ts.arima;
  * 
  */
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 import de.kp.works.core.Params;
 
 public class ARIMAComputeConfig extends ARIMAConfig {

@@ -21,8 +21,8 @@ package de.kp.works.ts.ma;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 import de.kp.works.ts.TimeSplit;
 import de.kp.works.ts.params.ModelParams;
 

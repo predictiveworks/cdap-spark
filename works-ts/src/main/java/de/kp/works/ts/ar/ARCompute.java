@@ -24,7 +24,7 @@ import java.util.List;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import co.cask.cdap.api.data.schema.Schema;
+import io.cdap.cdap.api.data.schema.Schema;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.ts.ForecastAssembler;
 

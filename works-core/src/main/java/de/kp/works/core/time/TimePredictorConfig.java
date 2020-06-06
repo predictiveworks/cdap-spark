@@ -20,8 +20,8 @@ package de.kp.works.core.time;
 
 import com.google.common.base.Strings;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 import de.kp.works.core.Params;
 
 public class TimePredictorConfig extends TimeConfig {

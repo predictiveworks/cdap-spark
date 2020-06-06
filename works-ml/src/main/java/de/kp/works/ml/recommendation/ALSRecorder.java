@@ -27,11 +27,11 @@ import org.apache.spark.ml.recommendation.ALSModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import co.cask.cdap.api.common.Bytes;
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Put;
-import co.cask.cdap.api.dataset.table.Table;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.api.common.Bytes;
+import io.cdap.cdap.api.dataset.lib.FileSet;
+import io.cdap.cdap.api.dataset.table.Put;
+import io.cdap.cdap.api.dataset.table.Table;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.RecommenderRecorder;
 import de.kp.works.core.ml.SparkMLManager;

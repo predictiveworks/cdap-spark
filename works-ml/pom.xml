@@ -42,13 +42,11 @@
 
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-     <app.parents>system:cdap-data-pipeline[5.1.1,5.1.1],system:cdap-data-streams[5.1.1,5.1.1]</app.parents>
+     <app.parents>system:cdap-data-pipeline[6.2.0,6.2.0],system:cdap-data-streams[6.2.0,6.2.0]</app.parents>
      <main.basedir>${project.basedir}</main.basedir>
 
      <docs.dir>docs</docs.dir>
      <widgets.dir>widgets</widgets.dir>
-
-     <cdap.version>5.1.1</cdap.version>    
 
   </properties>
 

@@ -21,8 +21,8 @@ package de.kp.works.ml.config;
 import java.util.HashMap;
 import java.util.Map;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 import de.kp.works.core.CRConfig;
 
 public class DTConfig extends CRConfig {

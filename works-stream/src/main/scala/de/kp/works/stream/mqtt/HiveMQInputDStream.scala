@@ -115,7 +115,7 @@ class HiveMQReceiver(
        
 			  val tokens = mqttTopic.split("\\/").toList
 			  
-			  val context = MD5.digest(tokens.init.mkString("|").getBytes).toString
+			  val context = MD5.digest(tokens.init.mkString("/").getBytes).toString
 			  val dimension = tokens.last
           
         val result = new MqttEvent(timestamp, seconds, mqttTopic, qos, duplicate, retained, payload, digest, json, context, dimension)

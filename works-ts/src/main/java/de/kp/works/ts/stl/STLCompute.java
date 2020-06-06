@@ -21,7 +21,7 @@ package de.kp.works.ts.stl;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.cask.cdap.api.data.schema.Schema;
+import io.cdap.cdap.api.data.schema.Schema;
 import de.kp.works.core.time.TimeCompute;
 
 public class STLCompute extends TimeCompute {

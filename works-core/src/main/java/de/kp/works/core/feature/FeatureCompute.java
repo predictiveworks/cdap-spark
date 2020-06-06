@@ -31,7 +31,7 @@ import org.apache.spark.sql.functions;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import co.cask.cdap.api.data.schema.Schema;
+import io.cdap.cdap.api.data.schema.Schema;
 import de.kp.works.core.BaseCompute;
 import de.kp.works.core.model.ModelProfile;
 

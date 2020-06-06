@@ -20,10 +20,10 @@ package de.kp.works.core;
 
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.cdap.etl.api.batch.SparkSink;
+import io.cdap.cdap.api.data.format.StructuredRecord;
+import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.etl.api.batch.SparkSink;
 
 public abstract class BaseSink extends SparkSink<StructuredRecord> {
 

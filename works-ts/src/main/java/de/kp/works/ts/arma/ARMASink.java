@@ -18,7 +18,7 @@ package de.kp.works.ts.arma;
  * 
  */
 
-import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.ml.SparkMLManager;
 import de.kp.works.core.time.TimeSink;
 

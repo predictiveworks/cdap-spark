@@ -30,10 +30,10 @@ import org.apache.spark.sql.types.StructType;
 
 import com.intel.analytics.bigdl.utils.Engine;
 
-import co.cask.cdap.api.data.format.StructuredRecord;
-import co.cask.cdap.api.spark.sql.DataFrames;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
-import co.cask.cdap.etl.api.batch.SparkPluginContext;
+import io.cdap.cdap.api.data.format.StructuredRecord;
+import io.cdap.cdap.api.spark.sql.DataFrames;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.BaseSink;
 import de.kp.works.core.SessionHelper;
 import scala.Tuple2;

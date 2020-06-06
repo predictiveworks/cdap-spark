@@ -13,7 +13,7 @@ package de.kp.works.core.model;
  * 
  */
 
-import co.cask.cdap.api.dataset.table.Row;
+import io.cdap.cdap.api.dataset.table.Row;
 import de.kp.works.core.Names;
 
 public class RegressorMetric {

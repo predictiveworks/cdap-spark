@@ -22,9 +22,9 @@ import java.util.Date;
 
 import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel;
 
-import co.cask.cdap.api.dataset.lib.FileSet;
-import co.cask.cdap.api.dataset.table.Table;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.api.dataset.lib.FileSet;
+import io.cdap.cdap.api.dataset.table.Table;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.ml.SparkMLManager;

@@ -21,9 +21,9 @@ package de.kp.works.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.cask.cdap.api.dataset.table.Row;
-import co.cask.cdap.api.dataset.table.Scanner;
-import co.cask.cdap.api.dataset.table.Table;
+import io.cdap.cdap.api.dataset.table.Row;
+import io.cdap.cdap.api.dataset.table.Scanner;
+import io.cdap.cdap.api.dataset.table.Table;
 import de.kp.works.core.Algorithms;
 
 public class ModelScanner {

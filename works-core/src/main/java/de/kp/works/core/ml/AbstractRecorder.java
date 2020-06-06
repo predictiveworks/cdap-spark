@@ -25,7 +25,7 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import co.cask.cdap.api.dataset.table.Put;
+import io.cdap.cdap.api.dataset.table.Put;
 
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
@@ -46,9 +46,9 @@ import co.cask.cdap.api.dataset.table.Put;
  * 
  */
 
-import co.cask.cdap.api.dataset.table.Row;
-import co.cask.cdap.api.dataset.table.Scanner;
-import co.cask.cdap.api.dataset.table.Table;
+import io.cdap.cdap.api.dataset.table.Row;
+import io.cdap.cdap.api.dataset.table.Scanner;
+import io.cdap.cdap.api.dataset.table.Table;
 import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelProfile;
 

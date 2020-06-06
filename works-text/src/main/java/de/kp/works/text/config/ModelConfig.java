@@ -20,8 +20,8 @@ package de.kp.works.text.config;
 
 import com.google.common.base.Strings;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
 
 public class ModelConfig extends BaseConfig {
