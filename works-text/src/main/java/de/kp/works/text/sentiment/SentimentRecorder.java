@@ -65,9 +65,11 @@ public class SentimentRecorder extends TextRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksText";
-		Table table = SparkMLManager.getTextTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getTextTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

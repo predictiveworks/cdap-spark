@@ -59,9 +59,11 @@ public class ACFRecorder extends TimeRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksTS";
-		Table table = SparkMLManager.getTimesTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getTimesTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
