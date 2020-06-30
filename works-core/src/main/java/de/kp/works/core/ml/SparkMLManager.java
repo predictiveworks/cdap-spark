@@ -693,6 +693,10 @@ public class SparkMLManager {
 		 */
 		fields.add(Schema.Field.of("id", Schema.of(Schema.Type.STRING)));		
 		/*
+		 * This is the namespace a certain ML model refers to
+		 */
+		fields.add(Schema.Field.of("namespace", Schema.of(Schema.Type.STRING)));		
+		/*
 		 * The name of a certain ML model
 		 */
 		fields.add(Schema.Field.of("name", Schema.of(Schema.Type.STRING)));

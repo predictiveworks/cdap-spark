@@ -64,9 +64,11 @@ public class NBRecorder extends ClassifierRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-		Table table = SparkMLManager.getClassificationTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getClassificationTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

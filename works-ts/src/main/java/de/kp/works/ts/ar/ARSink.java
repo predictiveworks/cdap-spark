@@ -34,7 +34,6 @@ public class ARSink extends TimeSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createTimeseriesIfNotExists(context);
-		
 	}
 
 }

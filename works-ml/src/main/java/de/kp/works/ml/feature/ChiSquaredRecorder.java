@@ -63,9 +63,11 @@ public class ChiSquaredRecorder extends FeatureRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-		Table table = SparkMLManager.getFeatureTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getFeatureTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

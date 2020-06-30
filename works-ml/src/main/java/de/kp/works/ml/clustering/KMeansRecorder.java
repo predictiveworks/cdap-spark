@@ -66,9 +66,11 @@ public class KMeansRecorder extends ClusterRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-		Table table = SparkMLManager.getClusteringTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getClusteringTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

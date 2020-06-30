@@ -66,7 +66,9 @@ public class RFRRecorder extends RegressorRecorder {
 		/***** METADATA *****/
 
 		Table table = SparkMLManager.getRegressionTable(context);
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		String namespace = context.getNamespace();
+		
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

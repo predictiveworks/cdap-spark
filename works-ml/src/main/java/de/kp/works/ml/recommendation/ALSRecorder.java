@@ -76,20 +76,22 @@ public class ALSRecorder extends RecommenderRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-		Table table = SparkMLManager.getRecommendationTable(context);
 
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		Table table = SparkMLManager.getRecommendationTable(context);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
-	private void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
+	private void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
 		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
 				modelParams);
 
 		/*

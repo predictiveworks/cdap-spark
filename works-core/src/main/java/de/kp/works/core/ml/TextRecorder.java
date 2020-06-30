@@ -94,14 +94,14 @@ public class TextRecorder extends AbstractRecorder {
 
 	}
 
-	protected void setMetadata(long ts, Table table, String algorithmName, String modelName, String modelPack,
+	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.TEXTANALYSIS_FS;
 		String modelVersion = getLatestModelVersion(table, algorithmName, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
 				modelParams);
 
 		if (algorithmName.equals(Algorithms.VIVEKN_SENTIMENT)) {

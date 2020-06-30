@@ -69,7 +69,9 @@ public class LDARecorder extends ClusterRecorder {
 		/***** METADATA *****/
 
 		Table table = SparkMLManager.getClusteringTable(context);
-		setMetadata(ts, table, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		String namespace = context.getNamespace();
+
+		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

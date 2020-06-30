@@ -64,7 +64,7 @@ public class AbstractRecorder {
 	 * Metadata schemata for different ML model share common fields; this method is
 	 * used to populate this shared fields
 	 */
-	public Put buildRow(byte[] key, Long timestamp, String name, String version, String fsName, String fsPath,
+	public Put buildRow(byte[] key, Long timestamp, String namespace, String name, String version, String fsName, String fsPath,
 			String pack, String stage, String algorithm, String params) {
 		/*
 		 * Build unique model identifier from all information that is available for a
@@ -83,7 +83,7 @@ public class AbstractRecorder {
 
 		}
 
-		Put row = new Put(key).add(Names.TIMESTAMP, timestamp).add("id", mid).add("name", name).add("version", version)
+		Put row = new Put(key).add(Names.TIMESTAMP, timestamp).add("id", mid).add("namespace", namespace).add("name", name).add("version", version)
 				.add("fsName", fsName).add(Names.FS_PATH, fsPath).add("pack", pack).add("stage", stage)
 				.add("algorithm", algorithm).add("params", params);
 
