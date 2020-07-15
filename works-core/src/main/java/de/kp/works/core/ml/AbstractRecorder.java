@@ -121,7 +121,7 @@ public class AbstractRecorder {
 
 	}
 
-	public String getLatestModelVersion(Table table, String algorithmName, String modelName, String modelStage) {
+	public String getLatestModelVersion(Table table, String algorithmName, String modelNamespace, String modelName, String modelStage) {
 
 		String strVersion = null;
 
@@ -139,10 +139,14 @@ public class AbstractRecorder {
 				String name = row.getString("name");
 				if (name.equals(modelName)) {
 
-					String stage = row.getString("stage");
-					if (stage.equals(modelStage))
-						strVersion = row.getString("version");
+					String namespace = row.getString("namespace");
+					if (namespace.equals(modelNamespace)) {
+	
+						String stage = row.getString("stage");
+						if (stage.equals(modelStage))
+							strVersion = row.getString("version");
 
+					}
 				}
 			}
 		}
