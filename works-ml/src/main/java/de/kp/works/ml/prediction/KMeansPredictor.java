@@ -52,6 +52,7 @@ public class KMeansPredictor extends PredictorCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
+		
 		config.validate();
 
 		KMeansRecorder recorder = new KMeansRecorder();

@@ -259,6 +259,12 @@ public class SslUtil {
 
 	}
 
+	/***** TRUST MANAGER *****/
+	
+	public static TrustManager[] getAllTrustManagers() {
+		return new TrustManager[] { new AllTrustManager() };
+	}
+
 	/***** TRUST MANAGER FACTORY *****/
 
 	public static TrustManagerFactory getStoreTrustManagerFactory(String truststoreFile, String truststoreType,

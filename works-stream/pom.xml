@@ -108,7 +108,17 @@
       <version>${pubsub.version}</version>
     </dependency>
     	
+    	<!-- Server Sent Events dependencies
+    	
+    	 -->
+    <dependency>
+      <groupId>com.squareup.okhttp3</groupId>
+      <artifactId>okhttp-sse</artifactId>
+      <version>3.14.4</version>
+    </dependency>
+  
   </dependencies>
+  
 
   <name>Works Stream</name>
   <description>Extended Apache Spark Streaming</description>

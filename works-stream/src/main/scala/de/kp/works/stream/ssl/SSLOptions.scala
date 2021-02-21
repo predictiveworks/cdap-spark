@@ -83,7 +83,7 @@ class SSLOptions(
 		val trustManagerFactory = getTrustManagerFactory
 
 		val sslContext = SSLContext.getInstance(tlsVersion)
-		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null)
+		sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), new java.security.SecureRandom())
 
 		return sslContext.getSocketFactory()
     
