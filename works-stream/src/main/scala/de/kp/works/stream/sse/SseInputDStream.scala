@@ -34,7 +34,7 @@ class SseInputDStream(
     _ssc: StreamingContext,
     storageLevel: StorageLevel,
     serverUrl: String,
-    authToken: Option[String],
+    authToken: Option[String] = None,
     sslOptions: Option[SSLOptions] = None) extends ReceiverInputDStream[SseEvent](_ssc) {
 
   override def name: String = s"Server Sent Events (SSE) stream [$id]"
