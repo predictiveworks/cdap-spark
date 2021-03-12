@@ -90,7 +90,7 @@ class HiveMQReceiver(
     mqttQoS: Option[Int] = None,    
     mqttVersion: Option[Int] = None    
     ) extends Receiver[MqttEvent](storageLevel) {
-
+  
     	private final val LOG = LoggerFactory.getLogger(classOf[HiveMQReceiver])
 
     private val UTF8 = Charset.forName("UTF-8")        
