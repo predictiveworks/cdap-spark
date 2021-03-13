@@ -24,8 +24,6 @@ import okhttp3.sse._
 
 import de.kp.works.stream.ssl._
 
-// TODO SSL SUPPORT
-
 class SseClient(
     serverUrl: String,
     authToken: Option[String],
