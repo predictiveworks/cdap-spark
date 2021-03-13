@@ -29,7 +29,7 @@ import de.kp.works.stream.ssl._
 
 object MqttUtils {
 
-/********** JAVA **********/
+  /********** JAVA **********/
 
   /**
    * Storage level of the data will be the default
@@ -190,7 +190,7 @@ object MqttUtils {
 
   }
 
-/********** SCALA **********/
+  /********** SCALA **********/
 
   /**
    * @param ssc           StreamingContext object
