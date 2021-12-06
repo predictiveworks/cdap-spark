@@ -1,4 +1,4 @@
-package de.kp.works.core.ml;
+package de.kp.works.core.ml.recommendation;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -13,6 +13,8 @@ package de.kp.works.core.ml;
  * 
  */
 
+import de.kp.works.core.ml.AbstractRecorder;
+import de.kp.works.core.ml.SparkMLManager;
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;

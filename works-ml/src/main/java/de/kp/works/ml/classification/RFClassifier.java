@@ -20,6 +20,7 @@ package de.kp.works.ml.classification;
 
 import java.util.Map;
 
+import de.kp.works.core.ml.classification.RFCRecorder;
 import org.apache.spark.ml.classification.RandomForestClassificationModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

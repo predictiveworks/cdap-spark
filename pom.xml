@@ -145,5 +145,6 @@
   	<module>works-text</module>
   	<module>works-ditto</module>
   	<module>works-stream</module>
+      <module>works-vs</module>
   </modules>
 </project>

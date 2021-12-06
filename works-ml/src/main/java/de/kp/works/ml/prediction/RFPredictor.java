@@ -35,7 +35,7 @@ import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.regressor.RFRRecorder;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.RFCRecorder;
+import de.kp.works.core.ml.classification.RFCRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RFPredictor")

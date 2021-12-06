@@ -21,6 +21,7 @@ package de.kp.works.ml.clustering;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.ml.clustering.BisectingKMeansRecorder;
 import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

@@ -1,7 +1,7 @@
-package de.kp.works.ml.classification;
+package de.kp.works.core.ml.classification;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,35 +21,35 @@ package de.kp.works.ml.classification;
 
 import java.util.Date;
 
-import org.apache.spark.ml.classification.*;
+import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClassifierRecorder;
+import de.kp.works.core.ml.classification.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class NBRecorder extends ClassifierRecorder {
+public class MLPRecorder extends ClassifierRecorder {
 
-	public NaiveBayesModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.NAIVE_BAYES;
+	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the NaiveBayes model from a model
-		 * specific file set
+		 * Leverage Apache Spark mechanism to read the MultilayerPerceptron model from a
+		 * model specific file set
 		 */
-		return NaiveBayesModel.load(modelPath);
+		return MultilayerPerceptronClassificationModel.load(modelPath);
 
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			NaiveBayesModel model) throws Exception {
-		
-		String algorithmName = Algorithms.NAIVE_BAYES;
+			MultilayerPerceptronClassificationModel model) throws Exception {
+
+		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
 
 		/***** ARTIFACTS *****/
 

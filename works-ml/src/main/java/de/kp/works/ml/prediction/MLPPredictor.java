@@ -33,7 +33,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.MLPRecorder;
+import de.kp.works.core.ml.classification.MLPRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MLPPredictor")

@@ -1,6 +1,6 @@
 package de.kp.works.core.model
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,48 +27,34 @@ trait MinMaxFinder {
   def classifierMinMax(metric:String, metrics:JList[ClassifierMetric]): (Double, Double) = {
     
     metric match {
-      case Names.ACCURACY => {
-        
+      case Names.ACCURACY =>
         val values = metrics.map(_.accuracy).toArray
-        return (values.min, values.max)
-        
-      }
-      case Names.F1 => {
-        
+        (values.min, values.max)
+
+      case Names.F1 =>
         val values = metrics.map(_.f1).toArray
-        return (values.min, values.max)
-                
-      }
-      case Names.WEIGHTED_FMEASURE => {
-        
+        (values.min, values.max)
+
+      case Names.WEIGHTED_FMEASURE =>
         val values = metrics.map(_.weightedFMeasure).toArray
-        return (values.min, values.max)
-                
-      }
-      case Names.WEIGHTED_PRECISION => {
-        
+        (values.min, values.max)
+
+      case Names.WEIGHTED_PRECISION =>
         val values = metrics.map(_.weightedPrecision).toArray
-        return (values.min, values.max)
-                
-      }
-      case Names.WEIGHTED_RECALL => {
-        
+        (values.min, values.max)
+
+      case Names.WEIGHTED_RECALL =>
         val values = metrics.map(_.weightedRecall).toArray
-        return (values.min, values.max)
-                
-      }
-      case Names.WEIGHTED_FALSE_POSITIVE => {
-        
+        (values.min, values.max)
+
+      case Names.WEIGHTED_FALSE_POSITIVE =>
         val values = metrics.map(_.weightedFalsePositiveRate).toArray
-        return (values.min, values.max)
-                
-      }
-      case Names.WEIGHTED_TRUE_POSITIVE => {
-        
+        (values.min, values.max)
+
+      case Names.WEIGHTED_TRUE_POSITIVE =>
         val values = metrics.map(_.weightedTruePositiveRate).toArray
-        return (values.min, values.max)
-                
-      }
+        (values.min, values.max)
+
       case _ => throw new IllegalArgumentException("Unknown classifier metric detected.")
     }
     
@@ -78,33 +64,21 @@ trait MinMaxFinder {
     
     metric match {
       
-      case Names.LIKELIHOOD => {
-        
+      case Names.LIKELIHOOD =>
         val values = metrics.map(_.likelihood).toArray
-        return (values.min, values.max)
-        
-      }
-      
-      case Names.PERPLEXITY => {
-       
+        (values.min, values.max)
+
+      case Names.PERPLEXITY =>
         val values = metrics.map(_.perplexity).toArray
-        return (values.min, values.max)
-         
-      }
-            
-      case Names.SILHOUETTE_COSINE => {
-       
+        (values.min, values.max)
+
+      case Names.SILHOUETTE_COSINE =>
         val values = metrics.map(_.silhouette_cosine).toArray
-        return (values.min, values.max)
-         
-      }
-            
-      case Names.SILHOUETTE_EUCLDIAN => {
-       
+        (values.min, values.max)
+
+      case Names.SILHOUETTE_EUCLDIAN =>
         val values = metrics.map(_.silhouette_euclidean).toArray
-        return (values.min, values.max)
-         
-      }
+        (values.min, values.max)
 
       case _ => throw new IllegalArgumentException("Unknown cluster metric detected.")      
     }
@@ -114,30 +88,22 @@ trait MinMaxFinder {
   def regressorMinMax(metric:String, metrics:JList[RegressorMetric]): (Double, Double) = {
     
     metric match {
-      case Names.MAE => {
-        
+      case Names.MAE =>
         val values = metrics.map(_.mae).toArray
-        return (values.min, values.max)
-        
-      }      
-      case Names.MSE => {
-        
+        (values.min, values.max)
+
+      case Names.MSE =>
         val values = metrics.map(_.mse).toArray
-        return (values.min, values.max)
-        
-      }      
-      case Names.R2 => {
-        
+        (values.min, values.max)
+
+      case Names.R2 =>
         val values = metrics.map(_.r2).toArray
-        return (values.min, values.max)
-        
-      }      
-      case Names.RSME => {
-        
+        (values.min, values.max)
+
+      case Names.RSME =>
         val values = metrics.map(_.rsme).toArray
-        return (values.min, values.max)
-        
-      }
+        (values.min, values.max)
+
       case _ => throw new IllegalArgumentException("Unknown regressor metric detected.")
     }
     

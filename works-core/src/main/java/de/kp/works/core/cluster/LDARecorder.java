@@ -26,7 +26,7 @@ import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClusterRecorder;
+import de.kp.works.core.ml.clustering.ClusterRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
 /**

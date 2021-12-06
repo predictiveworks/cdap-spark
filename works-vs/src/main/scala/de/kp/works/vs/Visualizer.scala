@@ -1,6 +1,7 @@
-package de.kp.works.core.model;
+package de.kp.works.vs
+
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,28 +14,16 @@ package de.kp.works.core.model;
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
+ *
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
- * 
+ *
  */
 
-import java.util.List;
+import org.apache.spark.sql.{Dataset, Row}
+import java.util.{Map => JMap}
 
-public class ModelFinder {
+class Visualizer {
 
-	public String findClassifier(String algoName, List<ClassifierMetric> metrics) {
-		String fsPath = null;
-		return fsPath;
-	}
-
-	public String findCluster(String algoName, List<ClusterMetric> metrics) {
-		String fsPath = null;
-		return fsPath;
-	}
-
-	public String findRegressor(String algoName, List<RegressorMetric> metrics) {
-		String fsPath = null;
-		return fsPath;
-	}
-
+  def visualize(source:Dataset[Row], settings:JMap[String,Object]):Unit = {
+  }
 }

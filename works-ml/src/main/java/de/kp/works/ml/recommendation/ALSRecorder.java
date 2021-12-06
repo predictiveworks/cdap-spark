@@ -33,7 +33,7 @@ import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.RecommenderRecorder;
+import de.kp.works.core.ml.recommendation.RecommenderRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class ALSRecorder extends RecommenderRecorder {

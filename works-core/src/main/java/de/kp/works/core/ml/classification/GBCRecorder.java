@@ -1,7 +1,7 @@
-package de.kp.works.ml.classification;
+package de.kp.works.core.ml.classification;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,44 +21,41 @@ package de.kp.works.ml.classification;
 
 import java.util.Date;
 
-import org.apache.spark.ml.classification.RandomForestClassificationModel;
+import org.apache.spark.ml.classification.*;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClassifierRecorder;
+import de.kp.works.core.ml.classification.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class RFCRecorder extends ClassifierRecorder {
+public class GBCRecorder extends ClassifierRecorder {
 
-	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
+	public GBTClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+		
+		String algorithmName = Algorithms.GRADIENT_BOOSTED_TREE;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the RandomForest model from a model
-		 * specific file set
+		 * Leverage Apache Spark mechanism to read the GBTClassifier model
+		 * from a model specific file set
 		 */
-		return RandomForestClassificationModel.load(modelPath);
-
+		return GBTClassificationModel.load(modelPath);
+		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			RandomForestClassificationModel model) throws Exception {
-
-		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
+			GBTClassificationModel model) throws Exception {
+		
+		String algorithmName = Algorithms.GRADIENT_BOOSTED_TREE;
 
 		/***** ARTIFACTS *****/
 
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the RandomForest model 
-		 * to a model specific file set
-		 */
+
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
@@ -67,10 +64,10 @@ public class RFCRecorder extends ClassifierRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-
+		
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
-
+		
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}

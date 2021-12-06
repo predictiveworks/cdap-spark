@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -34,7 +34,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.clustering.KMeansRecorder;
+import de.kp.works.core.ml.clustering.KMeansRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("KMeansPredictor")
@@ -43,7 +43,7 @@ public class KMeansPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 8662496131393728472L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 	private KMeansModel model;
 
 	public KMeansPredictor(PredictorConfig config) {

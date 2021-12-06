@@ -1,7 +1,7 @@
 package de.kp.works.core;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,36 +33,20 @@ import io.cdap.cdap.api.spark.sql.DataFrames;
 public class SessionHelper {
 
 	/**
-	 * A helper method to transform a CDAP specific JavaRDD<StructuredRecord> into
-	 * an Apache Spark Dataset<Row>
-	 * 
-	 * @param input
-	 * @param structType
-	 * @param spark
-	 * @return
+	 * A helper method to transform a CDAP specific JavaRDD<StructuredRecord>
+	 * into an Apache Spark Dataset<Row>
 	 */
 	public static Dataset<Row> toDataset(JavaRDD<StructuredRecord> input, StructType structType, SparkSession spark) {
-
 		JavaRDD<Row> rows = input.map(new RecordToRow(structType));
-		Dataset<Row> dataset = spark.createDataFrame(rows, structType);
-
-		return dataset;
-
+		return spark.createDataFrame(rows, structType);
 	}
 
 	/**
-	 * A helper method to transform an Apache Spark Dataset<Row> into a CDAP
-	 * specific JavaRDD<StructuredRecord>
-	 * 
-	 * @param output
-	 * @param schema
-	 * @return
+	 * A helper method to transform an Apache Spark Dataset<Row>
+	 * into a CDAP specific JavaRDD<StructuredRecord>
 	 */
 	public static JavaRDD<StructuredRecord> fromDataset(Dataset<Row> output, Schema schema) {
-
-		JavaRDD<StructuredRecord> records = output.javaRDD().map(new RowToRecord(schema));
-		return records;
-
+		return output.javaRDD().map(new RowToRecord(schema));
 	}
 
 	public static final class RecordToRow implements Function<StructuredRecord, Row> {
@@ -75,7 +59,7 @@ public class SessionHelper {
 		}
 
 		@Override
-		public Row call(StructuredRecord rec) throws Exception {
+		public Row call(StructuredRecord rec) {
 			return DataFrames.toRow(rec, structType);
 		}
 
@@ -91,7 +75,7 @@ public class SessionHelper {
 		}
 
 		@Override
-		public StructuredRecord call(Row row) throws Exception {
+		public StructuredRecord call(Row row) {
 			return DataFrames.fromRow(row, schema);
 		}
 	}

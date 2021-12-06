@@ -1,6 +1,6 @@
 package de.kp.works.ml.classification;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@ package de.kp.works.ml.classification;
 
 import java.util.Map;
 
+import de.kp.works.core.ml.classification.DTCRecorder;
 import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -37,7 +38,7 @@ import de.kp.works.core.classifier.ClassifierSink;
 import de.kp.works.ml.config.DTConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("DTClassifer")
+@Name("DTClassifier")
 @Description("A building stage for an Apache Spark ML Decision Tree classifier model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "
 		+ "another that describes the class or label value as numeric value.")
@@ -45,7 +46,7 @@ public class DTClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = -4324297354460233205L;
 
-	private DTConfig config;
+	private final DTConfig config;
 
 	public DTClassifier(DTConfig config) {
 		this.config = config;

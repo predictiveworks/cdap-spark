@@ -41,7 +41,7 @@ import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.core.predictor.PredictorCompute;
 
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.clustering.GaussianMixtureRecorder;
+import de.kp.works.core.ml.clustering.GaussianMixtureRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GaussianMixturePredictor")

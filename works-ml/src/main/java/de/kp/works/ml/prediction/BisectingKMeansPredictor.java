@@ -33,7 +33,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.cluster.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.clustering.BisectingKMeansRecorder;
+import de.kp.works.core.ml.clustering.BisectingKMeansRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BisectingKMeansPredictor")

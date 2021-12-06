@@ -1,6 +1,7 @@
-package de.kp.works.ml.clustering;
+package de.kp.works.core.ml.classification;
+
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,56 +21,53 @@ package de.kp.works.ml.clustering;
 
 import java.util.Date;
 
-import org.apache.spark.ml.clustering.GaussianMixtureModel;
+import org.apache.spark.ml.classification.*;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClusterRecorder;
+import de.kp.works.core.ml.classification.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class GaussianMixtureRecorder extends ClusterRecorder {
+public class DTCRecorder extends ClassifierRecorder {
 
-	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
+		String algorithmName = Algorithms.DECISION_TREE;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the GaussianMixture clustering model
+		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
 		 * from a model specific file set
 		 */
-		return GaussianMixtureModel.load(modelPath);
-
+		return DecisionTreeClassificationModel.load(modelPath);
+		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			GaussianMixtureModel model) throws Exception {
-
-		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
+			DecisionTreeClassificationModel model) throws Exception {
+		
+		String algorithmName = Algorithms.DECISION_TREE;
 
 		/***** ARTIFACTS *****/
 
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
-		 * model specific file set
-		 */
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 
+		FileSet fs = SparkMLManager.getClassificationFS(context);
+
+		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getClusteringTable(context);
+		
+		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
-
+		
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}

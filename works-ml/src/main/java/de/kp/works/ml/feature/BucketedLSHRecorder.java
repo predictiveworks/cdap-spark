@@ -26,7 +26,7 @@ import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.FeatureRecorder;
+import de.kp.works.core.ml.feature.FeatureRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class BucketedLSHRecorder extends FeatureRecorder {

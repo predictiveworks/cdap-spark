@@ -1,6 +1,6 @@
 package de.kp.works.core.ml;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@ package de.kp.works.core.ml;
 
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
+import java.util.Arrays;
 import java.util.Map;
 
 import com.google.gson.Gson;
@@ -70,24 +71,22 @@ public class AbstractRecorder {
 		 * Build unique model identifier from all information that is available for a
 		 * certain model
 		 */
-		String mid = null;
+		String mid;
 		try {
 			String[] parts = { String.valueOf(timestamp), name, version, fsName, fsPath, pack, stage, algorithm,
 					params };
 
 			String serialized = String.join("|", parts);
-			mid = MessageDigest.getInstance("MD5").digest(serialized.getBytes()).toString();
+			mid = Arrays.toString(MessageDigest.getInstance("MD5").digest(serialized.getBytes()));
 
 		} catch (Exception e) {
 			mid = String.valueOf(timestamp);
 
 		}
 
-		Put row = new Put(key).add(Names.TIMESTAMP, timestamp).add("id", mid).add("namespace", namespace).add("name", name).add("version", version)
+		return new Put(key).add(Names.TIMESTAMP, timestamp).add("id", mid).add("namespace", namespace).add("name", name).add("version", version)
 				.add("fsName", fsName).add(Names.FS_PATH, fsPath).add("pack", pack).add("stage", stage)
 				.add("algorithm", algorithm).add("params", params);
-
-		return row;
 
 	}
 

@@ -21,6 +21,7 @@ package de.kp.works.ml.classification;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.ml.classification.NBRecorder;
 import org.apache.spark.ml.classification.NaiveBayesModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

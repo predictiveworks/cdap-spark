@@ -1,6 +1,6 @@
 package de.kp.works.core.model
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -43,18 +43,18 @@ object ModelFinder extends MinMaxFinder {
      * for each metric metric to build normalized metric 
      * values
      */
-    val (accuracy_min, accuracy_max) = classifierMinMax(Names.ACCURACY, metrics)
+    val (_, accuracy_max) = classifierMinMax(Names.ACCURACY, metrics)
 
-    val (f1_min, f1_max) = classifierMinMax(Names.F1, metrics)    
-    val (weightedFMeasure_min, weightedFMeasure_max) = classifierMinMax(Names.WEIGHTED_FMEASURE, metrics)
+    val (_, f1_max) = classifierMinMax(Names.F1, metrics)
+    val (_, weightedFMeasure_max) = classifierMinMax(Names.WEIGHTED_FMEASURE, metrics)
     
-    val (weightedPrecision_min, weightedPrecision_max) = classifierMinMax(Names.WEIGHTED_PRECISION, metrics)
-    val (weightedRecall_min, weightedRecall_max) = classifierMinMax(Names.WEIGHTED_RECALL, metrics)    
+    val (_, weightedPrecision_max) = classifierMinMax(Names.WEIGHTED_PRECISION, metrics)
+    val (_, weightedRecall_max) = classifierMinMax(Names.WEIGHTED_RECALL, metrics)
     /* 
      * Weighted TPR is equivalent to WeightedRecall and must not
      * be counted twice
      */
-    val (weightedFPR_min, weightedFPR_max) = classifierMinMax(Names.WEIGHTED_FALSE_POSITIVE, metrics)
+    val (_, weightedFPR_max) = classifierMinMax(Names.WEIGHTED_FALSE_POSITIVE, metrics)
     /*
      * STEP #2: Normalize and aggregate each metric
      * value and build sum of normalize metric 
@@ -114,7 +114,7 @@ object ModelFinder extends MinMaxFinder {
     val min = best._3
     val max = sorted.last._3
     
-    val trust = if (max == 0D) 1D else (1 - min / max)
+    val trust = if (max == 0D) 1D else 1 - min / max
     
     val profile = new ModelProfile()
       .setId(best._2)
@@ -131,40 +131,40 @@ object ModelFinder extends MinMaxFinder {
       case 
       Algorithms.BISECTING_KMEANS | 
       Algorithms.GAUSSIAN_MIXTURE | 
-      Algorithms.KMEANS => {
-         /*
-         * STEP #1: Determine the minimum and maximum values 
-         * for each metric metric to build normalized metric 
+      Algorithms.KMEANS =>
+        /*
+         * STEP #1: Determine the minimum and maximum values
+         * for each metric metric to build normalized metric
          * values
          */
-        val (cosine_min, cosine_max) = clusterMinMax(Names.SILHOUETTE_COSINE, metrics)
-        val (euclidean_min, euclidean_max) = clusterMinMax(Names.SILHOUETTE_EUCLDIAN, metrics)    
+        val (_, cosine_max) = clusterMinMax(Names.SILHOUETTE_COSINE, metrics)
+        val (_, euclidean_max) = clusterMinMax(Names.SILHOUETTE_EUCLDIAN, metrics)
         /*
          * STEP #2: Normalize and aggregate each metric
-         * value and build sum of normalize metric 
+         * value and build sum of normalize metric
          */
         val scaled = metrics.map(metric => {
-         
-          /* COSINE: The smallest scaled deviation from the 
-           * maximum value is best  
+
+          /* COSINE: The smallest scaled deviation from the
+           * maximum value is best
            */
-          val cosine = 
+          val cosine =
             if (cosine_max == 0D) 0D else Math.abs((cosine_max - metric.silhouette_cosine) / cosine_max)
-         
-          /* EUCLIDEAN: The smallest scaled deviation from the 
-           * maximum value is best  
+
+          /* EUCLIDEAN: The smallest scaled deviation from the
+           * maximum value is best
            */
-          val euclidean = 
+          val euclidean =
             if (euclidean_max == 0D) 0D else Math.abs((euclidean_max - metric.silhouette_euclidean) / euclidean_max)
-       
+
           val err = cosine + euclidean
           (metric.fsPath, metric.id, err)
 
         }).toArray
-        
+
         /*
-         * Determine the best model as that model that has the 
-         * lowest aggregated metric value             
+         * Determine the best model as that model that has the
+         * lowest aggregated metric value
          */
         val sorted = scaled.sortBy(_._3)
         val best = sorted.head
@@ -174,51 +174,49 @@ object ModelFinder extends MinMaxFinder {
          */
         val min = best._3
         val max = sorted.last._3
-        
-        val trust = if (max == 0D) 1D else (1 - min / max)
-        
+
+        val trust = if (max == 0D) 1D else 1 - min / max
+
         val profile = new ModelProfile()
           .setId(best._2)
           .setPath(best._1)
           .setTrustability(trust)
-    
+
         profile
-       
-      }
-      case Algorithms.LATENT_DIRICHLET_ALLOCATION => {  
+      case Algorithms.LATENT_DIRICHLET_ALLOCATION =>
         /*
-         * STEP #1: Determine the minimum and maximum values 
-         * for each metric metric to build normalized metric 
+         * STEP #1: Determine the minimum and maximum values
+         * for each metric metric to build normalized metric
          * values
          */
         val (likelihood_min, likelihood_max) = clusterMinMax(Names.LIKELIHOOD, metrics)
-        val (perplexity_min, perplexity_max) = clusterMinMax(Names.PERPLEXITY, metrics)    
+        val (perplexity_min, perplexity_max) = clusterMinMax(Names.PERPLEXITY, metrics)
         /*
          * STEP #2: Normalize and aggregate each metric
-         * value and build sum of normalize metric 
+         * value and build sum of normalize metric
          */
         val scaled = metrics.map(metric => {
-         
-          /* LIKELIHOOD: The smallest scaled deviation from the 
-           * minimum value is best  
+
+          /* LIKELIHOOD: The smallest scaled deviation from the
+           * minimum value is best
            */
-          val likelihood = 
+          val likelihood =
             if (likelihood_max == 0D) 0D else Math.abs((likelihood_min - metric.likelihood) / likelihood_max)
-         
-          /* PERPLEXITY: The smallest scaled deviation from the 
-           * minimum value is best  
+
+          /* PERPLEXITY: The smallest scaled deviation from the
+           * minimum value is best
            */
-          val perplexity = 
+          val perplexity =
             if (perplexity_max == 0D) 0D else Math.abs((perplexity_min - metric.perplexity) / perplexity_max)
-       
+
           val err = likelihood + perplexity
           (metric.fsPath, metric.id, err)
 
         }).toArray
-        
+
         /*
-         * Determine the best model as that model that has the 
-         * lowest aggregated metric value             
+         * Determine the best model as that model that has the
+         * lowest aggregated metric value
          */
         val sorted = scaled.sortBy(_._3)
         val best = sorted.head
@@ -228,18 +226,15 @@ object ModelFinder extends MinMaxFinder {
          */
         val min = best._3
         val max = sorted.last._3
-        
-        val trust = if (max == 0D) 1D else (1 - min / max)
-        
+
+        val trust = if (max == 0D) 1D else 1 - min / max
+
         val profile = new ModelProfile()
           .setId(best._2)
           .setPath(best._1)
           .setTrustability(trust)
-    
+
         profile
-    
-          
-      }
     }
 
   }
@@ -313,7 +308,7 @@ object ModelFinder extends MinMaxFinder {
     val min = best._3
     val max = sorted.last._3
     
-    val trust = if (max == 0D) 1D else (1 - min / max)
+    val trust = if (max == 0D) 1D else 1 - min / max
     
     val profile = new ModelProfile()
       .setId(best._2)

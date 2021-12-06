@@ -34,7 +34,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.ml.MLUtils;
-import de.kp.works.ml.classification.DTCRecorder;
+import de.kp.works.core.ml.classification.DTCRecorder;
 import de.kp.works.ml.regression.DTRRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -49,7 +49,7 @@ public class DTPredictor extends PredictorCompute {
 	 */
 	private static final long serialVersionUID = 4611875710426366606L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 	/*
 	 * Reference to an Apache Spark ML classification or regression model that 
 	 * is used to predict a label (class) from the provided feature vector 
@@ -64,7 +64,8 @@ public class DTPredictor extends PredictorCompute {
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
-		
+
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
 			DTCRecorder recorder = new DTCRecorder();
@@ -154,8 +155,9 @@ public class DTPredictor extends PredictorCompute {
 		 * as Array[Numeric]
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
-		Dataset<Row> predictions = null;
+		Dataset<Row> predictions;
 
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 			
 			classifier.setFeaturesCol(vectorCol);

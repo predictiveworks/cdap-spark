@@ -1,7 +1,7 @@
-package de.kp.works.ml.classification;
+package de.kp.works.core.ml.classification;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,29 +27,29 @@ import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClassifierRecorder;
+import de.kp.works.core.ml.classification.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class DTCRecorder extends ClassifierRecorder {
+public class NBRecorder extends ClassifierRecorder {
 
-	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		String algorithmName = Algorithms.DECISION_TREE;
+	public NaiveBayesModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+		
+		String algorithmName = Algorithms.NAIVE_BAYES;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the NaiveBayes model from a model
+		 * specific file set
 		 */
-		return DecisionTreeClassificationModel.load(modelPath);
-		
+		return NaiveBayesModel.load(modelPath);
+
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			DecisionTreeClassificationModel model) throws Exception {
+			NaiveBayesModel model) throws Exception {
 		
-		String algorithmName = Algorithms.DECISION_TREE;
+		String algorithmName = Algorithms.NAIVE_BAYES;
 
 		/***** ARTIFACTS *****/
 
@@ -64,10 +64,10 @@ public class DTCRecorder extends ClassifierRecorder {
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
-		
+
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
-		
+
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}

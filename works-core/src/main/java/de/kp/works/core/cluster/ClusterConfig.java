@@ -1,6 +1,6 @@
 package de.kp.works.core.cluster;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,7 +33,7 @@ public class ClusterConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Description("The stage of the ML model. Supported values are 'experiment', 'staging', 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
 	public String modelStage;
 
@@ -58,7 +58,7 @@ public class ClusterConfig extends BaseConfig {
 	
 	public void validateSchema(Schema inputSchema) {
 
-		/** FEATURES COLUMN **/
+		/* FEATURES COLUMN */
 
 		Schema.Field featuresField = inputSchema.getField(featuresCol);
 		if (featuresField == null) {

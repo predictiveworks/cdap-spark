@@ -1,7 +1,7 @@
-package de.kp.works.ml.classification;
+package de.kp.works.core.ml.classification;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -27,7 +27,7 @@ import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClassifierRecorder;
+import de.kp.works.core.ml.classification.ClassifierRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
 public class LRRecorder extends ClassifierRecorder {

@@ -1,5 +1,4 @@
-package de.kp.works.ml.classification;
-
+package de.kp.works.core.ml.clustering;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -21,51 +20,54 @@ package de.kp.works.ml.classification;
 
 import java.util.Date;
 
-import org.apache.spark.ml.classification.MultilayerPerceptronClassificationModel;
+import org.apache.spark.ml.clustering.*;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.ClassifierRecorder;
+import de.kp.works.core.ml.clustering.ClusterRecorder;
 import de.kp.works.core.ml.SparkMLManager;
 
-public class MLPRecorder extends ClassifierRecorder {
+public class BisectingKMeansRecorder extends ClusterRecorder {
 
-	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+	public BisectingKMeansModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
+		String algorithmName = Algorithms.BISECTING_KMEANS;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the MultilayerPerceptron model from a
-		 * model specific file set
+		 * Leverage Apache Spark mechanism to read the Bisecting KMeans clustering model
+		 * from a model specific file set
 		 */
-		return MultilayerPerceptronClassificationModel.load(modelPath);
+		return BisectingKMeansModel.load(modelPath);
 
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			MultilayerPerceptronClassificationModel model) throws Exception {
+			BisectingKMeansModel model) throws Exception {
 
-		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
+		String algorithmName = Algorithms.BISECTING_KMEANS;
 
 		/***** ARTIFACTS *****/
 
 		Long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-
-		FileSet fs = SparkMLManager.getClassificationFS(context);
-
+		/*
+		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
+		 * model specific file set
+		 */
+		FileSet fs = SparkMLManager.getClusteringFS(context);
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+
 		model.save(modelPath);
 
 		/***** METADATA *****/
 
 		String modelPack = "WorksML";
 
-		Table table = SparkMLManager.getClassificationTable(context);
+		Table table = SparkMLManager.getClusteringTable(context);
 		String namespace = context.getNamespace();
 
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);

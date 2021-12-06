@@ -344,7 +344,7 @@ object SquaredEuclideanSilhouette extends Silhouette {
 
   /**
    * This method registers the class
-   * [[org.apache.spark.ml.evaluation.SquaredEuclideanSilhouette.ClusterStats]]
+   * [org.apache.spark.ml.evaluation.SquaredEuclideanSilhouette.ClusterStats]
    * for kryo serialization.
    *
    * @param sc `SparkContext` to be used
