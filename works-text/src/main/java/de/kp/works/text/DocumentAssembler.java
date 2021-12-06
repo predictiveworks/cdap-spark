@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -22,20 +22,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.annotation.Name;
+import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.api.data.schema.Schema;
+import io.cdap.cdap.etl.api.PipelineConfigurer;
+import io.cdap.cdap.etl.api.StageConfigurer;
+import io.cdap.cdap.etl.api.batch.SparkCompute;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-
 import com.google.common.base.Strings;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.api.data.schema.Schema;
-import co.cask.cdap.etl.api.PipelineConfigurer;
-import co.cask.cdap.etl.api.StageConfigurer;
-import co.cask.cdap.etl.api.batch.SparkCompute;
-import co.cask.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.BaseCompute;
 import de.kp.works.core.BaseConfig;
 
@@ -47,8 +46,7 @@ public class DocumentAssembler extends BaseCompute {
 
 	private static final long serialVersionUID = 5882041999274662218L;
 
-	private DocumentAssemblerConfig config;
-
+	private final DocumentAssemblerConfig config;
 	public DocumentAssembler(DocumentAssemblerConfig config) {
 		this.config = config;
 	}
@@ -76,18 +74,16 @@ public class DocumentAssembler extends BaseCompute {
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-		Properties props = new Properties();
-		props.setProperty("input.col", config.inputCol);
-		props.setProperty("output.col", config.outputCol);
+		String textCol = config.inputCol;
+		String documentCol = config.outputCol;
 
-		return NLP.assembleDocument(source, props);
+		return NLP.assembleDocument(source, textCol, documentCol);
 
 	}
 	
-	@Override
 	public void validateSchema() {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.inputCol);
 		if (textCol == null) {
@@ -101,6 +97,7 @@ public class DocumentAssembler extends BaseCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

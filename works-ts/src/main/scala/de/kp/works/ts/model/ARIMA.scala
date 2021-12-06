@@ -1,6 +1,6 @@
 package de.kp.works.ts.model
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,19 +18,14 @@ package de.kp.works.ts.model
  * 
  */
 
-import com.suning.spark.ts.{ARIMA => SuningARIMA, ARMA => SuningARMA, DiffAutoRegression => SuningDiffAR}
 import com.suning.spark.regression.{LinearRegression => SuningRegression}
-
+import com.suning.spark.ts.{ARIMA => SuningARIMA}
+import de.kp.works.core.ml.RegressorEvaluator
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.Vector
-
 import org.apache.spark.ml.param._
-import org.apache.spark.ml.param.shared._
-
 import org.apache.spark.ml.util._
-
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
@@ -62,8 +57,8 @@ class ARIMA(override val uid: String)
     
     val model = suning.fit(dataset.toDF)
 
-    val intercept = model.getIntercept
-    val weights = model.getWeights
+    val intercept = model.getIntercept()
+    val weights = model.getWeights()
 
     copyValues(new ARIMAModel(uid, intercept, weights).setParent(this))
 
@@ -98,7 +93,7 @@ class ARIMAModel(override val uid:String, intercept:Double, weights:Vector)
 		val labelCol = arima.getLabelCol
 		val predictionCol = arima.getPredictionCol
 				
-	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+	  RegressorEvaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
 

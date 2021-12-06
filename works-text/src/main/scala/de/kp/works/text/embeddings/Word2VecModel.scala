@@ -1,6 +1,6 @@
 package de.kp.works.text.embeddings
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,25 +18,15 @@ package de.kp.works.text.embeddings
  * 
  */
 
-import com.johnsnowlabs.nlp._
-
 import com.johnsnowlabs.nlp.AnnotatorType.{DOCUMENT, TOKEN, WORD_EMBEDDINGS}
+import com.johnsnowlabs.nlp._
 import com.johnsnowlabs.nlp.annotators.common._
-
-import com.johnsnowlabs.nlp.serialization.MapFeature
 import com.johnsnowlabs.nlp.util.io.ResourceHelper.spark.implicits._
-
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.ml.SparkParamsReader
-
-import org.apache.spark.ml.linalg._
-import org.apache.spark.ml.param._
 import org.apache.spark.ml.util._
-
-import org.apache.spark.sql.functions._
 import org.apache.spark.sql._
-
+import org.apache.spark.sql.functions._
 
 case class Word2VecData(word: String, vector: Array[Float])
 
@@ -62,7 +52,7 @@ class Word2VecModel(override val uid: String, vocab:Map[String, Array[Float]]) e
 
       import spark.implicits._
       
-      val dataPath = s"${path}/data"
+      val dataPath = s"$path/data"
       
       spark.createDataset[(String, Array[Float])](vocab.toSeq)
         .repartition(1)
@@ -85,7 +75,9 @@ class Word2VecModel(override val uid: String, vocab:Map[String, Array[Float]]) e
     val withEmbeddings = sentences.map{ s =>
       val tokens = s.indexedTokens.map { token =>
         val vectorOption = this.vocab.get(token.token)
-        TokenPieceEmbeddings(token.token, token.token, -1, true, vectorOption, Array.fill[Float]($(vectorSize))(0f), token.begin, token.end)
+        TokenPieceEmbeddings(
+          token.token, token.token, -1, isWordStart = true,
+          vectorOption, Array.fill[Float]($(vectorSize))(0f), token.begin, token.end)
       }
       WordpieceEmbeddingsSentence(tokens, s.sentenceIndex)
     }
@@ -143,7 +135,7 @@ object Word2VecModel extends EmbeddingsCoverage {
       import spark.implicits._
 
       val metadata = SparkParamsReader.loadMetadata(path, sc, className)
-     
+
       val dataPath = new Path(path, "data").toString
       val data = spark.read.parquet(dataPath).as[Word2VecData]
       

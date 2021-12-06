@@ -1,6 +1,6 @@
 package de.kp.works.text.spell;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,9 +20,9 @@ package de.kp.works.text.spell;
 
 import com.google.common.base.Strings;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 
 public class SpellConfig extends BaseConfig {
 

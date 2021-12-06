@@ -20,17 +20,13 @@ package de.kp.works.ts.model
 
 import com.suning.spark.ts.{ARMA => SuningARMA}
 import com.suning.spark.regression.{LinearRegression => SuningRegression}
-
+import de.kp.works.core.ml.RegressorEvaluator
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.Vector
-
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
-
 import org.apache.spark.ml.util._
-
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
@@ -97,7 +93,7 @@ class ARMAModel(override val uid:String, intercept:Double, weights:Vector)
 		val labelCol = arma.getLabelCol
 		val predictionCol = arma.getPredictionCol
 				
-	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+	  RegressorEvaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
  

@@ -19,10 +19,9 @@ package de.kp.works.text.pos;
  */
 
 import com.google.common.base.Strings;
-
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
 import de.kp.works.core.BaseConfig;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
 
 public class BasePOSConfig extends BaseConfig {
 

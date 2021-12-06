@@ -20,17 +20,13 @@ package de.kp.works.ts.model
 
 import com.suning.spark.ts.{MovingAverage => SuningMovingAverage}
 import com.suning.spark.regression.{LinearRegression => SuningRegression}
-
+import de.kp.works.core.ml.RegressorEvaluator
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.Vector
-
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
-
 import org.apache.spark.ml.util._
-
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
@@ -96,7 +92,7 @@ class MovingAverageModel(override val uid:String, intercept:Double, weights:Vect
 		val labelCol = ma.getLabelCol
 		val predictionCol = ma.getPredictionCol
 				
-	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+	  RegressorEvaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
 

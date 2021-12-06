@@ -52,14 +52,22 @@
 
   <dependencies>
  
-	<!-- cdap spark dependencies -->
-
+	<!-- WORKS CORE
+	-->
 	<dependency>
 	  <groupId>de.kp.works</groupId>
 	  <artifactId>works-core</artifactId>
 	  <version>0.3.0</version>
 	</dependency>
- 
+
+    <!-- TYPESAFE
+    -->
+    <dependency>
+      <groupId>com.typesafe</groupId>
+      <artifactId>config</artifactId>
+      <version>1.4.1</version>
+    </dependency>
+
     <!-- https://mvnrepository.com/artifact/com.intel.analytics.bigdl/bigdl-SPARK -->
     
     <!-- 

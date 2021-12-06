@@ -1,6 +1,6 @@
 package de.kp.works.text
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,12 +19,12 @@ package de.kp.works.text
  */
 
 import com.johnsnowlabs.nlp
-
 import org.apache.spark.ml.linalg.Vectors
-
 import org.apache.spark.sql._
+import org.apache.spark.sql.expressions.UserDefinedFunction
 import org.apache.spark.sql.functions._
 
+import scala.collection.mutable
 import scala.collection.mutable.WrappedArray
 
 case class DateMatcherResult(sentence:String, odate:String, ndate:String)
@@ -35,12 +35,13 @@ trait AnnotationBase {
    * annotation stage; two different options are supported: "extract"
    * and "replace"
    */
-  def finishDateMatcher(option:String) = udf{(sentences:WrappedArray[Row], dates:WrappedArray[Row]) => {
+  def finishDateMatcher(option:String): UserDefinedFunction =
+    udf{ (sentences:mutable.WrappedArray[Row], dates:mutable.WrappedArray[Row]) => {
       /*
        * The extracted number of dates may not match the 
        * number of sentences; therefore the sentences are
        * transformed into an index dictionary to enable
-       * proper assignmed of extracted dates
+       * proper assignment of extracted dates
        */
       val sidx = sentences.head.schema.fieldIndex("result")
       val indexed = sentences.map(_.getString(sidx)).zipWithIndex
@@ -75,53 +76,48 @@ trait AnnotationBase {
        * Finally finish result with respect to the provided
        * option parameter 
        */
-      val result = indexed.map{case(sentence,index) => {
-        
+      val result = indexed.map{case(sentence,index) =>
+
         option match {
-          case "extract" => {
-        
+          case "extract" =>
+
             if (dateMap.contains(index)) {
-              
+
               val (begin, end, date) = dateMap(index)
               val odate = sentence.substring(begin, end)
- 
+
               Array(sentence, odate, date)
-              
+
             } else {
-              /* 
-               * The extracted sentences does not contain any data 
+              /*
+               * The extracted sentences does not contain any data
                * or time expression; initial & extracted date is set
                * to an empty String
                */
               Array(sentence, "", "")
 
             }
-            
-          }
-          case "replace" => {
-        
+          case "replace" =>
+
             if (dateMap.contains(index)) {
-              
+
               val (begin, end, date) = dateMap(index)
               val odate = sentence.substring(begin, end)
 
               val replaced = sentence.replace(odate, date)
               Array(replaced)
-              
+
             } else {
-              /* 
+              /*
                * The extracted sentences does not contain any data
                * or time expression; the sentence is returned without
                * any change
                */
              Array(sentence)
             }
-                        
-          }
           case _ => throw new IllegalArgumentException(s"Option parameter '$option' is not supported")
         }
-        
-      }}
+      }
       
       result
       
@@ -130,9 +126,10 @@ trait AnnotationBase {
   /*
    * A helper method to finalize the result of the POS tagging approach;
    * it concatenates tokens and tags and returns a single set of mixed
-   * tokens separatetd by whitespaces
+   * tokens separated by whitespaces
    */
-  def finishPOSTagger = udf{(tokens:WrappedArray[Row], pos:WrappedArray[Row]) => {
+  def finishPOSTagger: UserDefinedFunction =
+    udf{ (tokens:mutable.WrappedArray[Row], pos:mutable.WrappedArray[Row]) => {
    
     val tSchema = tokens.head.schema
     val tridx = tSchema.fieldIndex("result")
@@ -140,9 +137,9 @@ trait AnnotationBase {
     val pSchema = pos.head.schema
     val pridx = pSchema.fieldIndex("result")
 
-    val mixin = tokens.zip(pos).map{case(token, tag) => {
+    val mixin = tokens.zip(pos).map{case(token, tag) =>
       s"${token.getString(tridx)}__${tag.getString(pridx)}"
-    }}
+    }
 
     mixin.mkString(" ")
     
@@ -153,7 +150,8 @@ trait AnnotationBase {
    * approach; as this mechanism is assigned to noise reduction, the plugin
    * returns the corrected sentence
    */
-  def finishSpellChecker(threshold:Double) = udf{(tokens:WrappedArray[Row], suggestions:WrappedArray[Row]) => {
+  def finishSpellChecker(threshold:Double): UserDefinedFunction =
+    udf{ (tokens:mutable.WrappedArray[Row], suggestions:mutable.WrappedArray[Row]) => {
       
     val tSchema = tokens.head.schema
     val tridx = tSchema.fieldIndex("result")
@@ -185,7 +183,7 @@ trait AnnotationBase {
    * tokens. The output can be used as 'text document' with other
    * text analysis plugins.
    */
-  def finishTokens = udf{tokens:WrappedArray[Row] => {
+  def finishTokens: UserDefinedFunction = udf{ tokens:mutable.WrappedArray[Row] => {
     
     val schema = tokens.head.schema
     val ridx = schema.fieldIndex("result")
@@ -230,7 +228,7 @@ trait AnnotationBase {
   
   def extractTokens(dataset:Dataset[Row], textCol:String, normalization:Boolean):Dataset[Row] = {
        
-      if (normalization == true)
+      if (normalization)
         normalizedTokens(dataset, textCol)
 
       else
@@ -285,12 +283,13 @@ trait AnnotationBase {
    * a pooling strategy (average | sum) to retrieve a feature
    * vector from all token embeddings    
    */
-  def embeddings2vector_udf(strategy:String) = udf{annotations:WrappedArray[Row] => {
+  def embeddings2vector_udf(strategy:String): UserDefinedFunction =
+    udf{ annotations:mutable.WrappedArray[Row] => {
       
     val schema = annotations.head.schema
     val index = schema.fieldIndex("embeddings")
 
-    val matrix = annotations.map(row => row.getAs[WrappedArray[Float]](schema.fieldIndex("embeddings")))
+    val matrix = annotations.map(row => row.getAs[mutable.WrappedArray[Float]](schema.fieldIndex("embeddings")))
 
     val res = Array.ofDim[Float](matrix(0).length)
     matrix(0).indices.foreach {

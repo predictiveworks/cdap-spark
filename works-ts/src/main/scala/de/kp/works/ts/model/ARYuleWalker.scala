@@ -19,17 +19,13 @@ package de.kp.works.ts.model
  */
 
 import com.suning.spark.ts.{ARYuleWalker => SuningARYuleWalker}
-
+import de.kp.works.core.ml.RegressorEvaluator
 import org.apache.hadoop.fs.Path
-
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.Vector
-
 import org.apache.spark.ml.param._
 import org.apache.spark.ml.param.shared._
-
 import org.apache.spark.ml.util._
-
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.types._
@@ -86,7 +82,7 @@ class ARYuleWalkerModel(override val uid:String, weights:Vector)
 		val labelCol = yuleWalker.getLabelCol
 		val predictionCol = yuleWalker.getPredictionCol
 				
-	  Evaluator.evaluate(predictions, labelCol, predictionCol)
+	  RegressorEvaluator.evaluate(predictions, labelCol, predictionCol)
     
   }
 

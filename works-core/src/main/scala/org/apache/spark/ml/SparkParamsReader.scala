@@ -20,13 +20,14 @@ package org.apache.spark.ml
 
 import org.apache.spark._
 import org.apache.spark.ml.param._
+import org.apache.spark.ml.util.DefaultParamsReader
 
 object SparkParamsReader {
   
-    def loadMetadata(path: String, sc: SparkContext, expectedClassName: String = "") = 
-      util.DefaultParamsReader.loadMetadata(path, sc, expectedClassName)
+    def loadMetadata(path: String, sc: SparkContext, expectedClassName: String = ""): DefaultParamsReader.Metadata =
+      DefaultParamsReader.loadMetadata(path, sc, expectedClassName)
 
-    def getAndSetParams(model: Params, metadata: util.DefaultParamsReader.Metadata) =
-      util.DefaultParamsReader.getAndSetParams(model, metadata)
+    def getAndSetParams(model: Params, metadata: DefaultParamsReader.Metadata): Unit =
+      DefaultParamsReader.getAndSetParams(model, metadata)
  
 }
