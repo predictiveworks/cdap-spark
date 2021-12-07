@@ -25,7 +25,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.kp.works</groupId>
   <artifactId>cdap-spark</artifactId>
-  <version>0.3.0</version>
+  <version>0.4.0</version>
   <packaging>pom</packaging>
 
   <name>CDAP Spark Parent POM</name>

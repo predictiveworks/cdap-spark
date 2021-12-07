@@ -26,7 +26,7 @@
   <parent>
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 	<relativePath>../pom.xml</relativePath>    
   </parent>
 
@@ -34,7 +34,7 @@
   <packaging>jar</packaging>
   
   <name>Works Rules</name>
-  <description>Business rules support for CDAP-Spark.</description>
+  <description>Drools business rules transformer (SparkCompute) for Google CDAP.</description>
 
   <properties>
 
@@ -50,14 +50,16 @@
 
   <dependencies>
       
-    <!-- drools compiler -->
+    <!-- DROOLS COMPILER
+    -->
     <dependency>
 	  <groupId>org.drools</groupId>
 	  <artifactId>drools-compiler</artifactId>
 	  <version>${drools.version}</version>
     </dependency>
     
-    <!-- drools compiler dependency -->
+    <!-- ECLIPSE COMPILER
+    -->
 	<dependency>
 	   <groupId>org.eclipse.jdt.core.compiler</groupId>
 	   <artifactId>ecj</artifactId>

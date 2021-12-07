@@ -26,7 +26,7 @@
   <parent>
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 	<relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -35,14 +35,14 @@
 
   <properties>
     <ditto.version>1.0.0</ditto.version>
-    <ignite.version>2.7.6</ignite.version>       
+    <ignite.version>2.8.1</ignite.version>
     
   </properties>
 
   <dependencies>
 
-	<!-- apache spark dependencies -->
-
+	<!-- SPARK STREAMING
+	-->
     <dependency>
       <groupId>org.apache.spark</groupId>
       <artifactId>spark-streaming_2.11</artifactId>
@@ -50,7 +50,8 @@
       <scope>provided</scope>
     </dependency>
 
-	<!-- eclipse ditto dependencies -->
+	<!-- ECLIPSE DITTO
+	-->
 
     <dependency>
       <groupId>org.eclipse.ditto</groupId>
@@ -58,14 +59,14 @@
       <version>${ditto.version}</version>
     </dependency>
 
-	<!-- ignite core dependencies -->
-
-	  <dependency>
-	    <groupId>org.apache.ignite</groupId>
-	    <artifactId>ignite-core</artifactId>
-	    <version>${ignite.version}</version>
-	    <scope>provided</scope>
-	  </dependency>
+	<!-- IGNITE CORE
+	-->
+	<dependency>
+	  <groupId>org.apache.ignite</groupId>
+	  <artifactId>ignite-core</artifactId>
+	  <version>${ignite.version}</version>
+	  <scope>provided</scope>
+	</dependency>
 
   </dependencies>
 

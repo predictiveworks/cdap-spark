@@ -3,7 +3,7 @@
   <parent>
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 	<relativePath>../pom.xml</relativePath>        
   </parent>
 
@@ -14,11 +14,12 @@
 
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-	  <maven.compiler.source>1.8</maven.compiler.source>
-  	  <maven.compiler.target>1.8</maven.compiler.target>
+	 <maven.compiler.source>1.8</maven.compiler.source>
+  	 <maven.compiler.target>1.8</maven.compiler.target>
      <encoding>UTF-8</encoding>
 
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+     <works.version>0.4.0</works.version>
 
      <app.parents>system:cdap-data-pipeline[6.2.0,6.2.0],system:cdap-data-streams[6.2.0,6.2.0]</app.parents>
      <main.basedir>${project.basedir}</main.basedir>
@@ -30,15 +31,15 @@
    
   <dependencies>
 
-	<!-- cdap spark dependencies -->
-
+	<!-- WORKS-CORE
+	-->
 	<dependency>
 	  <groupId>de.kp.works</groupId>
 	  <artifactId>works-core</artifactId>
-	  <version>0.3.0</version>
+	  <version>${works.version}</version>
 	</dependency>
   
-    <!-- Spark NLP dependencies 
+    <!-- SPARK NLP
     
     Important: this is a downgraded version that works with 
     Apache Spark v2.1.3 as this is the supported CDAP version

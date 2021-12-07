@@ -1,24 +1,28 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "Apply Rules",
+  "display-name": "Apply Rules",
 
-"configuration-groups": [
-	{
-      "label": "Basic",
+  "icon": {
+    "arguments": {
+      "data": "data:image/png;base64,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"
+    },
+    "type": "inline"
+  },
+
+  "configuration-groups": [
+    {
+      "label": "Plugin Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Reference Name",
-          "name": "referenceName",
-          "widget-attributes": {
-            "placeholder": "Name used to identify this rule-based data machine for lineage"
-          }
-		}
-	  ]
-	},
+          "name": "referenceName"
+        }
+      ]
+    },
 	{
-	  "label": "Rules",
+	  "label": "Rule Configuration",
 	  "properties": [
         {
           "widget-type": "textarea",

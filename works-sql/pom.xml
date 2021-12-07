@@ -25,7 +25,7 @@
   <parent>
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 	<relativePath>../pom.xml</relativePath>    
   </parent>
 
@@ -40,16 +40,18 @@
     <docs.dir>docs</docs.dir>
     <widgets.dir>widgets</widgets.dir>
 
+    <works.version>0.4.0</works.version>
+
   </properties>
   
   <dependencies>
 
-	<!-- cdap spark dependencies -->
-
+	<!-- WORKS-CORE
+	-->
 	<dependency>
 	  <groupId>de.kp.works</groupId>
 	  <artifactId>works-core</artifactId>
-	  <version>0.3.0</version>
+	  <version>${works.version}</version>
 	</dependency>
 
   </dependencies>

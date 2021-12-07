@@ -1,7 +1,6 @@
 package de.kp.works.rules;
-
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -66,8 +65,8 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 
 	private static final long serialVersionUID = 7585185760627607283L;
 
-	private ApplyRulesConfig config;
-	private Broadcast<InternalKnowledgeBase> kbase;
+	private final ApplyRulesConfig config;
+	private Broadcast<InternalKnowledgeBase> kBase;
 	/*
 	 * This is an internal flag that indicates whether the
 	 * provided input schema is suitable for ruleset evaluation
@@ -91,7 +90,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 
 		/* Broadcast to all Apache Spark workers */
 		JavaSparkContext jsc = context.getSparkContext();
-		kbase = jsc.broadcast(base);
+		kBase = jsc.broadcast(base);
 
 	}
 
@@ -101,8 +100,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 	}
 
 	@Override
-	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
-			throws Exception {
+	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) {
 		/*
 		 * This is an initial step, that checks whether the input
 		 * is empty, and, if this is the case returns the input
@@ -125,14 +123,14 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 		 * we have to make sure that the associated schema does not contain
 		 * complex data types
 		 */
-		if (isValidSchema == false) {
+		if (!isValidSchema) {
 
 			config.validate(inputSchema);
 			isValidSchema = true;
 
 		}
 
-		return input.mapPartitions(new DroolsFunction(kbase, config.getRulesType()));
+		return input.mapPartitions(new DroolsFunction(kBase, config.getRulesType()));
 
 	}
 
@@ -140,23 +138,23 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 
 		private static final long serialVersionUID = 5022685393133974680L;
 
-		private transient Broadcast<InternalKnowledgeBase> kbase;
-		private transient String rulesType;
+		private final transient Broadcast<InternalKnowledgeBase> kBase;
+		private final transient String rulesType;
 
 		private transient Schema inputSchema;
 		private transient Schema outputSchema;
 
 		DroolsFunction(Broadcast<InternalKnowledgeBase> kbase, String rulesType) {
-			this.kbase = kbase;
+			this.kBase = kbase;
 			this.rulesType = rulesType;
 		}
 
 		@Override
-		public Iterator<StructuredRecord> call(Iterator<StructuredRecord> partition) throws Exception {
+		public Iterator<StructuredRecord> call(Iterator<StructuredRecord> partition) {
 
 			try {
 				/* Create Drools session from broadcasted knowledge base */
-				KieSession session = kbase.getValue().newKieSession();
+				KieSession session = kBase.getValue().newKieSession();
 
 				/* Define results */
 				List<DroolsResult> droolsResults = new ArrayList<>();
@@ -215,9 +213,11 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 					String fieldName = results.get(0).field;
 					Schema.Field scoreField = Schema.Field.of(fieldName, Schema.of(Schema.Type.DOUBLE));
 
+					assert inputFields != null;
 					inputFields.add(scoreField);
 				}
-				
+
+				assert inputFields != null;
 				outputSchema = Schema.recordOf("rulesSchema", inputFields);
 
 			}
@@ -228,6 +228,8 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 				 * values to the record
 				 */
 				StructuredRecord.Builder builder = StructuredRecord.builder(outputSchema);
+
+				assert outputSchema.getFields() != null;
 				for (Schema.Field field : outputSchema.getFields()) {
 
 					String fieldName = field.getName();
@@ -252,10 +254,11 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 			Map<String, Object> fact = new HashMap<>();
 			List<Schema.Field> fields = record.getSchema().getFields();
 
+			assert fields != null;
 			for (Schema.Field field : fields) {
 
 				String fieldName = field.getName();
-				Object fieldValu = (Object) record.get(fieldName);
+				Object fieldValu = record.get(fieldName);
 
 				fact.put(fieldName, fieldValu);
 			}
@@ -286,12 +289,12 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 		@Name("rules")
 		@Description(RULES_DESCRIPTION)
 		@Macro
-		private String rules;
+		public String rules;
 
 		@Name("rulesType")
 		@Description(RULES_TYPE_DESCRIPTION)
 		@Macro
-		private String rulesType;
+		public String rulesType;
 
 		public ApplyRulesConfig(String rules) {
 
@@ -345,7 +348,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 			 * The schema must specify a record with fields that are defined by basic data
 			 * types only
 			 */
-			if (schema.getType().equals(Schema.Type.RECORD) == false)
+			if (!schema.getType().equals(Schema.Type.RECORD))
 				throw new IllegalArgumentException(
 						"[ApplyRules] The data format of the provided data records is not appropriate "
 								+ "to be computed by this data machine. Please check your blueprint configuration and re-build this application.");
@@ -355,6 +358,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 			 * specified data type are basic types
 			 */
 			List<Schema.Field> fields = schema.getFields();
+			assert fields != null;
 			for (Schema.Field field : fields) {
 
 				String fieldName = field.getName();
@@ -362,7 +366,7 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 				 * IMPORTANT: Nullable fields are described by a CDAP field schema that is a
 				 * UNION of a the nullable type and the non-nullable type;
 				 * 
-				 * to evaulate the respective schema, we MUST RESTRICT to the non- nullable type
+				 * to evaluate the respective schema, we MUST RESTRICT to the non- nullable type
 				 * only; otherwise we also view UNION schemas
 				 */
 				Schema fieldSchema = getNonNullIfNullable(field.getSchema());
@@ -391,15 +395,15 @@ public class ApplyRules extends SparkCompute<StructuredRecord, StructuredRecord>
 
 		}
 
-		private InternalKnowledgeBase loadKBase() throws Exception {
+		private InternalKnowledgeBase loadKBase() {
 
-			KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
-			kbuilder.add(new ByteArrayResource(rules.getBytes()), ResourceType.DRL);
+			KnowledgeBuilder kBuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+			kBuilder.add(new ByteArrayResource(rules.getBytes()), ResourceType.DRL);
 
-			InternalKnowledgeBase kbase = KnowledgeBaseFactory.newKnowledgeBase();
-			kbase.addPackages(kbuilder.getKnowledgePackages());
+			InternalKnowledgeBase kBase = KnowledgeBaseFactory.newKnowledgeBase();
+			kBase.addPackages(kBuilder.getKnowledgePackages());
 
-			return kbase;
+			return kBase;
 
 		}
 

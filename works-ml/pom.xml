@@ -1,6 +1,6 @@
 <!-- 
 
- ~ Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ ~ Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  ~ 
  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not
  ~ use this file except in compliance with the License. You may obtain a copy of
@@ -25,7 +25,7 @@
   <parent>
     <groupId>de.kp.works</groupId>
     <artifactId>cdap-spark</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
 	<relativePath>../pom.xml</relativePath>    
   </parent>
 
@@ -36,10 +36,11 @@
 
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-	  <maven.compiler.source>1.8</maven.compiler.source>
-  	  <maven.compiler.target>1.8</maven.compiler.target>
+	 <maven.compiler.source>1.8</maven.compiler.source>
+  	 <maven.compiler.target>1.8</maven.compiler.target>
      <encoding>UTF-8</encoding>
 
+     <works.version>0.4.0</works.version>
      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
      <app.parents>system:cdap-data-pipeline[6.2.0,6.2.0],system:cdap-data-streams[6.2.0,6.2.0]</app.parents>
@@ -55,12 +56,12 @@
   
   <dependencies>
 
-	<!-- cdap spark dependencies -->
-
+	<!-- WORKS CORE
+	-->
 	<dependency>
 	  <groupId>de.kp.works</groupId>
 	  <artifactId>works-core</artifactId>
-	  <version>0.3.0</version>
+	  <version>${works.version}</version>
 	</dependency>
 
   </dependencies>
