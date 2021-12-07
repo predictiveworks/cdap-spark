@@ -1,24 +1,28 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "Apply SQL",
+  "display-name": "Apply SQL",
 
-"configuration-groups": [
-	{
-      "label": "Basic",
+  "icon": {
+    "arguments": {
+      "data": "iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAABI9JREFUaIHtml1sFFUUx39nZmhrt9CWbm0BTYwGQiJBYoIhgUAwmKBdUPloIkZMjCHRoCW+CETqpItgjERi/AoSXyF8xEBby4ONxZiqDxLflKJGwq6AuwRbd6G2O3N86M6w3VB2K0Wmuv9kk3vPOffc85uPuzOTCyUFS+I1bFuNPjPegrAKcG5jTcXIEGifnZn1rm2LC2B5nizE9DmZWSs8Z1Bl22r0WfHoGSv+MrB3lHPDzli3batxe0obv9YfUnPDzli31/cLVzCCfiZydbhZHM2pf9KcgUIqgQRNJZCgqQQSNJVAgqYSSNBkFQ4Zkdozw44ztELQezCMaly9qGKcMw3rpNi/JfPjB9oJG0ITyv0ihFwlIdAbukq3NI9+Tbj704P3acZcBIDIT7F1676dcBAFcVvrt7vu0GsiVICAKggILq475DitdS1m26X3vTGpdloQ3gBCCCgg2TefdCU/pjp5qqqJ7/05HOthFd0HoKL7gXGDFLy03NbwFtCdQAWQFtUjCPsEuoAUYIJM9yE62IKwFwhlD0QvcAA4mw2Zi9LT387s8RZ7IxVzaW3yGoqsN6PJLr9v11e5jrsZ4U+A1DEagF3X4nlxaoQPAbSdyrRwFFgJVJsGe4DVE8RRFEi51zCU53VH+AoXk72yj2GxEyngTc8vBk8q3JHtnqpq4iPft4orA520GMppAJSmPzqorYlweSJACq9aol94TRVd4wo9bmN4INMa7nF2hF/RV2urPb8rLLg2jK9F0NxU05roA7yFwTBd5t80gZesYMDQlK2K9uaZKwSWIexxy80f1K6dByAwzY8Qzo+R0rcbJlP/Qc3Xr7NQgOy+kDDbLi1xDXkU+Bg4DaOO9Ax1rD0AKvTn2GeOkXKG39IxYcetgiBq1zcK6BQ7ccJsS24y25JzjWGrAcRfblV0QTbZd9dqZKnao/On2nkACGe7VwcNzkwMRjHLr6tnnNa6bbq1utazye4LCUW7csLiAMPKURlZkgHmXVnIdtWRb2f9J5gugg+PcLDuMQYmhILiVq0QyC63bEpbpjV8ylCJIVqrsNgLUOUtgJoIl9MdtAD7AVElmu7kmVQHZ8nwoELdyAB+NzK8fr3JRHlu1pHDG/PMGl+3vuJGRRa+tJSTjHx5tAQeUtE1CsuBMiChqs9a0eRBnzrCJwhPAxezpjnAI3gQ8KUDSyqf4NwNairL+5WPEeur4Bmxosnluq2x3il3FuLSILh3qnLeNI1fIfGN2Azlj6lq4oAe4mi6kqUiLFIlCiDwVSjCsvx4FekylJVj1eCo6li+okFg5J4APism1h/TzBDwuSrd6U42Aw0Ki9MdfKDwM8L8jLKlJsLl+Nq1MSA2nvz5uuWP8SKoKpuBvwBReAF4G2Wj5VA2UfMU/Rh/M5q6iiODHZzKCI+Lcq/CIHAhNG3U/85N6V8BAaiI8Avwzq3K/595QyyBBE0lkKCpBBI0lUCCphJI0OSDCOhk2zAg4O8LyAU53mfFo5MBxrbVsE7Ho6ge92x5m2piLyGymhzSgMoAPTYnc9d7k2m3xv9LfwPY0p0kaZ4YVwAAAABJRU5ErkJggg=="
+    },
+    "type": "inline"
+  },
+
+  "configuration-groups": [
+    {
+      "label": "Plugin Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Reference Name",
-          "name": "referenceName",
-          "widget-attributes": {
-            "placeholder": "Name used to identify this query-based data machine for lineage"
-          }
-		}
-	  ]
-	},
+          "name": "referenceName"
+        }
+      ]
+    },
 	{
-	  "label": "SQL Query",
+	  "label": "SQL Configuration",
 	  "properties": [
         {
           "widget-type": "textarea",

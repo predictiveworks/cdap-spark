@@ -1,7 +1,7 @@
 package de.kp.works.sql;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -59,7 +59,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 	 */	
 	private static final long serialVersionUID = 4939234688659944895L;
 
-	private ApplySQLConfig config;
+	private final ApplySQLConfig config;
 	/*
 	 * This is an internal flag that indicates whether the
 	 * provided input schema is suitable for SQL evaluation
@@ -92,8 +92,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 	}
 
 	@Override
-	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
-			throws Exception {
+	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) {
 		/*
 		 * This is an initial step, that checks whether the input
 		 * is empty, and, if this is the case returns the input
@@ -116,7 +115,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 * we have to make sure that the associated schema does not contain
 		 * complex data types
 		 */
-		if (isValidSchema == false) {
+		if (!isValidSchema) {
 
 			config.validate(inputSchema);
 			isValidSchema = true;
@@ -128,7 +127,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 * is needed to finally transform the incoming RDD into a Spark
 		 * SQL compliant dataset of [Row]
 		 */
-		StructType structType = (StructType)DataFrames.toDataType(inputSchema);
+		StructType structType = DataFrames.toDataType(inputSchema);
 
 		JavaSparkContext jsc = context.getSparkContext();	    
 		SparkSession session = new SparkSession(jsc.sc());		
@@ -136,7 +135,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 * Before we finally proceed and apply the provided SQL statement
 		 * to the incoming dataset, we check whether the statement is valid
 		 */
-		if (isValidSQL == false) {
+		if (!isValidSQL) {
 			
 			tableName = config.validateAndTable(session, config.sql);
 			isValidSQL = true;
@@ -150,9 +149,8 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 */
 		Dataset<Row> computed = applySQL(rows);
 		Schema outputSchema = DataFrames.toSchema(computed.schema());
-		
-		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(computed, outputSchema);
-		return records;
+
+		return SessionHelper.fromDataset(computed, outputSchema);
 
 	}
 	
@@ -191,11 +189,8 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		@Name("sql")
 		@Description(SQL_DESCRIPTION)
 		@Macro
-		private String sql;
+		public String sql;
 
-		public ApplySQLConfig(String sql) {
-			this.sql = sql;
-		}
 		/**
 		 * Returns the non-nullable part of the given {@link Schema} if it is nullable;
 		 * otherwise return it as is.
@@ -218,7 +213,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 			 * The schema must specify a record with fields that are defined by basic data
 			 * types only
 			 */
-			if (schema.getType().equals(Schema.Type.RECORD) == false)
+			if (!schema.getType().equals(Schema.Type.RECORD))
 				throw new IllegalArgumentException(
 						"[ApplySQL] The data format of the provided data records is not appropriate "
 								+ "to be computed by this data machine. Please check your blueprint configuration and re-build this application.");
@@ -228,6 +223,8 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 			 * specified data type are basic types
 			 */
 			List<Schema.Field> fields = schema.getFields();
+
+			assert fields != null;
 			for (Schema.Field field : fields) {
 
 				String fieldName = field.getName();
@@ -270,7 +267,7 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 */
 		private String validateAndTable(SparkSession session, String sql) {
 			
-			String tableName = null;
+			String tableName;
 			/* 
 			 * Check whether the SQL statement is compliant to Apache
 			 * Spark's SQL syntax
@@ -302,13 +299,10 @@ public class ApplySQL extends SparkCompute<StructuredRecord, StructuredRecord> {
 		 * This method is based on the logical plan created from the 
 		 * provided SQL statement and extracts all tables names that
 		 * refer to sub plan as <UnresolvedRelation>
-		 * 
-		 * @return
-		 * @throws Exception
 		 */
-		private List<String> tableNames(LogicalPlan plan) throws Exception {
+		private List<String> tableNames(LogicalPlan plan) {
 
-			List<String> tables = new ArrayList<String>();
+			List<String> tables = new ArrayList<>();
 
 			List<LogicalPlan> subplans = scala.collection.JavaConverters
 					.seqAsJavaListConverter(plan.collectLeaves()).asJava();
