@@ -51,7 +51,7 @@ public class KMeansSink extends ClusterSink {
 
 	private static final long serialVersionUID = 8351695775316345380L;
 
-	private KMeansConfig config;
+	private final KMeansConfig config;
 	
 	public KMeansSink(KMeansConfig config) {
 		this.config = config;
@@ -134,28 +134,24 @@ public class KMeansSink extends ClusterSink {
 
 		@Description("The number of cluster that have to be created.")
 		@Macro
-		private Integer k;
+		public Integer k;
 
 		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
-		@Nullable
 		@Macro
-		private Integer maxIter;
+		public Integer maxIter;
 
 		@Description("The convergence tolerance of the algorithm. Default value: 1e-4.")
-		@Nullable
 		@Macro
-		private Double tolerance;
+		public Double tolerance;
 
 		@Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value: 2.")
-		@Nullable
 		@Macro
-		private Integer initSteps;
+		public Integer initSteps;
 
 		@Description("The initialization mode of the algorithm. This can be either 'random' to choose random "
 				+ "random points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value: 'parallel'.")
 		@Nullable
-		@Macro
-		private String initMode;
+		public String initMode;
 
 		public KMeansConfig() {
 
@@ -172,7 +168,7 @@ public class KMeansSink extends ClusterSink {
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 			params.put("k", k);
 			params.put("maxIter", maxIter);
 
@@ -200,6 +196,7 @@ public class KMeansSink extends ClusterSink {
 				throw new IllegalArgumentException(String
 						.format("[%s] The number of initial steps must be greater than 0.", this.getClass().getName()));
 			}
+			assert initMode != null;
 			if (!(initMode.equals("random") || initMode.equals("parallel"))) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The initialization mode must be either 'parallel' or 'random'.",

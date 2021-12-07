@@ -1,6 +1,6 @@
 package de.kp.works.ml.clustering;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class GaussianMixtureSink extends ClusterSink {
 
 	private static final long serialVersionUID = -8171201794590284739L;
 
-	private GaussianMixtureConfig config;
+	private final GaussianMixtureConfig config;
 	
 	public GaussianMixtureSink(GaussianMixtureConfig config) {
 		this.config = config;
@@ -135,7 +135,7 @@ public class GaussianMixtureSink extends ClusterSink {
 		
 	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 100")
 	    @Macro
-	    private Integer maxIter;
+	    public Integer maxIter;
 
 		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
 				+ "of more iterations. Default is 0.01.")
@@ -144,16 +144,17 @@ public class GaussianMixtureSink extends ClusterSink {
 		
 		public GaussianMixtureConfig() {
 	    	
-    			modelStage = "experiment";
+			modelStage = "experiment";
     			
 			k = 2;
 			maxIter = 100;
+
 			tol = 0.01;
 		}
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 			params.put("k", k);
 			params.put("maxIter", maxIter);
 			params.put("tol", tol);

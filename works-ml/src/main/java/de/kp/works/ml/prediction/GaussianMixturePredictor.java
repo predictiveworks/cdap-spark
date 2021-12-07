@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -50,7 +50,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 2048099898896242709L;
 
-	private GaussianMixturePredictorConfig config;
+	private final GaussianMixturePredictorConfig config;
 	private GaussianMixtureModel model;
 
 	public GaussianMixturePredictor(GaussianMixturePredictorConfig config) {
@@ -106,6 +106,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 
 	public Schema getOutputSchema(Schema inputSchema, String predictionField, String probabilityField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
@@ -143,8 +144,9 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		 */
 		String vectorCol = "_vector";
 		/*
-		 * Prepare provided dataset by vectorizing the feature column which is specified
-		 * as Array[Numeric]
+		 * Prepare provided dataset by vectorizing the feature column which
+		 * is specified as Array[Numeric]; this adds a _vector column to the
+		 * dataset.
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
 
@@ -152,8 +154,16 @@ public class GaussianMixturePredictor extends PredictorCompute {
 		model.setPredictionCol(predictionCol);
 
 		model.setProbabilityCol("_probability");
-		Dataset<Row> predictions = MLUtils.devectorize(model.transform(vectorset), "_probability", probabilityCol);
-
+		/*
+		 * The probability column is a vector and must be transformed into
+		 * an Array[Numeric]
+		 */
+		Dataset<Row> predictions = MLUtils.devectorize(
+				model.transform(vectorset), "_probability", probabilityCol);
+		/*
+		 * Remove intermediate vector column from predictions
+		 * and annotate each prediction with the model profile
+		 */
 		Dataset<Row> output = predictions.drop(vectorCol);
 		return annotate(output, CLUSTER_TYPE);
 

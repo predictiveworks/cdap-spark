@@ -35,7 +35,9 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("KMeansVisor")
@@ -45,11 +47,9 @@ public class KMeansVisor extends VisualSink {
     private KMeansModel model;
     private KMeansRecorder recorder;
 
-    private final String algoName = Algorithms.KMEANS;
-    private final String reducer = "PCA";
-
     public KMeansVisor(VisualConfig config) {
         super(config);
+        this.algoName = Algorithms.KMEANS;
     }
 
     @Override
@@ -81,7 +81,10 @@ public class KMeansVisor extends VisualSink {
         String featuresCol = config.featuresCol;
         String predictionCol = config.predictionCol;
 
-        Dataset<Row> projected = Projector.execute(source, featuresCol, predictionCol);
+        List<String> otherCols = new ArrayList<>();
+        otherCols.add(predictionCol);
+
+        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
         /*
          * The projected dataset is a 3-column dataset, x, y, prediction.
          * This dataset is saved as *.parquet file in a local or distributed
@@ -99,15 +102,6 @@ public class KMeansVisor extends VisualSink {
             publisher.publish(algoName, reducer, filePath);
 
         }
-
-    }
-
-    private String buildFilePath() {
-
-        long ts = new Date().getTime();
-        String fsPath = algoName + "/" + ts + "/" + config.modelName + ".parquet";
-
-        return config.folderPath + "/" + fsPath;
 
     }
 }

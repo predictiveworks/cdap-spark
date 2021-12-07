@@ -1,6 +1,6 @@
 package de.kp.works.ml.clustering;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -56,7 +56,7 @@ public class BisectingKMeansSink extends ClusterSink {
 	 */
 	private static final long serialVersionUID = 7306065544750480510L;
 
-	private BisectingKMeansConfig config;
+	private final BisectingKMeansConfig config;
 	
 	public BisectingKMeansSink(BisectingKMeansConfig config) {
 		this.config = config;
@@ -113,7 +113,7 @@ public class BisectingKMeansSink extends ClusterSink {
 
 		Dataset<Row> predictions = model.transform(vectorset);
 		/*
-		 * The Clustering evaluator computes the silhouette coefficent of the computed
+		 * The Clustering evaluator computes the silhouette coefficient of the computed
 		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
 	    String modelMetrics = Evaluator.evaluate(predictions, vectorCol, predictionCol);
@@ -148,7 +148,7 @@ public class BisectingKMeansSink extends ClusterSink {
 		
 	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
 	    @Macro
-	    private Integer maxIter;
+	    public Integer maxIter;
 
 	    public BisectingKMeansConfig() {
 	    	
@@ -162,7 +162,7 @@ public class BisectingKMeansSink extends ClusterSink {
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 			params.put("k", k);
 			params.put("maxIter", maxIter);
 

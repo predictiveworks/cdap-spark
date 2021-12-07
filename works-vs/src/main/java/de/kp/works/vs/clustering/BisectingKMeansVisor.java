@@ -18,7 +18,11 @@ package de.kp.works.vs.clustering;
  *
  */
 
+import com.google.common.base.Strings;
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.clustering.BisectingKMeansRecorder;
+import de.kp.works.vs.Projector;
+import de.kp.works.vs.Publisher;
 import de.kp.works.vs.VisualSink;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.annotation.Description;
@@ -29,6 +33,11 @@ import io.cdap.cdap.etl.api.batch.SparkSink;
 import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("BisectingKMeansVisor")
@@ -40,6 +49,8 @@ public class BisectingKMeansVisor extends VisualSink {
 
     public BisectingKMeansVisor(VisualConfig config) {
         super(config);
+
+        this.algoName = Algorithms.BISECTING_KMEANS;
     }
 
     @Override
@@ -57,6 +68,42 @@ public class BisectingKMeansVisor extends VisualSink {
                                 this.getClass().getName(), config.modelName));
 
         }
+        /*
+         * This stage is intended to run after the Bisecting KMeans
+         * Predictor stage. This ensures that the data sources contains
+         * features and a prediction column.
+         *
+         * The following visualization use cases are supported:
+         *
+         * - The cartesian (2D) visualization of the features is
+         *   supported, and the respective cluster (number) is used
+         *   to assign different colors.
+         */
+        String featuresCol = config.featuresCol;
+        String predictionCol = config.predictionCol;
+
+        List<String> otherCols = new ArrayList<>();
+        otherCols.add(predictionCol);
+
+        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
+        /*
+         * The projected dataset is a 3-column dataset, x, y, prediction.
+         * This dataset is saved as *.parquet file in a local or distributed
+         * file system.
+         *
+         * This file system is shared with PredictiveWorks. visualization
+         * server that transforms the parquet file into an image.
+         */
+        String filePath = buildFilePath();
+        projected.write().mode(SaveMode.Overwrite).parquet(filePath);
+
+        if (!Strings.isNullOrEmpty(config.serverUrl)) {
+
+            Publisher publisher = new Publisher(config);
+            publisher.publish(algoName, reducer, filePath);
+
+        }
+
     }
 
 }

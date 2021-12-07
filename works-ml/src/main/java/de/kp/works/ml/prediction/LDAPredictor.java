@@ -142,9 +142,9 @@ public class LDAPredictor extends PredictorCompute {
 		/*
 		 * The output column with estimates of the topic mixture distribution for each document
 		 * (often called "theta" in the literature) is set internally to 'topicDistribution'
-		 *
-		 */		
-		Dataset<Row> predictions = MLUtils.devectorize(model.transform(vectorset), vectorCol, predictionCol);
+		 */
+		Dataset<Row> predictions = MLUtils.devectorize(
+				model.transform(vectorset), "topicDistribution", predictionCol);
 		/*
 		 * Remove intermediate vector column from predictions
 		 * and annotate each prediction with the model profile

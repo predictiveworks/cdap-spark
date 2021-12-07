@@ -20,14 +20,18 @@ package de.kp.works.vs
  */
 
 import de.kp.works.core.recording.MLUtils
+import java.util.{List => JList}
+
 import org.apache.spark.ml.feature.PCA
 import org.apache.spark.ml.linalg.DenseVector
 import org.apache.spark.sql.functions.{col, udf}
 import org.apache.spark.sql.{Dataset, Row}
 
+import scala.collection.JavaConversions._
+
 object Projector {
 
-  def execute(source:Dataset[Row], featuresCol:String, predictionCol:String):Dataset[Row] = {
+  def execute(source:Dataset[Row], featuresCol:String, otherCols:JList[String]):Dataset[Row] = {
 
     val vectorCol = "_vector"
     /*
@@ -38,7 +42,8 @@ object Projector {
     /*
      * Restrict to columns that are required for visualization
      */
-    val prepareset = vectorset.select(featuresCol, predictionCol)
+    val selectCols = (Seq(featuresCol) ++ otherCols).map(col)
+    val prepareset = vectorset.select(selectCols: _*)
     /*
      * Train PCA model and apply projection to prepared dataset
      */
@@ -52,7 +57,7 @@ object Projector {
 
     val projected = model
       .transform(prepareset)
-      .select(projectedCol, predictionCol)
+      .select(selectCols: _*)
 
     val decompose_udf = udf((vector:DenseVector) => {
         val point = vector.toArray

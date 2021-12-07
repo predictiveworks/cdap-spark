@@ -1,6 +1,6 @@
 package de.kp.works.ml.clustering;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -53,7 +53,7 @@ public class LDASink extends ClusterSink {
 
 	private static final long serialVersionUID = 7607102103139502481L;
 
-	private LDAConfig config;
+	private final LDAConfig config;
 
 	public LDASink(LDAConfig config) {
 		this.config = config;
@@ -115,7 +115,7 @@ public class LDASink extends ClusterSink {
 		Double perplexity = model.logPerplexity(testset);
 		Double likelihood = model.logLikelihood(testset);
 		/*
-		 * The perplexity & likelihood coefficent is specified as intrinsic 
+		 * The perplexity & likelihood coefficient is specified as intrinsic
 		 * JSON metrics for this LDA model and stored by the LDAManager
 		 */
 		Map<String, Object> metrics = new HashMap<>();
@@ -157,11 +157,11 @@ public class LDASink extends ClusterSink {
 		
 	    @Description("The number of topics that have to be created. Default is 10.")
 	    @Macro
-	    private Integer k;
+	    public Integer k;
 		
 	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
 	    @Macro
-	    private Integer maxIter;
+	    public Integer maxIter;
 	    
 	    LDAConfig() {
 
@@ -177,7 +177,7 @@ public class LDASink extends ClusterSink {
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 
 			params.put("k", k);
 			params.put("maxIter", maxIter);
@@ -197,7 +197,7 @@ public class LDASink extends ClusterSink {
 			splits.add(x);
 			splits.add(y);
 
-			Double[] array = splits.toArray(new Double[splits.size()]);
+			Double[] array = splits.toArray(new Double[0]);
 			return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 		}

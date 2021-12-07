@@ -18,6 +18,7 @@ package de.kp.works.vs;
  *
  */
 
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.SessionHelper;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.data.format.StructuredRecord;
@@ -35,9 +36,14 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
+import java.util.Date;
+
 abstract public class VisualSink extends SparkSink<StructuredRecord> {
 
+    protected String algoName;
     protected Schema inputSchema;
+
+    protected String reducer = "PCA";
     protected final VisualConfig config;
     /*
      * This class is a CDAP wrapper for the Scala [Visualizer]
@@ -93,6 +99,15 @@ abstract public class VisualSink extends SparkSink<StructuredRecord> {
     }
 
     public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+    }
+
+    protected String buildFilePath() {
+
+        long ts = new Date().getTime();
+        String fsPath = algoName + "/" + ts + "/" + config.modelName + ".parquet";
+
+        return config.folderPath + "/" + fsPath;
+
     }
 
 }

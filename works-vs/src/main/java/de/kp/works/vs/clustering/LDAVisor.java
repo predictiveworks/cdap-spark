@@ -18,7 +18,9 @@ package de.kp.works.vs.clustering;
  *
  */
 
+import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.clustering.LDARecorder;
+import de.kp.works.vs.Projector;
 import de.kp.works.vs.VisualSink;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.annotation.Description;
@@ -30,6 +32,9 @@ import org.apache.spark.ml.clustering.LDAModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDAVisor")
 @Description("An Apache Spark ML based visualization plugin for Latent Dirichlet clustering.")
@@ -40,6 +45,7 @@ public class LDAVisor extends VisualSink {
 
     public LDAVisor(VisualConfig config) {
         super(config);
+        this.algoName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
     }
 
     @Override
@@ -57,6 +63,25 @@ public class LDAVisor extends VisualSink {
                         this.getClass().getName(), config.modelName));
 
         }
+        /*
+         * This stage is intended to run after the Latent Dirichlet
+         * Predictor stage. This ensures that the data sources contains
+         * features and a prediction column.
+         *
+         * The following visualization use cases are supported:
+         *
+         * - The cartesian (2D) visualization of the features is
+         *   supported, and the respective cluster (number) is used
+         *   to assign different colors.
+         */
+        String featuresCol = config.featuresCol;
+        String predictionCol = config.predictionCol;
+
+        List<String> otherCols = new ArrayList<>();
+        otherCols.add(predictionCol);
+
+        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
+
     }
 
 }
