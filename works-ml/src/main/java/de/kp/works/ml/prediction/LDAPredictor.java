@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -35,9 +35,9 @@ import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.predictor.PredictorCompute;
-import de.kp.works.core.cluster.LDARecorder;
+import de.kp.works.core.recording.clustering.LDARecorder;
 import de.kp.works.core.cluster.PredictorConfig;
-import de.kp.works.core.ml.MLUtils;
+import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDAPredictor")
@@ -46,7 +46,7 @@ public class LDAPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 1979301843408604941L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 	private LDAModel model;
 
 	public LDAPredictor(PredictorConfig config) {
@@ -106,6 +106,7 @@ public class LDAPredictor extends PredictorCompute {
 	@Override
 	public Schema getOutputSchema(Schema inputSchema, String predictionField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(predictionField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));

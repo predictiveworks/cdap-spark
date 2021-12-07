@@ -45,10 +45,7 @@ public class BaseConfig extends PluginConfig {
 	public String referenceName;
     
 	public Map<String, Object> getParamsAsMap() {
-		
-		Map<String, Object> params = new HashMap<>();
-		return params;
-
+		return new HashMap<>();
 	}
 	
 	public String getParamsAsJSON() {
@@ -69,13 +66,13 @@ public class BaseConfig extends PluginConfig {
 		splits.add(x);
 		splits.add(y);
 
-		Double[] array = splits.toArray(new Double[splits.size()]);
+		Double[] array = splits.toArray(new Double[0]);
 		return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 	}
 	
 	public Boolean toBoolean(String value) {
-		return value.equals("true") ? true : false;
+		return value.equals("true");
 	}
 
 	public void validate() {

@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
 
-import de.kp.works.core.ml.clustering.KMeansRecorder;
+import de.kp.works.core.recording.clustering.KMeansRecorder;
 import org.apache.spark.ml.clustering.KMeansModel;
 
 import org.apache.spark.sql.Dataset;

@@ -42,7 +42,7 @@ import io.cdap.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.cluster.ClusterConfig;
 import de.kp.works.core.cluster.ClusterSink;
-import de.kp.works.core.cluster.LDARecorder;
+import de.kp.works.core.recording.clustering.LDARecorder;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDASink")

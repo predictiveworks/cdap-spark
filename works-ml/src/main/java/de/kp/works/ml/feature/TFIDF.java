@@ -34,7 +34,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.feature.FeatureConfig;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureCompute;
-import de.kp.works.core.ml.MLUtils;
+import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TFIDF")

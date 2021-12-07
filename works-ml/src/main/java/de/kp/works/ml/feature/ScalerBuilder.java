@@ -47,7 +47,7 @@ import io.cdap.cdap.etl.api.batch.SparkSink;
 import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.feature.FeatureModelConfig;
 import de.kp.works.core.feature.FeatureSink;
-import de.kp.works.core.ml.MLUtils;
+import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ScalerBuilder")

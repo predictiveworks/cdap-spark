@@ -32,7 +32,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.BaseSink;
 import de.kp.works.core.SessionHelper;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.recording.SparkMLManager;
 
 public class RegressorSink extends BaseSink {
 

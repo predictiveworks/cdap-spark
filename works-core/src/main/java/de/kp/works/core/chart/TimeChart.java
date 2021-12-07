@@ -39,7 +39,7 @@ import de.kp.works.core.BaseConfig;
 import de.kp.works.core.Names;
 import de.kp.works.core.Params;
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.ml.sampling.LTTBuckets;
+import de.kp.works.core.recording.sampling.LTTBuckets;
 /*
  * This class is intended to be used as a base sink for plotting purposes;
  * it writes records to a Table with one record field mapping to the Table 

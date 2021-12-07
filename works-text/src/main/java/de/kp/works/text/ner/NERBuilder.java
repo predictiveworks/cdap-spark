@@ -21,7 +21,7 @@ import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.text.TextSink;
 import de.kp.works.text.embeddings.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;

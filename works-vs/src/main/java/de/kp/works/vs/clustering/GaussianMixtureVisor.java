@@ -18,7 +18,7 @@ package de.kp.works.vs.clustering;
  *
  */
 
-import de.kp.works.core.ml.clustering.GaussianMixtureRecorder;
+import de.kp.works.core.recording.clustering.GaussianMixtureRecorder;
 import de.kp.works.vs.VisualSink;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.annotation.Description;

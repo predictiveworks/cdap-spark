@@ -33,8 +33,8 @@ import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
-import de.kp.works.core.ml.MLUtils;
-import de.kp.works.core.ml.classification.DTCRecorder;
+import de.kp.works.core.recording.MLUtils;
+import de.kp.works.core.recording.classification.DTCRecorder;
 import de.kp.works.ml.regression.DTRRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)

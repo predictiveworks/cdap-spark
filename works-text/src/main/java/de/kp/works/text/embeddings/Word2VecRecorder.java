@@ -26,8 +26,8 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.SparkMLManager;
-import de.kp.works.core.ml.TextRecorder;
+import de.kp.works.core.recording.SparkMLManager;
+import de.kp.works.core.recording.TextRecorder;
 
 import de.kp.works.text.embeddings.Word2VecModel;
 

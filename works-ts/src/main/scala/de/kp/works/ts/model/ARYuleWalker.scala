@@ -19,7 +19,7 @@ package de.kp.works.ts.model
  */
 
 import com.suning.spark.ts.{ARYuleWalker => SuningARYuleWalker}
-import de.kp.works.core.ml.RegressorEvaluator
+import de.kp.works.core.recording.RegressorEvaluator
 import org.apache.hadoop.fs.Path
 import org.apache.spark.ml._
 import org.apache.spark.ml.linalg.Vector

@@ -4,13 +4,18 @@
 "display-name": "KMeans Predictor",
  "configuration-groups": [
     {
-      "label": "Basic Configuration",
+      "label": "Plugin Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Reference Name",
           "name": "referenceName"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Model Name",
@@ -23,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -41,18 +46,23 @@
             ],
             "default": "latest"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Features Field",
-          "name": "featuresCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Prediction Field",
-          "name": "predictionCol"
         }
       ]
-    }
+   },
+   {
+     "label": "Data Configuration",
+     "properties": [
+       {
+         "widget-type": "textbox",
+         "label": "Features Field",
+         "name": "featuresCol"
+       },
+       {
+         "widget-type": "textbox",
+         "label": "Prediction Field",
+         "name": "predictionCol"
+       }
+     ]
+   }
   ]
 }

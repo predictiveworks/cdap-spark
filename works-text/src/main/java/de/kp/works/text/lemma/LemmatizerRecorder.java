@@ -27,8 +27,8 @@ import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.SparkMLManager;
-import de.kp.works.core.ml.TextRecorder;
+import de.kp.works.core.recording.SparkMLManager;
+import de.kp.works.core.recording.TextRecorder;
 
 public class LemmatizerRecorder extends TextRecorder {
 

@@ -27,8 +27,8 @@ import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.ml.regression.RegressorRecorder;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.recording.regression.RegressorRecorder;
+import de.kp.works.core.recording.SparkMLManager;
 
 public class DTRRecorder extends RegressorRecorder {
 

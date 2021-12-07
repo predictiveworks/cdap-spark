@@ -42,7 +42,7 @@ import io.cdap.cdap.etl.api.batch.SparkSink;
 import de.kp.works.core.regressor.RFRRecorder;
 import de.kp.works.core.regressor.RegressorSink;
 import de.kp.works.core.time.TimeConfig;
-import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.recording.RegressorEvaluator;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TsRegressor")

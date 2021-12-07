@@ -39,7 +39,7 @@ import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Params;
-import de.kp.works.core.cluster.LDARecorder;
+import de.kp.works.core.recording.clustering.LDARecorder;
 import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.embeddings.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;

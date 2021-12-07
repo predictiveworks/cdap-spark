@@ -20,7 +20,7 @@ package de.kp.works.ml.classification;
 
 import java.util.Map;
 
-import de.kp.works.core.ml.classification.DTCRecorder;
+import de.kp.works.core.recording.classification.DTCRecorder;
 import org.apache.spark.ml.classification.DecisionTreeClassificationModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

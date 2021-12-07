@@ -21,7 +21,7 @@ package de.kp.works.ml.regression
 import org.apache.spark.sql._
 import org.apache.spark.sql.functions._
 
-import de.kp.works.core.ml.MLUtils
+import de.kp.works.core.recording.MLUtils
 
 trait RegressorTrainer {
   /*

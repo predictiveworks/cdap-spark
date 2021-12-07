@@ -1,0 +1,161 @@
+{
+  "metadata": {"spec-version": "1.5"},
+
+  "display-name": "KMeans Visor",
+  "configuration-groups": [
+    {
+      "label": "Plugin Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Reference Name",
+          "name": "referenceName"
+        }
+      ]
+    },
+    {
+      "label": "Model Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Model Stage",
+          "name": "modelStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "staging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
+        },
+        {
+          "widget-type": "select",
+          "label": "Model Variant",
+          "name": "modelOption",
+          "widget-attributes": {
+            "values": [
+              "best",
+              "latest"
+            ],
+            "default": "latest"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Features Field",
+          "name": "featuresCol"
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Prediction Field",
+          "name": "predictionCol"
+        }
+      ]
+    },
+    {
+     "label": "File Configuration",
+     "properties": [
+       {
+         "widget-type": "textbox",
+         "label": "Folder Path",
+         "name": "folderPath"
+       }
+     ]
+   },
+   {
+     "label": "Endpoint Configuration",
+     "properties": [
+       {
+         "widget-type": "textbox",
+         "label": "Endpoint",
+         "name": "serverUrl"
+       }
+     ]
+   },
+   {
+     "label": "SSL Security",
+     "properties": [
+       {
+         "widget-type": "textbox",
+         "label": "Keystore Path",
+         "name": "sslKeyStorePath"
+       },
+       {
+         "widget-type": "select",
+         "label": "Keystore Type",
+         "name": "sslKeyStoreType",
+         "widget-attributes": {
+           "values": [
+             "JKS",
+             "JCEKS",
+             "PKCS12"
+           ],
+           "default": "JKS"
+         }
+       },
+       {
+         "widget-type": "textbox",
+         "label": "Keystore Algo",
+         "name": "sslKeyStoreAlgo"
+       },
+       {
+         "widget-type": "password",
+         "label": "Keystore Pass",
+         "name": "sslKeyStorePass"
+       },
+       {
+         "widget-type": "textbox",
+         "label": "Truststore Path",
+         "name": "sslTrustStorePath"
+       },
+       {
+         "widget-type": "select",
+         "label": "Truststore Type",
+         "name": "sslTrustStoreType",
+         "widget-attributes": {
+           "values": [
+             "JKS",
+             "JCEKS",
+             "PKCS12"
+           ],
+           "default": "JKS"
+         }
+       },
+       {
+         "widget-type": "textbox",
+         "label": "Truststore Algo",
+         "name": "sslTrustStoreAlgo"
+       },
+       {
+         "widget-type": "password",
+         "label": "Truststore Pass",
+         "name": "sslTrustStorePass"
+       },
+       {
+         "widget-type": "select",
+         "label": "Verify SSL",
+         "name": "sslVerify",
+         "widget-attributes": {
+           "values": [
+             "true",
+             "false"
+           ],
+           "default": "false"
+         }
+       }
+     ]
+   }
+ ]
+}

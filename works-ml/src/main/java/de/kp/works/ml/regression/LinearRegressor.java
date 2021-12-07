@@ -33,7 +33,7 @@ import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.ml.RegressorEvaluator;
+import de.kp.works.core.recording.RegressorEvaluator;
 import io.cdap.cdap.etl.api.batch.SparkSink;
 
 import de.kp.works.core.regressor.RegressorConfig;

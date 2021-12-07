@@ -19,7 +19,7 @@ package de.kp.works.ts.ma;
  */
 
 import io.cdap.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.ml.SparkMLManager;
+import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.time.TimeSink;
 
 public class MASink extends TimeSink {

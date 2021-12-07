@@ -38,7 +38,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimeConfig;
-import de.kp.works.core.ml.MLUtils;
+import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsLabelize")
