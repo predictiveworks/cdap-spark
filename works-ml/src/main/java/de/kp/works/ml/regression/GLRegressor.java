@@ -21,6 +21,7 @@ package de.kp.works.ml.regression;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.recording.regression.GLRecorder;
 import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

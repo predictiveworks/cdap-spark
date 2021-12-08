@@ -12,6 +12,7 @@ clustering model. It expects a dataset with at least one feature field as an arr
 to train the model.
 
 ## Configuration
+**Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
 
 ### Model Configuration
 

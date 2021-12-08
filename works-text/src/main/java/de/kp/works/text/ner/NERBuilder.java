@@ -62,7 +62,7 @@ public class NERBuilder extends TextSink {
 		 * as well as a Table; at this stage, we have to make sure that these internal
 		 * metadata structures are present
 		 */
-		SparkMLManager.createTextanalysisIfNotExists(context);
+		SparkMLManager.createTextAnalysisIfNotExists(context);
 
 		/*
 		 * Word2Vec models do not have any metrics, i.e. there

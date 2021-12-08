@@ -1,6 +1,6 @@
 package de.kp.works.ml.regression;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,7 @@ package de.kp.works.ml.regression;
 
 import java.util.Map;
 
+import de.kp.works.core.recording.regression.GBRRecorder;
 import org.apache.spark.ml.regression.GBTRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -46,7 +47,7 @@ public class GBTRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -8027323270352311072L;
 	
-	private GBTConfig config;
+	private final GBTConfig config;
 	
 	public GBTRegressor(GBTConfig config) {
 		this.config = config;

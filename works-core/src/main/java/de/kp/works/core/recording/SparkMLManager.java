@@ -1,16 +1,22 @@
 package de.kp.works.core.recording;
+
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
- * This software is the confidential and proprietary information of 
- * Dr. Krusche & Partner PartG ("Confidential Information"). 
- * 
- * You shall not disclose such Confidential Information and shall use 
- * it only in accordance with the terms of the license agreement you 
- * entered into with Dr. Krusche & Partner PartG.
- * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
- * 
+ *
  */
 
 import java.util.ArrayList;
@@ -158,45 +164,35 @@ public class SparkMLManager {
 
 	/***** CLASSIFICATION *****/
 
-	public static FileSet getClassificationFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getClassificationFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(CLASSIFICATION_FS) == false)
+		if (!context.datasetExists(CLASSIFICATION_FS))
 			throw new Exception("Fileset to store classification model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(CLASSIFICATION_FS);
-		return fs;
+		return context.getDataset(CLASSIFICATION_FS);
 
 	}
 
-	public static FileSet getClassificationFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(CLASSIFICATION_FS);
-		return fs;
-
+	public static FileSet getClassificationFS(SparkExecutionPluginContext context) {
+		return context.getDataset(CLASSIFICATION_FS);
 	}
 
-	public static Table getClassificationTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getClassificationTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(CLASSIFICATION_TABLE) == false)
+		if (!context.datasetExists(CLASSIFICATION_TABLE))
 			throw new Exception("Table to store classification model metadata does not exist.");
 
-		Table table = context.getDataset(CLASSIFICATION_TABLE);
-		return table;
+		return context.getDataset(CLASSIFICATION_TABLE);
 
 	}
 
-	public static Table getClassificationTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(CLASSIFICATION_TABLE);
-		return table;
-
+	public static Table getClassificationTable(SparkExecutionPluginContext context) {
+		return context.getDataset(CLASSIFICATION_TABLE);
 	}
 
 	public static void createClassificationIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(CLASSIFICATION_FS) == false) {
+		if (!context.datasetExists(CLASSIFICATION_FS)) {
 			/*
 			 * The classification fileset does not exist yet; this path is relative to the
 			 * data directory of the CDAP namespace in which the FileSet is created.
@@ -208,7 +204,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(CLASSIFICATION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(CLASSIFICATION_TABLE) == false) {
+		if (!context.datasetExists(CLASSIFICATION_TABLE)) {
 			/*
 			 * This is the first time, that we train a classification model; therefore, the
 			 * associated metadata dataset has to be created
@@ -231,45 +227,35 @@ public class SparkMLManager {
 
 	/***** CLUSTERING *****/
 
-	public static FileSet getClusteringFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getClusteringFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(CLUSTERING_FS) == false)
+		if (!context.datasetExists(CLUSTERING_FS))
 			throw new Exception("Fileset to store clustering model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(CLUSTERING_FS);
-		return fs;
+		return context.getDataset(CLUSTERING_FS);
 
 	}
 
-	public static FileSet getClusteringFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(CLUSTERING_FS);
-		return fs;
-
+	public static FileSet getClusteringFS(SparkExecutionPluginContext context) {
+		return context.getDataset(CLUSTERING_FS);
 	}
 
-	public static Table getClusteringTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getClusteringTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(CLUSTERING_TABLE) == false)
+		if (!context.datasetExists(CLUSTERING_TABLE))
 			throw new Exception("Table to store clustering model metadata does not exist.");
 
-		Table table = context.getDataset(CLUSTERING_TABLE);
-		return table;
+		return context.getDataset(CLUSTERING_TABLE);
 
 	}
 
-	public static Table getClusteringTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(CLUSTERING_TABLE);
-		return table;
-
+	public static Table getClusteringTable(SparkExecutionPluginContext context) {
+		return context.getDataset(CLUSTERING_TABLE);
 	}
 
 	public static void createClusteringIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(CLUSTERING_FS) == false) {
+		if (!context.datasetExists(CLUSTERING_FS)) {
 			/*
 			 * The clustering fileset does not exist yet; this path is relative to the data
 			 * directory of the CDAP namespace in which the FileSet is created.
@@ -281,7 +267,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(CLUSTERING_FS_BASE).build());
 		}
 
-		if (context.datasetExists(CLUSTERING_TABLE) == false) {
+		if (!context.datasetExists(CLUSTERING_TABLE)) {
 			/*
 			 * This is the first time, that we train a clustering model; therefore, the
 			 * associated metadata dataset has to be created
@@ -304,45 +290,38 @@ public class SparkMLManager {
 
 	/***** FEATURES *****/
 
-	public static FileSet getFeatureFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getFeatureFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(FEATURE_FS) == false)
+		if (!context.datasetExists(FEATURE_FS))
 			throw new Exception("Fileset to store feature model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(FEATURE_FS);
-		return fs;
+		return context.getDataset(FEATURE_FS);
 
 	}
 
-	public static FileSet getFeatureFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(FEATURE_FS);
-		return fs;
-
+	public static FileSet getFeatureFS(SparkExecutionPluginContext context) throws Exception {
+		return context.getDataset(FEATURE_FS);
 	}
 
-	public static Table getFeatureTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getFeatureTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(FEATURE_TABLE) == false)
+		if (!context.datasetExists(FEATURE_TABLE))
 			throw new Exception("Table to store feature model metadata does not exist.");
 
-		Table table = context.getDataset(FEATURE_TABLE);
-		return table;
+		return context.getDataset(FEATURE_TABLE);
 
 	}
 
 	public static Table getFeatureTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
+			throws Exception {
 
-		Table table = context.getDataset(FEATURE_TABLE);
-		return table;
+		return context.getDataset(FEATURE_TABLE);
 
 	}
 
 	public static void createFeatureIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(FEATURE_FS) == false) {
+		if (!context.datasetExists(FEATURE_FS)) {
 			/*
 			 * The feature fileset does not exist yet; this path is relative to the data
 			 * directory of the CDAP namespace in which the FileSet is created.
@@ -354,7 +333,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(FEATURE_FS_BASE).build());
 		}
 
-		if (context.datasetExists(FEATURE_TABLE) == false) {
+		if (!context.datasetExists(FEATURE_TABLE)) {
 			/*
 			 * This is the first time, that we train a feature model; therefore, the
 			 * associated metadata dataset has to be created
@@ -377,45 +356,35 @@ public class SparkMLManager {
 
 	/***** RECOMMENDATION *****/
 
-	public static FileSet getRecommendationFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getRecommendationFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(RECOMMENDATION_FS) == false)
+		if (!context.datasetExists(RECOMMENDATION_FS))
 			throw new Exception("Fileset to store recommendation model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(RECOMMENDATION_FS);
-		return fs;
+		return context.getDataset(RECOMMENDATION_FS);
 
 	}
 
-	public static FileSet getRecommendationFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(RECOMMENDATION_FS);
-		return fs;
-
+	public static FileSet getRecommendationFS(SparkExecutionPluginContext context) {
+		return context.getDataset(RECOMMENDATION_FS);
 	}
 
-	public static Table getRecommendationTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getRecommendationTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(RECOMMENDATION_TABLE) == false)
+		if (!context.datasetExists(RECOMMENDATION_TABLE))
 			throw new Exception("Table to store recommendation model metadata does not exist.");
 
-		Table table = context.getDataset(RECOMMENDATION_TABLE);
-		return table;
+		return context.getDataset(RECOMMENDATION_TABLE);
 
 	}
 
-	public static Table getRecommendationTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(RECOMMENDATION_TABLE);
-		return table;
-
+	public static Table getRecommendationTable(SparkExecutionPluginContext context) {
+		return context.getDataset(RECOMMENDATION_TABLE);
 	}
 
 	public static void createRecommendationIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(RECOMMENDATION_FS) == false) {
+		if (!context.datasetExists(RECOMMENDATION_FS)) {
 			/*
 			 * The recommendation fileset does not exist yet; this path is relative to the
 			 * data directory of the CDAP namespace in which the FileSet is created.
@@ -427,7 +396,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(RECOMMENDATION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(RECOMMENDATION_TABLE) == false) {
+		if (!context.datasetExists(RECOMMENDATION_TABLE)) {
 			/*
 			 * This is the first time, that we train a recommendation model; therefore, the
 			 * associated metadata dataset has to be created: note, the (current) ALS model
@@ -451,45 +420,35 @@ public class SparkMLManager {
 
 	/***** REGRESSION *****/
 
-	public static FileSet getRegressionFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getRegressionFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(REGRESSION_FS) == false)
+		if (!context.datasetExists(REGRESSION_FS))
 			throw new Exception("Fileset to store regression model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(REGRESSION_FS);
-		return fs;
+		return context.getDataset(REGRESSION_FS);
 
 	}
 
-	public static FileSet getRegressionFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(REGRESSION_FS);
-		return fs;
-
+	public static FileSet getRegressionFS(SparkExecutionPluginContext context) {
+		return context.getDataset(REGRESSION_FS);
 	}
 
-	public static Table getRegressionTabl(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getRegressionTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(REGRESSION_TABLE) == false)
+		if (!context.datasetExists(REGRESSION_TABLE))
 			throw new Exception("Table to store regression model metadata does not exist.");
 
-		Table table = context.getDataset(REGRESSION_TABLE);
-		return table;
+		return context.getDataset(REGRESSION_TABLE);
 
 	}
 
-	public static Table getRegressionTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(REGRESSION_TABLE);
-		return table;
-
+	public static Table getRegressionTable(SparkExecutionPluginContext context) {
+		return context.getDataset(REGRESSION_TABLE);
 	}
 
 	public static void createRegressionIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(REGRESSION_FS) == false) {
+		if (!context.datasetExists(REGRESSION_FS)) {
 			/*
 			 * The regression fileset does not exist yet; this path is relative to the data
 			 * directory of the CDAP namespace in which the FileSet is created.
@@ -501,7 +460,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(REGRESSION_FS_BASE).build());
 		}
 
-		if (context.datasetExists(REGRESSION_TABLE) == false) {
+		if (!context.datasetExists(REGRESSION_TABLE)) {
 			/*
 			 * This is the first time, that we train a regression model; therefore, the
 			 * associated metadata dataset has to be created
@@ -524,45 +483,38 @@ public class SparkMLManager {
 
 	/***** TEXT ANALYSIS *****/
 
-	public static FileSet getTextFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getTextFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(TEXTANALYSIS_FS) == false)
+		if (!context.datasetExists(TEXTANALYSIS_FS))
 			throw new Exception("Fileset to store text analysis model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
-		return fs;
+		return context.getDataset(TEXTANALYSIS_FS);
 
 	}
 
 	public static FileSet getTextFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
+			throws Exception {
 
-		FileSet fs = context.getDataset(TEXTANALYSIS_FS);
-		return fs;
+		return context.getDataset(TEXTANALYSIS_FS);
 
 	}
 
-	public static Table getTextTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getTextTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(TEXTANALYSIS_TABLE) == false)
+		if (!context.datasetExists(TEXTANALYSIS_TABLE))
 			throw new Exception("Table to store text analysis model metadata does not exist.");
 
-		Table table = context.getDataset(TEXTANALYSIS_TABLE);
-		return table;
+		return context.getDataset(TEXTANALYSIS_TABLE);
 
 	}
 
-	public static Table getTextTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(TEXTANALYSIS_TABLE);
-		return table;
-
+	public static Table getTextTable(SparkExecutionPluginContext context)throws Exception {
+		return context.getDataset(TEXTANALYSIS_TABLE);
 	}
 
-	public static void createTextanalysisIfNotExists(SparkPluginContext context) throws DatasetManagementException {
+	public static void createTextAnalysisIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(TEXTANALYSIS_FS) == false) {
+		if (!context.datasetExists(TEXTANALYSIS_FS)) {
 			/*
 			 * The text analysis fileset does not exist yet; this path is relative to the data
 			 * directory of the CDAP namespace in which the FileSet is created.
@@ -574,7 +526,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(TEXTANALYSIS_FS_BASE).build());
 		}
 
-		if (context.datasetExists(TEXTANALYSIS_TABLE) == false) {
+		if (!context.datasetExists(TEXTANALYSIS_TABLE)) {
 			/*
 			 * This is the first time, that we train a text analysis model; therefore, the
 			 * associated metadata dataset has to be created
@@ -597,45 +549,35 @@ public class SparkMLManager {
 	
 	/***** TIMESERIES *****/
 
-	public static FileSet getTimeFS(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static FileSet getTimeFS(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(TIMESERIES_FS) == false)
+		if (!context.datasetExists(TIMESERIES_FS))
 			throw new Exception("Fileset to store time series model artifacts does not exist.");
 
-		FileSet fs = context.getDataset(TIMESERIES_FS);
-		return fs;
+		return context.getDataset(TIMESERIES_FS);
 
 	}
 
-	public static FileSet getTimeFS(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		FileSet fs = context.getDataset(TIMESERIES_FS);
-		return fs;
-
+	public static FileSet getTimeFS(SparkExecutionPluginContext context) {
+		return context.getDataset(TIMESERIES_FS);
 	}
 
-	public static Table getTimeTable(SparkPluginContext context) throws DatasetManagementException, Exception {
+	public static Table getTimeTable(SparkPluginContext context) throws Exception {
 
-		if (context.datasetExists(TIMESERIES_TABLE) == false)
+		if (!context.datasetExists(TIMESERIES_TABLE))
 			throw new Exception("Table to store time series model metadata does not exist.");
 
-		Table table = context.getDataset(TIMESERIES_TABLE);
-		return table;
+		return context.getDataset(TIMESERIES_TABLE);
 
 	}
 
-	public static Table getTimesTable(SparkExecutionPluginContext context)
-			throws DatasetManagementException, Exception {
-
-		Table table = context.getDataset(TIMESERIES_TABLE);
-		return table;
-
+	public static Table getTimesTable(SparkExecutionPluginContext context) {
+		return context.getDataset(TIMESERIES_TABLE);
 	}
 
 	public static void createTimeseriesIfNotExists(SparkPluginContext context) throws DatasetManagementException {
 
-		if (context.datasetExists(TIMESERIES_FS) == false) {
+		if (!context.datasetExists(TIMESERIES_FS)) {
 			/*
 			 * The timeseries fileset does not exist yet; this path is relative to the data
 			 * directory of the CDAP namespace in which the FileSet is created.
@@ -647,7 +589,7 @@ public class SparkMLManager {
 					FileSetProperties.builder().setBasePath(TIMESERIES_FS_BASE).build());
 		}
 
-		if (context.datasetExists(TIMESERIES_TABLE) == false) {
+		if (!context.datasetExists(TIMESERIES_TABLE)) {
 			/*
 			 * This is the first time, that we train a timeseries model; therefore, the
 			 * associated metadata dataset has to be created
@@ -736,19 +678,16 @@ public class SparkMLManager {
 	
 	private static Schema createCommonSchema(String name) {
 
-		List<Schema.Field> fields = new ArrayList<>();
-		/* 
+		/*
 		 * Append shared field to the common schema 
 		 */
-		fields.addAll(getSharedFields());
+		List<Schema.Field> fields = new ArrayList<>(getSharedFields());
 		/*
 		 * The metrics of a certain ML model; for common models
 		 * this is specified as a JSON object 
 		 */
 		fields.add(Schema.Field.of("metrics", Schema.of(Schema.Type.STRING)));
-
-		Schema schema = Schema.recordOf(name, fields);
-		return schema;
+		return Schema.recordOf(name, fields);
 
 	}
 	/*
@@ -759,13 +698,12 @@ public class SparkMLManager {
 	private static Schema createClassificationSchema() {
 
 		String schemaName = "classificationSchema";
-		List<Schema.Field> fields = new ArrayList<>();		
-		/* 
+		/*
 		 * Append shared field to the classification schema 
 		 */
-		fields.addAll(getSharedFields());
+		List<Schema.Field> fields = new ArrayList<>(getSharedFields());
 		/*
-		 * The calculcated metric values for this classification model; 
+		 * The calculated metric values for this classification model;
 		 * currently the following metrics are supported:
 		 * 
 	     * - accuracy
@@ -782,10 +720,9 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of(Names.WEIGHTED_PRECISION, Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of(Names.WEIGHTED_RECALL, Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of(Names.WEIGHTED_FALSE_POSITIVE, Schema.of(Schema.Type.DOUBLE)));
-		fields.add(Schema.Field.of(Names.WEIGHTED_TRUE_POSITIVE, Schema.of(Schema.Type.DOUBLE)));		
+		fields.add(Schema.Field.of(Names.WEIGHTED_TRUE_POSITIVE, Schema.of(Schema.Type.DOUBLE)));
 
-		Schema schema = Schema.recordOf(schemaName, fields);
-		return schema;
+		return Schema.recordOf(schemaName, fields);
 
 	}
 
@@ -797,13 +734,12 @@ public class SparkMLManager {
 	private static Schema createClusteringSchema() {
 
 		String schemaName = "clusteringSchema";
-		List<Schema.Field> fields = new ArrayList<>();
-		/* 
+		/*
 		 * Append shared field to the clustering schema 
 		 */
-		fields.addAll(getSharedFields());
+		List<Schema.Field> fields = new ArrayList<>(getSharedFields());
 		/*
-		 * The calculcated metric values for this clustering model; 
+		 * The calculated metric values for this clustering model;
 		 * currently the following metrics are supported:
 		 *  
 		 *  - silhouette_euclidean
@@ -817,8 +753,7 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("perplexity", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("likelihood", Schema.of(Schema.Type.DOUBLE)));
 
-		Schema schema = Schema.recordOf(schemaName, fields);
-		return schema;
+		return Schema.recordOf(schemaName, fields);
 
 	}
 
@@ -830,13 +765,12 @@ public class SparkMLManager {
 	private static Schema createRegressionSchema() {
 
 		String schemaName = "regressionSchema";
-		List<Schema.Field> fields = new ArrayList<>();
-		/* 
+		/*
 		 * Append shared field to the regression schema 
 		 */
-		fields.addAll(getSharedFields());
+		List<Schema.Field> fields = new ArrayList<>(getSharedFields());
 		/*
-		 * The calculcated metric values for this regression model; 
+		 * The calculated metric values for this regression model;
 		 * currently the following metrics are supported:
 		 *  
 		 * - root mean squared error (rsme) 
@@ -850,8 +784,7 @@ public class SparkMLManager {
 		fields.add(Schema.Field.of("mae", Schema.of(Schema.Type.DOUBLE)));
 		fields.add(Schema.Field.of("r2", Schema.of(Schema.Type.DOUBLE)));
 
-		Schema schema = Schema.recordOf(schemaName, fields);
-		return schema;
+		return Schema.recordOf(schemaName, fields);
 
 	}
 

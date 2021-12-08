@@ -37,7 +37,7 @@ public class PredictorConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Description("The stage of the ML model. Supported values are 'experiment', 'staging', 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
 	public String modelStage;
 
@@ -59,8 +59,12 @@ public class PredictorConfig extends BaseConfig {
 	public String predictionCol;
 
 	public PredictorConfig() {
+
 		modelOption = BEST_MODEL;
 		modelStage = "experiment";
+
+		modelType = "classifier";
+
 	}
 	
 	public void validate() {
@@ -70,7 +74,7 @@ public class PredictorConfig extends BaseConfig {
 					String.format("[%s] The reference name must not be empty.", this.getClass().getName()));
 		}
 
-		/** MODEL & COLUMNS **/
+		/* MODEL & COLUMNS */
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));
@@ -90,7 +94,7 @@ public class PredictorConfig extends BaseConfig {
 
 	public void validateSchema(Schema inputSchema) {
 
-		/** FEATURES COLUMN **/
+		/* FEATURES COLUMN */
 
 		Schema.Field featuresField = inputSchema.getField(featuresCol);
 		if (featuresField == null) {
@@ -99,7 +103,7 @@ public class PredictorConfig extends BaseConfig {
 							this.getClass().getName()));
 		}
 
-		/** FEATURES COLUMN **/
+		/* FEATURES COLUMN */
 		SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
 
 	}

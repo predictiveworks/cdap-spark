@@ -18,6 +18,7 @@ package de.kp.works.vs;
  *
  */
 
+import com.google.common.base.Strings;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.SessionHelper;
 import de.kp.works.vs.config.VisualConfig;
@@ -33,10 +34,13 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.StructType;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 abstract public class VisualSink extends SparkSink<StructuredRecord> {
 
@@ -99,6 +103,29 @@ abstract public class VisualSink extends SparkSink<StructuredRecord> {
     }
 
     public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+    }
+
+    protected void projectAndPublish(Dataset<Row> source, String featuresCol, List<String> otherCols) throws IOException {
+
+        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
+        /*
+         * The projected dataset is a 3-column dataset, x, y, prediction.
+         * This dataset is saved as *.parquet file in a local or distributed
+         * file system.
+         *
+         * This file system is shared with PredictiveWorks. visualization
+         * server that transforms the parquet file into an image.
+         */
+        String filePath = buildFilePath();
+        projected.write().mode(SaveMode.Overwrite).parquet(filePath);
+
+        if (!Strings.isNullOrEmpty(config.serverUrl)) {
+
+            Publisher publisher = new Publisher(config);
+            publisher.publish(algoName, reducer, filePath);
+
+        }
+
     }
 
     protected String buildFilePath() {

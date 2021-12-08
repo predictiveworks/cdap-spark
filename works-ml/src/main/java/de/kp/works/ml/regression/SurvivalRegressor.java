@@ -21,6 +21,7 @@ package de.kp.works.ml.regression;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.recording.regression.SurvivalRecorder;
 import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

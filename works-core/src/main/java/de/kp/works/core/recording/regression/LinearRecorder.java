@@ -1,7 +1,7 @@
-package de.kp.works.ml.regression;
+package de.kp.works.core.recording.regression;
 
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -19,49 +19,47 @@ package de.kp.works.ml.regression;
  * 
  */
 
-import java.util.Date;
-
-import org.apache.spark.ml.regression.DecisionTreeRegressionModel;
-
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.regression.RegressorRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import org.apache.spark.ml.regression.LinearRegressionModel;
 
-public class DTRRecorder extends RegressorRecorder {
+import java.util.Date;
 
-	public DecisionTreeRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.DECISION_TREE;
+public class LinearRecorder extends RegressorRecorder {
+
+	public LinearRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String algorithmName = Algorithms.LINEAR_REGRESSION;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the DecisionTreeRegression model
+		 * Leverage Apache Spark mechanism to read the LinearRegression model
 		 * from a model specific file set
 		 */
-		return DecisionTreeRegressionModel.load(modelPath);
+		return LinearRegressionModel.load(modelPath);
 		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			DecisionTreeRegressionModel model) throws Exception {
-		
-		String algorithmName = Algorithms.DECISION_TREE;
+			LinearRegressionModel model) throws Exception {
 
-		/***** ARTIFACTS *****/
+		String algorithmName = Algorithms.LINEAR_REGRESSION;
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/* ARTIFACTS */
+
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getRegressionFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 
@@ -73,3 +71,4 @@ public class DTRRecorder extends RegressorRecorder {
 	}
 
 }
+

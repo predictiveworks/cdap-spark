@@ -1,16 +1,21 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "LR Classifier",
- "configuration-groups": [
-    {
-      "label": "Basic Configuration",
+  "display-name": "LR Classifier",
+   "configuration-groups": [
+     {
+       "label": "Plugin Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Reference Name",
+           "name": "referenceName"
+         }
+       ]
+     },
+     {
+      "label": "Model Configuration",
       "properties": [
-        {
-          "widget-type": "textbox",
-          "label": "Reference Name",
-          "name": "referenceName"
-        },
         {
           "widget-type": "textbox",
           "label": "Model Name",
@@ -23,35 +28,40 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Features Field",
-          "name": "featuresCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Label Field",
-          "name": "labelCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Data Split",
-          "name": "dataSplit",
-          "widget-attributes": {
-            "default": "70:30"
-          }
         }
       ]
     },
+     {
+       "label": "Data Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Features Field",
+           "name": "featuresCol"
+         },
+         {
+           "widget-type": "textbox",
+           "label": "Label Field",
+           "name": "labelCol"
+         },
+         {
+           "widget-type": "textbox",
+           "label": "Data Split",
+           "name": "dataSplit",
+           "widget-attributes": {
+             "default": "70:30"
+           }
+         }
+       ]
+     },
     {
-      "label": "Model Configuration",
+      "label": "Parameter Configuration",
       "properties": [
         {
           "widget-type": "textbox",

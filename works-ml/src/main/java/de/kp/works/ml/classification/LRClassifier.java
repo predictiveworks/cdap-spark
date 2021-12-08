@@ -1,6 +1,6 @@
 package de.kp.works.ml.classification;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -40,7 +40,7 @@ import de.kp.works.core.classifier.ClassifierConfig;
 import de.kp.works.core.classifier.ClassifierSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("LRClassifer")
+@Name("LRClassifier")
 @Description("A building stage for an Apache Spark ML Logistic Regression classifier model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
 		+ "another that describes the class or label value as numeric value.")
@@ -48,7 +48,7 @@ public class LRClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = 8968908020294101566L;
 
-	private LRClassifierConfig config;
+	private final LRClassifierConfig config;
 	
 	public LRClassifier(LRClassifierConfig config) {
 		this.config = config;

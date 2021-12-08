@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,7 +33,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.recording.MLUtils;
-import de.kp.works.ml.regression.LinearRecorder;
+import de.kp.works.core.recording.regression.LinearRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LinearPredictor")
@@ -42,7 +42,7 @@ public class LinearPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -1443274244219761815L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 	private LinearRegressionModel regressor;
 
 	public LinearPredictor(PredictorConfig config) {

@@ -79,7 +79,7 @@ public class DTConfig extends CRConfig {
 	public void validate() {
 		super.validate();
 
-		/** PARAMETERS **/
+		/* PARAMETERS */
 		if (maxBins < 2)
 			throw new IllegalArgumentException(
 					String.format("[%s] The maximum bins must be at least 2.", this.getClass().getName()));

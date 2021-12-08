@@ -1,4 +1,4 @@
-package de.kp.works.vs.clustering;
+package de.kp.works.vs;
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -20,8 +20,6 @@ package de.kp.works.vs.clustering;
 
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.clustering.LDARecorder;
-import de.kp.works.vs.Projector;
-import de.kp.works.vs.VisualSink;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
@@ -41,7 +39,6 @@ import java.util.List;
 public class LDAVisor extends VisualSink {
 
     private LDAModel model;
-    private LDARecorder recorder;
 
     public LDAVisor(VisualConfig config) {
         super(config);
@@ -51,9 +48,9 @@ public class LDAVisor extends VisualSink {
     @Override
     public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-        if (model == null || recorder == null) {
+        if (model == null) {
 
-            recorder = new LDARecorder();
+            LDARecorder recorder = new LDARecorder();
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 
@@ -80,7 +77,7 @@ public class LDAVisor extends VisualSink {
         List<String> otherCols = new ArrayList<>();
         otherCols.add(predictionCol);
 
-        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
+        projectAndPublish(source, featuresCol, otherCols);
 
     }
 

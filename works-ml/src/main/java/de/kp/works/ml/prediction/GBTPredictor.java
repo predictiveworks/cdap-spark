@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -35,7 +35,7 @@ import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
 import de.kp.works.core.recording.MLUtils;
 import de.kp.works.core.recording.classification.GBCRecorder;
-import de.kp.works.ml.regression.GBRRecorder;
+import de.kp.works.core.recording.regression.GBRRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("GBTPredictor")
@@ -46,7 +46,7 @@ public class GBTPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = 4445941695722336690L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 
 	private GBTClassificationModel classifier;
 	private GBTRegressionModel regressor;
@@ -59,6 +59,7 @@ public class GBTPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
 			GBCRecorder recorder = new GBCRecorder();
@@ -148,8 +149,9 @@ public class GBTPredictor extends PredictorCompute {
 		 * as Array[Numeric]
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
-		Dataset<Row> predictions = null;
+		Dataset<Row> predictions;
 
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
 			classifier.setFeaturesCol(vectorCol);

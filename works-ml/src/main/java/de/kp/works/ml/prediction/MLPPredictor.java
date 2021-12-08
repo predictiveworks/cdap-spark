@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -42,7 +42,7 @@ public class MLPPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -7257380193353979238L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 	private MultilayerPerceptronClassificationModel classifier;
 
 	public MLPPredictor(PredictorConfig config) {

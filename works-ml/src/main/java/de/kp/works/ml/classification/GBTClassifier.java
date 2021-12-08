@@ -1,6 +1,6 @@
 package de.kp.works.ml.classification;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -38,7 +38,7 @@ import de.kp.works.core.classifier.ClassifierSink;
 import de.kp.works.ml.config.GBTConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("GBTClassifer")
+@Name("GBTClassifier")
 @Description("A building stage for an Apache Spark ML Gradient-Boosted Tree classifier model. This stage expects " 
 				+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, "  
 				+ "another that describes the class or label value as numeric value.")
@@ -46,7 +46,7 @@ public class GBTClassifier extends ClassifierSink {
 
 	private static final long serialVersionUID = 2970318408059323693L;
 
-	private GBTConfig config;
+	private final GBTConfig config;
 	public GBTClassifier(GBTConfig config) {
 		this.config = config;
 	}

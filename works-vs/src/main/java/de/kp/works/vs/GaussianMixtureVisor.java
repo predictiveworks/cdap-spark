@@ -1,4 +1,4 @@
-package de.kp.works.vs.clustering;
+package de.kp.works.vs;
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,59 +18,52 @@ package de.kp.works.vs.clustering;
  *
  */
 
-import com.google.common.base.Strings;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.clustering.KMeansRecorder;
-import de.kp.works.vs.Projector;
-import de.kp.works.vs.Publisher;
-import de.kp.works.vs.VisualSink;
-import de.kp.works.vs.config.VisualConfig;
+import de.kp.works.core.recording.clustering.GaussianMixtureRecorder;
+import de.kp.works.vs.config.GaussianMixtureConfig;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
-import org.apache.spark.ml.clustering.KMeansModel;
+import org.apache.spark.ml.clustering.GaussianMixtureModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("KMeansVisor")
-@Description("An Apache Spark ML based visualization plugin for KMeans clustering.")
-public class KMeansVisor extends VisualSink {
+@Description("An Apache Spark ML based visualization plugin for Gaussian Mixture clustering.")
+public class GaussianMixtureVisor extends VisualSink {
 
-    private KMeansModel model;
-    private KMeansRecorder recorder;
+    private GaussianMixtureModel model;
 
-    public KMeansVisor(VisualConfig config) {
+    public GaussianMixtureVisor(GaussianMixtureConfig config) {
         super(config);
-        this.algoName = Algorithms.KMEANS;
+        this.algoName = Algorithms.GAUSSIAN_MIXTURE;
     }
 
     @Override
     public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-        if (model == null || recorder == null) {
+        if (model == null) {
 
-            recorder = new KMeansRecorder();
+            GaussianMixtureRecorder recorder = new GaussianMixtureRecorder();
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 
             if (model == null)
                 throw new IllegalArgumentException(
                         String.format("[%s] A clustering model with name '%s' does not exist.",
-                        this.getClass().getName(), config.modelName));
+                                this.getClass().getName(), config.modelName));
 
         }
         /*
-         * This stage is intended to run after the KMeans Predictor
-         * stage. This ensures that the data sources contains features
-         * and a prediction column.
+         * This stage is intended to run after the Gaussian Mixture
+         * Predictor stage. This ensures that the data sources contains
+         * features and a prediction column.
          *
          * The following visualization use cases are supported:
          *
@@ -81,27 +74,15 @@ public class KMeansVisor extends VisualSink {
         String featuresCol = config.featuresCol;
         String predictionCol = config.predictionCol;
 
+        String probabilityCol = ((GaussianMixtureConfig)config).probabilityCol;
+
         List<String> otherCols = new ArrayList<>();
         otherCols.add(predictionCol);
+        otherCols.add(probabilityCol);
 
-        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
-        /*
-         * The projected dataset is a 3-column dataset, x, y, prediction.
-         * This dataset is saved as *.parquet file in a local or distributed
-         * file system.
-         *
-         * This file system is shared with PredictiveWorks. visualization
-         * server that transforms the parquet file into an image.
-         */
-        String filePath = buildFilePath();
-        projected.write().mode(SaveMode.Overwrite).parquet(filePath);
-
-        if (!Strings.isNullOrEmpty(config.serverUrl)) {
-
-            Publisher publisher = new Publisher(config);
-            publisher.publish(algoName, reducer, filePath);
-
-        }
+        projectAndPublish(source, featuresCol, otherCols);
 
     }
+
 }
+

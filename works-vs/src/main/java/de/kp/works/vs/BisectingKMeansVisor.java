@@ -1,4 +1,4 @@
-package de.kp.works.vs.clustering;
+package de.kp.works.vs;
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,46 +18,40 @@ package de.kp.works.vs.clustering;
  *
  */
 
-import com.google.common.base.Strings;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.clustering.GaussianMixtureRecorder;
-import de.kp.works.vs.Projector;
-import de.kp.works.vs.Publisher;
-import de.kp.works.vs.VisualSink;
-import de.kp.works.vs.config.GaussianMixtureConfig;
+import de.kp.works.core.recording.clustering.BisectingKMeansRecorder;
 import de.kp.works.vs.config.VisualConfig;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
-import org.apache.spark.ml.clustering.GaussianMixtureModel;
+import org.apache.spark.ml.clustering.BisectingKMeansModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
-@Name("KMeansVisor")
-@Description("An Apache Spark ML based visualization plugin for Gaussian Mixture clustering.")
-public class GaussianMixtureVisor extends VisualSink {
+@Name("BisectingKMeansVisor")
+@Description("An Apache Spark ML based visualization plugin for Bisecting KMeans clustering.")
+public class BisectingKMeansVisor extends VisualSink {
 
-    private GaussianMixtureModel model;
-    private GaussianMixtureRecorder recorder;
+    private BisectingKMeansModel model;
 
-    public GaussianMixtureVisor(GaussianMixtureConfig config) {
+    public BisectingKMeansVisor(VisualConfig config) {
         super(config);
-        this.algoName = Algorithms.GAUSSIAN_MIXTURE;
+
+        this.algoName = Algorithms.BISECTING_KMEANS;
     }
 
     @Override
     public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
-        if (model == null || recorder == null) {
+        if (model == null) {
 
-            recorder = new GaussianMixtureRecorder();
+            BisectingKMeansRecorder recorder = new BisectingKMeansRecorder();
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 
@@ -68,7 +62,7 @@ public class GaussianMixtureVisor extends VisualSink {
 
         }
         /*
-         * This stage is intended to run after the Gaussian Mixture
+         * This stage is intended to run after the Bisecting KMeans
          * Predictor stage. This ensures that the data sources contains
          * features and a prediction column.
          *
@@ -81,30 +75,10 @@ public class GaussianMixtureVisor extends VisualSink {
         String featuresCol = config.featuresCol;
         String predictionCol = config.predictionCol;
 
-        String probabilityCol = ((GaussianMixtureConfig)config).probabilityCol;
-
         List<String> otherCols = new ArrayList<>();
         otherCols.add(predictionCol);
-        otherCols.add(probabilityCol);
 
-        Dataset<Row> projected = Projector.execute(source, featuresCol, otherCols);
-        /*
-         * The projected dataset is a 3-column dataset, x, y, prediction.
-         * This dataset is saved as *.parquet file in a local or distributed
-         * file system.
-         *
-         * This file system is shared with PredictiveWorks. visualization
-         * server that transforms the parquet file into an image.
-         */
-        String filePath = buildFilePath();
-        projected.write().mode(SaveMode.Overwrite).parquet(filePath);
-
-        if (!Strings.isNullOrEmpty(config.serverUrl)) {
-
-            Publisher publisher = new Publisher(config);
-            publisher.publish(algoName, reducer, filePath);
-
-        }
+        projectAndPublish(source, featuresCol, otherCols);
 
     }
 

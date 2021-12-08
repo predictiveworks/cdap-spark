@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -45,7 +45,7 @@ public class RFPredictor extends PredictorCompute {
 
 	private static final long serialVersionUID = -566627767807912994L;
 
-	private PredictorConfig config;
+	private final PredictorConfig config;
 
 	private RandomForestClassificationModel classifier;
 	private RandomForestRegressionModel regressor;
@@ -59,6 +59,7 @@ public class RFPredictor extends PredictorCompute {
 
 		config.validate();
 
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 			
 			RFCRecorder recorder = new RFCRecorder();
@@ -149,8 +150,9 @@ public class RFPredictor extends PredictorCompute {
 		 * as Array[Numeric]
 		 */
 		Dataset<Row> vectorset = MLUtils.vectorize(source, featuresCol, vectorCol, true);
-		Dataset<Row> predictions = null;
+		Dataset<Row> predictions;
 
+		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
 			classifier.setFeaturesCol(vectorCol);

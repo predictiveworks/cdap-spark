@@ -11,6 +11,7 @@ This machine learning plugin represents the prediction stage that leverages a tr
 Bisecting K-Means clustering model to assign a certain cluster center to each data record.
 
 ## Configuration
+**Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
 
 ### Model Configuration
 
