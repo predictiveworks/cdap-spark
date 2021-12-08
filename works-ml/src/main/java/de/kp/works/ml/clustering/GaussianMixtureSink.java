@@ -43,7 +43,7 @@ import de.kp.works.ml.clustering.Evaluator;
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("GaussianMixtureSink")
 @Description("A building stage for an Apache Spark ML Gaussian Mixture clustering model. This stage expects "
-		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
+		+ "a dataset with at least one 'features' field as an array of numeric values to train the model.")
 public class GaussianMixtureSink extends ClusterSink {
 
 	private static final long serialVersionUID = -8171201794590284739L;

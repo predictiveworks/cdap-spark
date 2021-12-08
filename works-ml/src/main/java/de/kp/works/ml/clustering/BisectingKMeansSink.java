@@ -43,7 +43,7 @@ import de.kp.works.ml.clustering.Evaluator;
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("BisectingKMeansSink")
 @Description("A building stage for an Apache Spark ML Bisecting K-Means clustering model. This stage expects "
-		+ "a dataset with at least one feature field as an array of numeric values to train the model.")
+		+ "a dataset with at least one 'features' field as an array of numeric values to train the model.")
 public class BisectingKMeansSink extends ClusterSink {
 	/*
 	 * Bisecting k-means is a kind of hierarchical clustering using

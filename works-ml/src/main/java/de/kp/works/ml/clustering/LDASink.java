@@ -47,7 +47,7 @@ import de.kp.works.core.recording.clustering.LDARecorder;
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDASink")
 @Description("A building stage for an Apache Spark ML Latent Dirichlet Allocation (LDA) clustering model. "
-		+ "This stage expects a dataset with at least one feature field as an array of numeric values to "
+		+ "This stage expects a dataset with at least one 'features' field as an array of numeric values to "
 		+ "train the model.")
 public class LDASink extends ClusterSink {
 
