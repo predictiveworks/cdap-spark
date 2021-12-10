@@ -21,6 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.recording.feature.W2VecRecorder;
 import org.apache.spark.ml.feature.Word2VecModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

@@ -18,6 +18,7 @@ package de.kp.works.ml.feature;
  * 
  */
 
+import de.kp.works.core.recording.feature.BucketedLSHRecorder;
 import org.apache.spark.ml.feature.BucketedRandomProjectionLSHModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

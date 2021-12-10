@@ -1,6 +1,6 @@
 package de.kp.works.ml.regression;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class LinearRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -9189352556712045343L;
 	
-	private LinearConfig config;
+	private final LinearConfig config;
 	
 	public LinearRegressor(LinearConfig config) {
 		this.config = config;
@@ -191,7 +191,7 @@ public class LinearRegressor extends RegressorSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (maxIter < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));

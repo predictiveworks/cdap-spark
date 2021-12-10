@@ -1,6 +1,6 @@
 package de.kp.works.ml.regression;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -52,7 +52,7 @@ public class SurvivalRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -2096945742865221471L;
 	
-	private SurvivalConfig config;
+	private final SurvivalConfig config;
 	
 	public SurvivalRegressor(SurvivalConfig config) {
 		this.config = config;
@@ -182,14 +182,14 @@ public class SurvivalRegressor extends RegressorSink {
 		public void validate() {
 			super.validate();
 
-			/** MODEL & COLUMNS **/
+			/* MODEL & COLUMNS */
 			if (Strings.isNullOrEmpty(censorCol)) {
 				throw new IllegalArgumentException(
 						String.format("[%s] The name of the field that contains the censor value must not be empty.",
 								this.getClass().getName()));
 			}
 			
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (maxIter < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
@@ -203,7 +203,7 @@ public class SurvivalRegressor extends RegressorSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** CENSOR COL **/
+			/* CENSOR COL */
 			
 			Schema.Field censorField = inputSchema.getField(labelCol);
 			if (censorField == null) {
@@ -213,7 +213,7 @@ public class SurvivalRegressor extends RegressorSink {
 
 			Schema.Type censorType = getNonNullIfNullable(censorField.getSchema()).getType();
 
-			if (SchemaUtil.isNumericType(censorType) == false) {
+			if (!SchemaUtil.isNumericType(censorType)) {
 				throw new IllegalArgumentException("The data type of the censor field must be numeric.");
 			}
 			

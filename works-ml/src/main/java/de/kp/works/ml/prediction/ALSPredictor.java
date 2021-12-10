@@ -1,6 +1,6 @@
 package de.kp.works.ml.prediction;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -39,7 +39,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Params;
 import de.kp.works.core.recommender.RecommenderCompute;
 import de.kp.works.ml.recommendation.ALSConfig;
-import de.kp.works.ml.recommendation.ALSRecorder;
+import de.kp.works.core.recording.recommendation.ALSRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ALSPredictor")
@@ -48,7 +48,7 @@ public class ALSPredictor extends RecommenderCompute {
 
 	private static final long serialVersionUID = -3668319605054724319L;
 
-	private ALSPredictorConfig config;
+	private final ALSPredictorConfig config;
 	private ALSModel model;
 
 	public ALSPredictor(ALSPredictorConfig config) {
@@ -104,7 +104,7 @@ public class ALSPredictor extends RecommenderCompute {
 
 	public void validateSchema(Schema inputSchema) {
 
-		/** USER COLUMN **/
+		/* USER COLUMN */
 
 		Schema.Field userCol = inputSchema.getField(config.userCol);
 		if (userCol == null) {
@@ -114,11 +114,11 @@ public class ALSPredictor extends RecommenderCompute {
 		}
 
 		Schema.Type userType = getNonNullIfNullable(userCol.getSchema()).getType();
-		if (isNumericType(userType) == false) {
+		if (!isNumericType(userType)) {
 			throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
 		}
 
-		/** ITEM COLUMN **/
+		/* ITEM COLUMN */
 
 		Schema.Field itemCol = inputSchema.getField(config.itemCol);
 		if (itemCol == null) {
@@ -128,7 +128,7 @@ public class ALSPredictor extends RecommenderCompute {
 		}
 
 		Schema.Type itemType = getNonNullIfNullable(itemCol.getSchema()).getType();
-		if (isNumericType(itemType) == false) {
+		if (!isNumericType(itemType)) {
 			throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
 		}
 

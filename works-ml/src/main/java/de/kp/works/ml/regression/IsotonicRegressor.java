@@ -1,6 +1,6 @@
 package de.kp.works.ml.regression;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class IsotonicRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = 185956615279200366L;
 	
-	private IsotonicConfig config;
+	private final IsotonicConfig config;
 	
 	public IsotonicRegressor(IsotonicConfig config) {
 		this.config = config;
@@ -166,7 +166,7 @@ public class IsotonicRegressor extends RegressorSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (featureIndex < 0)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The feature index must be nonnegative.", this.getClass().getName()));

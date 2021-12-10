@@ -1,4 +1,4 @@
-package de.kp.works.dl.model
+package de.kp.works.dl.model.builder
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,7 +22,7 @@ import com.intel.analytics.bigdl.nn.abstractnn.Activity
 import com.intel.analytics.bigdl.nn.keras.KerasLayer
 import com.intel.analytics.bigdl.optim.L1L2Regularizer
 import com.intel.analytics.bigdl.tensor.Tensor
-import com.intel.analytics.bigdl.tensor.TensorNumericMath._
+import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
 import com.intel.analytics.bigdl.utils.Shape
 import com.intel.analytics.zoo.pipeline.api.keras.layers._
 import com.intel.analytics.zoo.pipeline.api.keras2.layers
@@ -30,6 +30,7 @@ import com.intel.analytics.zoo.pipeline.api.keras2.layers.{Conv1D, Conv2D}
 import com.intel.analytics.zoo.pipeline.api.net.GraphNet
 import com.intel.analytics.zoo.pipeline.api.{keras, keras2}
 import com.typesafe.config.{Config, ConfigList}
+import de.kp.works.dl.model.{LoaderUtils, ModelNames}
 
 trait LayerBuilder extends SpecBuilder with OptimizerBuilder {
   /*
@@ -37,8 +38,8 @@ trait LayerBuilder extends SpecBuilder with OptimizerBuilder {
    */
   private val modelTypes = Array("analytics_zoo", "big_dl", "caffe", "torch")
 
-  def config2Layer(config: Config, kerasVersion: String, modelFolder:String)
-                  (implicit ev:TensorNumeric[_]) = {
+  def config2Layer(config: Config, kerasVersion: String, modelFolder: String)
+                  (implicit ev: TensorNumeric[_]) = {
 
     val bidirectional = getAsBoolean(config, "biDirectional", default = false)
     val timeDistributed = getAsBoolean(config, "timeDistributed", default = false)
@@ -167,7 +168,7 @@ trait LayerBuilder extends SpecBuilder with OptimizerBuilder {
 
   /** *** PRETRAINED **** */
 
-  def config2Pretrained(layer: Config, modelFolder:String): KerasLayer[Activity, Activity, Float] = {
+  def config2Pretrained(layer: Config, modelFolder: String): KerasLayer[Activity, Activity, Float] = {
 
     val params = layer.getConfig(ModelNames.PARAMS)
 
@@ -232,7 +233,7 @@ trait LayerBuilder extends SpecBuilder with OptimizerBuilder {
 
   }
 
-  def getModelPath(params: Config, modelFolder:String): String = {
+  def getModelPath(params: Config, modelFolder: String): String = {
 
     val modelPath = getStringParam(params, ModelNames.MODEL_PATH)
     if (modelPath.isDefined) return modelPath.get

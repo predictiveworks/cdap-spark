@@ -1,16 +1,21 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "Isotonic Predictor",
- "configuration-groups": [
-    {
-      "label": "Basic Configuration",
+  "display-name": "Isotonic Predictor",
+  "configuration-groups": [
+     {
+       "label": "Plugin Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Reference Name",
+           "name": "referenceName"
+         }
+       ]
+     },
+     {
+      "label": "Model Configuration",
       "properties": [
-        {
-          "widget-type": "textbox",
-          "label": "Reference Name",
-          "name": "referenceName"
-        },
         {
           "widget-type": "textbox",
           "label": "Model Name",
@@ -23,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -52,7 +57,12 @@
             ],
             "default": "regressor"
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Features Field",

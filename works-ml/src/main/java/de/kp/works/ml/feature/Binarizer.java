@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -45,15 +45,15 @@ public class Binarizer extends FeatureCompute {
 	
 	private static final long serialVersionUID = 4868372641130255213L;
 
-	private BinarizerConfig config;
+	private final BinarizerConfig binaryConfig;
 	
 	public Binarizer(BinarizerConfig config) {
-		this.config = config;
+		this.binaryConfig = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		binaryConfig.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -68,7 +68,7 @@ public class Binarizer extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.outputCol);
+			outputSchema = getOutputSchema(inputSchema, binaryConfig.outputCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -77,15 +77,11 @@ public class Binarizer extends FeatureCompute {
 	
 	@Override
 	public void validateSchema(Schema inputSchema) {
-		config.validateSchema(inputSchema);
+		binaryConfig.validateSchema(inputSchema);
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		/*
-		 * Transformation from Array[Numeric] to Array[Double]
-		 */		
-		BinarizerConfig binaryConfig = (BinarizerConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
@@ -102,10 +98,8 @@ public class Binarizer extends FeatureCompute {
 		transformer.setOutputCol("_vector");
 		transformer.setThreshold(binaryConfig.threshold);
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", binaryConfig.outputCol).drop("_input").drop("_vector");
-
-		return output;
+		Dataset<Row> transformed = transformer.transform(vectorset);
+		return MLUtils.devectorize(transformed, "_vector", binaryConfig.outputCol).drop("_input").drop("_vector");
 
 	}
 
@@ -115,6 +109,7 @@ public class Binarizer extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));

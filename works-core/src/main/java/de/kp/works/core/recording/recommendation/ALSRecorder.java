@@ -1,6 +1,6 @@
-package de.kp.works.ml.recommendation;
+package de.kp.works.core.recording.recommendation;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,28 +18,24 @@ package de.kp.works.ml.recommendation;
  * 
  */
 
-import java.lang.reflect.Type;
-import java.util.Date;
-import java.util.Map;
-
-import org.apache.spark.ml.recommendation.ALSModel;
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.common.Bytes;
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.recommendation.RecommenderRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import org.apache.spark.ml.recommendation.ALSModel;
+
+import java.lang.reflect.Type;
+import java.util.Date;
+import java.util.Map;
 
 public class ALSRecorder extends RecommenderRecorder {
 
-	private Type metricsType = new TypeToken<Map<String, Object>>() {
-	}.getType();
+	private final Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
 	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
@@ -60,10 +56,10 @@ public class ALSRecorder extends RecommenderRecorder {
 
 		String algorithmName = Algorithms.ALS;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 		/*
 		 * Leverage Apache Spark mechanism to write the ALS model to a model specific
 		 * file set
@@ -73,7 +69,7 @@ public class ALSRecorder extends RecommenderRecorder {
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 

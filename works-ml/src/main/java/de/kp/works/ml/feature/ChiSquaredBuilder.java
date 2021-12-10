@@ -21,6 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.core.recording.feature.ChiSquaredRecorder;
 import org.apache.spark.ml.feature.ChiSqSelectorModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

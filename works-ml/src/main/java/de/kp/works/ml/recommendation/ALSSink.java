@@ -1,6 +1,6 @@
 package de.kp.works.ml.recommendation;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import de.kp.works.core.recording.recommendation.ALSRecorder;
 import org.apache.spark.ml.recommendation.ALSModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -81,7 +82,7 @@ public class ALSSink extends RecommenderSink {
 	 */
 	private static final long serialVersionUID = -3516142642574309010L;
 
-	private ALSSinkConfig config;
+	private final ALSSinkConfig config;
 	
 	public ALSSink(ALSSinkConfig config) {
 		this.config = config;
@@ -240,7 +241,7 @@ public class ALSSink extends RecommenderSink {
 			splits.add(x);
 			splits.add(y);
 
-			Double[] array = splits.toArray(new Double[splits.size()]);
+			Double[] array = splits.toArray(new Double[0]);
 			return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 		}
@@ -292,7 +293,7 @@ public class ALSSink extends RecommenderSink {
 
 		public void validateSchema(Schema inputSchema) {
 
-			/** USER COLUMN **/
+			/* USER COLUMN */
 
 			Schema.Field userField = inputSchema.getField(userCol);
 			if (userField == null) {
@@ -301,11 +302,11 @@ public class ALSSink extends RecommenderSink {
 			}
 			
 			Schema.Type userType = getNonNullIfNullable(userField.getSchema()).getType();
-			if (SchemaUtil.isNumericType(userType) == false) {
+			if (!SchemaUtil.isNumericType(userType)) {
 				throw new IllegalArgumentException("The data type of the user field must be NUMERIC.");
 			}
 
-			/** ITEM COLUMN **/
+			/* ITEM COLUMN */
 
 			Schema.Field itemField = inputSchema.getField(itemCol);
 			if (itemField == null) {
@@ -314,11 +315,11 @@ public class ALSSink extends RecommenderSink {
 			}
 			
 			Schema.Type itemType = getNonNullIfNullable(itemField.getSchema()).getType();
-			if (SchemaUtil.isNumericType(itemType) == false) {
+			if (!SchemaUtil.isNumericType(itemType)) {
 				throw new IllegalArgumentException("The data type of the item field must be NUMERIC.");
 			}
 
-			/** RATING COLUMN **/
+			/* RATING COLUMN */
 
 			Schema.Field ratingField = inputSchema.getField(ratingCol);
 			if (ratingField == null) {
@@ -327,7 +328,7 @@ public class ALSSink extends RecommenderSink {
 			}
 			
 			Schema.Type ratingType = getNonNullIfNullable(ratingField.getSchema()).getType();
-			if (SchemaUtil.isNumericType(ratingType) == false) {
+			if (!SchemaUtil.isNumericType(ratingType)) {
 				throw new IllegalArgumentException("The data type of the rating field must be NUMERIC.");
 			}
 

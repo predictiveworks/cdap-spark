@@ -18,6 +18,7 @@ package de.kp.works.ml.feature;
  * 
  */
 
+import de.kp.works.core.recording.feature.TFIDFRecorder;
 import org.apache.spark.ml.feature.HashingTF;
 import org.apache.spark.ml.feature.IDFModel;
 import org.apache.spark.sql.Dataset;

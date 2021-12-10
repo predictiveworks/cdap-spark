@@ -1,6 +1,6 @@
-package de.kp.works.ml.feature;
+package de.kp.works.core.recording.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,7 +20,7 @@ package de.kp.works.ml.feature;
 
 import java.util.Date;
 
-import org.apache.spark.ml.feature.PCAModel;
+import org.apache.spark.ml.feature.CountVectorizerModel;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
@@ -29,38 +29,38 @@ import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.feature.FeatureRecorder;
 import de.kp.works.core.recording.SparkMLManager;
 
-public class PCARecorder extends FeatureRecorder {
+public class CountVecRecorder extends FeatureRecorder {
 
-	public PCAModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
+	public CountVectorizerModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String algorithmName = Algorithms.COUNT_VECTORIZER;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the PCA model
+		 * Leverage Apache Spark mechanism to read the CountVectorizer model
 		 * from a model specific file set
 		 */
-		return PCAModel.load(modelPath);
+		return CountVectorizerModel.load(modelPath);
 		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			PCAModel model) throws Exception {
-		
-		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
+			CountVectorizerModel model) throws Exception {
 
-		/***** ARTIFACTS *****/
+		String algorithmName = Algorithms.COUNT_VECTORIZER;
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		/* ARTIFACTS */
+
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 

@@ -1,4 +1,4 @@
-package de.kp.works.dl.model
+package de.kp.works.dl.model.builder
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,8 +22,9 @@ import com.intel.analytics.bigdl.optim
 import com.intel.analytics.bigdl.optim._
 import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
 import com.typesafe.config.Config
+import de.kp.works.dl.model.ModelNames
 
-trait OptimizerBuilder extends SpecBuilder {
+object Optimizer {
 
   def getOptimizers = List(
     "Adadelta",
@@ -32,6 +33,10 @@ trait OptimizerBuilder extends SpecBuilder {
     "Adamax",
     "RMSprop",
     "SGD")
+
+}
+
+trait OptimizerBuilder extends SpecBuilder {
 
   def config2Optimizer(optimizer: Config): OptimMethod[Float] = {
 
@@ -153,7 +158,7 @@ trait OptimizerBuilder extends SpecBuilder {
 
   }
 
-  def config2RMSprop(params: Config):RMSprop[Float] = {
+  def config2RMSprop(params: Config): RMSprop[Float] = {
 
     /* Learning rate */
     val learningRate = getAsDouble(params, ModelNames.LEARNING_RATE, 1e-2)
@@ -168,7 +173,7 @@ trait OptimizerBuilder extends SpecBuilder {
 
   }
 
-  def config2SGD(params: Config):SGD[Float] = {
+  def config2SGD(params: Config): SGD[Float] = {
 
     /* Learning rate */
     val learningRate = getAsDouble(params, ModelNames.LEARNING_RATE, 1e-3)

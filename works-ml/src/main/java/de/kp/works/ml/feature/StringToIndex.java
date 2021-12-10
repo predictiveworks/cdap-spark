@@ -18,6 +18,7 @@ package de.kp.works.ml.feature;
  * 
  */
 
+import de.kp.works.core.recording.feature.StringIndexerRecorder;
 import org.apache.spark.ml.feature.StringIndexerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

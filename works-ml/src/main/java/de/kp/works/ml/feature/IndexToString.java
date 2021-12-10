@@ -21,6 +21,7 @@ package de.kp.works.ml.feature;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.core.recording.feature.StringIndexerRecorder;
 import org.apache.spark.ml.feature.StringIndexerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

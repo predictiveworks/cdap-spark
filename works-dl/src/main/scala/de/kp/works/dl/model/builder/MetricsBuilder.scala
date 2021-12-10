@@ -1,4 +1,4 @@
-package de.kp.works.dl.model
+package de.kp.works.dl.model.builder
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -22,16 +22,17 @@ import com.intel.analytics.bigdl.optim.ValidationMethod
 import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
 import com.intel.analytics.zoo.pipeline.api.keras.metrics._
 import com.typesafe.config.Config
+import de.kp.works.dl.model.ModelNames
 
 trait MetricsBuilder extends SpecBuilder {
 
-  val DL_ACCURACY                    = "Accuracy"
-  val DL_BINARY_ACCURACY             = "BinaryAccuracy"
-  val DL_CATEGORICAL_ACCURACY        = "CategoricalAccuracy"
-  val DL_MAE                         = "MAE"
-  val DL_MSE                         = "MSE"
+  val DL_ACCURACY = "Accuracy"
+  val DL_BINARY_ACCURACY = "BinaryAccuracy"
+  val DL_CATEGORICAL_ACCURACY = "CategoricalAccuracy"
+  val DL_MAE = "MAE"
+  val DL_MSE = "MSE"
   val DL_SPARSE_CATEGORICAL_ACCURACY = "SparseCategoricalAccuracy"
-  val DL_TOP5_ACCURACY               = "Top5Accuracy"
+  val DL_TOP5_ACCURACY = "Top5Accuracy"
 
   def getMetrics = List(
     DL_ACCURACY,

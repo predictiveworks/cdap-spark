@@ -1,6 +1,6 @@
 package de.kp.works.ml.regression;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class GLRegressor extends RegressorSink {
 
 	private static final long serialVersionUID = -3133087003110797539L;
 
-	private GLRegressorConfig config;
+	private final GLRegressorConfig config;
 	
 	public GLRegressor(GLRegressorConfig config) {
 		this.config = config;
@@ -150,13 +150,15 @@ public class GLRegressor extends RegressorSink {
 		 * omitted
 		 */
 
-		@Description("The name of the family which is a description of the error distribution used in this model. "
-				+ "Supported values are: 'gaussian', 'binomial', 'poisson' and 'gamma'. The family values are correlated with the name of the link function. Default is 'gaussian'.")
+		@Description("The name of the family which is a description of the error distribution used in this model."
+				+ " Supported values are: 'gaussian', 'binomial', 'poisson' and 'gamma'. The family values are correlated"
+				+ " with the name of the link function. Default is 'gaussian'.")
 		@Macro
 		public String family;
 
-		@Description("The name of the link function which provides the relationship between the linear predictor and the mean of the distribution function. "
-				+ "Supported values are: 'identity', 'log', 'inverse', 'logit', 'probit', 'cloglog' and 'sqrt'. Default is 'identity' (gaussian).")
+		@Description("The name of the link function which provides the relationship between the linear predictor"
+				+ " and the mean of the distribution function. Supported values are: 'identity', 'log', 'inverse',"
+				+ " 'logit', 'probit', 'cloglog' and 'sqrt'. Default is 'identity' (gaussian).")
 		@Macro
 		public String link;
 
@@ -195,36 +197,17 @@ public class GLRegressor extends RegressorSink {
 
 			switch (family) {
 			case "gaussian": {
-
-				if (link.equals("identity") || link.equals("log") || link.equals("inverse"))
-					return true;
-				else
-					return false;
+				return link.equals("identity") || link.equals("log") || link.equals("inverse");
 			}
 
 			case "binomial": {
-
-				if (link.equals("logit") || link.equals("probit") || link.equals("cloglog"))
-					return true;
-				else
-					return false;
-
+				return link.equals("logit") || link.equals("probit") || link.equals("cloglog");
 			}
 			case "poisson": {
-
-				if (link.equals("log") || link.equals("identity") || link.equals("sqrt"))
-					return true;
-				else
-					return false;
-
+				return link.equals("log") || link.equals("identity") || link.equals("sqrt");
 			}
 			case "gamma": {
-
-				if (link.equals("inverse") || link.equals("identity") || link.equals("log"))
-					return true;
-				else
-					return false;
-
+				return link.equals("inverse") || link.equals("identity") || link.equals("log");
 			}
 			default:
 				return false;
@@ -235,7 +218,7 @@ public class GLRegressor extends RegressorSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (maxIter < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
@@ -248,7 +231,7 @@ public class GLRegressor extends RegressorSink {
 				throw new IllegalArgumentException(
 						String.format("[%s] The iteration tolerance must be positive.", this.getClass().getName()));
 
-			if (validateFamilyAndLink() == false) {
+			if (!validateFamilyAndLink()) {
 				throw new IllegalArgumentException(String.format(
 						"[%s] The combination of the family parameter and the selected link function is not supported.",
 						this.getClass().getName()));

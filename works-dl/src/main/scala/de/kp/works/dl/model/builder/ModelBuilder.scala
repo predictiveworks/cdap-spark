@@ -1,4 +1,5 @@
-package de.kp.works.dl.model
+package de.kp.works.dl.model.builder
+
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,11 +19,11 @@ package de.kp.works.dl.model
  *
  */
 
+import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
 import com.intel.analytics.zoo.pipeline.api.keras.layers.InputLayer
 import com.intel.analytics.zoo.pipeline.api.keras.models.Sequential
-import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
-
 import com.typesafe.config.{Config, ConfigObject}
+import de.kp.works.dl.model.ModelNames
 
 class ModelBuilder(implicit ev: TensorNumeric[Float]) extends LayerBuilder
   with OptimizerBuilder with LossBuilder with MetricsBuilder {

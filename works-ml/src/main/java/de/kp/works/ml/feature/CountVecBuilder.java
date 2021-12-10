@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import de.kp.works.core.recording.feature.CountVecRecorder;
 import org.apache.spark.ml.feature.CountVectorizer;
 import org.apache.spark.ml.feature.CountVectorizerModel;
 import org.apache.spark.sql.Dataset;

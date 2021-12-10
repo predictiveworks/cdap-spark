@@ -1,4 +1,4 @@
-package de.kp.works.ml.feature;
+package de.kp.works.core.recording.feature;
 /*
  * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,48 +18,47 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.util.Date;
-import org.apache.spark.ml.feature.IDFModel;
-
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.feature.FeatureRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import org.apache.spark.ml.feature.PCAModel;
 
-public class TFIDFRecorder extends FeatureRecorder {
+import java.util.Date;
 
-	public IDFModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+public class PCARecorder extends FeatureRecorder {
+
+	public PCAModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
-		String algorithmName = Algorithms.TFIDF;
+		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the IDF model
+		 * Leverage Apache Spark mechanism to read the PCA model
 		 * from a model specific file set
 		 */
-		return IDFModel.load(modelPath);
+		return PCAModel.load(modelPath);
 		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			IDFModel model) throws Exception {
+			PCAModel model) throws Exception {
 		
-		String algorithmName = Algorithms.TFIDF;
+		String algorithmName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getFeatureFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 
@@ -67,15 +66,6 @@ public class TFIDFRecorder extends FeatureRecorder {
 		String namespace = context.getNamespace();
 
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-		
-	}
-
-	public Object getParam(SparkExecutionPluginContext context, String modelName, String paramName) throws Exception {
-		
-		String algorithmName = Algorithms.TFIDF;
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		return getModelParam(table, algorithmName, modelName, paramName);
 		
 	}
 

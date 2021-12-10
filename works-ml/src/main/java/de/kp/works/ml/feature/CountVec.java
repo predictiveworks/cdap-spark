@@ -18,6 +18,7 @@ package de.kp.works.ml.feature;
  * 
  */
 
+import de.kp.works.core.recording.feature.CountVecRecorder;
 import org.apache.spark.ml.feature.CountVectorizerModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
