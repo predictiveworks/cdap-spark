@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -51,7 +51,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -5551497359106054161L;
 
-	private ChiSquaredBuilderConfig config;
+	private final ChiSquaredBuilderConfig config;
 	
 	public ChiSquaredBuilder(ChiSquaredBuilderConfig config) {
 		this.config = config;
@@ -194,10 +194,10 @@ public class ChiSquaredBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
 
-			/** Label COLUMN **/
+			/* LABEL COLUMN */
 			SchemaUtil.isNumeric(inputSchema, labelCol);
 			
 		}

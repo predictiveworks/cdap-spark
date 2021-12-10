@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,16 +44,16 @@ public class ChiSquaredSelector extends FeatureCompute {
 
 	private static final long serialVersionUID = 181964982743803324L;
 
-	private ChiSquaredSelectorConfig config;
+	private final ChiSquaredSelectorConfig selectorConfig;
 	private ChiSqSelectorModel model;
 
 	public ChiSquaredSelector(ChiSquaredSelectorConfig config) {
-		this.config = config;
+		this.selectorConfig = config;
 	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		config.validate();
+		selectorConfig.validate();
 		
 		ChiSquaredRecorder recorder = new ChiSquaredRecorder();
 		/*
@@ -62,10 +62,10 @@ public class ChiSquaredSelector extends FeatureCompute {
 		 * do not have any metrics, i.e. there is no model option: 
 		 * always the latest model is used
 		 */
-		model = recorder.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = recorder.read(context, selectorConfig.modelName, selectorConfig.modelStage, LATEST_MODEL);
 		if (model == null)
 			throw new IllegalArgumentException(String.format("[%s] A feature model with name '%s' does not exist.",
-					this.getClass().getName(), config.modelName));
+					this.getClass().getName(), selectorConfig.modelName));
 
 		/*
 		 * STEP #2: Retrieve the profile of the trained feature 
@@ -78,7 +78,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		selectorConfig.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -93,7 +93,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getArrayOutputSchema(inputSchema, config.outputCol, Schema.Type.DOUBLE);
+			outputSchema = getArrayOutputSchema(inputSchema, selectorConfig.outputCol, Schema.Type.DOUBLE);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -102,7 +102,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 	
 	@Override
 	public void validateSchema(Schema inputSchema) {
-		config.validateSchema(inputSchema);
+		selectorConfig.validateSchema(inputSchema);
 	}
 	/**
 	 * This method computes the transformed features by applying a trained
@@ -112,8 +112,6 @@ public class ChiSquaredSelector extends FeatureCompute {
 	 */
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		ChiSquaredSelectorConfig selectorConfig = (ChiSquaredSelectorConfig)config;
 		/*
 		 * Build internal column from input column and cast to 
 		 * double vector
@@ -128,7 +126,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 		 * For compliance purposes with CDAP data schemas, we have to resolve
 		 * the output format as Array Of Double
 		 */
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
+		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", this.selectorConfig.outputCol).drop("_input").drop("_vector");
 		return annotate(output, FEATURE_TYPE);
 
 	}
@@ -145,7 +143,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
 			
 		}

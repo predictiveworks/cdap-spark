@@ -1,6 +1,6 @@
 package de.kp.works.core.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -61,7 +61,7 @@ public class FeatureConfig extends BaseConfig {
 	public void validate() {
 		super.validate();
 
-		/** COLUMNS **/
+		/* COLUMNS */
 		if (Strings.isNullOrEmpty(inputCol)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The name of the field that contains the features must not be empty.",
@@ -77,7 +77,7 @@ public class FeatureConfig extends BaseConfig {
 
 	public void validateSchema(Schema inputSchema) {
 
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field inputField = inputSchema.getField(inputCol);
 		if (inputField == null) {
