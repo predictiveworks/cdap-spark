@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -64,7 +64,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = 4538434693829022065L;
 
-	private BucketedLSHBuilderConfig config;
+	private final BucketedLSHBuilderConfig config;
 	
 	public BucketedLSHBuilder(BucketedLSHBuilderConfig config) {
 		this.config = config;
@@ -158,7 +158,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (numHashTables < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of hash tables must be at least 1.", this.getClass().getName()));
@@ -172,7 +172,7 @@ public class BucketedLSHBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
 			
 		}

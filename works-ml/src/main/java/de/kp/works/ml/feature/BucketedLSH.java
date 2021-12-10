@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class BucketedLSH extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -5333140801597897278L;
 
-	private BucketedLSHConfig config;
+	private final BucketedLSHConfig config;
 	private BucketedRandomProjectionLSHModel model;
 
 	public BucketedLSH(BucketedLSHConfig config) {
@@ -119,7 +119,7 @@ public class BucketedLSH extends FeatureCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		/*
-		 * Tranformation from Array[Numeric] to Array[Double]
+		 * Transformation from Array[Numeric] to Array[Double]
 		 * 
 		 * Build internal column from input column and cast to 
 		 * double vector

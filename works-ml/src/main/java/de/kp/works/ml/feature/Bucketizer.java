@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -46,7 +46,7 @@ import de.kp.works.core.recording.MLUtils;
 @Name("Bucketizer")
 @Description("A transformation stage that leverages the Apache Spark ML Feature Bucketizer to map continuous features onto feature buckets.")
 public class Bucketizer extends FeatureCompute {
-	/*
+	/**
 	 * Bucketizer transforms a column of continuous features to a column of feature buckets, where the buckets 
 	 * are specified by users. It takes a parameter: splits.
 	 * 
@@ -65,15 +65,15 @@ public class Bucketizer extends FeatureCompute {
 
 	private static final long serialVersionUID = 139261697861873381L;
 
-	private BucketizerConfig config;
+	private final BucketizerConfig bucketConfig;
 	
 	public Bucketizer(BucketizerConfig config) {
-		this.config = config;
+		this.bucketConfig = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		bucketConfig.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -88,7 +88,7 @@ public class Bucketizer extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.outputCol);
+			outputSchema = getOutputSchema(inputSchema, bucketConfig.outputCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -97,16 +97,15 @@ public class Bucketizer extends FeatureCompute {
 	
 	@Override
 	public void validateSchema(Schema inputSchema) {
-		config.validateSchema(inputSchema);
+		bucketConfig.validateSchema(inputSchema);
 	}
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		/*
-		 * Tranformation from Numeric to Double
+		 * Transformation from Numeric to Double
 		 */
-		BucketizerConfig bucketConfig = (BucketizerConfig)config;
 		Dataset<Row> castset = MLUtils.castToDouble(source, bucketConfig.inputCol, "_input");
 		
 		org.apache.spark.ml.feature.Bucketizer transformer = new org.apache.spark.ml.feature.Bucketizer();
@@ -115,8 +114,7 @@ public class Bucketizer extends FeatureCompute {
 
 		transformer.setSplits(bucketConfig.getSplits());
 
-		Dataset<Row> output = transformer.transform(castset).drop("_input");		
-		return output;
+		return transformer.transform(castset).drop("_input");
 
 	}
 
@@ -126,6 +124,7 @@ public class Bucketizer extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
@@ -156,10 +155,10 @@ public class Bucketizer extends FeatureCompute {
 
 			for (String token: tokens) {
 				
-				if (token.trim().toLowerCase().equals("-infinity"))
+				if (token.trim().equalsIgnoreCase("-infinity"))
 					splits.add(Double.NEGATIVE_INFINITY);
 				
-				if (token.trim().toLowerCase().equals("infinity"))
+				if (token.trim().equalsIgnoreCase("infinity"))
 					splits.add(Double.POSITIVE_INFINITY);
 				
 				splits.add(Double.parseDouble(token.trim()));
@@ -167,7 +166,7 @@ public class Bucketizer extends FeatureCompute {
 
 			Collections.sort(splits);
 			
-			Double[] array = splits.toArray(new Double[splits.size()]);
+			Double[] array = splits.toArray(new Double[0]);
 			return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 		}
@@ -185,7 +184,7 @@ public class Bucketizer extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isNumeric(inputSchema, inputCol);
 			
 		}
