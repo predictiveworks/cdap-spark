@@ -52,7 +52,6 @@ public class ClassifierSink extends BaseSink {
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
 
-		JavaSparkContext jsc = context.getSparkContext();
 		/*
 		 * In case of an empty input immediately return 
 		 * without any further processing
@@ -65,17 +64,20 @@ public class ClassifierSink extends BaseSink {
 			inputSchema = input.first().getSchema();
 			validateSchema(inputSchema);
 		}
-
-		SparkSession session = new SparkSession(jsc.sc());
-
 		/*
-		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
+		 * Build an Apache Spark session from the provided
+		 * Spark context
+		 */
+		JavaSparkContext jsc = context.getSparkContext();
+		SparkSession session = new SparkSession(jsc.sc());
+		/*
+		 * Transform JavaRDD<StructuredRecord> into Dataset<Row>
 		 */
 		StructType structType = DataFrames.toDataType(inputSchema);
 		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
 		/*
-		 * STEP #2: Compute data model from 'rows' leveraging the underlying Scala
-		 * library of Predictive Works
+		 * Compute data model from 'rows' leveraging the underlying
+		 * Scala library of Predictive Works
 		 */
 		compute(context, rows);
 

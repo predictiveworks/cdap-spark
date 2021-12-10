@@ -1,4 +1,4 @@
-package de.kp.works.dl.models
+package de.kp.works.dl.model
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,8 +18,7 @@ package de.kp.works.dl.models
  * 
  */
 
-import com.typesafe.config.{Config, ConfigList, ConfigFactory, ConfigObject}
-
+import com.typesafe.config.{Config, ConfigFactory, ConfigList}
 import org.apache.log4j.Logger
 
 import scala.collection.JavaConversions._
@@ -27,7 +26,7 @@ import scala.collection.mutable.ArrayBuffer
 
 trait SpecBuilder {
        
-  val logger = Logger.getLogger(getClass)
+  val logger: Logger = Logger.getLogger(getClass)
    
   /*
    * A helper method to transform a String specification
@@ -45,31 +44,31 @@ trait SpecBuilder {
       ConfigFactory.parseString(cleanSpec)
       
     } catch {
-      case t:Throwable => {
-        throw new Exception("The Keras model specification cannot be parsed. Consider to change the specification.")
-      }
+      case _:Throwable =>
+        throw new Exception("The Keras like model specification cannot be parsed." +
+          " Consider to change the specification.")
     }
       
   }
 
-  def getAsBoolean(config:Config, name:String, default:Boolean) = {
+  def getAsBoolean(config:Config, name:String, default:Boolean): Boolean = {
     
     try {
       config.getBoolean(name)
 
     } catch {
-      case t:Throwable => default
+      case _:Throwable => default
     }
 
   }
   
-  def getAsDouble(config:Config, name:String, default:Double) = {
+  def getAsDouble(config:Config, name:String, default:Double): Double = {
     
     try {
       config.getDouble(name)
 
     } catch {
-      case t:Throwable => default
+      case _:Throwable => default
     }
 
   }
@@ -85,13 +84,13 @@ trait SpecBuilder {
 
   }
   
-  def getAsInt(config:Config, name:String, default:Int) = {
+  def getAsInt(config:Config, name:String, default:Int): Int = {
     
     try {
       config.getInt(name)
 
     } catch {
-      case t:Throwable => default
+      case _:Throwable => default
     }
 
   }
@@ -107,27 +106,14 @@ trait SpecBuilder {
 
   }
 
-  def getAsString(config:Config, name:String, default:String) = {
+  def getAsString(config:Config, name:String, default:String): String = {
     
     try {
       config.getString(name)
 
     } catch {
-      case t:Throwable => default
+      case _:Throwable => default
     }
 
   }
-/*
- * 
-      val params = layer.getConfig("params")
-      /* 
-       * Int tuple of length 2 corresponding to the downscale 
-       * vertically and horizontally. Default is (2, 2), which 
-       * will halve the image in each dimension.
-       */
-      val poolSize = config2IntArray(params.getList("poolSize"))
-      MaxPooling2D(poolSize = (poolSize(0), poolSize(1)))
-
- * 
- */
 }

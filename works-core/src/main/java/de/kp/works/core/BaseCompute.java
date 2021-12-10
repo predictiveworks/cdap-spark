@@ -69,10 +69,9 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
 			throws Exception {
 
-		JavaSparkContext jsc = context.getSparkContext();
 		/*
-		 * In case of an empty input the input is immediately returned without any
-		 * further processing
+		 * In case of an empty input the input is immediately
+		 * returned without any further processing
 		 */
 		if (input.isEmpty()) {
 			return input;
@@ -86,6 +85,7 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 			validateSchema(inputSchema);
 		}
 
+		JavaSparkContext jsc = context.getSparkContext();
 		SparkSession session = new SparkSession(jsc.sc());
 
 		/*
@@ -107,6 +107,14 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 		 */
 		return SessionHelper.fromDataset(output, outputSchema);
 
+	}
+
+	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		throw new Exception("[BaseCompute] Not implemented");
+	}
+
+	public Dataset<Row> compute(SparkSession session, Dataset<Row> source) throws Exception {
+		throw new Exception("[BaseCompute] Not implemented");
 	}
 
  	public void validateSchema(Schema inputSchema) {
@@ -140,9 +148,5 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 	protected static Schema getNonNullIfNullable(Schema schema) {
 		return schema.isNullable() ? schema.getNonNullable() : schema;
 	}
-	
-	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		throw new Exception("[BaseCompute] Not implemented");
-	}
-	
+
 }

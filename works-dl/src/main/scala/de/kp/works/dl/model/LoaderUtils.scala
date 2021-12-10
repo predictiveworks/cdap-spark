@@ -1,4 +1,4 @@
-package de.kp.works.dl.models
+package de.kp.works.dl.model
 /*
  * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
@@ -18,30 +18,25 @@ package de.kp.works.dl.models
  * 
  */
 
-import com.intel.analytics.bigdl.nn.abstractnn.{AbstractModule, Activity}
 import com.intel.analytics.bigdl.tensor.TensorNumericMath.TensorNumeric
-
 import com.intel.analytics.zoo.pipeline.api.Net
 import com.intel.analytics.zoo.pipeline.api.keras.models.KerasNet
-import com.intel.analytics.zoo.pipeline.api.net.{GraphNet, TFNet}
-import com.intel.analytics.zoo.pipeline.api.net.TorchNet
+import com.intel.analytics.zoo.pipeline.api.net.{GraphNet, TFNet, TorchNet}
 
-import scala.reflect.ClassTag
-
-class LoaderUtils[T: ClassTag](implicit val ev: TensorNumeric[T]) {
+class LoaderUtils(implicit val ev: TensorNumeric[Float]) {
   
   def load(
       modelType:String, modelPath:String, 
-      defPath:Option[String] = None, weightPath:Option[String] = None):Either[KerasNet[T], GraphNet[T]] = {
+      defPath:Option[String] = None, weightPath:Option[String] = None):Either[KerasNet[Float], GraphNet[Float]] = {
 
     modelType match {
-      case "analytics_zoo" => {
+      case "analytics_zoo" =>
         /*
-         * Load an existing model defined using the Analytics Zoo Keras-style API. 
-         * The model path and optionally weight path if exists must be specified, 
+         * Load an existing model defined using the Analytics Zoo Keras-style API.
+         * The model path and optionally weight path if exists must be specified,
          * where the model was saved.
          */
-        val model:KerasNet[T] = if (weightPath.isDefined) {
+        val model:KerasNet[Float] = if (weightPath.isDefined) {
           Net.load(modelPath, weightPath.get)
 
         } else {
@@ -49,25 +44,23 @@ class LoaderUtils[T: ClassTag](implicit val ev: TensorNumeric[T]) {
         }
 
         Left(model)
-      }
-      case "big_dl" => {
-        val model:GraphNet[T] = if (weightPath.isDefined) {
+
+      case "big_dl" =>
+        val model:GraphNet[Float] = if (weightPath.isDefined) {
           Net.loadBigDL(modelPath, weightPath.get)
-          
+
         } else {
           Net.loadBigDL(modelPath)
         }
-        
+
         Right(model)
-      }
-      case "caffe" => {
-        val model:GraphNet[T] = Net.loadCaffe(defPath.get, modelPath)
+      case "caffe" =>
+        val model:GraphNet[Float] = Net.loadCaffe(defPath.get, modelPath)
         Right(model)
-      }
-      case "torch" => {
-        val model:GraphNet[T] = Net.loadTorch(modelPath)
+
+      case "torch" =>
+        val model:GraphNet[Float] = Net.loadTorch(modelPath)
         Right(model)
-      }
     }
   }
   /*

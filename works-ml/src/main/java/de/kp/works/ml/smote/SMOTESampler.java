@@ -1,6 +1,6 @@
 package de.kp.works.ml.smote;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -42,13 +42,14 @@ import de.kp.works.core.smote.SMOTECompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("SMOTESampler")
-@Description("A preparation stage for either building Apache Spark based classification or regression models. This stage leverages the "
-		+ "SMOTE algorithm to extends a training dataset containing features & labels with synthetic data records.")
+@Description("A preparation stage for either building Apache Spark based classification or regression models."
+		+ " This stage leverages the SMOTE algorithm to extends a training dataset containing features & labels"
+		+ " with synthetic data records.")
 public class SMOTESampler extends SMOTECompute {
 	
 	private static final long serialVersionUID = 6941306314689386349L;
 
-	private SMOTESamplerConfig config;
+	private final SMOTESamplerConfig config;
 	
 	public SMOTESampler(SMOTESamplerConfig config) {
 		this.config = config;
@@ -177,7 +178,7 @@ public class SMOTESampler extends SMOTECompute {
 		}
 		public void validateSchema(Schema inputSchema) {
 			
-			/** FEATURES COLUMN **/
+			/* FEATURES COLUMN */
 
 			Schema.Field featuresField = inputSchema.getField(featuresCol);
 			if (featuresField == null) {
@@ -187,7 +188,7 @@ public class SMOTESampler extends SMOTECompute {
 
 			SchemaUtil.isArrayOfNumeric(inputSchema, featuresCol);
 			
-			/** LABEL COLUMN **/
+			/* LABEL COLUMN */
 
 			Schema.Field labelField = inputSchema.getField(labelCol);
 			if (labelField == null) {

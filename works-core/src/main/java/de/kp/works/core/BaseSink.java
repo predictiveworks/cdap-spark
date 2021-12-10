@@ -1,6 +1,6 @@
 package de.kp.works.core;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -24,6 +24,7 @@ import io.cdap.cdap.api.data.format.StructuredRecord;
 import io.cdap.cdap.api.data.schema.Schema;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
+import org.apache.spark.sql.SparkSession;
 
 public abstract class BaseSink extends SparkSink<StructuredRecord> {
 
@@ -42,6 +43,10 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 	}
 
 	public void compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
+		throw new Exception("[ERROR] Not implemented");
+	}
+
+	public void compute(SparkSession session, Dataset<Row> source) throws Exception {
 		throw new Exception("[ERROR] Not implemented");
 	}
 

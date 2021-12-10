@@ -1,4 +1,22 @@
 package de.kp.works.ml.mining;
+/*
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ *
+ * @author Stefan Krusche, Dr. Krusche & Partner PartG
+ *
+ */
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +65,7 @@ public class FPGrowth extends MiningCompute {
 
 	private static final long serialVersionUID = -6799602007838602218L;
 
-	private FPGrowthConfig config;
+	private final FPGrowthConfig config;
 	
 	public FPGrowth(FPGrowthConfig config) {
 		this.config = config;
@@ -128,12 +146,12 @@ public class FPGrowth extends MiningCompute {
 
 		@Description("Minimal support level of the frequent pattern. Value must be in range [0.0, 1.0]. "
 				+ "Any pattern that appears more than (minSupport * data size) times will be "
-				+ "output in the frequent itemsets. Default is 0.3.")
+				+ "output in the frequent item sets. Default is 0.3.")
 		@Macro
 		public Double minSupport;
 
 		@Description("Minimal confidence for generating Association Rule. minConfidence will not affect the mining "
-				+ "for frequent itemsets, but will affect the association rules generation. Default is 0.8.")
+				+ "for frequent item sets, but will affect the association rules generation. Default is 0.8.")
 		@Macro
 		public Double minConfidence;
 
@@ -167,7 +185,7 @@ public class FPGrowth extends MiningCompute {
 		
 		public void validateSchema(Schema inputSchema) {
 
-			/** ITEMS COLUMN **/
+			/* ITEMS COLUMN */
 
 			Schema.Field itemsField = inputSchema.getField(itemsCol);
 			if (itemsField == null) {
@@ -175,7 +193,7 @@ public class FPGrowth extends MiningCompute {
 						"[%s] The input schema must contain the field that defines the items.", this.getClass().getName()));
 			}
 			
-			/** ITEMS COLUMN **/
+			/* ITEMS COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, itemsCol);
 			
 		}

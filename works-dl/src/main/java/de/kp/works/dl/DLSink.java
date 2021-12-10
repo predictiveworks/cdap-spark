@@ -37,10 +37,10 @@ import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.BaseSink;
 import de.kp.works.core.SessionHelper;
 import scala.Tuple2;
-/*
- * The base [SparkSink] for all Analytics Zoo and BigDL
- * pipelines. Major difference to other SparkSinks is 
- * the requirement to initiate the BigDL engine. 
+/**
+ * This class defines the base [SparkSink] for all Analytics Zoo & BigDL
+ * based deep learning sinks. Major difference to other [SparkSink]s is
+ * the requirement to initiate the BigDL engine.
  */
 public class DLSink extends BaseSink {
 
@@ -54,8 +54,6 @@ public class DLSink extends BaseSink {
 
 	@Override
 	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
-
-		JavaSparkContext jsc = context.getSparkContext();
 		/*
 		 * In case of an empty input immediately return without 
 		 * any further processing
@@ -73,21 +71,22 @@ public class DLSink extends BaseSink {
 		 * STEP #1: Works DL is based on Intel's Analytics Zoo. 
 		 * This demands for a slightly different generation of 
 		 * the respective Spark session
-		 */		
+		 */
+		JavaSparkContext jsc = context.getSparkContext();
 		SparkSession session = getSession(jsc.sc());
+
 		Engine.init();
 
 		/*
-		 * STEP #2: Transform JavaRDD<StructuredRecord> into 
-		 * Dataset<Row>
+		 * Transform JavaRDD<StructuredRecord> into  Dataset<Row>
 		 */
 		StructType structType = DataFrames.toDataType(inputSchema);
 		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
 		/*
-		 * STEP #3: Compute data model from 'rows' leveraging 
-		 * the underlying Scala library of Predictive Works
+		 * Compute data model from 'rows' leveraging the underlying
+		 * Scala library of Predictive Works
 		 */
-		compute(context, rows);
+		compute(session, rows);
 
 	}		
 	/*
@@ -110,8 +109,7 @@ public class DLSink extends BaseSink {
 		 * Build a new session
 		 */
 		Builder builder = SparkSession.builder();
-		Tuple2<String, String>[] params = sparkConf.getAll();
-		for (Tuple2<String, String> param : params) {
+		for (Tuple2<String, String> param : sparkConf.getAll()) {
 
 			String key = param._1();
 			String value = param._2();

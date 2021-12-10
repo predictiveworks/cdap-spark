@@ -1,6 +1,6 @@
 package de.kp.works.dl;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,10 +37,10 @@ import de.kp.works.core.BaseCompute;
 import de.kp.works.core.SessionHelper;
 import scala.Tuple2;
 
-/*
- * The base [SparkCompute] for all Analytics Zoo and BigDL
- * pipelines. Major difference to other SparkComputes is 
- * the requirement to initiate the BigDL engine. 
+/**
+ * This class defines the base [SparkCompute] for all Analytics Zoo & BigDL
+ * based deep learning transformations. Major difference to other [SparkCompute]s
+ * is the requirement to initiate the BigDL engine.
  */
 public class DLCompute extends BaseCompute {
 
@@ -55,7 +55,6 @@ public class DLCompute extends BaseCompute {
 	public JavaRDD<StructuredRecord> transform(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input)
 			throws Exception {
 
-		JavaSparkContext jsc = context.getSparkContext();
 		/*
 		 * In case of an empty input the input is immediately 
 		 * returned without any further processing
@@ -73,34 +72,31 @@ public class DLCompute extends BaseCompute {
 			validateSchema(inputSchema);
 		}
 		/*
-		 * STEP #1: Works DL is based on Intel's Analytics Zoo. 
-		 * This demands for a slightly different generation of 
-		 * the respective Spark session
-		 */		
+		 * Works DL is based on Intel's Analytics Zoo. This demands for
+		 * a slightly different generation of the respective Spark session
+		 */
+		JavaSparkContext jsc = context.getSparkContext();
 		SparkSession session = getSession(jsc.sc());
 		Engine.init();
 
 		/*
-		 * STEP #2: Transform JavaRDD<StructuredRecord> into 
-		 * Dataset<Row>
+		 * Transform JavaRDD<StructuredRecord> into Dataset<Row>
 		 */
 		StructType structType = DataFrames.toDataType(inputSchema);
 		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
 
 		/*
-		 * STEP #3: Compute source with underlying Scala library 
-		 * and derive the output schema dynamically from the computed 
-		 * dataset
+		 * Compute source with underlying Scala library and derive
+		 * the output schema dynamically from the computed dataset
 		 */
 		Dataset<Row> output = compute(context, rows);
 		if (outputSchema == null) {
 			outputSchema = DataFrames.toSchema(output.schema());
 		}
 		/*
-		 * STEP #4: Transform Dataset<Row> into JavaRDD<StructuredRecord>
+		 * Transform Dataset<Row> into JavaRDD<StructuredRecord>
 		 */
-		JavaRDD<StructuredRecord> records = SessionHelper.fromDataset(output, outputSchema);
-		return records;
+		return SessionHelper.fromDataset(output, outputSchema);
 
 	}
 	/*
