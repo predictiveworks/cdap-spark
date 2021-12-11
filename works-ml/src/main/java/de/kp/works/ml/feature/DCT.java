@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -57,15 +57,15 @@ public class DCT extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -8951658736866494139L;
 
-	private DCTConfig config;
+	private final DCTConfig transformConfig;
 	
 	public DCT(DCTConfig config) {
-		this.config = config;
+		this.transformConfig = config;
 	}
 	@Override
 	public void configurePipeline(PipelineConfigurer pipelineConfigurer) throws IllegalArgumentException {
 
-		config.validate();
+		transformConfig.validate();
 
 		StageConfigurer stageConfigurer = pipelineConfigurer.getStageConfigurer();
 		/*
@@ -80,7 +80,7 @@ public class DCT extends FeatureCompute {
 			 * In cases where the input schema is explicitly provided, we determine the
 			 * output schema by explicitly adding the output column
 			 */
-			outputSchema = getOutputSchema(inputSchema, config.outputCol);
+			outputSchema = getOutputSchema(inputSchema, transformConfig.outputCol);
 			stageConfigurer.setOutputSchema(outputSchema);
 
 		}
@@ -89,7 +89,7 @@ public class DCT extends FeatureCompute {
 	
 	@Override
 	public void validateSchema(Schema inputSchema) {
-		config.validateSchema(inputSchema);
+		transformConfig.validateSchema(inputSchema);
 	}
 
 	/**
@@ -98,6 +98,7 @@ public class DCT extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
@@ -107,8 +108,6 @@ public class DCT extends FeatureCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		DCTConfig transformConfig = (DCTConfig)config;
 		/*
 		 * Transformation from Array[Numeric] to Array[Double]
 		 * 
@@ -126,13 +125,11 @@ public class DCT extends FeatureCompute {
 		 */		
 		transformer.setOutputCol("_vector");
 		
-		Boolean inverse = transformConfig.inverse.equals("true") ? true : false;
+		boolean inverse = transformConfig.inverse.equals("true");
 		transformer.setInverse(inverse);
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", transformConfig.outputCol).drop("_input").drop("_vector");
-
-		return output;
+		Dataset<Row> transformed = transformer.transform(vectorset);
+		return MLUtils.devectorize(transformed, "_vector", transformConfig.outputCol).drop("_input").drop("_vector");
 
 	}
 	
@@ -155,7 +152,7 @@ public class DCT extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfNumeric(inputSchema, inputCol);
 			
 		}

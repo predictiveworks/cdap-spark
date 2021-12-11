@@ -49,10 +49,10 @@ public class BisectingKMeansRecorder extends ClusterRecorder {
 
 		String algorithmName = Algorithms.BISECTING_KMEANS;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 		/*
 		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
 		 * model specific file set
@@ -62,7 +62,7 @@ public class BisectingKMeansRecorder extends ClusterRecorder {
 
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 

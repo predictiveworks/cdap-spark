@@ -90,7 +90,7 @@ public class AbstractRecorder {
 
 	}
 
-	public Object getModelParam(Table table, String algorithmName, String modelName, String paramName) {
+	public Object getModelParam(Table table, String algoName, String modelName, String paramName) {
 
 		String strParams = null;
 		Row row;
@@ -104,8 +104,12 @@ public class AbstractRecorder {
 			String algorithm = row.getString("algorithm");
 			String name = row.getString("name");
 
-			if (algorithm.equals(algorithmName) && name.equals(modelName)) {
-				strParams = row.getString("params");
+			assert algorithm != null;
+			if (algorithm.equals(algoName)) {
+				assert name != null;
+				if (name.equals(modelName)) {
+					strParams = row.getString("params");
+				}
 			}
 		}
 
@@ -120,7 +124,7 @@ public class AbstractRecorder {
 
 	}
 
-	public String getLatestModelVersion(Table table, String algorithmName, String modelNamespace, String modelName, String modelStage) {
+	public String getLatestModelVersion(Table table, String algoName, String modelNS, String modelName, String modelStage) {
 
 		String strVersion = null;
 
@@ -133,15 +137,22 @@ public class AbstractRecorder {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
-			if (algorithm.equals(algorithmName)) {
+			assert algorithm != null;
+			if (algorithm.equals(algoName)) {
 
 				String name = row.getString("name");
+
+				assert name != null;
 				if (name.equals(modelName)) {
 
 					String namespace = row.getString("namespace");
-					if (namespace.equals(modelNamespace)) {
+
+					assert namespace != null;
+					if (namespace.equals(modelNS)) {
 	
 						String stage = row.getString("stage");
+
+						assert stage != null;
 						if (stage.equals(modelStage))
 							strVersion = row.getString("version");
 
@@ -163,7 +174,7 @@ public class AbstractRecorder {
 
 	}
 
-	public ModelProfile getLatestModelProfile(Table table, String algorithmName, String modelName, String modelStage) {
+	public ModelProfile getLatestModelProfile(Table table, String algoName, String modelName, String modelStage) {
 
 		ModelProfile profile = null;
 
@@ -175,12 +186,18 @@ public class AbstractRecorder {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
-			if (algorithm.equals(algorithmName)) {
+
+			assert algorithm != null;
+			if (algorithm.equals(algoName)) {
 
 				String name = row.getString("name");
+
+				assert name != null;
 				if (name.equals(modelName)) {
 
 					String stage = row.getString("stage");
+
+					assert stage != null;
 					if (stage.equals(modelStage))
 						profile = new ModelProfile().setId(row.getString("id")).setPath(row.getString("fsPath"));
 

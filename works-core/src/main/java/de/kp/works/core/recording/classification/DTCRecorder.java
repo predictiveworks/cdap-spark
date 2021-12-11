@@ -50,17 +50,17 @@ public class DTCRecorder extends ClassifierRecorder {
 		
 		String algorithmName = Algorithms.DECISION_TREE;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 		

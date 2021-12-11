@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -38,12 +38,13 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("CountVec")
-@Description("A transformation stage that leverages the Apache Spark ML CountVectorizer. This stage requires a trained CountVectorizer model.")
+@Description("A transformation stage that leverages the Apache Spark ML CountVectorizer."
+		+ " This stage requires a trained CountVectorizer model.")
 public class CountVec extends FeatureCompute {
 
 	private static final long serialVersionUID = -6547859144514311308L;
 
-	private CountVecConfig config;
+	private final CountVecConfig config;
 	private CountVectorizerModel model;
 
 	public CountVec(CountVecConfig config) {
@@ -143,7 +144,7 @@ public class CountVec extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

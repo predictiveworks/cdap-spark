@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -58,7 +58,7 @@ public class MinHashLSHBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = 1064127164732936531L;
 
-	private MinHashLSHBuilderConfig config;
+	private final MinHashLSHBuilderConfig config;
 	
 	public MinHashLSHBuilder(MinHashLSHBuilderConfig config) {
 		this.config = config;
@@ -145,7 +145,7 @@ public class MinHashLSHBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (numHashTables < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The number of hash tables must be at least 1.", this.getClass().getName()));

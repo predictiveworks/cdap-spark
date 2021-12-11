@@ -1,16 +1,21 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "Hashing TF",
- "configuration-groups": [
+  "display-name": "Hashing TF",
+  "configuration-groups": [
     {
-      "label": "Basic Configuration",
+      "label": "Plugin Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Reference Name",
           "name": "referenceName"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Input Field",
@@ -20,7 +25,12 @@
           "widget-type": "textbox",
           "label": "Output Field",
           "name": "outputCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Number of Features",
@@ -28,5 +38,6 @@
         }
       ]
     }
+
   ]
 }

@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,19 +18,11 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nullable;
-
-import de.kp.works.core.recording.feature.CountVecRecorder;
-import org.apache.spark.ml.feature.CountVectorizer;
-import org.apache.spark.ml.feature.CountVectorizerModel;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-
 import com.google.gson.Gson;
-
+import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.feature.FeatureModelConfig;
+import de.kp.works.core.feature.FeatureSink;
+import de.kp.works.core.recording.feature.CountVecRecorder;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -40,10 +32,13 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
+import org.apache.spark.ml.feature.CountVectorizer;
+import org.apache.spark.ml.feature.CountVectorizerModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.feature.FeatureModelConfig;
-import de.kp.works.core.feature.FeatureSink;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("CountVecBuilder")
@@ -52,7 +47,7 @@ public class CountVecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 2389361295065144103L;
 
-	private CountVecBuilderConfig config;
+	private final CountVecBuilderConfig config;
 	
 	public CountVecBuilder(CountVecBuilderConfig config) {
 		this.config = config;
@@ -113,7 +108,6 @@ public class CountVecBuilder extends FeatureSink {
 		@Description("The maximum size of the vocabulary. If this value is smaller than the total number of different "
 				+ "terms, the vocabulary will contain the top terms ordered by term frequency across the corpus.")
 		@Macro
-		@Nullable
 		public Integer vocabSize;
 
 		@Description("Specifies the minimum nonnegative number of different documents a term must appear in to be included "
@@ -151,7 +145,7 @@ public class CountVecBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (vocabSize < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum size of the vocabulary must be at least 1.", this.getClass().getName()));
@@ -169,7 +163,7 @@ public class CountVecBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

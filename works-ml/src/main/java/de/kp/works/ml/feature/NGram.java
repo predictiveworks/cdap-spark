@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -55,7 +55,7 @@ public class NGram extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -3545405220776080200L;
 
-	private NGramConfig config;
+	private final NGramConfig config;
 	
 	public NGram(NGramConfig config) {
 		this.config = config;
@@ -97,8 +97,7 @@ public class NGram extends FeatureCompute {
 		transformer.setOutputCol(config.outputCol);
 		transformer.setN(config.n);
 
-		Dataset<Row> output = transformer.transform(source);		
-		return output;
+		return transformer.transform(source);
 
 	}
 	
@@ -113,6 +112,7 @@ public class NGram extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -145,7 +145,7 @@ public class NGram extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

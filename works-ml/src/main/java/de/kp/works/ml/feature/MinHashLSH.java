@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -46,7 +46,7 @@ public class MinHashLSH extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = 1435132891116854304L;
 
-	private MinHashLSHConfig config;
+	private final MinHashLSHConfig config;
 	private MinHashLSHModel model;
 
 	public MinHashLSH(MinHashLSHConfig config) {
