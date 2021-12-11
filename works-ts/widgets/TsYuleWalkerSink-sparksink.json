@@ -1,16 +1,21 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "TS Yule Walker Builder",
- "configuration-groups": [
+  "display-name": "TS Yule Walker Builder",
+  "configuration-groups": [
     {
-      "label": "Basic Configuration",
+      "label": "Plugin Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Reference Name",
           "name": "referenceName"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Basic Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Model Name",
