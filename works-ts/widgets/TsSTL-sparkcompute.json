@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "label": "Algorithm Configuration",
+      "label": "Parameter Configuration",
       "properties": [
         {
           "widget-type": "textbox",

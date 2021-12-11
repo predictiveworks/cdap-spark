@@ -14,7 +14,7 @@
        ]
      },
      {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -46,26 +46,36 @@
             ],
             "default": "latest"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Time Field",
-          "name": "timeCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Value Field",
-          "name": "valueCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Time Steps",
-          "name": "steps",
-          "widget-attributes": {
-            "default": "1"
-          }
         }
       ]
-    }
+     },
+     {
+       "label": "Data Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Time Field",
+           "name": "timeCol"
+         },
+         {
+           "widget-type": "textbox",
+           "label": "Value Field",
+           "name": "valueCol"
+         }
+       ]
+     },
+     {
+       "label": "Parameter Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Time Steps",
+           "name": "steps",
+           "widget-attributes": {
+             "default": "1"
+           }
+         }
+       ]
+     }
   ]
 }

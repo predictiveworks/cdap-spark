@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,13 +28,18 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Time Field",
@@ -52,7 +57,12 @@
           "widget-attributes": {
             "default": "70:30"
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Lag Order",
@@ -60,12 +70,7 @@
           "widget-attributes": {
             "default": "20"
           }
-        }
-      ]
-    },
-    {
-      "label": "Model Configuration",
-      "properties": [
+        },
         {
           "widget-type": "textbox",
           "label": "Minimum Gain",

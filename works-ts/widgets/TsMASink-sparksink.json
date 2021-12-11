@@ -14,17 +14,12 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "Model Name",
           "name": "modelName"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Time Field",
-          "name": "timeCol"
         },
         {
           "widget-type": "select",
@@ -33,12 +28,22 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Time Field",
+          "name": "timeCol"
         },
         {
           "widget-type": "textbox",
@@ -56,7 +61,7 @@
       ]
     },
     {
-      "label": "Model Configuration",
+      "label": "Parameter Configuration",
       "properties": [
         {
           "widget-type": "textbox",

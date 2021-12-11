@@ -13,8 +13,8 @@
         }
       ]
     },
-   {
-      "label": "Basic Configuration",
+    {
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -35,7 +35,12 @@
           "widget-type": "textbox",
           "label": "Label Field",
           "name": "labelCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Feature Dimensions",
