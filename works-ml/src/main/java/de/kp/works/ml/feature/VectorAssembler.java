@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,20 +18,11 @@ package de.kp.works.ml.feature;
  * 
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.types.ArrayType;
-import org.apache.spark.sql.types.DataType;
-import org.apache.spark.sql.types.DoubleType;
-import org.apache.spark.sql.types.NumericType;
-import org.apache.spark.sql.types.StructField;
-
 import com.google.common.base.Strings;
-
+import de.kp.works.core.BaseConfig;
+import de.kp.works.core.SchemaUtil;
+import de.kp.works.core.feature.FeatureCompute;
+import de.kp.works.core.recording.MLUtils;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -41,11 +32,16 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+import org.apache.spark.sql.types.ArrayType;
+import org.apache.spark.sql.types.DataType;
+import org.apache.spark.sql.types.NumericType;
+import org.apache.spark.sql.types.StructField;
 
-import de.kp.works.core.BaseConfig;
-import de.kp.works.core.SchemaUtil;
-import de.kp.works.core.feature.FeatureCompute;
-import de.kp.works.core.recording.MLUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("VectorAssembler")
@@ -55,7 +51,7 @@ public class VectorAssembler extends FeatureCompute {
 
 	private static final long serialVersionUID = 2001829171672928424L;
 
-	private VectorAssemblerConfig config;
+	private final VectorAssemblerConfig config;
 	
 	public VectorAssembler(VectorAssemblerConfig config) {
 		this.config = config;
@@ -122,7 +118,7 @@ public class VectorAssembler extends FeatureCompute {
 			 * The field is selected by the user 
 			 */
 			DataType fieldType = schemaField.dataType();
-			if (fieldType instanceof DoubleType || fieldType instanceof NumericType) {
+			if (fieldType instanceof NumericType) {
 				assembleCols.add(fieldName);
 			
 			} else if (fieldType instanceof ArrayType) {
@@ -146,7 +142,7 @@ public class VectorAssembler extends FeatureCompute {
 
 		org.apache.spark.ml.feature.VectorAssembler transformer = new org.apache.spark.ml.feature.VectorAssembler();
 		
-		String[] inputCols = assembleCols.toArray(new String[assembleCols.size()]);
+		String[] inputCols = assembleCols.toArray(new String[0]);
 		transformer.setInputCols(inputCols);
 
 		/*
@@ -160,7 +156,7 @@ public class VectorAssembler extends FeatureCompute {
 			/*
 			 * Finally temporary vector columns are removed from the output
 			 */
-			String[] dropCols = vectorCols.toArray(new String[vectorCols.size()]);
+			String[] dropCols = vectorCols.toArray(new String[0]);
 			return output.drop(dropCols);
 
 		} else
@@ -174,6 +170,7 @@ public class VectorAssembler extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
@@ -205,7 +202,7 @@ public class VectorAssembler extends FeatureCompute {
 				trimmed.add(token.trim());
 			}
 			
-			return trimmed.toArray(new String[trimmed.size()]);
+			return trimmed.toArray(new String[0]);
 
 		}
 		
@@ -231,6 +228,8 @@ public class VectorAssembler extends FeatureCompute {
 			for (String column: columns) {
 
 				Schema.Field field = inputSchema.getField(column);
+
+				assert field != null;
 				Schema fieldSchema = getNonNullIfNullable(field.getSchema());
 				
 				Schema.Type fieldType = fieldSchema.getType();
@@ -244,7 +243,9 @@ public class VectorAssembler extends FeatureCompute {
 								String.format("[%s] The field that defines the input must be either NUMERIC or an ARRAY.", this.getClass().getName()));
 					}
 
+					assert fieldSchema.getComponentSchema() != null;
 					Schema.Type fieldCompType = getNonNullIfNullable(fieldSchema.getComponentSchema()).getType();
+
 					if (!SchemaUtil.isNumericType(fieldCompType)) {
 						throw new IllegalArgumentException(
 								String.format("[%s] The data type of the input field components must be NUMERIC.", this.getClass().getName()));

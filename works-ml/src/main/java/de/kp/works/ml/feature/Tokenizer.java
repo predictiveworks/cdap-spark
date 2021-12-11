@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -52,7 +52,7 @@ public class Tokenizer extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = 5149156933259052782L;
 
-	private TokenizerConfig config;
+	private final TokenizerConfig config;
 	
 	public Tokenizer(TokenizerConfig config) {
 		this.config = config;
@@ -93,6 +93,7 @@ public class Tokenizer extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -113,11 +114,10 @@ public class Tokenizer extends FeatureCompute {
 		transformer.setPattern(config.pattern);
 		transformer.setMinTokenLength(config.minTokenLength);
 		
-		Boolean gaps = (config.gaps.equals("true")) ? true : false;
+		boolean gaps = config.gaps.equals("true");
 		transformer.setGaps(gaps);
 
-		Dataset<Row> output = transformer.transform(source);		
-		return output;
+		return transformer.transform(source);
 
 	}
 
@@ -160,7 +160,7 @@ public class Tokenizer extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isString(inputSchema, inputCol);
 			
 		}

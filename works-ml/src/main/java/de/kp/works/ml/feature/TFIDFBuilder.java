@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -52,7 +52,7 @@ public class TFIDFBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = -513344006567533602L;
 
-	private TFIDFBuilderConfig config;
+	private final TFIDFBuilderConfig config;
 	
 	public TFIDFBuilder(TFIDFBuilderConfig config) {
 		this.config = config;
@@ -142,7 +142,7 @@ public class TFIDFBuilder extends FeatureSink {
 						.format("[%s] The number of features must be greater than 0.", this.getClass().getName()));
 			}
 			
-			if (numFeatures < 0) {
+			if (minDocFreq < 0) {
 				throw new IllegalArgumentException(String
 						.format("[%s] The minimum number of documents must be nonnegative.", this.getClass().getName()));
 			}
@@ -152,7 +152,7 @@ public class TFIDFBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

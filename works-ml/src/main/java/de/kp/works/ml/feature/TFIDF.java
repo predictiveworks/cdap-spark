@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -46,10 +46,10 @@ public class TFIDF extends FeatureCompute {
 
 	private static final long serialVersionUID = 5252236917563666462L;
 
-	private TFIDFConfig config;
+	private final TFIDFConfig config;
 	
 	private IDFModel model;
-	private TFIDFRecorder recorder;
+	private final TFIDFRecorder recorder;
 
 	public TFIDF(TFIDFConfig config) {
 		this.config = config;
@@ -153,7 +153,7 @@ public class TFIDF extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

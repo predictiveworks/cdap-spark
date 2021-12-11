@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class W2VecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 3885087751281049601L;
 
-	private W2VecBuilderConfig config;
+	private final W2VecBuilderConfig config;
 	
 	public W2VecBuilder(W2VecBuilderConfig config) {
 		this.config = config;
@@ -167,7 +167,7 @@ public class W2VecBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (maxIter < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));
@@ -197,7 +197,7 @@ public class W2VecBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isArrayOfString(inputSchema, inputCol);
 			
 		}

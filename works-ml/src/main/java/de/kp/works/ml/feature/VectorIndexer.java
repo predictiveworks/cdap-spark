@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,7 +44,7 @@ public class VectorIndexer extends FeatureCompute {
 
 	private static final long serialVersionUID = 5944112891925832168L;
 
-	private VectorIndexerConfig config;
+	private final VectorIndexerConfig config;
 	private VectorIndexerModel model;
 
 	public VectorIndexer(VectorIndexerConfig config) {
