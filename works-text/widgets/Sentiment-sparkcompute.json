@@ -14,8 +14,13 @@
        ]
      },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Model Name",
+          "name": "modelName"
+        },
         {
           "widget-type": "select",
           "label": "Model Stage",
@@ -23,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -41,23 +46,23 @@
             ],
             "default": "latest"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Model Name",
-          "name": "modelName"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Text Field",
-          "name": "textCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Prediction Field",
-          "name": "predictionCol"
         }
       ]
-    }
+    },
+     {
+       "label": "Data Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Text Field",
+           "name": "textCol"
+         },
+         {
+           "widget-type": "textbox",
+           "label": "Prediction Field",
+           "name": "predictionCol"
+         }
+       ]
+     }
   ]
 }

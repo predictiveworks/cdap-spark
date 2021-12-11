@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,13 +28,18 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Text Field",
@@ -51,7 +56,7 @@
       ]
     },
     {
-      "label": "Model Configuration",
+      "label": "Parameter Configuration",
       "properties": [
         {
           "widget-type": "textbox",

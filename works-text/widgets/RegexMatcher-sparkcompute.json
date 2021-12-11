@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -25,7 +25,12 @@
           "widget-type": "textbox",
           "label": "Token Field",
           "name": "outputCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textarea",
           "label": "Regex Rules",
@@ -42,7 +47,6 @@
             "default": ","
           }
         }
-
       ]
     }
   ]

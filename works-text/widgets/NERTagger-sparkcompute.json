@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -47,13 +47,18 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Text Field",
@@ -68,7 +73,12 @@
           "widget-type": "textbox",
           "label": "Entities Field",
           "name": "nerCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "select",
           "label": "Normalization",

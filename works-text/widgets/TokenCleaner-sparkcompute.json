@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -25,7 +25,12 @@
           "widget-type": "textbox",
           "label": "Cleaned Field",
           "name": "cleanCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textarea",
           "label": "Stop Words",

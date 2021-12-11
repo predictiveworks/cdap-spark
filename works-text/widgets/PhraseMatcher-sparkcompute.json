@@ -14,7 +14,7 @@
        ]
      },
     {
-      "label": "Basic Configuration",
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -25,25 +25,30 @@
           "widget-type": "textbox",
           "label": "Phrase Field",
           "name": "outputCol"
-        },
-        {
-          "widget-type": "textarea",
-          "label": "Phrases",
-          "name": "phrases",
-          "widget-attributes": {
-            "rows": "10"
-          }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Phrase Delimiter",
-          "name": "delimiter",
-          "widget-attributes": {
-            "default": ","
-          }
         }
-
       ]
-    }
+     },
+     {
+       "label": "Parameter Configuration",
+       "properties": [
+         {
+           "widget-type": "textarea",
+           "label": "Phrases",
+           "name": "phrases",
+           "widget-attributes": {
+             "rows": "10"
+           }
+         },
+         {
+           "widget-type": "textbox",
+           "label": "Phrase Delimiter",
+           "name": "delimiter",
+           "widget-attributes": {
+             "default": ","
+           }
+         }
+
+       ]
+     }
   ]
 }

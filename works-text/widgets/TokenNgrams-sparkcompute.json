@@ -14,7 +14,7 @@
        ]
      },
      {
-      "label": "Basic Configuration",
+      "label": "Data Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -25,16 +25,21 @@
           "widget-type": "textbox",
           "label": "N-Gram Field",
           "name": "ngramCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "N-Gram Length",
-          "name": "n",
-          "widget-attributes": {
-            "default": "2"
-          }
         }
       ]
-    }
+    },
+     {
+       "label": "Parameter Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "N-Gram Length",
+           "name": "n",
+           "widget-attributes": {
+             "default": "2"
+           }
+         }
+       ]
+     }
   ]
 }

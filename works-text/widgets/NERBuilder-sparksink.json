@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -47,22 +47,27 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
+        }
+       ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Corpus Field",
           "name": "lineCol"
         }
-       ]
+      ]
     },
     {
-      "label": "Model Configuration",
+      "label": "Parameter Configuration",
       "properties": [
         {
           "widget-type": "textbox",

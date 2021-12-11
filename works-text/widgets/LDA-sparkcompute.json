@@ -14,7 +14,7 @@
       ]
     },
     {
-      "label": "Basic Configuration",
+      "label": "Model Configuration",
       "properties": [
         {
           "widget-type": "textbox",
@@ -28,7 +28,7 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
@@ -59,14 +59,19 @@
           "widget-attributes": {
             "values": [
               "experiment",
-              "stagging",
+              "staging",
               "production",
               "archived"
             ],
             "default": "experiment"
           }
-        },
-        {
+        }
+      ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
+       {
           "widget-type": "textbox",
           "label": "Text Field",
           "name": "textCol"
@@ -75,7 +80,12 @@
           "widget-type": "textbox",
           "label": "Topic Field",
           "name": "topicCol"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "select",
           "label": "Pooling Strategy",
@@ -99,8 +109,7 @@
             ],
             "default": "vector"
           }
-        }        
-
+        }
       ]
     }
   ]
