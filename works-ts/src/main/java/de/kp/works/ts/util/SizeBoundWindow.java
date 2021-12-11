@@ -1,6 +1,6 @@
 package de.kp.works.ts.util;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,9 +13,7 @@ package de.kp.works.ts.util;
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
- * @author Pranab Ghosh
- * 
+ *
  */
 
 import java.io.Serializable;
@@ -36,36 +34,22 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 	
 	public SizeBoundWindow() {
 	}
-	
-	/**
-	 * @param maxSize
-	 */
+
 	public SizeBoundWindow(int maxSize) {
 		super(true);
 		this.maxSize = maxSize;
 	}
 	
-	/**
-	 * @param maxSize
-	 * @param stepSize
-	 */
 	public SizeBoundWindow(int maxSize, int stepSize) {
 		this(maxSize);
 		this.stepSize = stepSize;
 	}
 	
-	/**
-	 * @param maxSize
-	 * @param stepSize
-	 */
 	public SizeBoundWindow(int maxSize, int stepSize, int processStepSize) {
 		this(maxSize, stepSize);
 		this.processStepSize = processStepSize;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.hoidla.window.DataWindow#add(java.lang.Object)
-	 */
 	@Override
 	public void add(T obj) {
 		if (null == dataWindow) {
@@ -85,9 +69,6 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 	}
 	
 
-	/* (non-Javadoc)
-	 * @see org.hoidla.window.DataWindow#expire()
-	 */
 	@Override
 	public void expire() {
 		//process window data
@@ -97,9 +78,6 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 		slide();
 	}
 	
-	/**
-	 * 
-	 */
 	private void process() {
 		//process window data
 		if (count % processStepSize == 0) {
@@ -107,9 +85,6 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 		}
 	}
 	
-	/**
-	 * 
-	 */
 	private void slide() {
 		//slide window
 		if (dataWindow.size() > maxSize) {
@@ -119,8 +94,8 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 				dataWindow.clear();
 			} else {
 				//slide by stepSize
-				for (int i = 0; i < stepSize; ++i) {
-					dataWindow.remove(0);
+				if (stepSize > 0) {
+					dataWindow.subList(0, stepSize).clear();
 				}
 			}
 			expired = true;
@@ -129,51 +104,30 @@ public class SizeBoundWindow<T> extends DataWindow<T> implements Serializable {
 		}
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.hoidla.window.DataWindow#isFull()
-	 */
 	public boolean isFull() {
 		return dataWindow.size() == maxSize;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getMaxSize() {
 		return maxSize;
 	}
 
-	/**
-	 * @param maxSize
-	 */
 	public void setMaxSize(int maxSize) {
 		this.maxSize = maxSize;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getStepSize() {
 		return stepSize;
 	}
 
-	/**
-	 * @param stepSize
-	 */
 	public void setStepSize(int stepSize) {
 		this.stepSize = stepSize;
 	}
 
-	/**
-	 * @return
-	 */
 	public int getProcessStepSize() {
 		return processStepSize;
 	}
 
-	/**
-	 * @param processStepSize
-	 */
 	public void setProcessStepSize(int processStepSize) {
 		this.processStepSize = processStepSize;
 	}

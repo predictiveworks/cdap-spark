@@ -1,6 +1,6 @@
 package de.kp.works.text.dep;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.dep;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.DependencyRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -40,7 +41,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
 import de.kp.works.text.config.ModelConfig;
-import de.kp.works.text.pos.POSRecorder;
+import de.kp.works.text.recording.POSRecorder;
 import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -51,7 +52,7 @@ public class DependencyParser extends TextCompute {
 
 	private static final long serialVersionUID = 2556276054866498202L;
 
-	private DependencyParserConfig config;
+	private final DependencyParserConfig config;
 	
 	private DependencyParserModel model;
 	private PerceptronModel perceptron;
@@ -119,7 +120,7 @@ public class DependencyParser extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/*  TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -137,6 +138,7 @@ public class DependencyParser extends TextCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String sentenceField, String dependencyField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(sentenceField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

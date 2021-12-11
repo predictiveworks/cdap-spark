@@ -1,6 +1,6 @@
 package de.kp.works.ts.arma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,6 +18,7 @@ package de.kp.works.ts.arma;
  * 
  */
 
+import de.kp.works.ts.recording.ARMARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -40,7 +41,7 @@ public class TsAutoARMA extends ARMACompute {
 
 	private static final long serialVersionUID = -4782182822373835162L;
 
-	private TsAutoARMAConfig config;
+	private final TsAutoARMAConfig config;
 	private AutoARMAModel model;
 	
 	public TsAutoARMA(TsAutoARMAConfig config) {

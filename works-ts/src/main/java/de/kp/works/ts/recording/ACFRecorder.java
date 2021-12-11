@@ -1,6 +1,6 @@
-package de.kp.works.ts.util;
+package de.kp.works.ts.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * This software is the confidential and proprietary information of 
  * Dr. Krusche & Partner PartG ("Confidential Information"). 
@@ -25,7 +25,7 @@ import de.kp.works.ts.AutoCorrelationModel;
 
 public class ACFRecorder extends TimeRecorder {
 
-	/** AUTOCORRELATION FUNCTION **/
+	/** AUTO-CORRELATION FUNCTION **/
 
 	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
@@ -46,17 +46,17 @@ public class ACFRecorder extends TimeRecorder {
 		
 		String algorithmName = Algorithms.ACF;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksTS";
 

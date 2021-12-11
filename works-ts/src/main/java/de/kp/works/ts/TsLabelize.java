@@ -1,6 +1,6 @@
 package de.kp.works.ts;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -50,7 +50,7 @@ public class TsLabelize extends TimeCompute {
 
 	private static final long serialVersionUID = 7459495787871346631L;
 
-	private TsLabelConfig config;
+	private final TsLabelConfig config;
 	
 	public TsLabelize(TsLabelConfig config) {
 		this.config = config;
@@ -94,14 +94,14 @@ public class TsLabelize extends TimeCompute {
 		 * transformed into an array of double to be compliant
 		 * with Google CDAP
 		 */
-		Dataset<Row> output = MLUtils.devectorize(lagging.transform(source), config.featuresCol, config.featuresCol);		
-		return output;
+		return MLUtils.devectorize(lagging.transform(source), config.featuresCol, config.featuresCol);
 		
 	}
 
 	public Schema getOutputSchema(Schema inputSchema) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
+		assert inputSchema.getFields() != null;
 		for (Schema.Field field: inputSchema.getFields()) {
 			/*
 			 * Cast the data type of the value field to double

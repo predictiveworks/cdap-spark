@@ -1,6 +1,6 @@
 package de.kp.works.ts.stl;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class TsAutoSTL extends STLCompute {
 
 	private static final long serialVersionUID = -4933626546193785571L;
 	
-	private TsAutoSTLConfig config;
+	private final TsAutoSTLConfig config;
 	
 	public TsAutoSTL(TsAutoSTLConfig config) {
 		this.config = config;
@@ -82,12 +82,12 @@ public class TsAutoSTL extends STLCompute {
 		
 		AutoSTL decomposer = new AutoSTL();
 		
-		/** COLUMNS **/
+		/* COLUMNS */
 		decomposer.setTimeCol(config.timeCol);
 		decomposer.setValueCol(config.valueCol);
 		decomposer.setGroupCol(config.groupCol);
 		
-		/** PARAMETERS **/
+		/* PARAMETERS */
 		decomposer.setOuterIter(config.outerIter);
 		decomposer.setInnerIter(config.innerIter);
 
@@ -102,10 +102,8 @@ public class TsAutoSTL extends STLCompute {
 
 		else
 			decomposer.setLagValues(config.getLagValues());
-		
-		
-		Dataset<Row> output = decomposer.transform(source);
-		return output;
+
+		return decomposer.transform(source);
 	
 	}
 
@@ -146,7 +144,7 @@ public class TsAutoSTL extends STLCompute {
 				lags.add(Integer.parseInt(token.trim()));
 			}
 
-			Integer[] array = lags.toArray(new Integer[lags.size()]);
+			Integer[] array = lags.toArray(new Integer[0]);
 			return Stream.of(array).mapToInt(Integer::intValue).toArray();
 
 		}

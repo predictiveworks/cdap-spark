@@ -1,6 +1,6 @@
 package de.kp.works.text.ner;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.ner;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.NERRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,7 +40,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.text.TextCompute;
 
-import de.kp.works.text.embeddings.Word2VecRecorder;
+import de.kp.works.text.recording.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 import de.kp.works.text.util.Names;
 
@@ -51,7 +52,7 @@ public class NERTagger extends TextCompute {
 
 	private static final long serialVersionUID = -7309094976122977799L;
 
-	private NERTaggerConfig config;
+	private final NERTaggerConfig config;
 
 	private NerCrfModel model;
 	private Word2VecModel word2vec;
@@ -125,6 +126,7 @@ public class NERTagger extends TextCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String tokenField, String nerField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -137,7 +139,7 @@ public class NERTagger extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -178,7 +180,7 @@ public class NERTagger extends TextCompute {
 		}
 		
 		public Boolean getNormalization() {
-			return (normalization.equals("true")) ? true : false;
+			return normalization.equals("true");
 		}
 
 		public void validate() {

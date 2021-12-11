@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -46,7 +46,7 @@ import de.kp.works.core.BaseConfig;
 public class SentenceTokenizer extends TextCompute {
 
 	private static final long serialVersionUID = 1439261525993214062L;
-	private SentenceTokenizerConfig config;
+	private final SentenceTokenizerConfig config;
 	
 	public SentenceTokenizer(SentenceTokenizerConfig config) {
 		this.config = config;
@@ -95,6 +95,7 @@ public class SentenceTokenizer extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.tokenCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

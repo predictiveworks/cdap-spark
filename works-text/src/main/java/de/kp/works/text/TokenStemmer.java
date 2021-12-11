@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ import de.kp.works.text.util.Names;
 public class TokenStemmer extends TextCompute {
 
 	private static final long serialVersionUID = -9175482610644361111L;
-	private TokenStemmerConfig config;
+	private final TokenStemmerConfig config;
 	
 	public TokenStemmer(TokenStemmerConfig config) {
 		this.config = config;
@@ -85,7 +85,7 @@ public class TokenStemmer extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -99,7 +99,8 @@ public class TokenStemmer extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());		
+		assert inputSchema.getFields() != null;
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(config.stemCol, Schema.of(Schema.Type.STRING)));
 		
 		return Schema.recordOf(inputSchema.getRecordName() + ".transformed", fields);

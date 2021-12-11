@@ -1,6 +1,6 @@
 package de.kp.works.text.embeddings;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.embeddings;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.Word2VecRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -47,8 +48,12 @@ public class Word2Vec extends TextCompute {
 
 	private static final long serialVersionUID = 1849637381439375304L;
 
-	private Word2VecConfig config;
+	private final Word2VecConfig config;
 	private Word2VecModel model;
+
+	public Word2Vec(Word2VecConfig config) {
+		this.config = config;
+	}
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
@@ -104,6 +109,7 @@ public class Word2Vec extends TextCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String tokenField, String embeddingField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 
 		fields.add(Schema.Field.of(tokenField, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -116,7 +122,7 @@ public class Word2Vec extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {

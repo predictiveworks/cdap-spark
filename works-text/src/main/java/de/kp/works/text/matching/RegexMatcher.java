@@ -1,6 +1,6 @@
 package de.kp.works.text.matching;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class RegexMatcher extends TextCompute {
 
 	private static final long serialVersionUID = -5699840126647930210L;
 
-	private RegexMatcherConfig config;
+	private final RegexMatcherConfig config;
 	
 	public RegexMatcher(RegexMatcherConfig config) {
 		this.config = config;
@@ -91,7 +91,7 @@ public class RegexMatcher extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -105,6 +105,7 @@ public class RegexMatcher extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -118,20 +119,18 @@ public class RegexMatcher extends TextCompute {
 
 		@Description("A delimiter separated list of Regex rules.")
 		@Macro
-		private String rules;
+		public String rules;
 
 		@Description("The delimiter used to separate the different Regex rules.")
 		@Macro
-		private String delimiter;
+		public String delimiter;
 		
 		public RegexMatcherConfig() {
 			delimiter = ",";
 		}
 
 		public String getRules() {
-			
-			String cleaned = rules.replaceAll("\\r\\n|\\r|\\n", " ");
-			return cleaned;
+			return rules.replaceAll("\\r\\n|\\r|\\n", " ");
 		}
 		
 		public void validate() {

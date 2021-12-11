@@ -1,6 +1,6 @@
 package de.kp.works.ts.ar;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,6 +18,7 @@ package de.kp.works.ts.ar;
  * 
  */
 
+import de.kp.works.ts.recording.ARRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -39,7 +40,7 @@ public class TsYuleWalker extends ARCompute {
 
 	private static final long serialVersionUID = -3512433728877952854L;
 
-	private TsYuleWalkerConfig config;
+	private final TsYuleWalkerConfig config;
 	private ARYuleWalkerModel model;
 	
 	public TsYuleWalker(TsYuleWalkerConfig config) {
@@ -96,12 +97,10 @@ public class TsYuleWalker extends ARCompute {
 	
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-		
-		TsYuleWalkerConfig computeConfig = (TsYuleWalkerConfig)(config);
-		
-		/* Time & value column may have names different from traing phase */
-		model.setTimeCol(computeConfig.timeCol);
-		model.setValueCol(computeConfig.valueCol);
+
+		/* Time & value column may have names different from training phase */
+		model.setTimeCol(config.timeCol);
+		model.setValueCol(config.valueCol);
 
 		Dataset<Row> forecast = model.forecast(source, config.steps);
 		return assembleAndAnnotate(source, forecast, config.timeCol, config.valueCol);

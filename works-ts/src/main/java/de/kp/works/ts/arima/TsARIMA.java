@@ -1,6 +1,6 @@
 package de.kp.works.ts.arima;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,6 +18,7 @@ package de.kp.works.ts.arima;
  * 
  */
 
+import de.kp.works.ts.recording.ARIMARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -40,7 +41,7 @@ public class TsARIMA extends ARIMACompute {
 
 	private static final long serialVersionUID = 5020395409516031250L;
 
-	private TsARIMAConfig config;
+	private final TsARIMAConfig config;
 	private ARIMAModel model;
 	
 	public TsARIMA(TsARIMAConfig config) {

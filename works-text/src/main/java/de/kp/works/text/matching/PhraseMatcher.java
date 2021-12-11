@@ -1,6 +1,6 @@
 package de.kp.works.text.matching;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class PhraseMatcher extends TextCompute {
 
 	private static final long serialVersionUID = 2804482371714576676L;
 
-	private PhraseMatcherConfig config;
+	private final PhraseMatcherConfig config;
 	
 	public PhraseMatcher(PhraseMatcherConfig config) {
 		this.config = config;
@@ -91,7 +91,7 @@ public class PhraseMatcher extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -105,6 +105,7 @@ public class PhraseMatcher extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.outputCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
@@ -118,20 +119,18 @@ public class PhraseMatcher extends TextCompute {
 
 		@Description("A delimiter separated list of text phrases.")
 		@Macro
-		private String phrases;
+		public String phrases;
 
 		@Description("The delimiter used to separate the different text phrases.")
 		@Macro
-		private String delimiter;
+		public String delimiter;
 		
 		public PhraseMatcherConfig() {
 			delimiter = ",";
 		}
 
 		public String getPhrases() {
-			
-			String cleaned = phrases.replaceAll("\\r\\n|\\r|\\n", " ");
-			return cleaned;
+			return phrases.replaceAll("\\r\\n|\\r|\\n", " ");
 		}
 		
 		public void validate() {

@@ -1,6 +1,6 @@
 package de.kp.works.ts.util;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2011 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -37,33 +37,20 @@ public class SizeBoundFloatStatsWindow extends SizeBoundWindow<Double> {
 	private boolean processed;
 	private boolean fullStat = true;
 	
-	/**
-	 * @param maxSize
-	 */
 	public SizeBoundFloatStatsWindow(int maxSize) {
 		super(maxSize);
 	}
 	
-	/**
-	 * @param maxSize
-	 * @param fullStat
-	 */
 	public SizeBoundFloatStatsWindow(int maxSize, boolean fullStat) {
 		super(maxSize);
 		this.fullStat = fullStat;
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.hoidla.window.DataWindow#add(java.lang.Object)
-	 */
 	public void add(Double value) {
 		processed = false;
 		super.add(value);
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.hoidla.window.DataWindow#processFullWindow()
-	 */
 	public  void processFullWindow() {
 		sum = 0;
 		count = 0;
@@ -72,7 +59,7 @@ public class SizeBoundFloatStatsWindow extends SizeBoundWindow<Double> {
 			sumSq = 0;
 			min = Double.MAX_VALUE;
 			max = Double.MIN_VALUE;
-			List<Double> values = new ArrayList<Double>();
+			List<Double> values = new ArrayList<>();
 			for (Double val : dataWindow) {
 				sum += val;
 				sumSq += val * val;
@@ -108,58 +95,34 @@ public class SizeBoundFloatStatsWindow extends SizeBoundWindow<Double> {
 		processed = true;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getMean() {
 		return mean;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getStdDev() {
 		return stdDev;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getMin() {
 		return min;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getMax() {
 		return max;
 	}
 
-	/**
-	 * @return
-	 */
 	public double getMedian() {
 		return median;
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isProcessed() {
 		return processed;
 	}
 
-	/**
-	 * @param processed
-	 */
 	public void setProcessed(boolean processed) {
 		this.processed = processed;
 	}
 	
-	/**
-	 * 
-	 */
 	public void forcedProcess() {
 		if (!processed) {
 			 processFullWindow();

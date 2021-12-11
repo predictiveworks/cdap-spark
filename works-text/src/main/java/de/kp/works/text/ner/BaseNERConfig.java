@@ -1,6 +1,6 @@
 package de.kp.works.text.ner;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -33,7 +33,7 @@ public class BaseNERConfig extends ModelConfig {
 	public String embeddingName;
 
 	@Description("The stage of the Word2Vec embedding model. Supported values are 'experiment', "
-			+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+			+ "'staging', 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
 	public String embeddingStage;
 

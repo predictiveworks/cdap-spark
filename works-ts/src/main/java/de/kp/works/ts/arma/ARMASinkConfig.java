@@ -1,6 +1,6 @@
 package de.kp.works.ts.arma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -71,9 +71,8 @@ public class ARMASinkConfig extends ARMAConfig {
 		TimeSplit splitter = new TimeSplit();
 		splitter.setTimeCol(timeCol);
 		splitter.setTimeSplit(timeSplit);
-	
-		Dataset<Row>[] splitted = splitter.timeSplit(source);
-		return splitted;
+
+		return splitter.timeSplit(source);
 	
 	}
 	

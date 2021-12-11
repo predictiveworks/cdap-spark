@@ -1,6 +1,6 @@
 package de.kp.works.text.spell;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.spell;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.SpellRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -50,7 +51,7 @@ public class NorvigChecker extends TextCompute {
 
 	private static final long serialVersionUID = 2369095136053899600L;
 
-	private SpellCheckerConfig config;
+	private final SpellCheckerConfig config;
 	private NorvigSweetingModel model;
 
 	public NorvigChecker(SpellCheckerConfig config) {
@@ -105,16 +106,14 @@ public class NorvigChecker extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		NorvigPredictor predictor = new NorvigPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.spellCol, config.threshold);
-
-		return predictions;
+		return predictor.predict(source, config.textCol, config.spellCol, config.threshold);
 		
 	}
 
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -133,6 +132,7 @@ public class NorvigChecker extends TextCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(config.spellCol, Schema.of(Schema.Type.STRING)));
 		

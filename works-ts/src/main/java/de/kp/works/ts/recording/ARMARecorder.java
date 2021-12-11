@@ -1,6 +1,6 @@
-package de.kp.works.ts.arima;
+package de.kp.works.ts.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -26,59 +26,59 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.SparkMLManager;
-import de.kp.works.ts.model.ARIMAModel;
-import de.kp.works.ts.model.AutoARIMAModel;
+import de.kp.works.ts.model.ARMAModel;
+import de.kp.works.ts.model.AutoARMAModel;
 
-public class ARIMARecorder extends TimeRecorder {
+public class ARMARecorder extends TimeRecorder {
 
 	/** READ **/
 	
-	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
-		String algorithmName = Algorithms.ARIMA;
+		String algorithmName = Algorithms.ARMA;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the ARIMA model
+		 * Leverage Apache Spark mechanism to read the ARMA model
 		 * from a model specific file set
 		 */
-		return ARIMAModel.load(modelPath);
+		return ARMAModel.load(modelPath);
 		
 	}
 	
-	public AutoARIMAModel readAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
-		String algorithmName = Algorithms.AUTO_ARIMA;
+		String algorithmName = Algorithms.AUTO_ARMA;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the AutoARIMA model
+		 * Leverage Apache Spark mechanism to read the AutoARMA model
 		 * from a model specific file set
 		 */
-		return AutoARIMAModel.load(modelPath);
+		return AutoARMAModel.load(modelPath);
 		
 	}
 
 	/** WRITE **/
 	
-	public void trackARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			ARIMAModel model) throws Exception {
+	public void trackARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
+			ARMAModel model) throws Exception {
 		
-		String algorithmName = Algorithms.ARIMA;
+		String algorithmName = Algorithms.ARMA;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksTS";
 
@@ -89,22 +89,22 @@ public class ARIMARecorder extends TimeRecorder {
 		
 	}
 	
-	public void trackAutoARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			AutoARIMAModel model) throws Exception {
+	public void trackAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
+			AutoARMAModel model) throws Exception {
 		
-		String algorithmName = Algorithms.AUTO_ARIMA;
+		String algorithmName = Algorithms.AUTO_ARMA;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTimeFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksTS";
 

@@ -1,6 +1,6 @@
-package de.kp.works.text.embeddings;
+package de.kp.works.text.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -34,7 +34,7 @@ import de.kp.works.text.embeddings.Word2VecModel;
 public class Word2VecRecorder extends TextRecorder {
 
 	/**
-	 * The Word2Vec model is used with other builders; as their initializtion
+	 * The Word2Vec model is used with other builders; as their initialization
 	 * phase is based on the basic plugin context, we need an extra read method
 	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
@@ -69,17 +69,17 @@ public class Word2VecRecorder extends TextRecorder {
 
 		String algorithmName = Algorithms.WORD2VEC;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksText";
 

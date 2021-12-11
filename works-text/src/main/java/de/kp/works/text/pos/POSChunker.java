@@ -1,6 +1,6 @@
 package de.kp.works.text.pos;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.pos;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.POSRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -50,7 +51,7 @@ public class POSChunker extends TextCompute {
 	
 	private static final long serialVersionUID = 4211653733506144147L;
 
-	private POSChunkerConfig config;
+	private final POSChunkerConfig config;
 	private PerceptronModel model;
 
 	public POSChunker(POSChunkerConfig config) {
@@ -110,7 +111,7 @@ public class POSChunker extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -129,6 +130,7 @@ public class POSChunker extends TextCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(config.chunkCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));
 		
@@ -150,11 +152,11 @@ public class POSChunker extends TextCompute {
 
 		@Description("A delimiter separated list of chunking rules.")
 		@Macro
-		private String rules;
+		public String rules;
 
 		@Description("The delimiter used to separate the different chunking rules.")
 		@Macro
-		private String delimiter;
+		public String delimiter;
 		
 		public POSChunkerConfig() {
 			modelStage = "experiment";

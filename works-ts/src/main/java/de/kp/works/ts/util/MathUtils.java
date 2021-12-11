@@ -1,6 +1,6 @@
 package de.kp.works.ts.util;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -13,9 +13,7 @@ package de.kp.works.ts.util;
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
- * 
- * @author Pranab Ghosh
- * 
+ *
  */
 
 import java.util.ArrayList;
@@ -33,10 +31,6 @@ public class MathUtils {
 	 * 
 	 */
 
-	/**
-	 * @param x
-	 * @return
-	 */
 	public static double biSquare(double x) {
 		double bs = 0;
 		if (x < 1.0) {
@@ -45,10 +39,6 @@ public class MathUtils {
 		return bs;
 	}
 
-	/**
-	 * @param size
-	 * @return
-	 */
 	public static double[] createIndex(int size) {
 
 		double[] index = new double[size];
@@ -61,19 +51,13 @@ public class MathUtils {
 
 	}
 
-	/**
-	 * @param data
-	 * @param ref
-	 * @param neighbor
-	 * @return
-	 */
 	public static int[] findNeighbors(double[] data, int ref, double[] neighbor) {
 
 		int size = data.length;
 		int nSize = neighbor.length;
 
-		int beg = 0;
-		int refWithin = 0;
+		int beg;
+		int refWithin;
 
 		if (ref < nSize / 2) {
 			beg = 0;
@@ -95,10 +79,6 @@ public class MathUtils {
 		return result;
 	}
 
-	/**
-	 * @param data
-	 * @return
-	 */
 	public static double[][] indexArray(double[] data) {
 
 		// index data
@@ -114,32 +94,20 @@ public class MathUtils {
 
 	}
 
-	/**
-	 * @param vec
-	 * @param absVec
-	 * @return
-	 */
 	public static void getAbsolute(double[] vec, double[] absVec) {
 		for (int i = 0; i < vec.length; ++i) {
 			absVec[i] = Math.abs(vec[i]);
 		}
 	}
 
-	/**
-	 * @param vec
-	 */
 	public static void getAbsolute(double[] vec) {
 		for (int i = 0; i < vec.length; ++i) {
 			vec[i] = Math.abs(vec[i]);
 		}
 	}
 
-	/**
-	 * @param vec
-	 * @return
-	 */
 	public static double getMedian(double[] vec) {
-		double med = 0;
+		double med;
 		Arrays.sort(vec);
 		int size = vec.length;
 		int half = size / 2;
@@ -151,20 +119,10 @@ public class MathUtils {
 		return med;
 	}
 
-	/**
-	 * @param coeffs
-	 * @param x
-	 * @return
-	 */
 	public static double linearRegressionPrediction(Pair<Double, Double> coeffs, double x) {
-		double y = coeffs.getLeft() * x + coeffs.getRight();
-		return y;
+		return coeffs.getLeft() * x + coeffs.getRight();
 	}
 
-	/**
-	 * @param data
-	 * @param neighborSize
-	 */
 	public static void loessSmooth(double[] data, int neighborSize) {
 		double[] neighbor = new double[neighborSize];
 		double[] index = createIndex(neighborSize);
@@ -176,11 +134,6 @@ public class MathUtils {
 		}
 	}
 
-	/**
-	 * @param data
-	 * @param neighborSize
-	 * @param dWeights
-	 */
 	public static void loessSmooth(double[] data, int neighborSize, double[] dWeights) {
 
 		double[] neighbor = new double[neighborSize];
@@ -199,10 +152,6 @@ public class MathUtils {
 		}
 	}
 
-	/**
-	 * @param data
-	 * @param ref
-	 */
 	public static double[] loessWeight(double[] data, double ref) {
 
 		int size = data.length;
@@ -223,17 +172,12 @@ public class MathUtils {
 
 	}
 
-	/**
-	 * @param data
-	 * @param windowSize
-	 * @param filteredDataSize
-	 */
 	public static double[] lowPassFilter(double[] data, int windowSize) {
 
-		List<Double> filteredData = new ArrayList<Double>();
+		List<Double> filteredData = new ArrayList<>();
 		SizeBoundFloatStatsWindow window = new SizeBoundFloatStatsWindow(windowSize, false);
-		for (int i = 0; i < data.length; ++i) {
-			window.add(data[i]);
+		for (double datum : data) {
+			window.add(datum);
 			if (window.isFull()) {
 				filteredData.add(window.getMean());
 			}
@@ -241,22 +185,12 @@ public class MathUtils {
 		return fromListToDoubleArray(filteredData);
 	}
 
-	/**
-	 * @param data
-	 * @param weights
-	 * @return
-	 */
 	public static Pair<Double, Double> weightedLinearRegression(double[] data, double[] weights) {
 		// index data
 		double[][] table = indexArray(data);
 		return weightedLinearRegression(table, weights);
 	}
 
-	/**
-	 * @param table
-	 * @param weights
-	 * @return
-	 */
 	public static Pair<Double, Double> weightedLinearRegression(double[][] table, double[] weights) {
 
 		int count = table.length;
@@ -281,8 +215,7 @@ public class MathUtils {
 		}
 		double b1 = s1 / s2;
 		double b0 = avY - b1 * avX;
-		Pair<Double, Double> coeff = new Pair<Double, Double>(b1, b0);
-		return coeff;
+		return new Pair<>(b1, b0);
 	}
 
 	/********************
@@ -298,10 +231,6 @@ public class MathUtils {
 
 	}
 
-	/**
-	 * @param valueList
-	 * @return
-	 */
 	public static double[] fromListToDoubleArray(List<Double> valueList) {
 		double[] values = new double[valueList.size()];
 		for (int i = 0; i < valueList.size(); ++i) {
@@ -311,14 +240,9 @@ public class MathUtils {
 	}
 
 	public static double maxValue(double val1st, double val2nd) {
-		return val1st > val2nd ? val1st : val2nd;
+		return Math.max(val1st, val2nd);
 	}
 
-	/**
-	 * @param a
-	 * @param b
-	 * @return
-	 */
 	public static double[] subtractVector(double[] a, double[] b) {
 		RealVector va = new ArrayRealVector(a);
 		RealVector vb = new ArrayRealVector(b);
@@ -326,10 +250,6 @@ public class MathUtils {
 		return vc.toArray();
 	}
 
-	/**
-	 * @param data
-	 * @return
-	 */
 	public static double sum(double[] data) {
 		double sum = 0;
 		for (double d : data) {

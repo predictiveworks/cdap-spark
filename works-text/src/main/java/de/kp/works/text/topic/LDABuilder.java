@@ -1,6 +1,6 @@
 package de.kp.works.text.topic;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -46,7 +46,7 @@ import de.kp.works.core.SchemaUtil;
 import de.kp.works.core.recording.clustering.LDARecorder;
 import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.text.TextSink;
-import de.kp.works.text.embeddings.Word2VecRecorder;
+import de.kp.works.text.recording.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
@@ -57,7 +57,7 @@ public class LDABuilder extends TextSink {
 
 	private static final long serialVersionUID = 4678742201151266996L;
 
-	private LDATextSinkConfig config;
+	private final LDATextSinkConfig config;
 	private Word2VecModel word2vec;
 	
 	public LDABuilder(LDATextSinkConfig config) {
@@ -128,7 +128,7 @@ public class LDABuilder extends TextSink {
 		Double perplexity = model.logPerplexity(testset);
 		Double likelihood = model.logLikelihood(testset);
 		/*
-		 * The perplexity & likelihood coefficent is specified as intrinsic 
+		 * The perplexity & likelihood coefficient is specified as intrinsic
 		 * JSON metrics for this LDA model and stored by the LDAManager
 		 */
 		Map<String, Object> metrics = new HashMap<>();
@@ -157,7 +157,7 @@ public class LDABuilder extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -180,11 +180,11 @@ public class LDABuilder extends TextSink {
 
 		@Description("The number of topics that have to be created. Default is 10.")
 		@Macro
-		private Integer k;
+		public Integer k;
 
 		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
 		@Macro
-		private Integer maxIter;
+		public Integer maxIter;
 
 		public LDATextSinkConfig() {
 
@@ -201,7 +201,7 @@ public class LDABuilder extends TextSink {
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 
 			params.put("k", k);
 			params.put("maxIter", maxIter);
@@ -224,7 +224,7 @@ public class LDABuilder extends TextSink {
 			splits.add(x);
 			splits.add(y);
 
-			Double[] array = splits.toArray(new Double[splits.size()]);
+			Double[] array = splits.toArray(new Double[0]);
 			return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 		}

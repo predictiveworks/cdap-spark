@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -48,7 +48,7 @@ public class TokenNgrams extends TextCompute {
 
 	private static final long serialVersionUID = -8026917293183629882L;
 	
-	private TokenNgramsConfig config;
+	private final TokenNgramsConfig config;
 	
 	public TokenNgrams(TokenNgramsConfig config) {
 		this.config = config;
@@ -83,7 +83,7 @@ public class TokenNgrams extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -97,6 +97,7 @@ public class TokenNgrams extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.ngramCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

@@ -1,6 +1,6 @@
 package de.kp.works.text.spell;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.spell;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.text.recording.SpellRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -50,7 +51,7 @@ public class NorvigBuilder extends TextSink {
 
 	private static final long serialVersionUID = -2931861752983178288L;
 
-	private SpellSinkConfig config;
+	private final SpellSinkConfig config;
 	
 	public NorvigBuilder(SpellSinkConfig config) {
 		this.config = config;
@@ -92,7 +93,7 @@ public class NorvigBuilder extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** LINE COLUMN **/
+		/* LINE COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {

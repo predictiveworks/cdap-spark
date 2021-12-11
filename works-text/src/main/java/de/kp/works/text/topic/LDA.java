@@ -1,6 +1,6 @@
 package de.kp.works.text.topic;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -41,7 +41,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Params;
 import de.kp.works.core.recording.clustering.LDARecorder;
 import de.kp.works.core.text.TextCompute;
-import de.kp.works.text.embeddings.Word2VecRecorder;
+import de.kp.works.text.recording.Word2VecRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
@@ -52,7 +52,7 @@ public class LDA extends TextCompute {
 
 	private static final long serialVersionUID = 5821757318391348559L;
 
-	private LDAConfig config;
+	private final LDAConfig config;
 
 	private LDAModel model;
 	private Word2VecModel word2vec;
@@ -113,6 +113,7 @@ public class LDA extends TextCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		if (config.topicStrategy.equals("cluster")) {
@@ -151,7 +152,7 @@ public class LDA extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -183,7 +184,7 @@ public class LDA extends TextCompute {
 
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 			params.put("strategy", getStrategy());
 
 			return params;

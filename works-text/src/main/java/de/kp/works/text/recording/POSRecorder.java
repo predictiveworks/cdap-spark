@@ -1,6 +1,6 @@
-package de.kp.works.text.topic;
+package de.kp.works.text.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,6 +20,8 @@ package de.kp.works.text.topic;
 
 import java.util.Date;
 
+import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
+
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -28,40 +30,38 @@ import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.recording.TextRecorder;
 
-import de.kp.works.text.topic.LDATopicModel;
+public class POSRecorder extends TextRecorder {
 
-public class TopicRecorder extends TextRecorder {
-
-	public LDATopicModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-
-		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+	public PerceptronModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+		
+		String algorithmName = Algorithms.PART_OF_SPEECH;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the LDATopic model
+		 * Leverage Apache Spark mechanism to read the PerceptronModel model
 		 * from a model specific file set
 		 */
-		return LDATopicModel.load(modelPath);
+		return (PerceptronModel)PerceptronModel.load(modelPath);
 		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			LDATopicModel model) throws Exception {
+			PerceptronModel model) throws Exception {
+		
+		String algorithmName = Algorithms.PART_OF_SPEECH;
 
-		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+		/* ARTIFACTS */
 
-		/***** ARTIFACTS *****/
-
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksText";
 
@@ -74,9 +74,9 @@ public class TopicRecorder extends TextRecorder {
 
 	public Object getParam(Table table, String modelName, String paramName) {
 
-		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+		String algorithmName = Algorithms.PART_OF_SPEECH;
 		return getModelParam(table, algorithmName, modelName, paramName);
-		
+	
 	}
 
 }

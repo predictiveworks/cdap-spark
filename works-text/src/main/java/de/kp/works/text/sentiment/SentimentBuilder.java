@@ -1,6 +1,6 @@
 package de.kp.works.text.sentiment;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.sentiment;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.text.recording.SentimentRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -50,7 +51,7 @@ public class SentimentBuilder extends TextSink {
 	
 	private static final long serialVersionUID = -242069506700606299L;
 
-	private SentimentSinkConfig config;
+	private final SentimentSinkConfig config;
 	
 	public SentimentBuilder(SentimentSinkConfig config) {
 		this.config = config;
@@ -109,7 +110,7 @@ public class SentimentBuilder extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {

@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -50,7 +50,7 @@ public class TokenCleaner extends TextCompute {
 	
 	private static final long serialVersionUID = 4659252932384061356L;
 
-	private TokenCleanerConfig config;
+	private final TokenCleanerConfig config;
 	
 	public TokenCleaner(TokenCleanerConfig config) {
 		this.config = config;
@@ -85,7 +85,7 @@ public class TokenCleaner extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -103,6 +103,7 @@ public class TokenCleaner extends TextCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(config.cleanCol, Schema.of(Schema.Type.STRING)));
 		
@@ -124,11 +125,11 @@ public class TokenCleaner extends TextCompute {
 
 		@Description("A delimiter separated list of stop words, i.e. words that have to be removed from the extracted tokens.")
 		@Macro
-		private String words;
+		public String words;
 
 		@Description("The delimiter used to separate the different stop words. Default is comma-separated.")
 		@Macro
-		private String delimiter;
+		public String delimiter;
 		
 		public TokenCleanerConfig() {
 			delimiter = ",";

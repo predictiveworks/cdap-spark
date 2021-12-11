@@ -1,6 +1,6 @@
 package de.kp.works.text.lemma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.lemma;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.text.recording.LemmatizerRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -54,7 +55,7 @@ public class LemmatizerBuilder extends TextSink {
 	 */
 	private static final long serialVersionUID = 3819386514287004996L;
 
-	private LemmaSinkConfig config;
+	private final LemmaSinkConfig config;
 	
 	public LemmatizerBuilder(LemmaSinkConfig config) {
 		this.config = config;
@@ -97,7 +98,7 @@ public class LemmatizerBuilder extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** LINE COLUMN **/
+		/* LINE COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.lineCol);
 		if (textCol == null) {

@@ -1,6 +1,6 @@
 package de.kp.works.ts;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -40,7 +40,7 @@ import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimeConfig;
-import de.kp.works.ts.util.ACFRecorder;
+import de.kp.works.ts.recording.ACFRecorder;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TsAutoCorrelate")
@@ -50,10 +50,10 @@ public class TsACF extends TimeCompute {
 
 	private static final long serialVersionUID = -2782650546004837104L;
 
-	private TsAutoCorrelateConfig config;
+	private final TsAutoCorrelateConfig computeConfig;
 
-	public TsACF(TsAutoCorrelateConfig config) {
-		this.config = config;
+	public TsACF(TsAutoCorrelateConfig computeConfig) {
+		this.computeConfig = computeConfig;
 
 	}
 
@@ -71,8 +71,6 @@ public class TsACF extends TimeCompute {
 
 	@Override
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
-
-		TsAutoCorrelateConfig computeConfig = (TsAutoCorrelateConfig) config;
 
 		AutoCorrelation computer = new AutoCorrelation();
 		computer.setValueCol(computeConfig.valueCol);
@@ -94,7 +92,7 @@ public class TsACF extends TimeCompute {
 
 		ACFRecorder manager = new ACFRecorder();
 		
-		String modelStage = config.modelStage;
+		String modelStage = computeConfig.modelStage;
 		manager.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 		return source;
@@ -157,7 +155,7 @@ public class TsACF extends TimeCompute {
 				lags.add(Integer.parseInt(token.trim()));
 			}
 
-			Integer[] array = lags.toArray(new Integer[lags.size()]);
+			Integer[] array = lags.toArray(new Integer[0]);
 			return Stream.of(array).mapToInt(Integer::intValue).toArray();
 
 		}

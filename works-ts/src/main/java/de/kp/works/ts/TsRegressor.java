@@ -1,6 +1,6 @@
 package de.kp.works.ts;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -60,7 +60,7 @@ public class TsRegressor extends RegressorSink {
 	 * and trend, make sure that the specified time column refers to the
 	 * 'remainder' column after an STL decomposition has been applied.
 	 */
-	private TsRegressorConfig config;
+	private final TsRegressorConfig config;
 
 	public TsRegressor(TsRegressorConfig config) {
 		this.config = config;
@@ -246,7 +246,7 @@ public class TsRegressor extends RegressorSink {
 						String.format("[%s] The time split must not be empty.", this.getClass().getName()));
 			}
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (timeLag < 1)
 				throw new IllegalArgumentException(
 						String.format("[%s] The number of past time points to take into account must be at least 1.", this.getClass().getName()));
@@ -280,7 +280,7 @@ public class TsRegressor extends RegressorSink {
 			splits.add(x);
 			splits.add(y);
 
-			Double[] array = splits.toArray(new Double[splits.size()]);
+			Double[] array = splits.toArray(new Double[0]);
 			return Stream.of(array).mapToDouble(Double::doubleValue).toArray();
 
 		}

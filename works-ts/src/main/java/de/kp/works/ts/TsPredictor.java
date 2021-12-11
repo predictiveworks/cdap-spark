@@ -1,6 +1,6 @@
 package de.kp.works.ts;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -44,7 +44,7 @@ public class TsPredictor extends TimeCompute {
 
 	private static final long serialVersionUID = 3141012240338918366L;
 
-	private TsPredictorConfig config;
+	private final TsPredictorConfig config;
 	private RFRRecorder recorder;
 	
 	private RandomForestRegressionModel regressor;
@@ -144,6 +144,8 @@ public class TsPredictor extends TimeCompute {
 	public Schema getOutputSchema(Schema inputSchema) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
+
+		assert inputSchema.getFields() != null;
 		for (Schema.Field field: inputSchema.getFields()) {
 			
 			if (field.getName().equals(config.valueCol)) {

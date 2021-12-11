@@ -1,6 +1,6 @@
 package de.kp.works.ts.arima;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.ts.arima;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.ts.recording.ARIMARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -45,7 +46,7 @@ public class TsAutoARIMASink extends ARIMASink {
 
 	private static final long serialVersionUID = -4997838624011706379L;
 	
-	private TsAutoARIMASinkConfig config;
+	private final TsAutoARIMASinkConfig config;
 	
 	public TsAutoARIMASink(TsAutoARIMASinkConfig config) {
 		this.config = config;

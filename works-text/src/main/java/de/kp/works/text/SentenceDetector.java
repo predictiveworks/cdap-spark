@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -47,7 +47,7 @@ public class SentenceDetector extends TextCompute {
 
 	private static final long serialVersionUID = 3247150334409546416L;
 
-	private SentenceDetectorConfig config;
+	private final SentenceDetectorConfig config;
 	
 	public SentenceDetector(SentenceDetectorConfig config) {
 		this.config = config;
@@ -97,6 +97,7 @@ public class SentenceDetector extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.sentenceCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

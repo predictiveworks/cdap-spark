@@ -1,6 +1,6 @@
 package de.kp.works.text.topic;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.topic;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.TopicRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -44,7 +45,7 @@ public class Topic extends TextCompute {
 
 	private static final long serialVersionUID = 6494628611665323901L;
 
-	private TopicConfig config;
+	private final TopicConfig config;
 	private LDATopicModel model;
 	
 	public Topic(TopicConfig config) {
@@ -106,6 +107,7 @@ public class Topic extends TextCompute {
 		
 		if (config.topicStrategy.equals("document-topic")) {
 
+			assert inputSchema.getFields() != null;
 			List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 
 			fields.add(Schema.Field.of("topics", Schema.arrayOf(Schema.of(Schema.Type.INT))));
@@ -130,7 +132,7 @@ public class Topic extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {

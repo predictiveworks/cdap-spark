@@ -1,6 +1,6 @@
 package de.kp.works.ts;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -50,7 +50,7 @@ public class TsResample extends TimeCompute {
 
 	private static final long serialVersionUID = 2602057748184161616L;
 
-	private TsResampleConfig config;
+	private final TsResampleConfig config;
 
 	public TsResample(TsResampleConfig config) {
 		this.config = config;
@@ -95,15 +95,15 @@ public class TsResample extends TimeCompute {
 			computer.setGroupCol(config.groupCol);
 
 		computer.setStepSize(config.stepSize);
-
-		Dataset<Row> output = computer.transform(source);
-		return output;
+		return computer.transform(source);
 
 	}
 
 	public Schema getOutputSchema(Schema inputSchema) {
 		
 		List<Schema.Field> outfields = new ArrayList<>();
+
+		assert inputSchema.getFields() != null;
 		for (Schema.Field field: inputSchema.getFields()) {
 			/*
 			 * Cast the data type of the value field to double
@@ -114,7 +114,8 @@ public class TsResample extends TimeCompute {
 			} else
 				outfields.add(field);
 		}
-		
+
+		assert inputSchema.getRecordName() != null;
 		return Schema.recordOf(inputSchema.getRecordName(), outfields);
 
 	}
@@ -136,7 +137,6 @@ public class TsResample extends TimeCompute {
 		@Description("Distance between subsequent points of the time series after resampling. The value "
 				+ "specifies a certain time interval in seconds. Default is 30.")
 		@Macro
-		@Nullable
 		public Integer stepSize;
 
 		public TsResampleConfig() {
@@ -146,7 +146,7 @@ public class TsResample extends TimeCompute {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (stepSize < 1)
 				throw new IllegalArgumentException(
 						String.format("[%s] The time interval between neighboring points must be at least 1 second.", this.getClass().getName()));

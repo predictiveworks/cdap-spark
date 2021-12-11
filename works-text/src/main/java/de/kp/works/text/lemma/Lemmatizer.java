@@ -1,6 +1,6 @@
 package de.kp.works.text.lemma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.lemma;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.LemmatizerRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -56,7 +57,7 @@ public class Lemmatizer extends TextCompute {
 	 * from this as an input format
 	 */
 	
-	private LemmatizerConfig config;
+	private final LemmatizerConfig config;
 	private LemmatizerModel model;
 
 	public Lemmatizer(LemmatizerConfig config) {
@@ -111,16 +112,14 @@ public class Lemmatizer extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		LemmaPredictor predictor = new LemmaPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.lemmaCol);
-
-		return predictions;
+		return predictor.predict(source, config.textCol, config.lemmaCol);
 		
 	}
 	
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/*  TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -139,6 +138,7 @@ public class Lemmatizer extends TextCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.lemmaCol, Schema.of(Schema.Type.STRING)));		

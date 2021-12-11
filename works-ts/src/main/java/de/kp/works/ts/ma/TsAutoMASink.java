@@ -1,6 +1,6 @@
 package de.kp.works.ts.ma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.ts.ma;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.ts.recording.MARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -45,7 +46,7 @@ public class TsAutoMASink extends MASink {
 
 	private static final long serialVersionUID = -2078063701847845205L;
 	
-	private TsAutoMASinkConfig config;
+	private final TsAutoMASinkConfig config;
 	
 	public TsAutoMASink(TsAutoMASinkConfig config) {
 		this.config = config;

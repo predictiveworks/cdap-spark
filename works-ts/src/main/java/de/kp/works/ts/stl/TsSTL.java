@@ -1,6 +1,6 @@
 package de.kp.works.ts.stl;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -47,7 +47,7 @@ public class TsSTL extends STLCompute {
 	 * remainder components and consists of a sequence of applications of the LOESS smoother.
 	 * 
 	 */
-	private TsSTLConfig config;
+	private final TsSTLConfig config;
 	
 	public TsSTL(TsSTLConfig config) {
 		this.config = config;
@@ -81,12 +81,12 @@ public class TsSTL extends STLCompute {
 		
 		STL decomposer = new STL();
 		
-		/** COLUMNS **/
+		/* COLUMNS */
 		decomposer.setTimeCol(config.timeCol);
 		decomposer.setValueCol(config.valueCol);
 		decomposer.setGroupCol(config.groupCol);
 		
-		/** PARAMETERS **/
+		/* PARAMETERS */
 		decomposer.setOuterIter(config.outerIter);
 		decomposer.setInnerIter(config.innerIter);
 		
@@ -96,9 +96,8 @@ public class TsSTL extends STLCompute {
 		decomposer.setTrendLoessSize(config.trendLoessSize);
 		
 		decomposer.setLevelLoessSize(config.levelLoessSize);
-		
-		Dataset<Row> output = decomposer.transform(source);
-		return output;
+
+		return decomposer.transform(source);
 	
 	}
 

@@ -1,6 +1,6 @@
 package de.kp.works.text.ner;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -47,7 +47,7 @@ public class NERRelation extends TextCompute {
 
 	private static final long serialVersionUID = 1L;
 
-	private NERRelationConfig config;
+	private final NERRelationConfig config;
 	
 	public NERRelation(NERRelationConfig config) {
 		this.config = config;
@@ -97,7 +97,7 @@ public class NERRelation extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TOKEN COLUMN **/
+		/* TOKEN COLUMN */
 
 		Schema.Field tokenCol = inputSchema.getField(config.tokenCol);
 		if (tokenCol == null) {
@@ -108,7 +108,7 @@ public class NERRelation extends TextCompute {
 
 		isArrayOfString(config.tokenCol);
 
-		/** NER COLUMN **/
+		/* NER COLUMN */
 
 		Schema.Field nerCol = inputSchema.getField(config.nerCol);
 		if (nerCol == null) {

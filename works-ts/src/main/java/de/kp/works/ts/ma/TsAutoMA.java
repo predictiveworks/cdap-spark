@@ -1,6 +1,6 @@
 package de.kp.works.ts.ma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -18,6 +18,7 @@ package de.kp.works.ts.ma;
  * 
  */
 
+import de.kp.works.ts.recording.MARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -38,7 +39,7 @@ public class TsAutoMA extends MACompute {
 
 	private static final long serialVersionUID = -3457589115912285863L;
 
-	private TsAutoMAConfig config;
+	private final TsAutoMAConfig config;
 	private AutoMAModel model;
 	
 	public TsAutoMA(TsAutoMAConfig config) {

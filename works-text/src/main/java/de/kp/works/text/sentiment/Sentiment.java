@@ -1,6 +1,6 @@
 package de.kp.works.text.sentiment;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.sentiment;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.text.recording.SentimentRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -48,7 +49,7 @@ public class Sentiment extends TextCompute {
 
 	private static final long serialVersionUID = -5009925022021738613L;
 
-	private SentimentConfig config;
+	private final SentimentConfig config;
 	private ViveknSentimentModel model;
 
 	public Sentiment(SentimentConfig config) {
@@ -57,7 +58,7 @@ public class Sentiment extends TextCompute {
 
 	@Override
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
-		((SentimentConfig) config).validate();
+		config.validate();
 
 		model = new SentimentRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
 		if (model == null)
@@ -100,15 +101,13 @@ public class Sentiment extends TextCompute {
 	public Dataset<Row> compute(SparkExecutionPluginContext context, Dataset<Row> source) throws Exception {
 
 		SAPredictor predictor = new SAPredictor(model);
-		Dataset<Row> predictions = predictor.predict(source, config.textCol, config.predictionCol);
-
-		return predictions;
+		return predictor.predict(source, config.textCol, config.predictionCol);
 		
 	}
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -127,6 +126,7 @@ public class Sentiment extends TextCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.STRING)));

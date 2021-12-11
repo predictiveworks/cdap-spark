@@ -1,6 +1,6 @@
 package de.kp.works.text.embeddings;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.text.embeddings;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.text.recording.Word2VecRecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -46,7 +47,7 @@ public class Word2VecBuilder extends TextSink {
 
 	private static final long serialVersionUID = 393252026613980477L;
 
-	private Word2VecSinkConfig config;
+	private final Word2VecSinkConfig config;
 	
 	public Word2VecBuilder(Word2VecSinkConfig config) {
 		this.config = config;
@@ -89,7 +90,7 @@ public class Word2VecBuilder extends TextSink {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 
-		/** TEXT COLUMN **/
+		/* TEXT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {

@@ -39,7 +39,7 @@ public class LDATextConfig extends ModelConfig {
 	public String embeddingName;
 
 	@Description("The stage of the Word2Vec embedding model. Supported values are 'experiment', "
-			+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+			+ "'staging', 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
 	public String embeddingStage;
 
@@ -47,7 +47,7 @@ public class LDATextConfig extends ModelConfig {
 	@Macro
 	public String textCol;
 
-	@Description("The pooling strategy how to merge word embedings into document embeddings. Supported values "
+	@Description("The pooling strategy how to merge word embeddings into document embeddings. Supported values "
 			+ "are 'average' and 'sum'. Default is 'average'.")
 	@Macro
 	public String poolingStrategy;

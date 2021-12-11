@@ -1,6 +1,6 @@
 package de.kp.works.ts.arma;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -21,6 +21,7 @@ package de.kp.works.ts.arma;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.kp.works.ts.recording.ARMARecorder;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
@@ -45,7 +46,7 @@ public class TsARMASink extends ARMASink {
 
 	private static final long serialVersionUID = 1166162703581222031L;
 	
-	private TsARMASinkConfig config;
+	private final TsARMASinkConfig config;
 	
 	public TsARMASink(TsARMASinkConfig config) {
 		this.config = config;

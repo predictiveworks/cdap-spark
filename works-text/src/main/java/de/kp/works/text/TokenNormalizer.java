@@ -1,6 +1,6 @@
 package de.kp.works.text;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ import de.kp.works.core.BaseConfig;
 public class TokenNormalizer extends TextCompute {
 
 	private static final long serialVersionUID = 7292639821710358852L;
-	private TokenNormalizerConfig config;
+	private final TokenNormalizerConfig config;
 	
 	public TokenNormalizer(TokenNormalizerConfig config) {
 		this.config = config;
@@ -84,7 +84,7 @@ public class TokenNormalizer extends TextCompute {
 	@Override
 	public void validateSchema(Schema inputSchema) {
 		
-		/** INPUT COLUMN **/
+		/* INPUT COLUMN */
 
 		Schema.Field textCol = inputSchema.getField(config.textCol);
 		if (textCol == null) {
@@ -98,6 +98,7 @@ public class TokenNormalizer extends TextCompute {
 	
 	public Schema getOutputSchema(Schema inputSchema) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(config.normCol, Schema.arrayOf(Schema.of(Schema.Type.STRING))));

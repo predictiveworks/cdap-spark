@@ -1,6 +1,6 @@
-package de.kp.works.text.ner;
+package de.kp.works.text.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -20,48 +20,48 @@ package de.kp.works.text.ner;
 
 import java.util.Date;
 
-import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel;
+import com.johnsnowlabs.nlp.annotators.spell.norvig.NorvigSweetingModel;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.recording.TextRecorder;
+import de.kp.works.core.recording.SparkMLManager;
 
-public class NERRecorder extends TextRecorder {
-	
-	public NerCrfModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-	
-		String algorithmName = Algorithms.NER_CRF;
+public class SpellRecorder extends TextRecorder {
+
+	public NorvigSweetingModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+		
+		String algorithmName = Algorithms.NORVIG;
 
 		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the NER model
+		 * Leverage Apache Spark mechanism to read the NorvigSweeting model
 		 * from a model specific file set
 		 */
-		return (NerCrfModel)NerCrfModel.load(modelPath);
+		return (NorvigSweetingModel)NorvigSweetingModel.load(modelPath);
 		
 	}
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
-			NerCrfModel model) throws Exception {
+			NorvigSweetingModel model) throws Exception {
 		
-		String algorithmName = Algorithms.NER_CRF;
+		String algorithmName = Algorithms.NORVIG;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getTextFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksText";
 
@@ -69,14 +69,14 @@ public class NERRecorder extends TextRecorder {
 		String namespace = context.getNamespace();
 
 		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
+		
 	}
 
 	public Object getParam(Table table, String modelName, String paramName) {
 		
-		String algorithmName = Algorithms.NER_CRF;
+		String algorithmName = Algorithms.NORVIG;
 		return getModelParam(table, algorithmName, modelName, paramName);
-		
+
 	}
 
 }

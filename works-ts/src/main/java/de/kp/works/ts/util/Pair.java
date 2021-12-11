@@ -1,6 +1,6 @@
 package de.kp.works.ts.util;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -30,48 +30,28 @@ public class Pair<L, R> implements Serializable {
 	public Pair() {
 	}
 
-	/**
-	 * @param left
-	 * @param right
-	 */
 	public Pair(L left, R right) {
 		this.left = left;
 		this.right = right;
 	}
 
-	/**
-	 * @param left
-	 * @param right
-	 */
 	public void initialize(L left, R right) {
 		this.left = left;
 		this.right = right;
 	}
 
-	/**
-	 * @return
-	 */
 	public L getLeft() {
 		return left;
 	}
 
-	/**
-	 * @param left
-	 */
 	public void setLeft(L left) {
 		this.left = left;
 	}
 
-	/**
-	 * @return
-	 */
 	public R getRight() {
 		return right;
 	}
 
-	/**
-	 * @param right
-	 */
 	public void setRight(R right) {
 		this.right = right;
 	}
