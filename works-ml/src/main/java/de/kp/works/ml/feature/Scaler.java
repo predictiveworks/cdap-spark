@@ -18,6 +18,7 @@ package de.kp.works.ml.feature;
  * 
  */
 
+import de.kp.works.core.recording.feature.ScalerRecorder;
 import org.apache.spark.ml.feature.MaxAbsScalerModel;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
 import org.apache.spark.ml.feature.StandardScalerModel;

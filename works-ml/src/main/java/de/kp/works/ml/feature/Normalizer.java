@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -45,7 +45,7 @@ public class Normalizer extends FeatureCompute {
 
 	private static final long serialVersionUID = 8637506241398507943L;
 
-	private NormalizerConfig config;
+	private final NormalizerConfig config;
 	
 	public Normalizer(NormalizerConfig config) {
 		this.config = config;
@@ -86,6 +86,7 @@ public class Normalizer extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
@@ -113,10 +114,8 @@ public class Normalizer extends FeatureCompute {
 		transformer.setOutputCol("_vector");
 		transformer.setP((double)config.norm);
 
-		Dataset<Row> transformed = transformer.transform(vectorset);		
-
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
-		return output;
+		Dataset<Row> transformed = transformer.transform(vectorset);
+		return MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_input").drop("_vector");
 	    		
 	}
 		

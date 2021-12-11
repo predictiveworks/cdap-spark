@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -40,7 +40,7 @@ import de.kp.works.core.feature.FeatureCompute;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("QuantileDiscretizer")
 @Description("A transformation stage that leverages the Apache Spark ML Quantile Discretizer "
-		+ "to map continuous features of a certain input field onto binned categorical feature.")
+		+ "to map continuous features of a certain input field onto binned categorical features.")
 public class QuantileDiscretizer extends FeatureCompute {
 	/*
 	 * 'QuantileDiscretizer' takes a column with continuous features and outputs a
@@ -68,7 +68,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -3391666113031818960L;
 
-	private QuantileDiscretizerConfig config;
+	private final QuantileDiscretizerConfig config;
 	
 	public QuantileDiscretizer(QuantileDiscretizerConfig config) {
 		this.config = config;
@@ -110,6 +110,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.of(Schema.Type.DOUBLE)));
@@ -130,8 +131,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 		transformer.setNumBuckets(config.numBuckets);
 		transformer.setRelativeError(config.relativeError);
 
-		Dataset<Row> output = transformer.fit(source).transform(source);	
-		return output;
+		return transformer.fit(source).transform(source);
 	    		
 	}
 
@@ -171,7 +171,7 @@ public class QuantileDiscretizer extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isNumeric(inputSchema, inputCol);
 			
 		}

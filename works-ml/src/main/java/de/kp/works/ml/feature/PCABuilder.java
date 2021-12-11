@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class PCABuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -698695950116408878L;
 
-	private PCABuilderConfig config;
+	private final PCABuilderConfig config;
 	
 	public PCABuilder(PCABuilderConfig config) {
 		this.config = config;
@@ -127,7 +127,7 @@ public class PCABuilder extends FeatureSink {
 		
 		public Map<String, Object> getParamsAsMap() {
 
-			Map<String, Object> params = new HashMap<String, Object>();
+			Map<String, Object> params = new HashMap<>();
 			params.put("numComp", numComp);
 
 			return params;

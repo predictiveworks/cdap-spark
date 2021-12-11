@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import de.kp.works.core.recording.feature.ScalerRecorder;
 import org.apache.spark.ml.feature.MaxAbsScaler;
 import org.apache.spark.ml.feature.MaxAbsScalerModel;
 import org.apache.spark.ml.feature.MinMaxScaler;

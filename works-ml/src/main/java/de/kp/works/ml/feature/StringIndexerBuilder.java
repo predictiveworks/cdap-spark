@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -53,7 +53,7 @@ public class StringIndexerBuilder extends FeatureSink {
 	 */
 	private static final long serialVersionUID = -2360022873735403321L;
 
-	private StringIndexerBuilderConfig config;
+	private final StringIndexerBuilderConfig config;
 	
 	public StringIndexerBuilder(StringIndexerBuilderConfig config) {
 		this.config = config;
@@ -117,7 +117,7 @@ public class StringIndexerBuilder extends FeatureSink {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isString(inputSchema, inputCol);
 			
 		}

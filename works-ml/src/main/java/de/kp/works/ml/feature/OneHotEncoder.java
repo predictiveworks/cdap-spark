@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 -2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -49,7 +49,7 @@ public class OneHotEncoder extends FeatureCompute {
 	 */
 	private static final long serialVersionUID = -7284145086498844486L;
 
-	private OneHotEncoderConfig config;
+	private final OneHotEncoderConfig config;
 	
 	public OneHotEncoder(OneHotEncoderConfig config) {
 		this.config = config;
@@ -90,6 +90,7 @@ public class OneHotEncoder extends FeatureCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(Schema.Type.DOUBLE))));
@@ -112,13 +113,11 @@ public class OneHotEncoder extends FeatureCompute {
 		 */
 		transformer.setOutputCol("_vector");
 		
-		Boolean dropLast = config.dropLast.equals("true") ? true : false;
+		boolean dropLast = config.dropLast.equals("true");
 		transformer.setDropLast(dropLast);
 
-		Dataset<Row> transformed = transformer.transform(source);		
-
-		Dataset<Row> output = MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
-		return output;
+		Dataset<Row> transformed = transformer.transform(source);
+		return MLUtils.devectorize(transformed, "_vector", config.outputCol).drop("_vector");
 	    		
 	}
 
@@ -145,7 +144,7 @@ public class OneHotEncoder extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isNumeric(inputSchema, inputCol);
 			
 		}

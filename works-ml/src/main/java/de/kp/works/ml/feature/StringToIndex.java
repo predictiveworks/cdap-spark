@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -42,7 +42,7 @@ public class StringToIndex extends FeatureCompute {
 
 	private static final long serialVersionUID = -4361931347919726410L;
 
-	private StringToIndexConfig config;
+	private final StringToIndexConfig config;
 	private StringIndexerModel model;
 
 	public StringToIndex(StringToIndexConfig config) {
@@ -135,7 +135,7 @@ public class StringToIndex extends FeatureCompute {
 		public void validateSchema(Schema inputSchema) {
 			super.validateSchema(inputSchema);
 			
-			/** INPUT COLUMN **/
+			/* INPUT COLUMN */
 			SchemaUtil.isString(inputSchema, inputCol);
 			
 		}
