@@ -1,16 +1,21 @@
 {
-"metadata": {"spec-version": "1.5"},
+  "metadata": {"spec-version": "1.5"},
 
-"display-name": "N-gram Generator",
- "configuration-groups": [
-    {
+  "display-name": "N-gram Generator",
+   "configuration-groups": [
+     {
+       "label": "Plugin Configuration",
+       "properties": [
+         {
+           "widget-type": "textbox",
+           "label": "Reference Name",
+           "name": "referenceName"
+         }
+       ]
+     },
+     {
       "label": "Basic Configuration",
       "properties": [
-        {
-          "widget-type": "textbox",
-          "label": "Reference Name",
-          "name": "referenceName"
-        },
         {
           "widget-type": "textbox",
           "label": "Text Field",
