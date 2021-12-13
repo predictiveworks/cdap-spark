@@ -36,7 +36,7 @@ public class RecommenderRecorder extends AbstractRecorder {
 
 	@Override
 	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-							   String modelStage, String modelParams, String modelMetrics, String fsPath) {
+							   String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
 	}
 
 }

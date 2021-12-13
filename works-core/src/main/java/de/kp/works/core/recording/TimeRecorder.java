@@ -16,7 +16,6 @@ package de.kp.works.core.recording;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Algorithms;
-import io.cdap.cdap.api.common.Bytes;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -44,16 +43,10 @@ public class TimeRecorder extends AbstractRecorder {
 	}
 
 	@Override
-	protected void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
-			String modelStage, String modelParams, String modelMetrics, String fsPath) {
+	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
+			String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
 
-		String fsName = SparkMLManager.TIMESERIES_FS;
-		String modelVersion = getLatestVersion(table, algoName, namespace, modelName, modelStage);
-
-		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
-				modelParams);
-
+		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
 		if (algoName.equals(Algorithms.ACF)) {
 			table.put(row.add("metrics", modelMetrics));
 			

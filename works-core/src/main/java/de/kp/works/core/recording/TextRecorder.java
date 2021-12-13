@@ -16,7 +16,6 @@ package de.kp.works.core.recording;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Algorithms;
-import io.cdap.cdap.api.common.Bytes;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -54,15 +53,9 @@ public class TextRecorder extends AbstractRecorder {
 
 	@Override
 	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-			String modelStage, String modelParams, String modelMetrics, String fsPath) {
+			String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
 
-		String fsName = SparkMLManager.TEXTANALYSIS_FS;
-		String modelVersion = getLatestVersion(table, algoName, modelNS, modelName, modelStage);
-
-		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, modelNS, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
-				modelParams);
-
+		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
 		if (algoName.equals(Algorithms.VIVEKN_SENTIMENT)) {
 			/*
 			 * Unpack regression metrics to build time series of metric values

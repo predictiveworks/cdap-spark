@@ -23,6 +23,7 @@ import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelProfile;
 import de.kp.works.core.model.ModelScanner;
+import io.cdap.cdap.api.common.Bytes;
 import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Row;
@@ -38,7 +39,9 @@ import java.util.Map;
 
 public abstract class AbstractRecorder {
 
+	protected String algoName;
 	protected String algoType;
+
 	protected ModelProfile profile;
 
 	public ModelProfile getProfile() {
@@ -60,13 +63,34 @@ public abstract class AbstractRecorder {
 	}
 
 	protected abstract void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-							   String modelStage, String modelParams, String modelMetrics, String fsPath);
+							   String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception;
 
+
+	public Put buildRow(long ts, Table table, String modelNS, String modelName, String modelPack,
+							   String modelStage, String modelParams, String fsPath) throws Exception {
+
+		String fsName = getFileName();
+		String modelVersion = getLatestVersion(table, algoName, modelNS, modelName, modelStage);
+
+		byte[] key = Bytes.toBytes(ts);
+		return buildRow(
+				key,
+				ts,
+				modelNS,
+				modelName,
+				modelVersion,
+				fsName,
+				fsPath,
+				modelPack,
+				modelStage,
+				algoName,
+				modelParams);
+	}
 	/*
 	 * Metadata schemata for different ML model share common fields; this method is
 	 * used to populate this shared fields
 	 */
-	public Put buildRow(byte[] key, Long timestamp, String namespace, String name, String version, String fsName, String fsPath,
+	private Put buildRow(byte[] key, Long timestamp, String modelNS, String name, String version, String fsName, String fsPath,
 			String pack, String stage, String algorithm, String params) {
 		/*
 		 * Build unique model identifier from all information that is available for a
@@ -88,7 +112,7 @@ public abstract class AbstractRecorder {
 		return new Put(key)
 				.add(Names.TIMESTAMP, timestamp)
 				.add("id", mid)
-				.add("namespace", namespace)
+				.add("namespace", modelNS)
 				.add("name", name)
 				.add("version", version)
 				.add("fsName", fsName)
@@ -458,6 +482,47 @@ public abstract class AbstractRecorder {
 		}
 
 		return fs;
+
+	}
+
+	private String getFileName() throws Exception {
+
+		String fileName;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fileName = SparkMLManager.CLASSIFICATION_FS;
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fileName = SparkMLManager.CLUSTERING_FS;
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fileName = SparkMLManager.FEATURE_FS;
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fileName = SparkMLManager.RECOMMENDATION_FS;
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fileName = SparkMLManager.REGRESSION_FS;
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fileName = SparkMLManager.TEXTANALYSIS_FS;
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fileName = SparkMLManager.TIMESERIES_FS;
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fileName;
 
 	}
 
