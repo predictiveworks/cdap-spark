@@ -39,7 +39,7 @@ public class Word2VecRecorder extends TextRecorder {
 	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
@@ -51,7 +51,7 @@ public class Word2VecRecorder extends TextRecorder {
 	
 	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model

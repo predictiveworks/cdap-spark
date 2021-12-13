@@ -35,7 +35,7 @@ public class SentimentRecorder extends TextRecorder {
 	public ViveknSentimentModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption)
 			throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Sentiment Analysis model from a

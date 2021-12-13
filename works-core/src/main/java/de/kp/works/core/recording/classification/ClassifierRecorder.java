@@ -37,7 +37,7 @@ public class ClassifierRecorder extends AbstractRecorder {
 	 * machine learning model; either the path of the latest
 	 *
 	 */
-	protected String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption) throws Exception {
+	protected String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
 	}
 
@@ -51,18 +51,18 @@ public class ClassifierRecorder extends AbstractRecorder {
 		Table table = SparkMLManager.getClassificationTable(context);
 		String modelNS = context.getNamespace();
 
-		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
-	private void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
+	private void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.CLASSIFICATION_FS;
-		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algoName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
 				modelParams);
 
 		/*

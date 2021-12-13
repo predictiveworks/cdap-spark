@@ -34,12 +34,9 @@ public class RFCRecorder extends ClassifierRecorder {
 
 	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
-		/*
-		 * Leverage Apache Spark mechanism to read the RandomForest model from a model
-		 * specific file set
-		 */
+
 		return RandomForestClassificationModel.load(modelPath);
 
 	}

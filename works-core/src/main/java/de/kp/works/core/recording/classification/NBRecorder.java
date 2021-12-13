@@ -34,7 +34,7 @@ public class NBRecorder extends ClassifierRecorder {
 
 	public NaiveBayesModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the NaiveBayes model from a model

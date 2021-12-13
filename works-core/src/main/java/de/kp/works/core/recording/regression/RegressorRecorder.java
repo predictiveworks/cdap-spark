@@ -39,7 +39,7 @@ public class RegressorRecorder extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
-	public String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption) throws Exception {
+	public String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
 	}
 
@@ -53,18 +53,18 @@ public class RegressorRecorder extends AbstractRecorder {
 		Table table = SparkMLManager.getRegressionTable(context);
 		String modelNS = context.getNamespace();
 
-		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
-	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
+	protected void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.REGRESSION_FS;
-		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algoName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
 				modelParams);
 
 		/*
