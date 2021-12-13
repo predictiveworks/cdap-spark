@@ -52,20 +52,15 @@ public class LDARecorder extends ClusterRecorder {
 
 		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
-		 * model specific file set
-		 */
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + Long.toString(ts) + "/" + modelName;
 
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		Table table = SparkMLManager.getClusteringTable(context);
 		String namespace = context.getNamespace();

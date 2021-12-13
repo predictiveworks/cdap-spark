@@ -18,6 +18,7 @@ package de.kp.works.core.recording;
  * 
  */
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.security.MessageDigest;
 import java.util.Arrays;
@@ -184,6 +185,12 @@ public class AbstractRecorder {
 		profile = getProfile(context, algoType, algoName, modelName, modelStage, modelOption);
 		if (profile.fsPath == null) return null;
 
+		return buildPath(context, algoType, profile.fsPath);
+
+	}
+
+	public String buildPath(SparkExecutionPluginContext context, String algoType, String fsPath) throws Exception {
+
 		FileSet fs;
 		switch (algoType) {
 			case SparkMLManager.CLASSIFIER: {
@@ -219,7 +226,48 @@ public class AbstractRecorder {
 
 		}
 
-		return fs.getBaseLocation().append(profile.fsPath).toURI().getPath();
+		return fs.getBaseLocation().append(fsPath).toURI().getPath();
+
+	}
+
+	public String buildPath(SparkPluginContext context, String algoType, String fsPath) throws Exception {
+
+		FileSet fs;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fs = SparkMLManager.getClassificationFS(context);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fs = SparkMLManager.getClusteringFS(context);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fs = SparkMLManager.getFeatureFS(context);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fs = SparkMLManager.getRecommendationFS(context);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fs = SparkMLManager.getRegressionFS(context);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fs = SparkMLManager.getTextFS(context);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fs = SparkMLManager.getTimeFS(context);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fs.getBaseLocation().append(fsPath).toURI().getPath();
 
 	}
 
@@ -229,42 +277,7 @@ public class AbstractRecorder {
 		profile = getProfile(context, algoType, algoName, modelName, modelStage, modelOption);
 		if (profile.fsPath == null) return null;
 
-		FileSet fs;
-		switch (algoType) {
-			case SparkMLManager.CLASSIFIER: {
-				fs = SparkMLManager.getClassificationFS(context);
-				break;
-			}
-			case SparkMLManager.CLUSTER: {
-				fs = SparkMLManager.getClusteringFS(context);
-				break;
-			}
-			case SparkMLManager.FEATURE: {
-				fs = SparkMLManager.getFeatureFS(context);
-				break;
-			}
-			case SparkMLManager.RECOMMENDER: {
-				fs = SparkMLManager.getRecommendationFS(context);
-				break;
-			}
-			case SparkMLManager.REGRESSOR: {
-				fs = SparkMLManager.getRegressionFS(context);
-				break;
-			}
-			case SparkMLManager.TEXT: {
-				fs = SparkMLManager.getTextFS(context);
-				break;
-			}
-			case SparkMLManager.TIME: {
-				fs = SparkMLManager.getTimeFS(context);
-				break;
-			}
-			default:
-				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
-
-		}
-
-		return fs.getBaseLocation().append(profile.fsPath).toURI().getPath();
+		return buildPath(context, algoType, profile.fsPath);
 
 	}
 

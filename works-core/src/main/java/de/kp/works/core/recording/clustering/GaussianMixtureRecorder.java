@@ -49,20 +49,15 @@ public class GaussianMixtureRecorder extends ClusterRecorder {
 
 		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
-		 * model specific file set
-		 */
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		long ts = new Date().getTime();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 

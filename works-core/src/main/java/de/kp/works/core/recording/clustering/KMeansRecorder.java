@@ -52,14 +52,9 @@ public class KMeansRecorder extends ClusterRecorder {
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + Long.toString(ts) + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the LogisticRegression model to a
-		 * model specific file set
-		 */
-		FileSet fs = SparkMLManager.getClusteringFS(context);
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */

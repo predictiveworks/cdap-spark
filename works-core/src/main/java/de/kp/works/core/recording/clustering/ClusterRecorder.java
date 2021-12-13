@@ -41,6 +41,10 @@ public class ClusterRecorder extends AbstractRecorder {
 		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
 	}
 
+	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
+		return buildPath(context, algoType, fsPath);
+	}
+
 	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 

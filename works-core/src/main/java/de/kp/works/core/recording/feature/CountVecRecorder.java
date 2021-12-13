@@ -55,9 +55,7 @@ public class CountVecRecorder extends FeatureRecorder {
 		long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
-		FileSet fs = SparkMLManager.getFeatureFS(context);
-
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */

@@ -73,9 +73,7 @@ public class ARIMARecorder extends TimeRecorder {
 		long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */
@@ -99,9 +97,7 @@ public class ARIMARecorder extends TimeRecorder {
 		long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts + "/" + modelName;
 
-		FileSet fs = SparkMLManager.getTimeFS(context);
-
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */

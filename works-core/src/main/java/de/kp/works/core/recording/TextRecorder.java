@@ -1,6 +1,6 @@
 package de.kp.works.core.recording;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * This software is the confidential and proprietary information of 
  * Dr. Krusche & Partner PartG ("Confidential Information"). 
@@ -38,6 +38,14 @@ public class TextRecorder extends AbstractRecorder {
 	public String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption)
 			throws Exception {
 		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+	}
+
+	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
+		return buildPath(context, algoType, fsPath);
+	}
+
+	protected String buildModelPath(SparkPluginContext context, String fsPath) throws Exception {
+		return buildPath(context, algoType, fsPath);
 	}
 
 	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,

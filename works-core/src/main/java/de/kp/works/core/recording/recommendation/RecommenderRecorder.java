@@ -21,8 +21,12 @@ public class RecommenderRecorder extends AbstractRecorder {
 
 	protected String algoType = SparkMLManager.RECOMMENDER;
 
-	public String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption) throws Exception {
+	protected String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption) throws Exception {
 		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+	}
+
+	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
+		return buildPath(context, algoType, fsPath);
 	}
 
 }

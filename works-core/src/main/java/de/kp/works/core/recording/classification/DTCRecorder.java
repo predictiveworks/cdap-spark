@@ -21,6 +21,7 @@ package de.kp.works.core.recording.classification;
 
 import java.util.Date;
 
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ml.classification.*;
 
 import io.cdap.cdap.api.dataset.lib.FileSet;
@@ -38,8 +39,9 @@ public class DTCRecorder extends ClassifierRecorder {
 		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
-		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
-		 * from a model specific file set
+		 * Leverage Apache Spark mechanism to read the
+		 * [DecisionTreeClassification] model from a model
+		 * specific file set
 		 */
 		return DecisionTreeClassificationModel.load(modelPath);
 		
@@ -57,9 +59,7 @@ public class DTCRecorder extends ClassifierRecorder {
 		long ts = new Date().getTime();
 		String fsPath = algoName + "/" + ts + "/" + modelName;
 
-		FileSet fs = SparkMLManager.getClassificationFS(context);
-
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */

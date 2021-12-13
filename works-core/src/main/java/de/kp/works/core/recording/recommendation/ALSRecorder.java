@@ -60,13 +60,8 @@ public class ALSRecorder extends RecommenderRecorder {
 
 		long ts = new Date().getTime();
 		String fsPath = algorithmName + "/" + ts + "/" + modelName;
-		/*
-		 * Leverage Apache Spark mechanism to write the ALS model to a model specific
-		 * file set
-		 */
-		FileSet fs = SparkMLManager.getRecommendationFS(context);
 
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */
