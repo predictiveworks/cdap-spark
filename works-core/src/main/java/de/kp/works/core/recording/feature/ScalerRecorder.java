@@ -47,7 +47,7 @@ public class ScalerRecorder extends FeatureRecorder {
 		
 		algoName = Algorithms.MIN_MAX_SCALER;
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -83,7 +83,7 @@ public class ScalerRecorder extends FeatureRecorder {
 
 		algoName = Algorithms.MAX_ABS_SCALER;
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -119,7 +119,7 @@ public class ScalerRecorder extends FeatureRecorder {
 
 		algoName = Algorithms.STANDARD_SCALER;
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Standard Scaler model

@@ -27,40 +27,34 @@ import java.util.Map;
 public class TimeRecorder extends AbstractRecorder {
 
 	protected String algoName;
-	protected String algoType = SparkMLManager.TIME;
-
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
+
+	public TimeRecorder() {
+		algoType = SparkMLManager.TIME;
+	}
+
 
 	public String getModelPath(SparkExecutionPluginContext context, String algoName,
 							   String modelName, String modelStage, String modelOption) throws Exception {
-		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+		return getPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, algoType, fsPath);
+		return buildPath(context, fsPath);
 	}
 
-	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
-							   String modelParams, String modelMetrics, String fsPath) throws Exception {
-
-		Table table = SparkMLManager.getTimeTable(context);
-		String modelNS = context.getNamespace();
-
-		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
-	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
+	@Override
+	protected void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.TIMESERIES_FS;
-		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algoName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
 				modelParams);
 
-		if (algorithmName.equals(Algorithms.ACF)) {
+		if (algoName.equals(Algorithms.ACF)) {
 			table.put(row.add("metrics", modelMetrics));
 			
 		} else {

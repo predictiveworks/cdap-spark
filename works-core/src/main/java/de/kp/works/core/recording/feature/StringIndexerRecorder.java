@@ -19,7 +19,6 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
-import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.StringIndexerModel;
 
@@ -34,7 +33,7 @@ public class StringIndexerRecorder extends FeatureRecorder {
 
 	public StringIndexerModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the StringIndexer model
@@ -59,13 +58,6 @@ public class StringIndexerRecorder extends FeatureRecorder {
 
 		String modelPack = "WorksML";
 		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-		
-	}
-
-	public Object getParam(Table table, String modelName, String paramName) {
-
-		String algorithmName = Algorithms.STRING_INDEXER;
-		return getModelParam(table, algorithmName, modelName, paramName);
 		
 	}
 

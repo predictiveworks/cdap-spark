@@ -29,33 +29,27 @@ import java.util.Map;
 public class ClassifierRecorder extends AbstractRecorder {
 
 	protected String algoName;
-	protected String algoType = SparkMLManager.CLASSIFIER;
-
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
+
+	public ClassifierRecorder() {
+		algoType = SparkMLManager.CLASSIFIER;
+	}
+
 	/**
 	 * This method retrieves the (internal) CDAP path of a stored
 	 * machine learning model; either the path of the latest
 	 *
 	 */
 	protected String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+		return getPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, algoType, fsPath);
+		return buildPath(context, fsPath);
 	}
 
-	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
-							   String modelParams, String modelMetrics, String fsPath) {
-
-		Table table = SparkMLManager.getClassificationTable(context);
-		String modelNS = context.getNamespace();
-
-		setMetadata(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
-	private void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
+	@Override
+	protected void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.CLASSIFICATION_FS;

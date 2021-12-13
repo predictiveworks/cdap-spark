@@ -24,6 +24,10 @@ public class ACFRecorder extends TimeRecorder {
 
 	/** AUTO-CORRELATION FUNCTION **/
 
+	public ACFRecorder() {
+		super();
+	}
+
 	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
 		algoName = Algorithms.ACF;

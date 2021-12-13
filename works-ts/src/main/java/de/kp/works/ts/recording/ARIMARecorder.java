@@ -28,6 +28,10 @@ import java.util.Date;
 
 public class ARIMARecorder extends TimeRecorder {
 
+	public ARIMARecorder() {
+		super();
+	}
+
 	/** READ **/
 	
 	public ARIMAModel readARIMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {

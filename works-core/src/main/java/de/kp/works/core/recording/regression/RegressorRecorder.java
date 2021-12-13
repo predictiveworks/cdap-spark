@@ -35,28 +35,21 @@ import java.util.Map;
 public class RegressorRecorder extends AbstractRecorder {
 
 	protected String algoName;
-	protected String algoType = SparkMLManager.REGRESSOR;
-
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
+	public RegressorRecorder() {
+		algoType = SparkMLManager.REGRESSOR;
+	}
+
 	public String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+		return getPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, algoType, fsPath);
+		return buildPath(context, fsPath);
 	}
 
-	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
-							   String modelParams, String modelMetrics, String fsPath) {
-
-		Table table = SparkMLManager.getRegressionTable(context);
-		String modelNS = context.getNamespace();
-
-		setMetadata(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
+	@Override
 	protected void setMetadata(long ts, Table table, String namespace, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 

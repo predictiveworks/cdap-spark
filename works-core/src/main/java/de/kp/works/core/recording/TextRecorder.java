@@ -28,38 +28,31 @@ import java.util.Map;
 public class TextRecorder extends AbstractRecorder {
 
 	protected String algoName;
-	protected String algoType = SparkMLManager.TEXT;
-
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
-	
+
+	public TextRecorder() {
+		algoType = SparkMLManager.TEXT;
+	}
+
 	public String getModelPath(SparkPluginContext context, String modelName, String modelStage, String modelOption)
 			throws Exception {
-		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+		return getPath(context, algoName, modelName, modelStage, modelOption);
 	}
 	
 	public String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption)
 			throws Exception {
-		return getPath(context, algoType, algoName, modelName, modelStage, modelOption);
+		return getPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, algoType, fsPath);
+		return buildPath(context, fsPath);
 	}
 
 	protected String buildModelPath(SparkPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, algoType, fsPath);
+		return buildPath(context, fsPath);
 	}
 
-	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
-							   String modelParams, String modelMetrics, String fsPath) throws Exception {
-
-		Table table = SparkMLManager.getTextTable(context);
-		String modelNS = context.getNamespace();
-
-		setMetadata(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
+	@Override
 	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 

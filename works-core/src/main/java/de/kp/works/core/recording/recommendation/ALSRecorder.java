@@ -72,24 +72,15 @@ public class ALSRecorder extends RecommenderRecorder {
 
 	}
 
-	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
-							   String modelParams, String modelMetrics, String fsPath) throws Exception {
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String modelNS = context.getNamespace();
-
-		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
-	private void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
+	@Override
+	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algoName, modelNS, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
-		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,
+		Put row = buildRow(key, ts, modelNS, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
 				modelParams);
 
 		/*

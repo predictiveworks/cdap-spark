@@ -28,6 +28,10 @@ import java.util.Date;
 
 public class MARecorder extends TimeRecorder {
 
+	public MARecorder() {
+		super();
+	}
+
 	/** READ **/
 	
 	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {

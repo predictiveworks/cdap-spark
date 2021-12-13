@@ -30,6 +30,10 @@ import java.util.Date;
 
 public class ARRecorder extends TimeRecorder {
 
+	public ARRecorder() {
+		super();
+	}
+
 	/** READ **/
 	
 	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {

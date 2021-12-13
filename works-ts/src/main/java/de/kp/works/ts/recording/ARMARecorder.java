@@ -28,6 +28,10 @@ import java.util.Date;
 
 public class ARMARecorder extends TimeRecorder {
 
+	public ARMARecorder() {
+		super();
+	}
+
 	/** READ **/
 	
 	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
