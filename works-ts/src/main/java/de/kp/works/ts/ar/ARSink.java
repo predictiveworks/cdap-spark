@@ -18,22 +18,8 @@ package de.kp.works.ts.ar;
  * 
  */
 
-import io.cdap.cdap.etl.api.batch.SparkPluginContext;
-import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.core.time.TimeSink;
 
 public class ARSink extends TimeSink {
-
-	private static final long serialVersionUID = -2627863312885407890L;
-
-	@Override
-	public void prepareRun(SparkPluginContext context) throws Exception {
-		/*
-		 * Time series model components and metadata are persisted in a CDAP FileSet
-		 * as well as a Table; at this stage, we have to make sure that these internal
-		 * metadata structures are present
-		 */
-		SparkMLManager.createTimeseriesIfNotExists(context);
-	}
 
 }

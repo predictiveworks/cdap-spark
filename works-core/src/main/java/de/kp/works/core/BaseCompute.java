@@ -18,6 +18,7 @@ package de.kp.works.core;
  * 
  */
 
+import de.kp.works.core.configuration.S3Access;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
@@ -86,6 +87,22 @@ public abstract class BaseCompute extends SparkCompute<StructuredRecord, Structu
 		}
 
 		JavaSparkContext jsc = context.getSparkContext();
+		/*
+		 * MODEL ARTIFACT (READ) SUPPORT
+		 *
+		 * This feature either leverages the local file system
+		 * or an AWS S3 bucket to store and manage trained
+		 * Apache Spark ML models.
+		 */
+		S3Access s3Creds = new S3Access();
+		if (s3Creds.nonEmpty()) {
+
+			jsc.hadoopConfiguration().set("fs.s3a.endpoint", s3Creds.getEndpoint());
+
+			jsc.hadoopConfiguration().set("fs.s3a.access.key", s3Creds.getAccessKey());
+			jsc.hadoopConfiguration().set("fs.s3a.secret.key", s3Creds.getSecretKey());
+		}
+
 		SparkSession session = new SparkSession(jsc.sc());
 
 		/*

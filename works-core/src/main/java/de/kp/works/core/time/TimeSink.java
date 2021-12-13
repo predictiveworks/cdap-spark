@@ -18,19 +18,9 @@ package de.kp.works.core.time;
  * 
  */
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.StructType;
-
-import io.cdap.cdap.api.data.format.StructuredRecord;
-import io.cdap.cdap.api.spark.sql.DataFrames;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.BaseSink;
-import de.kp.works.core.SessionHelper;
+import de.kp.works.core.recording.SparkMLManager;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
 public class TimeSink extends BaseSink {
 
@@ -38,39 +28,12 @@ public class TimeSink extends BaseSink {
 
 	@Override
 	public void prepareRun(SparkPluginContext context) throws Exception {
-		throw new Exception("[TimeSink] method not implemented.");
+		/*
+		 * Time series model components and metadata are persisted in a CDAP FileSet
+		 * as well as a Table; at this stage, we have to make sure that these internal
+		 * metadata structures are present
+		 */
+		SparkMLManager.createTimeseriesIfNotExists(context);
 	}
 
-	@Override
-	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
-
-		JavaSparkContext jsc = context.getSparkContext();
-		/*
-		 * In case of an empty input immediately return 
-		 * without any further processing
-		 */
-		if (input.isEmpty())
-			return;
-
-		if (inputSchema == null) {
-			
-			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema);
-		}
-
-		SparkSession session = new SparkSession(jsc.sc());
-
-		/*
-		 * STEP #1: Transform JavaRDD<StructuredRecord> into Dataset<Row>
-		 */
-		StructType structType = DataFrames.toDataType(inputSchema);
-		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
-		/*
-		 * STEP #2: Compute data model from 'rows' leveraging the underlying Scala
-		 * library of Predictive Works
-		 */
-		compute(context, rows);
-
-	}
-	
 }

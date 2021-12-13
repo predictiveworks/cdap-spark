@@ -18,21 +18,9 @@ package de.kp.works.core.classifier;
  * 
  */
 
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.StructType;
-
-import io.cdap.cdap.api.data.format.StructuredRecord;
-
-import io.cdap.cdap.api.spark.sql.DataFrames;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 import de.kp.works.core.BaseSink;
-import de.kp.works.core.SessionHelper;
 import de.kp.works.core.recording.SparkMLManager;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
 public class ClassifierSink extends BaseSink {
 
@@ -46,40 +34,6 @@ public class ClassifierSink extends BaseSink {
 		 * metadata structures are present
 		 */
 		SparkMLManager.createClassificationIfNotExists(context);
-
-	}
-
-	@Override
-	public void run(SparkExecutionPluginContext context, JavaRDD<StructuredRecord> input) throws Exception {
-
-		/*
-		 * In case of an empty input immediately return 
-		 * without any further processing
-		 */
-		if (input.isEmpty())
-			return;
-
-		if (inputSchema == null) {
-			
-			inputSchema = input.first().getSchema();
-			validateSchema(inputSchema);
-		}
-		/*
-		 * Build an Apache Spark session from the provided
-		 * Spark context
-		 */
-		JavaSparkContext jsc = context.getSparkContext();
-		SparkSession session = new SparkSession(jsc.sc());
-		/*
-		 * Transform JavaRDD<StructuredRecord> into Dataset<Row>
-		 */
-		StructType structType = DataFrames.toDataType(inputSchema);
-		Dataset<Row> rows = SessionHelper.toDataset(input, structType, session);
-		/*
-		 * Compute data model from 'rows' leveraging the underlying
-		 * Scala library of Predictive Works
-		 */
-		compute(context, rows);
 
 	}
 }

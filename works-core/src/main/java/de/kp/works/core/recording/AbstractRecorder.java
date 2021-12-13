@@ -48,6 +48,10 @@ public abstract class AbstractRecorder {
 	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
 							   String modelParams, String modelMetrics, String fsPath) throws Exception {
 
+		/*
+		 * CDAP specific operation of the metadata
+		 * registration
+		 */
 		Table table = getTable(context);
 		String modelNS = context.getNamespace();
 
@@ -57,6 +61,7 @@ public abstract class AbstractRecorder {
 
 	protected abstract void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
 							   String modelStage, String modelParams, String modelMetrics, String fsPath);
+
 	/*
 	 * Metadata schemata for different ML model share common fields; this method is
 	 * used to populate this shared fields
@@ -191,82 +196,17 @@ public abstract class AbstractRecorder {
 
 	public String buildPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
 
-		FileSet fs;
-		switch (algoType) {
-			case SparkMLManager.CLASSIFIER: {
-				fs = SparkMLManager.getClassificationFS(context);
-				break;
-			}
-			case SparkMLManager.CLUSTER: {
-				fs = SparkMLManager.getClusteringFS(context);
-				break;
-			}
-			case SparkMLManager.FEATURE: {
-				fs = SparkMLManager.getFeatureFS(context);
-				break;
-			}
-			case SparkMLManager.RECOMMENDER: {
-				fs = SparkMLManager.getRecommendationFS(context);
-				break;
-			}
-			case SparkMLManager.REGRESSOR: {
-				fs = SparkMLManager.getRegressionFS(context);
-				break;
-			}
-			case SparkMLManager.TEXT: {
-				fs = SparkMLManager.getTextFS(context);
-				break;
-			}
-			case SparkMLManager.TIME: {
-				fs = SparkMLManager.getTimeFS(context);
-				break;
-			}
-			default:
-				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
-
-		}
-
+		FileSet fs = getFileSet(context);
 		return fs.getBaseLocation().append(fsPath).toURI().getPath();
 
 	}
 
 	public String buildPath(SparkPluginContext context, String fsPath) throws Exception {
-
-		FileSet fs;
-		switch (algoType) {
-			case SparkMLManager.CLASSIFIER: {
-				fs = SparkMLManager.getClassificationFS(context);
-				break;
-			}
-			case SparkMLManager.CLUSTER: {
-				fs = SparkMLManager.getClusteringFS(context);
-				break;
-			}
-			case SparkMLManager.FEATURE: {
-				fs = SparkMLManager.getFeatureFS(context);
-				break;
-			}
-			case SparkMLManager.RECOMMENDER: {
-				fs = SparkMLManager.getRecommendationFS(context);
-				break;
-			}
-			case SparkMLManager.REGRESSOR: {
-				fs = SparkMLManager.getRegressionFS(context);
-				break;
-			}
-			case SparkMLManager.TEXT: {
-				fs = SparkMLManager.getTextFS(context);
-				break;
-			}
-			case SparkMLManager.TIME: {
-				fs = SparkMLManager.getTimeFS(context);
-				break;
-			}
-			default:
-				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
-
-		}
-
+		/*
+		 * This method generates the model path from the
+		 * provided fsPath and the respective CDAP file system
+		 */
+		FileSet fs = getFileSet(context);
 		return fs.getBaseLocation().append(fsPath).toURI().getPath();
 
 	}
@@ -439,6 +379,88 @@ public abstract class AbstractRecorder {
 
 	}
 
+	private FileSet getFileSet(SparkExecutionPluginContext context) throws Exception {
+
+		FileSet fs;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fs = SparkMLManager.getClassificationFS(context);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fs = SparkMLManager.getClusteringFS(context);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fs = SparkMLManager.getFeatureFS(context);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fs = SparkMLManager.getRecommendationFS(context);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fs = SparkMLManager.getRegressionFS(context);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fs = SparkMLManager.getTextFS(context);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fs = SparkMLManager.getTimeFS(context);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fs;
+
+	}
+
+	private FileSet getFileSet(SparkPluginContext context) throws Exception {
+
+		FileSet fs;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fs = SparkMLManager.getClassificationFS(context);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fs = SparkMLManager.getClusteringFS(context);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fs = SparkMLManager.getFeatureFS(context);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fs = SparkMLManager.getRecommendationFS(context);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fs = SparkMLManager.getRegressionFS(context);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fs = SparkMLManager.getTextFS(context);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fs = SparkMLManager.getTimeFS(context);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fs;
+
+	}
+
 	private Table getTable(SparkPluginContext context) throws Exception {
 
 		Table table;
@@ -479,4 +501,5 @@ public abstract class AbstractRecorder {
 		return table;
 
 	}
+
 }

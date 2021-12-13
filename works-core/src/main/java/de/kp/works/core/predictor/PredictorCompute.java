@@ -67,6 +67,7 @@ public class PredictorCompute extends BaseCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
 
+		assert inputSchema.getFields() != null;
 		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));
 		
@@ -101,7 +102,7 @@ public class PredictorCompute extends BaseCompute {
 			 * with the same annotation; we therefore extract
 			 * them from the fist column
 			 */
-			Integer index = predictions.schema().fieldIndex(ANNOTATION_COL);
+			int index = predictions.schema().fieldIndex(ANNOTATION_COL);
 
 			String annotation = predictions.first().getString(index);			
 			annonItems.addAll(annonToList(annotation));

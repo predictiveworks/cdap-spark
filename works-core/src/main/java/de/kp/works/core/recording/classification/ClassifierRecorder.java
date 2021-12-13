@@ -59,23 +59,23 @@ public class ClassifierRecorder extends AbstractRecorder {
 		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algoName,
 				modelParams);
 
-		/*
-		 * Unpack classification metrics to build time series of metric values
-		 */
+		String[] metricNames = new String[] {
+			Names.ACCURACY,
+			Names.F1,
+			Names.WEIGHTED_FMEASURE,
+			Names.WEIGHTED_PRECISION,
+			Names.WEIGHTED_RECALL,
+			Names.WEIGHTED_FALSE_POSITIVE,
+			Names.WEIGHTED_TRUE_POSITIVE
+		};
+
 		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
+		for (String metricName: metricNames) {
+			Double metricValue = (Double) metrics.get(metricName);
+			row.add(metricName, metricValue);
+		}
 
-		Double accuracy = (Double) metrics.get(Names.ACCURACY);
-		Double f1 = (Double) metrics.get(Names.F1);
-		Double weightedFMeasure = (Double) metrics.get(Names.WEIGHTED_FMEASURE);
-		Double weightedPrecision = (Double) metrics.get(Names.WEIGHTED_PRECISION);
-		Double weightedRecall = (Double) metrics.get(Names.WEIGHTED_RECALL);
-		Double weightedFalsePositiveRate = (Double) metrics.get(Names.WEIGHTED_FALSE_POSITIVE);
-		Double weightedTruePositiveRate = (Double) metrics.get(Names.WEIGHTED_TRUE_POSITIVE);
-
-		table.put(row.add(Names.ACCURACY, accuracy).add(Names.F1, f1).add(Names.WEIGHTED_FMEASURE, weightedFMeasure)
-				.add(Names.WEIGHTED_PRECISION, weightedPrecision).add(Names.WEIGHTED_RECALL, weightedRecall)
-				.add(Names.WEIGHTED_FALSE_POSITIVE, weightedFalsePositiveRate)
-				.add(Names.WEIGHTED_TRUE_POSITIVE, weightedTruePositiveRate));
+		table.put(row);
 
 	}
 
