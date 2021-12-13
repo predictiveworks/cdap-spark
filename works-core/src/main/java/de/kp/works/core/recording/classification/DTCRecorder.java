@@ -31,11 +31,11 @@ import de.kp.works.core.recording.SparkMLManager;
 
 public class DTCRecorder extends ClassifierRecorder {
 
+	private final String algoName = Algorithms.DECISION_TREE;
+
 	public DecisionTreeClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.DECISION_TREE;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DecisionTreeClassification model
@@ -44,16 +44,18 @@ public class DTCRecorder extends ClassifierRecorder {
 		return DecisionTreeClassificationModel.load(modelPath);
 		
 	}
-
+	/**
+	 * This method supports the training phase and registers
+	 * the metadata (metrics & params) of a certain trained
+	 * machine learning model
+	 */
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			DecisionTreeClassificationModel model) throws Exception {
-		
-		String algorithmName = Algorithms.DECISION_TREE;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 
@@ -67,7 +69,7 @@ public class DTCRecorder extends ClassifierRecorder {
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
 		
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

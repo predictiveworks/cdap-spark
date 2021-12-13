@@ -31,11 +31,11 @@ import de.kp.works.core.recording.SparkMLManager;
 
 public class RFCRecorder extends ClassifierRecorder {
 
+	private final String algoName = Algorithms.RANDOM_FOREST_TREE;
+
 	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the RandomForest model from a model
@@ -48,12 +48,10 @@ public class RFCRecorder extends ClassifierRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			RandomForestClassificationModel model) throws Exception {
 
-		String algorithmName = Algorithms.RANDOM_FOREST_TREE;
+		/* ARTIFACTS */
 
-		/***** ARTIFACTS *****/
-
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 		/*
 		 * Leverage Apache Spark mechanism to write the RandomForest model 
 		 * to a model specific file set
@@ -63,14 +61,14 @@ public class RFCRecorder extends ClassifierRecorder {
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
 
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

@@ -31,11 +31,11 @@ import de.kp.works.core.recording.SparkMLManager;
 
 public class MLPRecorder extends ClassifierRecorder {
 
+	private final String algoName = Algorithms.MULTI_LAYER_PERCEPTRON;
+
 	public MultilayerPerceptronClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MultilayerPerceptron model from a
@@ -48,26 +48,24 @@ public class MLPRecorder extends ClassifierRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MultilayerPerceptronClassificationModel model) throws Exception {
 
-		String algorithmName = Algorithms.MULTI_LAYER_PERCEPTRON;
+		/* ARTIFACTS */
 
-		/***** ARTIFACTS *****/
-
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
 
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

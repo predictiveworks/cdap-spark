@@ -21,17 +21,103 @@ package de.kp.works.core.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Row;
 import io.cdap.cdap.api.dataset.table.Scanner;
 import io.cdap.cdap.api.dataset.table.Table;
 import de.kp.works.core.Algorithms;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
 public class ModelScanner {
+	/**
+	 * This method retrieves the profile of the best (most accurate)
+	 * machine learning model; the current implementation retrieves
+	 * the metadata and the associated profile from an internal
+	 * dataset.
+	 */
+	public ModelProfile bestProfile(SparkExecutionPluginContext context, String algoType, String algoName,
+									String modelName, String modelStage) throws Exception {
 
-	public ModelProfile bestClassifier(Table table, String algoName, String modelName, String modelStage) {
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				Table table = context.getDataset(SparkMLManager.CLASSIFICATION_TABLE);
+				return bestClassifier(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.CLUSTER: {
+				Table table = context.getDataset(SparkMLManager.CLUSTERING_TABLE);
+				return bestCluster(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.FEATURE: {
+				Table table = context.getDataset(SparkMLManager.FEATURE_TABLE);
+				return bestFeature(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.RECOMMENDER: {
+				Table table = context.getDataset(SparkMLManager.RECOMMENDATION_TABLE);
+				return bestRecommender(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.REGRESSOR: {
+				Table table = context.getDataset(SparkMLManager.REGRESSION_TABLE);
+				return bestRegressor(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.TEXT: {
+				Table table = context.getDataset(SparkMLManager.TEXTANALYSIS_TABLE);
+				return bestText(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.TIME: {
+				Table table = context.getDataset(SparkMLManager.TIMESERIES_TABLE);
+				return bestTime(table, algoName, modelName, modelStage);
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+	}
+
+	public ModelProfile bestProfile(SparkPluginContext context, String algoType, String algoName,
+									String modelName, String modelStage) throws Exception {
+
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				Table table = context.getDataset(SparkMLManager.CLASSIFICATION_TABLE);
+				return bestClassifier(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.CLUSTER: {
+				Table table = context.getDataset(SparkMLManager.CLUSTERING_TABLE);
+				return bestCluster(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.FEATURE: {
+				Table table = context.getDataset(SparkMLManager.FEATURE_TABLE);
+				return bestFeature(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.RECOMMENDER: {
+				Table table = context.getDataset(SparkMLManager.RECOMMENDATION_TABLE);
+				return bestRecommender(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.REGRESSOR: {
+				Table table = context.getDataset(SparkMLManager.REGRESSION_TABLE);
+				return bestRegressor(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.TEXT: {
+				Table table = context.getDataset(SparkMLManager.TEXTANALYSIS_TABLE);
+				return bestText(table, algoName, modelName, modelStage);
+			}
+			case SparkMLManager.TIME: {
+				Table table = context.getDataset(SparkMLManager.TIMESERIES_TABLE);
+				return bestTime(table, algoName, modelName, modelStage);
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+	}
+
+	private ModelProfile bestClassifier(Table table, String algoName, String modelName, String modelStage) {
 		/*
 		 * All classifiers are evaluated leveraging the same evaluator, i.e. no
-		 * distinction between different algorithms is requied
+		 * distinction between different algorithms is required
 		 */
 		List<ClassifierMetric> metrics = new ArrayList<>();
 		Row row;
@@ -40,12 +126,15 @@ public class ModelScanner {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
+			assert algorithm != null;
 			if (algorithm.equals(algoName)) {
 
 				String name = row.getString("name");
+				assert name != null;
 				if (name.equals(modelName)) {
 
 					String stage = row.getString("stage");
+					assert stage != null;
 					if (stage.equals(modelStage)) {
 
 						ClassifierMetric metric = new ClassifierMetric();
@@ -72,12 +161,15 @@ public class ModelScanner {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
+			assert algorithm != null;
 			if (algorithm.equals(algoName)) {
 
 				String name = row.getString("name");
+				assert name != null;
 				if (name.equals(modelName)) {
 
 					String stage = row.getString("stage");
+					assert stage != null;
 					if (stage.equals(modelStage)) {
 
 						ClusterMetric metric = new ClusterMetric();
@@ -102,13 +194,10 @@ public class ModelScanner {
 
 	public ModelProfile bestRecommender(Table table, String algoName, String modelName, String modelStage) {
 
-		switch (algoName) {
-		case Algorithms.ALS: {
+		if (Algorithms.ALS.equals(algoName)) {
 			return bestRegressor(table, algoName, modelName, modelStage);
 		}
-		default:
-			return null;
-		}
+		return null;
 
 	}
 
@@ -125,12 +214,15 @@ public class ModelScanner {
 		while ((row = rows.next()) != null) {
 
 			String algorithm = row.getString("algorithm");
+			assert algorithm != null;
 			if (algorithm.equals(algoName)) {
 
 				String name = row.getString("name");
+				assert name != null;
 				if (name.equals(modelName)) {
 
 					String stage = row.getString("stage");
+					assert stage != null;
 					if (stage.equals(modelStage)) {
 
 						RegressorMetric metric = new RegressorMetric();
@@ -151,14 +243,10 @@ public class ModelScanner {
 
 	public ModelProfile bestText(Table table, String algoName, String modelName, String modelStage) {
 
-		switch (algoName) {
-
-		case Algorithms.VIVEKN_SENTIMENT: {
+		if (Algorithms.VIVEKN_SENTIMENT.equals(algoName)) {
 			return bestRegressor(table, algoName, modelName, modelStage);
 		}
-		default:
-			return null;
-		}
+		return null;
 
 	}
 

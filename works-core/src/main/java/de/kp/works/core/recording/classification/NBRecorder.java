@@ -31,11 +31,11 @@ import de.kp.works.core.recording.SparkMLManager;
 
 public class NBRecorder extends ClassifierRecorder {
 
-	public NaiveBayesModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.NAIVE_BAYES;
+	private final String algoName = Algorithms.NAIVE_BAYES;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public NaiveBayesModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the NaiveBayes model from a model
@@ -47,27 +47,25 @@ public class NBRecorder extends ClassifierRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			NaiveBayesModel model) throws Exception {
-		
-		String algorithmName = Algorithms.NAIVE_BAYES;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
 
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

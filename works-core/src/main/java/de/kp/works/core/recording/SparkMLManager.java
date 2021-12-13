@@ -46,9 +46,20 @@ import de.kp.works.core.Names;
  */
 public class SparkMLManager {
 
+	/** CLASSIFICATION SUPPORT **/
+
+	/*
+	 * Classification: In classification tasks, the machine learning program
+	 * must draw a conclusion from observed values and determine to what category
+	 * new observations belong.
+	 *
+	 * As an example, image classification algorithms provide a single label that
+	 * represents the entire content of an image.
+	 */
+	public static final String CLASSIFIER  = "classifier";
 	/*
 	 * The name of the internal dataset that is used to persist metadata for
-	 * all classifier models in a time series; this dataset is publically
+	 * all classifier models in a time series; this dataset is publicly
 	 * visible from the CDAP user interface
 	 */
 	public static String CLASSIFICATION_TABLE = "Classifiers";
@@ -64,6 +75,9 @@ public class SparkMLManager {
 	 */
 	public static String CLASSIFICATION_FS_BASE = "models/classification/";
 
+	/** CLUSTERING SUPPORT **/
+
+	public static final String CLUSTER = "cluster";
 	/*
 	 * The name of the internal dataset that is used to persist metadata for
 	 * all cluster models
@@ -80,6 +94,10 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String CLUSTERING_FS_BASE = "models/clustering/";
+
+	/** FEATURE SUPPORT **/
+
+	public static final String FEATURE = "feature";
 	/*
 	 * The name of the internal dataset that is used to persist metadata for
 	 * all feature models.
@@ -96,6 +114,10 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String FEATURE_FS_BASE = "models/feature/";
+
+	/** RECOMMENDATION SUPPORT **/
+
+	public static final String RECOMMENDER = "recommender";
 	/*
 	 * The model of the internal dataset that is used to persist metadata for
 	 * recommendation models.
@@ -112,6 +134,18 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String RECOMMENDATION_FS_BASE = "models/recommendation/";
+
+	/** REGRESSION SUPPORT **/
+
+	/*
+	 * Regression: In regression tasks, the machine learning program must estimate
+	 * – and understand – the relationships among variables.
+	 *
+	 * Regression analysis focuses on one dependent variable and a series of other
+	 * changing variables – making it particularly useful for prediction and forecasting.
+	 */
+	public static final String REGRESSOR   = "regressor";
+
 	/*
 	 * The model of the internal dataset that is used to persist metadata for
 	 * all regression models.
@@ -128,7 +162,10 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String REGRESSION_FS_BASE = "models/regression/";
-	
+
+	/** TEXT ANALYSIS SUPPORT **/
+
+	public static final String TEXT = "text";
 	/*
 	 * The model of the internal dataset that is used to persist metadata for
 	 * all text analysis models.
@@ -145,6 +182,10 @@ public class SparkMLManager {
 	 * be interpreted as an absolute path in the file system
 	 */
 	public static String TEXTANALYSIS_FS_BASE = "models/textanalysis/";
+
+	/** TIME SERIES SUPPORT **/
+
+	public static final String TIME = "time";
 	/*
 	 * The model of the internal dataset that is used to persist metadata with
 	 * respect to time series models.

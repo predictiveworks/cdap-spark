@@ -26,6 +26,8 @@ import java.util.Map;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import de.kp.works.core.model.ModelScanner;
+import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Put;
 
 /*
@@ -52,6 +54,8 @@ import io.cdap.cdap.api.dataset.table.Scanner;
 import io.cdap.cdap.api.dataset.table.Table;
 import de.kp.works.core.Names;
 import de.kp.works.core.model.ModelProfile;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
 public class AbstractRecorder {
 
@@ -174,7 +178,245 @@ public class AbstractRecorder {
 
 	}
 
-	public ModelProfile getLatestModelProfile(Table table, String algoName, String modelName, String modelStage) {
+	public String getPath(SparkExecutionPluginContext context, String algoType, String algoName,
+						  String modelName, String modelStage, String modelOption) throws Exception {
+
+		profile = getProfile(context, algoType, algoName, modelName, modelStage, modelOption);
+		if (profile.fsPath == null) return null;
+
+		FileSet fs;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fs = SparkMLManager.getClassificationFS(context);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fs = SparkMLManager.getClusteringFS(context);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fs = SparkMLManager.getFeatureFS(context);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fs = SparkMLManager.getRecommendationFS(context);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fs = SparkMLManager.getRegressionFS(context);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fs = SparkMLManager.getTextFS(context);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fs = SparkMLManager.getTimeFS(context);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fs.getBaseLocation().append(profile.fsPath).toURI().getPath();
+
+	}
+
+	public String getPath(SparkPluginContext context, String algoType, String algoName,
+						  String modelName, String modelStage, String modelOption) throws Exception {
+
+		profile = getProfile(context, algoType, algoName, modelName, modelStage, modelOption);
+		if (profile.fsPath == null) return null;
+
+		FileSet fs;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				fs = SparkMLManager.getClassificationFS(context);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				fs = SparkMLManager.getClusteringFS(context);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				fs = SparkMLManager.getFeatureFS(context);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				fs = SparkMLManager.getRecommendationFS(context);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				fs = SparkMLManager.getRegressionFS(context);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				fs = SparkMLManager.getTextFS(context);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				fs = SparkMLManager.getTimeFS(context);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return fs.getBaseLocation().append(profile.fsPath).toURI().getPath();
+
+	}
+
+	public ModelProfile getProfile(SparkExecutionPluginContext context, String algoType, String algoName,
+										String modelName, String modelStage, String modelOption) throws Exception {
+
+		switch (modelOption) {
+			case "best" : {
+				profile = getBestProfile(context, algoType, algoName, modelName, modelStage);
+				break;
+			}
+			case "latest" : {
+				profile = getLatestProfile(context, algoType, algoName, modelName, modelStage);
+				break;
+			}
+			default:
+				throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
+		return profile;
+
+	}
+
+	public ModelProfile getProfile(SparkPluginContext context, String algoType, String algoName,
+								   String modelName, String modelStage, String modelOption) throws Exception {
+
+		switch (modelOption) {
+			case "best" : {
+				profile = getBestProfile(context, algoType, algoName, modelName, modelStage);
+				break;
+			}
+			case "latest" : {
+				profile = getLatestProfile(context, algoType, algoName, modelName, modelStage);
+				break;
+			}
+			default:
+				throw new Exception(String.format("Model option '%s' is not supported yet.", modelOption));
+		}
+
+		return profile;
+
+	}
+
+	protected ModelProfile getBestProfile(SparkExecutionPluginContext context, String algoType, String algoName,
+										  String modelName, String modelStage) throws Exception {
+
+		ModelScanner scanner = new ModelScanner();
+
+		ModelProfile profile = scanner.bestProfile(context, algoType, algoName, modelName, modelStage);
+		if (profile == null)
+			profile = getLatestProfile(context, algoType, algoName, modelName, modelStage);
+
+		return profile;
+
+	}
+	protected ModelProfile getBestProfile(SparkPluginContext context, String algoType, String algoName,
+										  String modelName, String modelStage) throws Exception {
+
+		ModelScanner scanner = new ModelScanner();
+
+		ModelProfile profile = scanner.bestProfile(context, algoType, algoName, modelName, modelStage);
+		if (profile == null)
+			profile = getLatestProfile(context, algoType, algoName, modelName, modelStage);
+
+		return profile;
+
+	}
+
+	public ModelProfile getLatestProfile(SparkExecutionPluginContext context, String algoType,
+										 String algoName, String modelName, String modelStage) throws Exception {
+
+		Table table;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				table = context.getDataset(SparkMLManager.CLASSIFICATION_TABLE);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				table = context.getDataset(SparkMLManager.CLUSTERING_TABLE);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				table = context.getDataset(SparkMLManager.FEATURE_TABLE);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				table = context.getDataset(SparkMLManager.RECOMMENDATION_TABLE);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				table = context.getDataset(SparkMLManager.REGRESSION_TABLE);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				table = context.getDataset(SparkMLManager.TEXTANALYSIS_TABLE);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				table = context.getDataset(SparkMLManager.TIMESERIES_TABLE);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return getLatestProfile(table, algoName, modelName, modelStage);
+
+	}
+	public ModelProfile getLatestProfile(SparkPluginContext context, String algoType,
+										 String algoName, String modelName, String modelStage) throws Exception {
+
+		Table table;
+		switch (algoType) {
+			case SparkMLManager.CLASSIFIER: {
+				table = context.getDataset(SparkMLManager.CLASSIFICATION_TABLE);
+				break;
+			}
+			case SparkMLManager.CLUSTER: {
+				table = context.getDataset(SparkMLManager.CLUSTERING_TABLE);
+				break;
+			}
+			case SparkMLManager.FEATURE: {
+				table = context.getDataset(SparkMLManager.FEATURE_TABLE);
+				break;
+			}
+			case SparkMLManager.RECOMMENDER: {
+				table = context.getDataset(SparkMLManager.RECOMMENDATION_TABLE);
+				break;
+			}
+			case SparkMLManager.REGRESSOR: {
+				table = context.getDataset(SparkMLManager.REGRESSION_TABLE);
+				break;
+			}
+			case SparkMLManager.TEXT: {
+				table = context.getDataset(SparkMLManager.TEXTANALYSIS_TABLE);
+				break;
+			}
+			case SparkMLManager.TIME: {
+				table = context.getDataset(SparkMLManager.TIMESERIES_TABLE);
+				break;
+			}
+			default:
+				throw new Exception(String.format("The algorithm type '%s' is not supported.", algoType));
+
+		}
+
+		return getLatestProfile(table, algoName, modelName, modelStage);
+
+	}
+
+	private ModelProfile getLatestProfile(Table table, String algoName, String modelName, String modelStage) {
 
 		ModelProfile profile = null;
 

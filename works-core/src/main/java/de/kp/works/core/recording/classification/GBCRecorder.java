@@ -31,11 +31,11 @@ import de.kp.works.core.recording.SparkMLManager;
 
 public class GBCRecorder extends ClassifierRecorder {
 
-	public GBTClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.GRADIENT_BOOSTED_TREE;
+	private final String algoName = Algorithms.GRADIENT_BOOSTED_TREE;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public GBTClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the GBTClassifier model
@@ -47,27 +47,25 @@ public class GBCRecorder extends ClassifierRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			GBTClassificationModel model) throws Exception {
-		
-		String algorithmName = Algorithms.GRADIENT_BOOSTED_TREE;
 
-		/***** ARTIFACTS *****/
+		/* ARTIFACTS */
 
-		Long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts.toString() + "/" + modelName;
+		long ts = new Date().getTime();
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		FileSet fs = SparkMLManager.getClassificationFS(context);
 		
 		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
 		model.save(modelPath);
 
-		/***** METADATA *****/
+		/* METADATA */
 
 		String modelPack = "WorksML";
 		
 		Table table = SparkMLManager.getClassificationTable(context);
 		String namespace = context.getNamespace();
 		
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
