@@ -18,23 +18,22 @@ package de.kp.works.core.recording.clustering;
  * 
  */
 
-import java.util.Date;
-
-import org.apache.spark.ml.clustering.*;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import org.apache.spark.ml.clustering.KMeansModel;
+
+import java.util.Date;
 
 public class KMeansRecorder extends ClusterRecorder {
 
+	public KMeansRecorder() {
+		super();
+		algoName = Algorithms.KMEANS;
+	}
+
 	public KMeansModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.KMEANS;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the KMeans clustering model from a
@@ -47,12 +46,10 @@ public class KMeansRecorder extends ClusterRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			KMeansModel model) throws Exception {
 
-		String algorithmName = Algorithms.KMEANS;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -60,11 +57,7 @@ public class KMeansRecorder extends ClusterRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getClusteringTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

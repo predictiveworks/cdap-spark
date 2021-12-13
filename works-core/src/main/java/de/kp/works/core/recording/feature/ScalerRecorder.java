@@ -18,18 +18,14 @@ package de.kp.works.core.recording.feature;
  * 
  */
 
-import java.util.Date;
-
+import de.kp.works.core.Algorithms;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.MaxAbsScalerModel;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
 import org.apache.spark.ml.feature.StandardScalerModel;
 
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.feature.FeatureRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import java.util.Date;
+
 /*
  * This class provides management support in common for
  * those scaler models:
@@ -41,13 +37,17 @@ import de.kp.works.core.recording.SparkMLManager;
  */
 public class ScalerRecorder extends FeatureRecorder {
 
+	public ScalerRecorder() {
+		super();
+	}
+
 	/** MIN MAX **/
 
 	public MinMaxScalerModel readMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
-		String algorithmName = Algorithms.MIN_MAX_SCALER;
+		algoName = Algorithms.MIN_MAX_SCALER;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -59,13 +59,13 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	public void trackMinMaxScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MinMaxScalerModel model) throws Exception {
-		
-		String algorithmName = Algorithms.MIN_MAX_SCALER;
+
+		algoName = Algorithms.MIN_MAX_SCALER;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -73,21 +73,17 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 
 	/** MAX ABS **/
 
 	public MaxAbsScalerModel readMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.MAX_ABS_SCALER;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.MAX_ABS_SCALER;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinMax Scaler model
@@ -99,13 +95,13 @@ public class ScalerRecorder extends FeatureRecorder {
 	
 	public void trackMaxAbsScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MaxAbsScalerModel model) throws Exception {
-		
-		String algorithmName = Algorithms.MAX_ABS_SCALER;
+
+		algoName = Algorithms.MAX_ABS_SCALER;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -113,11 +109,7 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 
@@ -125,9 +117,9 @@ public class ScalerRecorder extends FeatureRecorder {
 
 	public StandardScalerModel readStandardScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.STANDARD_SCALER;
+		algoName = Algorithms.STANDARD_SCALER;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Standard Scaler model
@@ -140,12 +132,12 @@ public class ScalerRecorder extends FeatureRecorder {
 	public void trackStandardScaler(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			StandardScalerModel model) throws Exception {
 
-		String algorithmName = Algorithms.STANDARD_SCALER;
+		algoName = Algorithms.STANDARD_SCALER;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -153,11 +145,7 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

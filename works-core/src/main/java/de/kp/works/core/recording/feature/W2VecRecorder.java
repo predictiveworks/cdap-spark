@@ -18,24 +18,22 @@ package de.kp.works.core.recording.feature;
  * 
  */
 
-import java.util.Date;
-
+import de.kp.works.core.Algorithms;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.Word2VecModel;
 
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.feature.FeatureRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import java.util.Date;
 
 public class W2VecRecorder extends FeatureRecorder {
 
-	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.WORD2VEC;
+	public W2VecRecorder() {
+		super();
+		algoName = Algorithms.WORD2VEC;
+	}
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
@@ -47,13 +45,11 @@ public class W2VecRecorder extends FeatureRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			Word2VecModel model) throws Exception {
-		
-		String algorithmName = Algorithms.WORD2VEC;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -61,11 +57,7 @@ public class W2VecRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

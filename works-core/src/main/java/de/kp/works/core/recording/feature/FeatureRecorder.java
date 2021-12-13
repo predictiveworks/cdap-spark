@@ -27,6 +27,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 public class FeatureRecorder extends AbstractRecorder {
 
+	protected String algoName;
 	protected String algoType = SparkMLManager.FEATURE;
 
 	protected String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption)
@@ -38,11 +39,21 @@ public class FeatureRecorder extends AbstractRecorder {
 		return buildPath(context, algoType, fsPath);
 	}
 
+	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
+							   String modelParams, String modelMetrics, String fsPath) throws Exception {
+
+		Table table = SparkMLManager.getFeatureTable(context);
+		String modelNS = context.getNamespace();
+
+		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+	}
+
 	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.FEATURE_FS;
-		String modelVersion = getLatestModelVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

@@ -13,15 +13,12 @@ package de.kp.works.ts.recording;
  * 
  */
 
-import java.util.Date;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.TimeRecorder;
-import de.kp.works.core.recording.SparkMLManager;
 import de.kp.works.ts.AutoCorrelationModel;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+
+import java.util.Date;
 
 public class ACFRecorder extends TimeRecorder {
 
@@ -29,9 +26,9 @@ public class ACFRecorder extends TimeRecorder {
 
 	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 		
-		String algorithmName = Algorithms.ACF;
+		algoName = Algorithms.ACF;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoCorrelation model
@@ -43,13 +40,13 @@ public class ACFRecorder extends TimeRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoCorrelationModel model) throws Exception {
-		
-		String algorithmName = Algorithms.ACF;
+
+		algoName = Algorithms.ACF;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -57,11 +54,7 @@ public class ACFRecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

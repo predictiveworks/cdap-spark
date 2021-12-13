@@ -18,26 +18,23 @@ package de.kp.works.ts.recording;
  * 
  */
 
-import java.util.Date;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.AutoMAModel;
 import de.kp.works.ts.model.MovingAverageModel;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+
+import java.util.Date;
 
 public class MARecorder extends TimeRecorder {
 
 	/** READ **/
 	
 	public MovingAverageModel readMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.MA;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.MA;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MovingAverage model
@@ -48,10 +45,10 @@ public class MARecorder extends TimeRecorder {
 	}
 	
 	public AutoMAModel readAutoMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.AUTO_MA;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.AUTO_MA;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoMA model
@@ -65,13 +62,13 @@ public class MARecorder extends TimeRecorder {
 	
 	public void trackMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MovingAverageModel model) throws Exception {
-		
-		String algorithmName = Algorithms.MA;
+
+		algoName = Algorithms.MA;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -79,23 +76,19 @@ public class MARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 	
 	public void trackAutoMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoMAModel model) throws Exception {
-		
-		String algorithmName = Algorithms.AUTO_MA;
+
+		algoName = Algorithms.AUTO_MA;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -103,11 +96,7 @@ public class MARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

@@ -26,7 +26,9 @@ import java.util.Map;
 
 public class TimeRecorder extends AbstractRecorder {
 
+	protected String algoName;
 	protected String algoType = SparkMLManager.TIME;
+
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
 	public String getModelPath(SparkExecutionPluginContext context, String algoName,
@@ -38,11 +40,21 @@ public class TimeRecorder extends AbstractRecorder {
 		return buildPath(context, algoType, fsPath);
 	}
 
+	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
+							   String modelParams, String modelMetrics, String fsPath) throws Exception {
+
+		Table table = SparkMLManager.getTimeTable(context);
+		String modelNS = context.getNamespace();
+
+		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+	}
+
 	protected void setMetadata(long ts, Table table, String namespace, String algorithmName, String modelName, String modelPack,
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.TIMESERIES_FS;
-		String modelVersion = getLatestModelVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

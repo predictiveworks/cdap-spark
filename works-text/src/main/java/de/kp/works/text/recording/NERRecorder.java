@@ -18,25 +18,23 @@ package de.kp.works.text.recording;
  * 
  */
 
-import java.util.Date;
-
 import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.TextRecorder;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import de.kp.works.core.recording.TextRecorder;
+import java.util.Date;
 
 public class NERRecorder extends TextRecorder {
-	
-	public NerCrfModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-	
-		String algorithmName = Algorithms.NER_CRF;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public NERRecorder() {
+		super();
+		algoName = Algorithms.NER_CRF;
+	}
+
+	public NerCrfModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the NER model
@@ -48,13 +46,11 @@ public class NERRecorder extends TextRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			NerCrfModel model) throws Exception {
-		
-		String algorithmName = Algorithms.NER_CRF;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -62,19 +58,8 @@ public class NERRecorder extends TextRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksText";
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
-		Table table = SparkMLManager.getTextTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-
-	}
-
-	public Object getParam(Table table, String modelName, String paramName) {
-		
-		String algorithmName = Algorithms.NER_CRF;
-		return getModelParam(table, algorithmName, modelName, paramName);
-		
 	}
 
 }

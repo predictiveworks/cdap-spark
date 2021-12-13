@@ -129,7 +129,7 @@ public class AbstractRecorder {
 
 	}
 
-	public String getLatestModelVersion(Table table, String algoName, String modelNS, String modelName, String modelStage) {
+	public String getLatestVersion(Table table, String algoName, String modelNS, String modelName, String modelStage) {
 
 		String strVersion = null;
 

@@ -19,19 +19,18 @@ package de.kp.works.core.recording.classification;
  * 
  */
 
-import java.util.Date;
-
+import de.kp.works.core.Algorithms;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.classification.RandomForestClassificationModel;
 
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import java.util.Date;
 
 public class RFCRecorder extends ClassifierRecorder {
 
-	private final String algoName = Algorithms.RANDOM_FOREST_TREE;
+	public RFCRecorder() {
+		super();
+		algoName = Algorithms.RANDOM_FOREST_TREE;
+	}
 
 	public RandomForestClassificationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
@@ -59,11 +58,7 @@ public class RFCRecorder extends ClassifierRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getClassificationTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

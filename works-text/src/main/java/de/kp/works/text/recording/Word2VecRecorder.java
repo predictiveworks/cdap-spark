@@ -18,20 +18,20 @@ package de.kp.works.text.recording;
  * 
  */
 
-import java.util.Date;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.TextRecorder;
+import de.kp.works.text.embeddings.Word2VecModel;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import de.kp.works.core.recording.TextRecorder;
-
-import de.kp.works.text.embeddings.Word2VecModel;
+import java.util.Date;
 
 public class Word2VecRecorder extends TextRecorder {
+
+	public Word2VecRecorder() {
+		super();
+		algoName = Algorithms.WORD2VEC;
+	}
 
 	/**
 	 * The Word2Vec model is used with other builders; as their initialization
@@ -39,9 +39,7 @@ public class Word2VecRecorder extends TextRecorder {
 	 */
 	public Word2VecModel read(SparkPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.WORD2VEC;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
@@ -53,9 +51,7 @@ public class Word2VecRecorder extends TextRecorder {
 	
 	public Word2VecModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.WORD2VEC;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Word2Vec model
@@ -67,12 +63,10 @@ public class Word2VecRecorder extends TextRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			Word2VecModel model) throws Exception {
 
-		String algorithmName = Algorithms.WORD2VEC;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -80,19 +74,8 @@ public class Word2VecRecorder extends TextRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksText";
-
-		Table table = SparkMLManager.getTextTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
-	}
-
-	public Object getParam(Table table, String modelName, String paramName) {
-
-		String algorithmName = Algorithms.WORD2VEC;
-		return getModelParam(table, algorithmName, modelName, paramName);
-	
 	}
 
 }

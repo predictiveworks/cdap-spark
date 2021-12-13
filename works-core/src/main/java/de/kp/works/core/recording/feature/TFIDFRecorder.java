@@ -18,23 +18,24 @@ package de.kp.works.core.recording.feature;
  * 
  */
 
-import java.util.Date;
-import org.apache.spark.ml.feature.IDFModel;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.feature.FeatureRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import org.apache.spark.ml.feature.IDFModel;
+
+import java.util.Date;
 
 public class TFIDFRecorder extends FeatureRecorder {
 
-	public IDFModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.TFIDF;
+	public TFIDFRecorder() {
+		super();
+		algoName = Algorithms.TFIDF;
+	}
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public IDFModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the IDF model
@@ -46,13 +47,11 @@ public class TFIDFRecorder extends FeatureRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			IDFModel model) throws Exception {
-		
-		String algorithmName = Algorithms.TFIDF;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -60,20 +59,14 @@ public class TFIDFRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 
 	public Object getParam(SparkExecutionPluginContext context, String modelName, String paramName) throws Exception {
-		
-		String algorithmName = Algorithms.TFIDF;
 
 		Table table = SparkMLManager.getFeatureTable(context);
-		return getModelParam(table, algorithmName, modelName, paramName);
+		return getModelParam(table, algoName, modelName, paramName);
 		
 	}
 

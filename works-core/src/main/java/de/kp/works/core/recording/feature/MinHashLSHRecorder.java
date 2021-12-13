@@ -19,9 +19,6 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.MinHashLSHModel;
 
@@ -29,11 +26,14 @@ import java.util.Date;
 
 public class MinHashLSHRecorder extends FeatureRecorder {
 
+	public MinHashLSHRecorder() {
+		super();
+		algoName = Algorithms.MIN_HASH_LSH;
+	}
+
 	public MinHashLSHModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.MIN_HASH_LSH;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the MinHashLSH model
@@ -46,12 +46,10 @@ public class MinHashLSHRecorder extends FeatureRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			MinHashLSHModel model) throws Exception {
 
-		String algorithmName = Algorithms.MIN_HASH_LSH;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -59,11 +57,7 @@ public class MinHashLSHRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

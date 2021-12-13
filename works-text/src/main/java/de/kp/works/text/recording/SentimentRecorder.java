@@ -18,26 +18,24 @@ package de.kp.works.text.recording;
  * 
  */
 
-import java.util.Date;
-
 import com.johnsnowlabs.nlp.annotators.sda.vivekn.ViveknSentimentModel;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.TextRecorder;
-import de.kp.works.core.recording.SparkMLManager;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+
+import java.util.Date;
 
 public class SentimentRecorder extends TextRecorder {
+
+	public SentimentRecorder() {
+		super();
+		algoName = Algorithms.VIVEKN_SENTIMENT;
+	}
 
 	public ViveknSentimentModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption)
 			throws Exception {
 
-		String algorithmName = Algorithms.VIVEKN_SENTIMENT;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Sentiment Analysis model from a
@@ -50,12 +48,10 @@ public class SentimentRecorder extends TextRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams,
 			String modelMetrics, ViveknSentimentModel model) throws Exception {
 
-		String algorithmName = Algorithms.VIVEKN_SENTIMENT;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -63,11 +59,7 @@ public class SentimentRecorder extends TextRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksText";
-
-		Table table = SparkMLManager.getTextTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

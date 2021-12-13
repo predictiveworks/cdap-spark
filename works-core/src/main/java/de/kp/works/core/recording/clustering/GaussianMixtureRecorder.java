@@ -18,23 +18,22 @@ package de.kp.works.core.recording.clustering;
  * 
  */
 
-import java.util.Date;
-
+import de.kp.works.core.Algorithms;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.clustering.GaussianMixtureModel;
 
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import java.util.Date;
 
 public class GaussianMixtureRecorder extends ClusterRecorder {
 
+	public GaussianMixtureRecorder() {
+		super();
+		algoName = Algorithms.GAUSSIAN_MIXTURE;
+	}
+
 	public GaussianMixtureModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the GaussianMixture clustering model
@@ -47,12 +46,10 @@ public class GaussianMixtureRecorder extends ClusterRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			GaussianMixtureModel model) throws Exception {
 
-		String algorithmName = Algorithms.GAUSSIAN_MIXTURE;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -60,11 +57,7 @@ public class GaussianMixtureRecorder extends ClusterRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getClusteringTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

@@ -19,25 +19,26 @@ package de.kp.works.core.recording.clustering;
  * 
  */
 
-import java.util.Date;
-import org.apache.spark.ml.clustering.*;
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+import org.apache.spark.ml.clustering.DistributedLDAModel;
+import org.apache.spark.ml.clustering.LDAModel;
+
+import java.util.Date;
 
 /**
  * LDA based clustering is used in works-ml and also in works-text project
  */
 public class LDARecorder extends ClusterRecorder {
 
+	public LDARecorder() {
+		super();
+		algoName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
+	}
+
 	public LDAModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the LDA clustering model from a model
@@ -50,22 +51,17 @@ public class LDARecorder extends ClusterRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelPack, String modelStage,
 			String modelParams, String modelMetrics, LDAModel model) throws Exception {
 
-		String algorithmName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + Long.toString(ts) + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */
 
-		Table table = SparkMLManager.getClusteringTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 

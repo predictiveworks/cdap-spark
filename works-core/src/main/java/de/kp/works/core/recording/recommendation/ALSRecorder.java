@@ -23,7 +23,6 @@ import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.common.Bytes;
-import io.cdap.cdap.api.dataset.lib.FileSet;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -37,11 +36,15 @@ public class ALSRecorder extends RecommenderRecorder {
 
 	private final Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
+	public ALSRecorder() {
+		super();
+		algoName = Algorithms.ALS;
+	}
+
+
 	public ALSModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.ALS;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the Bisecting KMeans clustering model
@@ -54,12 +57,10 @@ public class ALSRecorder extends RecommenderRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams,
 			String modelMetrics, ALSModel model) throws Exception {
 
-		String algorithmName = Algorithms.ALS;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -67,11 +68,17 @@ public class ALSRecorder extends RecommenderRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
-		Table table = SparkMLManager.getRecommendationTable(context);
-		String namespace = context.getNamespace();
+	}
 
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+	protected void setMetadata(SparkExecutionPluginContext context, long ts, String modelName, String modelPack, String modelStage,
+							   String modelParams, String modelMetrics, String fsPath) throws Exception {
+
+		Table table = SparkMLManager.getFeatureTable(context);
+		String modelNS = context.getNamespace();
+
+		setMetadata(ts, table, modelNS, algoName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
 	}
 
@@ -79,7 +86,7 @@ public class ALSRecorder extends RecommenderRecorder {
 			String modelStage, String modelParams, String modelMetrics, String fsPath) {
 
 		String fsName = SparkMLManager.RECOMMENDATION_FS;
-		String modelVersion = getLatestModelVersion(table, algorithmName, namespace, modelName, modelStage);
+		String modelVersion = getLatestVersion(table, algorithmName, namespace, modelName, modelStage);
 
 		byte[] key = Bytes.toBytes(ts);
 		Put row = buildRow(key, ts, namespace, modelName, modelVersion, fsName, fsPath, modelPack, modelStage, algorithmName,

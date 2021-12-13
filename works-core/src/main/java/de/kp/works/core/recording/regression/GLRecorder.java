@@ -20,9 +20,6 @@ package de.kp.works.core.recording.regression;
  */
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.regression.GeneralizedLinearRegressionModel;
 
@@ -30,11 +27,14 @@ import java.util.Date;
 
 public class GLRecorder extends RegressorRecorder {
 
-	public GeneralizedLinearRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.GENERALIZED_LINEAR_REGRESSION;
+	public GLRecorder() {
+		super();
+		algoName = Algorithms.GENERALIZED_LINEAR_REGRESSION;
+	}
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public GeneralizedLinearRegressionModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the GeneralizedLinearRegression model
@@ -46,27 +46,19 @@ public class GLRecorder extends RegressorRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			GeneralizedLinearRegressionModel model) throws Exception {
-		
-		String algorithmName = Algorithms.GENERALIZED_LINEAR_REGRESSION;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
-		FileSet fs = SparkMLManager.getRegressionFS(context);
-
-		String modelPath = fs.getBaseLocation().append(fsPath).toURI().getPath();
+		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
 
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getRegressionTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

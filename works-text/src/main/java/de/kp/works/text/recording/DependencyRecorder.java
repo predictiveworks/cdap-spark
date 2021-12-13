@@ -17,25 +17,24 @@ package de.kp.works.text.recording;
  * @author Stefan Krusche, Dr. Krusche & Partner PartG
  * 
  */
-import java.util.Date;
 
 import com.johnsnowlabs.nlp.annotators.parser.dep.DependencyParserModel;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.Algorithms;
+import de.kp.works.core.recording.TextRecorder;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
-import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import de.kp.works.core.recording.TextRecorder;
+import java.util.Date;
 
 public class DependencyRecorder extends TextRecorder {
 
+	public DependencyRecorder() {
+		super();
+		algoName = Algorithms.DEPENDENCY_PARSER;
+	}
+
 	public DependencyParserModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
 
-		String algorithmName = Algorithms.DEPENDENCY_PARSER;
-
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DependencyParser model
@@ -48,12 +47,10 @@ public class DependencyRecorder extends TextRecorder {
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			DependencyParserModel model) throws Exception {
 
-		String algorithmName = Algorithms.DEPENDENCY_PARSER;
-
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -61,18 +58,7 @@ public class DependencyRecorder extends TextRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksText";
-
-		Table table = SparkMLManager.getTextTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
-		
-	}
-
-	public Object getParam(Table table, String modelName, String paramName) {
-		
-		String algorithmName = Algorithms.DEPENDENCY_PARSER;
-		return getModelParam(table, algorithmName, modelName, paramName);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

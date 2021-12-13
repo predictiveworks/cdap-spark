@@ -19,6 +19,7 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 public class RecommenderRecorder extends AbstractRecorder {
 
+	protected String algoName;
 	protected String algoType = SparkMLManager.RECOMMENDER;
 
 	protected String getModelPath(SparkExecutionPluginContext context, String algoName, String modelName, String modelStage, String modelOption) throws Exception {

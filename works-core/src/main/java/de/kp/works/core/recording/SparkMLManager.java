@@ -612,7 +612,7 @@ public class SparkMLManager {
 
 	}
 
-	public static Table getTimesTable(SparkExecutionPluginContext context) {
+	public static Table getTimeTable(SparkExecutionPluginContext context) {
 		return context.getDataset(TIMESERIES_TABLE);
 	}
 

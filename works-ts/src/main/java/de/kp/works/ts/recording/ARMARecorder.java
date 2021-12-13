@@ -18,26 +18,23 @@ package de.kp.works.ts.recording;
  * 
  */
 
-import java.util.Date;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARMAModel;
 import de.kp.works.ts.model.AutoARMAModel;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+
+import java.util.Date;
 
 public class ARMARecorder extends TimeRecorder {
 
 	/** READ **/
 	
 	public ARMAModel readARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.ARMA;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.ARMA;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARMA model
@@ -48,10 +45,10 @@ public class ARMARecorder extends TimeRecorder {
 	}
 	
 	public AutoARMAModel readAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.AUTO_ARMA;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.AUTO_ARMA;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoARMA model
@@ -65,13 +62,13 @@ public class ARMARecorder extends TimeRecorder {
 	
 	public void trackARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			ARMAModel model) throws Exception {
-		
-		String algorithmName = Algorithms.ARMA;
+
+		algoName = Algorithms.ARMA;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -79,23 +76,19 @@ public class ARMARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 	
 	public void trackAutoARMA(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoARMAModel model) throws Exception {
-		
-		String algorithmName = Algorithms.AUTO_ARMA;
+
+		algoName = Algorithms.AUTO_ARMA;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -103,11 +96,7 @@ public class ARMARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

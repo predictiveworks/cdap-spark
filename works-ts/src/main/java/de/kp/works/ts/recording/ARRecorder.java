@@ -18,28 +18,25 @@ package de.kp.works.ts.recording;
  * 
  */
 
-import java.util.Date;
-
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
-import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
+import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.model.AutoARModel;
 import de.kp.works.ts.model.AutoRegressionModel;
 import de.kp.works.ts.model.DiffAutoRegressionModel;
+import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
+
+import java.util.Date;
 
 public class ARRecorder extends TimeRecorder {
 
 	/** READ **/
 	
 	public AutoRegressionModel readAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.AR;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.AR;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoRegression model
@@ -50,10 +47,10 @@ public class ARRecorder extends TimeRecorder {
 	}
 	
 	public AutoARModel readAutoAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.AUTO_AR;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.AUTO_AR;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the AutoAR model
@@ -64,10 +61,10 @@ public class ARRecorder extends TimeRecorder {
 	}
 	
 	public DiffAutoRegressionModel readDiffAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.DIFF_AR;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.DIFF_AR;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the DiffAutoRegression model
@@ -78,10 +75,10 @@ public class ARRecorder extends TimeRecorder {
 	}
 	
 	public ARYuleWalkerModel readYuleWalker(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.YULE_WALKER;
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+		algoName = Algorithms.YULE_WALKER;
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the ARYuleWalker model
@@ -96,12 +93,12 @@ public class ARRecorder extends TimeRecorder {
 	public void trackAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoRegressionModel model) throws Exception {
 
-		String algorithmName = Algorithms.AR;
+		algoName = Algorithms.AR;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -109,23 +106,19 @@ public class ARRecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 	
 	public void trackAutoAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			AutoARModel model) throws Exception {
 
-		String algorithmName = Algorithms.AUTO_AR;
+		algoName = Algorithms.AUTO_AR;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -133,23 +126,19 @@ public class ARRecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 	
 	public void trackDiffAR(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			DiffAutoRegressionModel model) throws Exception {
 
-		String algorithmName = Algorithms.DIFF_AR;
+		algoName = Algorithms.DIFF_AR;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -157,23 +146,19 @@ public class ARRecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 	
 	public void trackYuleWalker(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			ARYuleWalkerModel model) throws Exception {
 
-		String algorithmName = Algorithms.YULE_WALKER;
+		algoName = Algorithms.YULE_WALKER;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -181,11 +166,7 @@ public class ARRecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-
-		Table table = SparkMLManager.getTimesTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 

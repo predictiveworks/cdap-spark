@@ -19,9 +19,6 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.recording.SparkMLManager;
-import io.cdap.cdap.api.dataset.lib.FileSet;
-import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.VectorIndexerModel;
 
@@ -29,11 +26,14 @@ import java.util.Date;
 
 public class VectorIndexerRecorder extends FeatureRecorder {
 
-	public VectorIndexerModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		
-		String algorithmName = Algorithms.VECTOR_INDEXER;
+	public VectorIndexerRecorder() {
+		super();
+		algoName = Algorithms.VECTOR_INDEXER;
+	}
 
-		String modelPath = getModelPath(context, algorithmName, modelName, modelStage, modelOption);
+	public VectorIndexerModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+
+		String modelPath = getModelPath(context, algoName, modelName, modelStage, modelOption);
 		if (modelPath == null) return null;
 		/*
 		 * Leverage Apache Spark mechanism to read the VectorIndexer model
@@ -45,13 +45,11 @@ public class VectorIndexerRecorder extends FeatureRecorder {
 
 	public void track(SparkExecutionPluginContext context, String modelName, String modelStage, String modelParams, String modelMetrics,
 			VectorIndexerModel model) throws Exception {
-		
-		String algorithmName = Algorithms.VECTOR_INDEXER;
 
 		/* ARTIFACTS */
 
 		long ts = new Date().getTime();
-		String fsPath = algorithmName + "/" + ts + "/" + modelName;
+		String fsPath = algoName + "/" + ts + "/" + modelName;
 
 		String modelPath = buildModelPath(context, fsPath);
 		model.save(modelPath);
@@ -59,11 +57,7 @@ public class VectorIndexerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-
-		Table table = SparkMLManager.getFeatureTable(context);
-		String namespace = context.getNamespace();
-
-		setMetadata(ts, table, namespace, algorithmName, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 		
 	}
 
