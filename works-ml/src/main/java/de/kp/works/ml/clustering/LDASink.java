@@ -138,7 +138,8 @@ public class LDASink extends ClusterSink {
 		String modelStage = config.modelStage;
 		
 		String modelPack = "WorksML";
-		new LDARecorder().track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
+		new LDARecorder(configReader)
+				.track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
 
 	}
 

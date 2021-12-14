@@ -124,7 +124,8 @@ public class SurvivalRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new SurvivalRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new SurvivalRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

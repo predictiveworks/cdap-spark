@@ -92,7 +92,9 @@ public class LDABuilder extends TextSink {
 		 * later use in compute, Word2Vec model do not have any metrics, 
 		 * i.e. there is no model option: always the latest model is used
 		 */
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
+		word2vec = new Word2VecRecorder(configReader)
+				.read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
+
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -150,7 +152,8 @@ public class LDABuilder extends TextSink {
 		String modelStage = config.modelStage;
 		
 		String modelPack = "WorksText";
-		new LDARecorder().track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
+		new LDARecorder(configReader)
+				.track(context, modelName, modelPack, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

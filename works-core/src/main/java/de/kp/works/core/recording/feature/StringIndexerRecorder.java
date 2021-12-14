@@ -19,6 +19,7 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.StringIndexerModel;
 
@@ -26,8 +27,8 @@ import java.util.Date;
 
 public class StringIndexerRecorder extends FeatureRecorder {
 
-	public StringIndexerRecorder() {
-		super();
+	public StringIndexerRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.STRING_INDEXER;
 	}
 

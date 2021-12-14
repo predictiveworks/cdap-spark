@@ -18,14 +18,9 @@ package de.kp.works.ml.clustering;
  * 
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.core.recording.clustering.GaussianMixtureRecorder;
-import org.apache.spark.ml.clustering.GaussianMixtureModel;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -35,10 +30,12 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
+import org.apache.spark.ml.clustering.GaussianMixtureModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import de.kp.works.core.cluster.ClusterConfig;
-import de.kp.works.core.cluster.ClusterSink;
-import de.kp.works.ml.clustering.Evaluator;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("GaussianMixtureSink")
@@ -105,7 +102,7 @@ public class GaussianMixtureSink extends ClusterSink {
 
 		Dataset<Row> predictions = model.transform(vectorset);
 		/*
-		 * The Clustering evaluator computes the silhouette coefficent of the computed
+		 * The Clustering evaluator computes the silhouette coefficient of the computed
 		 * predictions as a means to evaluate the quality of the chosen parameters
 		 */
 	    String modelMetrics = Evaluator.evaluate(predictions, vectorCol, predictionCol);
@@ -116,7 +113,8 @@ public class GaussianMixtureSink extends ClusterSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new GaussianMixtureRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new GaussianMixtureRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

@@ -108,7 +108,8 @@ public class TsAutoMASink extends MASink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new MARecorder().trackAutoMA(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new MARecorder(configReader)
+				.trackAutoMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

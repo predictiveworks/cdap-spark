@@ -21,6 +21,7 @@ package de.kp.works.core.recording;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Names;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.model.ModelProfile;
 import de.kp.works.core.model.ModelScanner;
 import io.cdap.cdap.api.common.Bytes;
@@ -39,10 +40,19 @@ import java.util.Map;
 
 public abstract class AbstractRecorder {
 
+	protected ConfigReader configReader;
+	/*
+	 * Static context information about the machine
+	 * learning model to record
+	 */
 	protected String algoName;
 	protected String algoType;
 
 	protected ModelProfile profile;
+
+	public AbstractRecorder(ConfigReader configReader) {
+		this.configReader = configReader;
+	}
 
 	public ModelProfile getProfile() {
 		return profile;
@@ -111,16 +121,16 @@ public abstract class AbstractRecorder {
 
 		return new Put(key)
 				.add(Names.TIMESTAMP, timestamp)
-				.add("id", mid)
-				.add("namespace", modelNS)
-				.add("name", name)
-				.add("version", version)
-				.add("fsName", fsName)
+				.add(Names.ID, mid)
+				.add(Names.NAMESPACE, modelNS)
+				.add(Names.NAME, name)
+				.add(Names.VERSION, version)
+				.add(Names.FS_NAME, fsName)
 				.add(Names.FS_PATH, fsPath)
-				.add("pack", pack)
-				.add("stage", stage)
-				.add("algorithm", algorithm)
-				.add("params", params);
+				.add(Names.PACK, pack)
+				.add(Names.STAGE, stage)
+				.add(Names.ALGORITHM, algorithm)
+				.add(Names.PARAMS, params);
 
 	}
 
@@ -210,7 +220,10 @@ public abstract class AbstractRecorder {
 
 	public String getPath(SparkExecutionPluginContext context, String algoName,
 						  String modelName, String modelStage, String modelOption) throws Exception {
-
+		/*
+		 * The model profile is registered as this
+		 * is used in subsequent processing
+		 */
 		profile = getProfile(context, algoName, modelName, modelStage, modelOption);
 		if (profile.fsPath == null) return null;
 

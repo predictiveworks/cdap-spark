@@ -33,7 +33,7 @@ import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import de.kp.works.core.predictor.PredictorCompute;
 import de.kp.works.core.predictor.PredictorConfig;
-import de.kp.works.core.regressor.RFRRecorder;
+import de.kp.works.core.recording.regression.RFRRecorder;
 import de.kp.works.core.recording.MLUtils;
 import de.kp.works.core.recording.classification.RFCRecorder;
 
@@ -62,7 +62,7 @@ public class RFPredictor extends PredictorCompute {
 		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 			
-			RFCRecorder recorder = new RFCRecorder();
+			RFCRecorder recorder = new RFCRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained classification model
 			 * that refers to the provide name, stage and option
@@ -80,7 +80,7 @@ public class RFPredictor extends PredictorCompute {
 
 		} else if (config.modelType.equals("regressor")) {
 
-			RFRRecorder recorder = new RFRRecorder();
+			RFRRecorder recorder = new RFRRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained regression model
 			 * that refers to the provide name, stage and option

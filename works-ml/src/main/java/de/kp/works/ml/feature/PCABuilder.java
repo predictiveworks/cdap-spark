@@ -104,7 +104,8 @@ public class PCABuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new PCARecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new PCARecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 	

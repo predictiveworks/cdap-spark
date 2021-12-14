@@ -40,8 +40,7 @@ public class PredictorCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -3397323077600081423L;
 
-	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {
-	}.getType();
+	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {}.getType();
 	/*
 	 * The annotation type supported by this predictor stage
 	 */

@@ -87,7 +87,9 @@ public class NERBuilder extends TextSink {
 		 * Word2Vec models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);		
+		word2vec = new Word2VecRecorder(configReader)
+				.read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
+
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",
@@ -110,7 +112,8 @@ public class NERBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new NERRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new NERRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

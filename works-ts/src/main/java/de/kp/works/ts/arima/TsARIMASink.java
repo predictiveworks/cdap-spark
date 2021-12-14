@@ -108,7 +108,8 @@ public class TsARIMASink extends ARIMASink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ARIMARecorder().trackARIMA(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARIMARecorder(configReader)
+				.trackARIMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

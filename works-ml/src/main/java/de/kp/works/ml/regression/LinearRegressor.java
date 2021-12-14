@@ -119,7 +119,8 @@ public class LinearRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new LinearRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new LinearRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

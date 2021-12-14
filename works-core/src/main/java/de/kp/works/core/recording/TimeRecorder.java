@@ -16,6 +16,8 @@ package de.kp.works.core.recording;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.Names;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.api.dataset.table.Put;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -28,7 +30,8 @@ public class TimeRecorder extends AbstractRecorder {
 	protected String algoName;
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
-	public TimeRecorder() {
+	public TimeRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoType = SparkMLManager.TIME;
 	}
 
@@ -51,17 +54,22 @@ public class TimeRecorder extends AbstractRecorder {
 			table.put(row.add("metrics", modelMetrics));
 			
 		} else {
-			/*
-			 * Unpack regression metrics to build time series of metric values
-			 */
+
+			String[] metricNames = new String[] {
+					Names.RSME,
+					Names.MSE,
+					Names.MAE,
+					Names.R2
+			};
+
 			Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
-	
-			Double rsme = (Double) metrics.get("rsme");
-			Double mse = (Double) metrics.get("mse");
-			Double mae = (Double) metrics.get("mae");
-			Double r2 = (Double) metrics.get("r2");
-	
-			table.put(row.add("rsme", rsme).add("mse", mse).add("mae", mae).add("r2", r2));
+			for (String metricName: metricNames) {
+				Double metricValue = (Double) metrics.get(metricName);
+				row.add(metricName, metricValue);
+			}
+
+			table.put(row);
+
 		}
 	}
 

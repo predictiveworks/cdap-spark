@@ -138,7 +138,7 @@ object ModelFinder extends MinMaxFinder {
          * values
          */
         val (_, cosine_max) = clusterMinMax(Names.SILHOUETTE_COSINE, metrics)
-        val (_, euclidean_max) = clusterMinMax(Names.SILHOUETTE_EUCLDIAN, metrics)
+        val (_, euclidean_max) = clusterMinMax(Names.SILHOUETTE_EUCLIDEAN, metrics)
         /*
          * STEP #2: Normalize and aggregate each metric
          * value and build sum of normalize metric

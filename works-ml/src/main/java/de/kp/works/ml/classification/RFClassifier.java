@@ -113,7 +113,9 @@ public class RFClassifier extends ClassifierSink {
 		 */		
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
-		new RFCRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+
+		new RFCRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

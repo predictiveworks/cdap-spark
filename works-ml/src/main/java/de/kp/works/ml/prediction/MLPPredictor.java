@@ -53,7 +53,7 @@ public class MLPPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		MLPRecorder recorder = new MLPRecorder();
+		MLPRecorder recorder = new MLPRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained classification model
 		 * that refers to the provide name, stage and option

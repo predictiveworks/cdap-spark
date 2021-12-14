@@ -19,6 +19,7 @@ package de.kp.works.core.recording.clustering;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.clustering.GaussianMixtureModel;
 
@@ -26,8 +27,8 @@ import java.util.Date;
 
 public class GaussianMixtureRecorder extends ClusterRecorder {
 
-	public GaussianMixtureRecorder() {
-		super();
+	public GaussianMixtureRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.GAUSSIAN_MIXTURE;
 	}
 

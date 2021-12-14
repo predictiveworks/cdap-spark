@@ -19,6 +19,7 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.MinHashLSHModel;
 
@@ -26,8 +27,8 @@ import java.util.Date;
 
 public class MinHashLSHRecorder extends FeatureRecorder {
 
-	public MinHashLSHRecorder() {
-		super();
+	public MinHashLSHRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.MIN_HASH_LSH;
 	}
 

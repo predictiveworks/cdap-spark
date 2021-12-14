@@ -66,7 +66,9 @@ public class NorvigChecker extends TextCompute {
 		 * Norvig models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		model = new SpellRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = new SpellRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Norvig Spell Checking model with name '%s' does not exist.",

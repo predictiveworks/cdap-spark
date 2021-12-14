@@ -19,6 +19,7 @@ package de.kp.works.ts.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARYuleWalkerModel;
 import de.kp.works.ts.model.AutoARModel;
@@ -30,8 +31,8 @@ import java.util.Date;
 
 public class ARRecorder extends TimeRecorder {
 
-	public ARRecorder() {
-		super();
+	public ARRecorder(ConfigReader configReader) {
+		super(configReader);
 	}
 
 	/** READ **/

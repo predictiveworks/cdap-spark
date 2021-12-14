@@ -120,7 +120,8 @@ public class MLPClassifier extends ClassifierSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new MLPRecorder().track(context, modelName, modelStage, modelParams, metricsJson, model);
+		new MLPRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, metricsJson, model);
 
 	}
 

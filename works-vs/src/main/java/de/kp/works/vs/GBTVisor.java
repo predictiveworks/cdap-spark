@@ -58,7 +58,7 @@ public class GBTVisor extends VisualSink {
             assert modelType != null;
             if (modelType.equals("classifier")) {
 
-                GBCRecorder recorder = new GBCRecorder ();
+                GBCRecorder recorder = new GBCRecorder(configReader);
                 /*
                  * Retrieve the trained classification model
                  * that refers to the provide name, stage and option
@@ -70,7 +70,7 @@ public class GBTVisor extends VisualSink {
 
             } else if (modelType.equals("regressor")) {
 
-                GBRRecorder recorder = new GBRRecorder();
+                GBRRecorder recorder = new GBRRecorder(configReader);
                 /*
                  * Retrieve the trained regression model
                  * that refers to the provide name, stage and option

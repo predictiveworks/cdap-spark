@@ -19,6 +19,7 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.PCAModel;
 
@@ -26,8 +27,8 @@ import java.util.Date;
 
 public class PCARecorder extends FeatureRecorder {
 
-	public PCARecorder() {
-		super();
+	public PCARecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.PRINCIPAL_COMPONENT_ANALYSIS;
 	}
 

@@ -106,7 +106,8 @@ public class TsDiffARSink extends ARSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ARRecorder().trackDiffAR(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARRecorder(configReader)
+				.trackDiffAR(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

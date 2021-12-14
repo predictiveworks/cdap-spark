@@ -1,6 +1,6 @@
 package de.kp.works.core.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.kp.works.core.configuration.ConfigReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.functions;
@@ -39,8 +40,7 @@ public class FeatureCompute extends BaseCompute {
 
 	private static final long serialVersionUID = -852876404206487204L;
 
-	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {
-	}.getType();
+	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {}.getType();
 	/*
 	 * The annotation type supported by this feature stage
 	 */
@@ -60,7 +60,8 @@ public class FeatureCompute extends BaseCompute {
 	 */
 	public Schema getOutputSchema(Schema inputSchema, String outputField, Schema.Type fieldType) {
 
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());		
+		assert inputSchema.getFields() != null;
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(outputField, Schema.of(fieldType)));
 		/* 
 		 * Check whether the input schema already has an 
@@ -83,7 +84,8 @@ public class FeatureCompute extends BaseCompute {
 	 */
 	protected Schema getArrayOutputSchema(Schema inputSchema, String outputField, Schema.Type fieldType) {
 
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());		
+		assert inputSchema.getFields() != null;
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(outputField, Schema.arrayOf(Schema.of(fieldType))));		
 		/* 
 		 * Check whether the input schema already has an 
@@ -117,7 +119,7 @@ public class FeatureCompute extends BaseCompute {
 			 * with the same annotation; we therefore extract
 			 * them from the fist column
 			 */
-			Integer index = dataset.schema().fieldIndex(ANNOTATION_COL);
+			int index = dataset.schema().fieldIndex(ANNOTATION_COL);
 
 			String annotation = dataset.first().getString(index);			
 			annonItems.addAll(annonToList(annotation));

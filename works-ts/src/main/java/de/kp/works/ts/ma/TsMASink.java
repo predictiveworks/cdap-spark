@@ -105,7 +105,7 @@ public class TsMASink extends MASink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new MARecorder().trackMA(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new MARecorder(configReader).trackMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

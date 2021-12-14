@@ -53,7 +53,7 @@ public class TsAutoARIMA extends ARIMACompute {
 		
 		config.validate();
 
-		ARIMARecorder recorder = new ARIMARecorder();
+		ARIMARecorder recorder = new ARIMARecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

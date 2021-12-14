@@ -20,6 +20,7 @@ package de.kp.works.core.recording.classification;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.classification.LogisticRegressionModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class LRRecorder extends ClassifierRecorder {
 
-	public LRRecorder() {
-		super();
+	public LRRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.LOGISTIC_REGRESSION;
 	}
 

@@ -55,7 +55,7 @@ public class ChiSquaredSelector extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		selectorConfig.validate();
 		
-		ChiSquaredRecorder recorder = new ChiSquaredRecorder();
+		ChiSquaredRecorder recorder = new ChiSquaredRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option.  Chi-Squared models 

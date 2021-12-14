@@ -65,7 +65,9 @@ public class LDA extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new LDARecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+		model = new LDARecorder(configReader)
+				.read(context, config.modelName, config.modelStage, config.modelOption);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] An LDA model with name '%s' does not exist.",
@@ -75,7 +77,9 @@ public class LDA extends TextCompute {
 		 * Word2Vec models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		word2vec = new Word2VecRecorder().read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
+		word2vec = new Word2VecRecorder(configReader)
+				.read(context, config.embeddingName, config.embeddingStage, LATEST_MODEL);
+
 		if (word2vec == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

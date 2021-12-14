@@ -19,6 +19,7 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -28,8 +29,8 @@ import java.util.Date;
 
 public class TFIDFRecorder extends FeatureRecorder {
 
-	public TFIDFRecorder() {
-		super();
+	public TFIDFRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.TFIDF;
 	}
 

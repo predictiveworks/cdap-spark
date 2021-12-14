@@ -20,6 +20,7 @@ package de.kp.works.core.recording.regression;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.regression.AFTSurvivalRegressionModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class SurvivalRecorder extends RegressorRecorder {
 
-	public SurvivalRecorder() {
-		super();
+	public SurvivalRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.SURVIVAL_AFT_REGRESSION;
 	}
 

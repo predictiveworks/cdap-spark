@@ -50,7 +50,7 @@ public class KMeansVisor extends VisualSink {
 
         if (model == null) {
 
-            KMeansRecorder recorder = new KMeansRecorder();
+            KMeansRecorder recorder = new KMeansRecorder(configReader);
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 

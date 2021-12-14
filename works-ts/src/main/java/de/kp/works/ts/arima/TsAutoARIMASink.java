@@ -110,7 +110,8 @@ public class TsAutoARIMASink extends ARIMASink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ARIMARecorder().trackAutoARIMA(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARIMARecorder(configReader)
+				.trackAutoARIMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

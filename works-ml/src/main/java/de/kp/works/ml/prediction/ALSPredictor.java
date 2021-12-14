@@ -59,7 +59,7 @@ public class ALSPredictor extends RecommenderCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		((ALSConfig) config).validate();
 
-		ALSRecorder recorder = new ALSRecorder();
+		ALSRecorder recorder = new ALSRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained recommendation model that refers to the provide
 		 * name, stage and option

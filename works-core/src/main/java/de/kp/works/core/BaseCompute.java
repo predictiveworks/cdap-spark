@@ -18,6 +18,7 @@ package de.kp.works.core;
  * 
  */
 
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.configuration.S3Access;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -35,6 +36,11 @@ import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 public abstract class BaseCompute extends SparkCompute<StructuredRecord, StructuredRecord> {
 
 	private static final long serialVersionUID = 6855738584152026479L;
+	/*
+	 * The config reader is introduced to enable
+	 * access to static side wide configurations
+	 */
+	protected ConfigReader configReader = new ConfigReader();
 
 	/*
 	 * Reference to input & output schema

@@ -19,6 +19,7 @@ package de.kp.works.core.recording.clustering;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.clustering.KMeansModel;
 
@@ -26,8 +27,8 @@ import java.util.Date;
 
 public class KMeansRecorder extends ClusterRecorder {
 
-	public KMeansRecorder() {
-		super();
+	public KMeansRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.KMEANS;
 	}
 

@@ -53,7 +53,7 @@ public class LRPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 		
-		LRRecorder recorder = new LRRecorder();
+		LRRecorder recorder = new LRRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained classification model
 		 * that refers to the provide name, stage and option

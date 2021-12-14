@@ -53,7 +53,7 @@ public class TsAutoARMA extends ARMACompute {
 		
 		config.validate();
 
-		ARMARecorder recorder = new ARMARecorder();
+		ARMARecorder recorder = new ARMARecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

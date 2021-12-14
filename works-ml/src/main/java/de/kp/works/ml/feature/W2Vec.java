@@ -55,7 +55,7 @@ public class W2Vec extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		W2VecRecorder recorder = new W2VecRecorder();
+		W2VecRecorder recorder = new W2VecRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. Word2Vec models do 

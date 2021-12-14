@@ -90,7 +90,7 @@ public class TsACF extends TimeCompute {
 		String modelParams = computeConfig.getParamsAsJSON();
 		String modelName = computeConfig.modelName;
 
-		ACFRecorder manager = new ACFRecorder();
+		ACFRecorder manager = new ACFRecorder(configReader);
 		
 		String modelStage = computeConfig.modelStage;
 		manager.track(context, modelName, modelStage, modelParams, modelMetrics, model);

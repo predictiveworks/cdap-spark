@@ -1,6 +1,6 @@
 package de.kp.works.core.recommender;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -40,8 +40,7 @@ public class RecommenderCompute extends BaseCompute {
 
 	private static final long serialVersionUID = 1944699231227314308L;
 
-	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {
-	}.getType();
+	protected Type annotationType = new TypeToken<List<Map<String, Object>>>() {}.getType();
 
 	protected static final String RECOMMENDER_TYPE = "recommender";
 	
@@ -58,7 +57,8 @@ public class RecommenderCompute extends BaseCompute {
 	 */
 	protected Schema getOutputSchema(Schema inputSchema, String predictionField) {
 
-		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());		
+		assert inputSchema.getFields() != null;
+		List<Schema.Field> fields = new ArrayList<>(inputSchema.getFields());
 		fields.add(Schema.Field.of(predictionField, Schema.of(Schema.Type.DOUBLE)));		
 		/* 
 		 * Check whether the input schema already has an 
@@ -91,7 +91,7 @@ public class RecommenderCompute extends BaseCompute {
 			 * with the same annotation; we therefore extract
 			 * them from the fist column
 			 */
-			Integer index = predictions.schema().fieldIndex(ANNOTATION_COL);
+			int index = predictions.schema().fieldIndex(ANNOTATION_COL);
 
 			String annotation = predictions.first().getString(index);			
 			annonItems.addAll(annonToList(annotation));

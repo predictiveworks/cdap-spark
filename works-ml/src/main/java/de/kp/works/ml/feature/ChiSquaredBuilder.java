@@ -109,7 +109,8 @@ public class ChiSquaredBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ChiSquaredRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ChiSquaredRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 

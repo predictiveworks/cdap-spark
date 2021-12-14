@@ -53,7 +53,7 @@ public class StringToIndex extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		StringIndexerRecorder recorder = new StringIndexerRecorder();
+		StringIndexerRecorder recorder = new StringIndexerRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. String Indexer models 

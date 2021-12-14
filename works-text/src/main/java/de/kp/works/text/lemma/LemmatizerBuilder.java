@@ -91,7 +91,8 @@ public class LemmatizerBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new LemmatizerRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new LemmatizerRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

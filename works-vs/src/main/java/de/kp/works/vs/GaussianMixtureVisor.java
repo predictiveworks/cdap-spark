@@ -50,7 +50,8 @@ public class GaussianMixtureVisor extends VisualSink {
 
         if (model == null) {
 
-            GaussianMixtureRecorder recorder = new GaussianMixtureRecorder();
+            GaussianMixtureRecorder recorder = new GaussianMixtureRecorder(configReader);
+
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 

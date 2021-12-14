@@ -55,7 +55,7 @@ public class CountVec extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		CountVecRecorder recorder = new CountVecRecorder();
+		CountVecRecorder recorder = new CountVecRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. Count Vectorizer 

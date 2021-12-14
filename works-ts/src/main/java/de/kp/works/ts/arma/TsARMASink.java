@@ -105,7 +105,7 @@ public class TsARMASink extends ARMASink {
 		 */		
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
-		new ARMARecorder().trackARMA(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARMARecorder(configReader).trackARMA(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

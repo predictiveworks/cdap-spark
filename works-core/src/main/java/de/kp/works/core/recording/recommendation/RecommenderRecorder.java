@@ -13,6 +13,7 @@ package de.kp.works.core.recording.recommendation;
  * 
  */
 
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Table;
@@ -22,7 +23,8 @@ public class RecommenderRecorder extends AbstractRecorder {
 
 	protected String algoName;
 
-	public RecommenderRecorder() {
+	public RecommenderRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoType = SparkMLManager.RECOMMENDER;
 	}
 

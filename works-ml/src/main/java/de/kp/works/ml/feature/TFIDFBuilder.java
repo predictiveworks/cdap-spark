@@ -101,7 +101,8 @@ public class TFIDFBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new TFIDFRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new TFIDFRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

@@ -1,6 +1,6 @@
 package de.kp.works.ml.feature;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -47,7 +47,7 @@ public class Scaler extends FeatureCompute {
 
 	private static final long serialVersionUID = -2419787880853896958L;
 
-	private ScalerConfig config;
+	private final ScalerConfig config;
 	
 	private MaxAbsScalerModel maxAbsModel;
 	private MinMaxScalerModel minMaxModel;
@@ -62,7 +62,7 @@ public class Scaler extends FeatureCompute {
 
 		config.validate();
 
-		ScalerRecorder recorder = new ScalerRecorder();
+		ScalerRecorder recorder = new ScalerRecorder(configReader);
 		String modelType = config.modelType;
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 

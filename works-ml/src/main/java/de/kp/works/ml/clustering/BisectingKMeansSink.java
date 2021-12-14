@@ -124,7 +124,8 @@ public class BisectingKMeansSink extends ClusterSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new BisectingKMeansRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new BisectingKMeansRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

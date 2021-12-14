@@ -42,7 +42,7 @@ public class ClusterMetric {
 		
 		ts = row.getLong(Names.TIMESTAMP);
 
-		silhouette_euclidean = row.getDouble(Names.SILHOUETTE_EUCLDIAN);
+		silhouette_euclidean = row.getDouble(Names.SILHOUETTE_EUCLIDEAN);
 		silhouette_cosine = row.getDouble(Names.SILHOUETTE_COSINE);
 		
 		perplexity = row.getDouble(Names.PERPLEXITY);

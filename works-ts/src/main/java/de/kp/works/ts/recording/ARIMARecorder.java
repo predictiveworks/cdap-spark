@@ -19,6 +19,7 @@ package de.kp.works.ts.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.model.AutoARIMAModel;
@@ -28,8 +29,8 @@ import java.util.Date;
 
 public class ARIMARecorder extends TimeRecorder {
 
-	public ARIMARecorder() {
-		super();
+	public ARIMARecorder(ConfigReader configReader) {
+		super(configReader);
 	}
 
 	/** READ **/

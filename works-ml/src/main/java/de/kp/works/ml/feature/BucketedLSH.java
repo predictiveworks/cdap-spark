@@ -59,7 +59,7 @@ public class BucketedLSH extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		BucketedLSHRecorder recorder = new BucketedLSHRecorder();
+		BucketedLSHRecorder recorder = new BucketedLSHRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. Bucketed LSH models 

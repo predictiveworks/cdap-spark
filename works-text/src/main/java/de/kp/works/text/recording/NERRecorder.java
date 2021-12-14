@@ -20,6 +20,7 @@ package de.kp.works.text.recording;
 
 import com.johnsnowlabs.nlp.annotators.ner.crf.NerCrfModel;
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TextRecorder;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class NERRecorder extends TextRecorder {
 
-	public NERRecorder() {
-		super();
+	public NERRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.NER_CRF;
 	}
 

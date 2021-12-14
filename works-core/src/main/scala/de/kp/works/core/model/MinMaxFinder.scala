@@ -76,7 +76,7 @@ trait MinMaxFinder {
         val values = metrics.map(_.silhouette_cosine).toArray
         (values.min, values.max)
 
-      case Names.SILHOUETTE_EUCLDIAN =>
+      case Names.SILHOUETTE_EUCLIDEAN =>
         val values = metrics.map(_.silhouette_euclidean).toArray
         (values.min, values.max)
 

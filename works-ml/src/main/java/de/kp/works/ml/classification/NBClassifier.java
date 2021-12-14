@@ -118,7 +118,8 @@ public class NBClassifier extends ClassifierSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new NBRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new NBRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -165,7 +166,7 @@ public class NBClassifier extends ClassifierSink {
 		public void validate() {
 			super.validate();
 			
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (smoothing < 0D)
 				throw new IllegalArgumentException(
 						String.format("[%s] The smoothing must be nonnegative.", this.getClass().getName()));

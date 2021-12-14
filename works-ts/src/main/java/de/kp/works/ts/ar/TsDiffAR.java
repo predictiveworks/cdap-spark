@@ -52,7 +52,7 @@ public class TsDiffAR extends ARCompute {
 		
 		config.validate();
 
-		ARRecorder recorder = new ARRecorder();
+		ARRecorder recorder = new ARRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

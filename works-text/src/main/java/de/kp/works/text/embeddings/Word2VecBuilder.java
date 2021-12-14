@@ -83,7 +83,8 @@ public class Word2VecBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new Word2VecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new Word2VecRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

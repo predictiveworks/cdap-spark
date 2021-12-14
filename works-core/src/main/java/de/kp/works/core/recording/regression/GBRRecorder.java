@@ -20,6 +20,7 @@ package de.kp.works.core.recording.regression;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.regression.GBTRegressionModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class GBRRecorder extends RegressorRecorder {
 
-	public GBRRecorder() {
-		super();
+	public GBRRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.GRADIENT_BOOSTED_TREE;
 	}
 

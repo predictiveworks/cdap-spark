@@ -114,7 +114,8 @@ public class GBTClassifier extends ClassifierSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new GBCRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new GBCRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

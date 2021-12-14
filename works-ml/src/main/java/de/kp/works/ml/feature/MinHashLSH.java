@@ -57,7 +57,7 @@ public class MinHashLSH extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		MinHashLSHRecorder recorder = new MinHashLSHRecorder();
+		MinHashLSHRecorder recorder = new MinHashLSHRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. MinimumHash LSH 

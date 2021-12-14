@@ -28,15 +28,24 @@ public class Names {
 	public static final String MAE = "mae";
 	public static final String R2 = "r2";
 	
-	public static final String SILHOUETTE_EUCLDIAN = "silhouette_euclidean";
+	public static final String SILHOUETTE_EUCLIDEAN = "silhouette_euclidean";
 	public static final String SILHOUETTE_COSINE = "silhouette_cosine";
 	public static final String PERPLEXITY = "perplexity";
 	public static final String LIKELIHOOD = "likelihood";
-	
-	public static final String FS_PATH = "fsPath";
-	public static final String ID = "id";
+
+	public static final String ALGORITHM = "algorithm";
+	public static final String FS_NAME   = "fsName";
+	public static final String FS_PATH   = "fsPath";
+	public static final String ID 		 = "id";
+	public static final String METRICS   = "metrics";
+	public static final String NAME 	 = "name";
+	public static final String NAMESPACE = "namespace";
+	public static final String PACK 	 = "pack";
+	public static final String PARAMS    = "params";
+	public static final String STAGE     = "stage";
 	public static final String TIMESTAMP = "timestamp";
-	
+	public static final String VERSION 	 = "version";
+
 	public static final String LLT_BUCKETS = "LLT-Buckets";
 	
 }

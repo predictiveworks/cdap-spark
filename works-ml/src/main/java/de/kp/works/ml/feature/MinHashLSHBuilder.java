@@ -114,7 +114,8 @@ public class MinHashLSHBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new MinHashLSHRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new MinHashLSHRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

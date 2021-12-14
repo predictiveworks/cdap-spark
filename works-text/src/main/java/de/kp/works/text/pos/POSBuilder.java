@@ -86,7 +86,8 @@ public class POSBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new POSRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new POSRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

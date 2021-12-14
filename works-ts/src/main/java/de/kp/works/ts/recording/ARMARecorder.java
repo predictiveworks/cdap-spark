@@ -19,6 +19,7 @@ package de.kp.works.ts.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARMAModel;
 import de.kp.works.ts.model.AutoARMAModel;
@@ -28,8 +29,8 @@ import java.util.Date;
 
 public class ARMARecorder extends TimeRecorder {
 
-	public ARMARecorder() {
-		super();
+	public ARMARecorder(ConfigReader configReader) {
+		super(configReader);
 	}
 
 	/** READ **/

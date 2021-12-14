@@ -100,7 +100,8 @@ public class TsYuleWalkerSink extends ARSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ARRecorder().trackYuleWalker(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARRecorder(configReader)
+				.trackYuleWalker(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

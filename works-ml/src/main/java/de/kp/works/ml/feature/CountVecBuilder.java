@@ -97,7 +97,8 @@ public class CountVecBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new CountVecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new CountVecRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 

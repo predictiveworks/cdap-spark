@@ -19,16 +19,9 @@ package de.kp.works.ml.clustering;
  * 
  */
 
-import java.util.HashMap;
-import java.util.Map;
-import javax.annotation.Nullable;
-
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.core.recording.clustering.KMeansRecorder;
-import org.apache.spark.ml.clustering.KMeansModel;
-
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -38,10 +31,13 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
+import org.apache.spark.ml.clustering.KMeansModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import de.kp.works.core.cluster.ClusterConfig;
-import de.kp.works.core.cluster.ClusterSink;
-import de.kp.works.ml.clustering.Evaluator;
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("KMeansSink")
@@ -119,7 +115,8 @@ public class KMeansSink extends ClusterSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new KMeansRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new KMeansRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

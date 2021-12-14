@@ -14,6 +14,7 @@ package de.kp.works.ts.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.AutoCorrelationModel;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -24,8 +25,8 @@ public class ACFRecorder extends TimeRecorder {
 
 	/** AUTO-CORRELATION FUNCTION **/
 
-	public ACFRecorder() {
-		super();
+	public ACFRecorder(ConfigReader configReader) {
+		super(configReader);
 	}
 
 	public AutoCorrelationModel read(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {

@@ -57,7 +57,7 @@ public class LDAPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		LDARecorder recorder = new LDARecorder();
+		LDARecorder recorder = new LDARecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained clustering model
 		 * that refers to the provide name, stage and option

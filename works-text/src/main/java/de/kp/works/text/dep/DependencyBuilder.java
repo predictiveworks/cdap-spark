@@ -104,7 +104,8 @@ public class DependencyBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new DependencyRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new DependencyRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 	

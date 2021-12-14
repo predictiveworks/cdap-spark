@@ -18,6 +18,7 @@ package de.kp.works.core.recording.feature;
  *
  */
 
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Put;
@@ -28,7 +29,8 @@ public class FeatureRecorder extends AbstractRecorder {
 
 	protected String algoName;
 
-	public FeatureRecorder() {
+	public FeatureRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoType = SparkMLManager.FEATURE;
 	}
 

@@ -72,7 +72,9 @@ public class Lemmatizer extends TextCompute {
 		 * Lemmatization models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		model = new LemmatizerRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = new LemmatizerRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Lemmatization model with name '%s' does not exist.",

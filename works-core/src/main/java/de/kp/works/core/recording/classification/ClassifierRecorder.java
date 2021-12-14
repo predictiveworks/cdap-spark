@@ -16,6 +16,7 @@ package de.kp.works.core.recording.classification;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Names;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Put;
@@ -29,7 +30,8 @@ public class ClassifierRecorder extends AbstractRecorder {
 
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
-	public ClassifierRecorder() {
+	public ClassifierRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoType = SparkMLManager.CLASSIFIER;
 	}
 

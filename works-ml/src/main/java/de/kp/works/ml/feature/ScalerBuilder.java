@@ -57,7 +57,7 @@ public class ScalerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -7301919602186472418L;
 
-	private ScalerBuilderConfig config;
+	private final ScalerBuilderConfig config;
 	
 	public ScalerBuilder(ScalerBuilderConfig config) {
 		this.config = config;
@@ -104,8 +104,10 @@ public class ScalerBuilder extends FeatureSink {
 			
 			MinMaxScaler minMaxScaler = new MinMaxScaler();
 			minMaxScaler.setInputCol("_input");
-		
+
+			assert config.lowerBound != null;
 			minMaxScaler.setMin(config.lowerBound);
+			assert config.upperBound != null;
 			minMaxScaler.setMax(config.upperBound);
 			
 			MinMaxScalerModel model = minMaxScaler.fit(vectorset);
@@ -113,7 +115,8 @@ public class ScalerBuilder extends FeatureSink {
 			String modelName = config.modelName;
 			String modelStage = config.modelStage;
 			
-			new ScalerRecorder().trackMinMaxScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
+			new ScalerRecorder(configReader)
+					.trackMinMaxScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 			
 			
 		} else if (modelType.equals("maxabs")) {
@@ -126,31 +129,27 @@ public class ScalerBuilder extends FeatureSink {
 			String modelName = config.modelName;
 			String modelStage = config.modelStage;
 			
-			new ScalerRecorder().trackMaxAbsScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
+			new ScalerRecorder(configReader)
+					.trackMaxAbsScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 			
 		} else {
 			
 			StandardScaler standardScaler = new StandardScaler();
 			standardScaler.setInputCol("_input");
-			
-			if (config.withMean.equals("false"))
-				standardScaler.setWithMean(false);
-			
-			else 
-				standardScaler.setWithMean(true);
-			
-			if (config.withStd.equals("false"))
-				standardScaler.setWithStd(false);
-			
-			else 
-				standardScaler.setWithStd(true);
+
+			assert config.withMean != null;
+			standardScaler.setWithMean(!config.withMean.equals("false"));
+
+			assert config.withStd != null;
+			standardScaler.setWithStd(!config.withStd.equals("false"));
 				
 			StandardScalerModel model = standardScaler.fit(vectorset);
 
 			String modelName = config.modelName;
 			String modelStage = config.modelStage;
 			
-			new ScalerRecorder().trackStandardScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
+			new ScalerRecorder(configReader)
+					.trackStandardScaler(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 		}
 	}
@@ -219,7 +218,12 @@ public class ScalerBuilder extends FeatureSink {
 		public void validate() {
 			super.validate();
 			
-			if (modelType.equals("minmax") && lowerBound > upperBound) {
+			if (
+				modelType.equals("minmax") &&
+				lowerBound != null &&
+				upperBound != null &&
+				lowerBound > upperBound) {
+
 				throw new IllegalArgumentException(String
 						.format("[%s] The lower bound must be smaller or equal than the upper one.", this.getClass().getName()));
 			}

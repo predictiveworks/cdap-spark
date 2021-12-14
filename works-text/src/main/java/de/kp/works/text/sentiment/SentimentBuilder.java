@@ -103,7 +103,8 @@ public class SentimentBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new SentimentRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new SentimentRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 	

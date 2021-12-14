@@ -120,7 +120,8 @@ public class TopicBuilder extends TextSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new TopicRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new TopicRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 				
 	}
 	

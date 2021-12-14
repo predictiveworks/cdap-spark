@@ -55,7 +55,7 @@ public class KMeansPredictor extends PredictorCompute {
 		
 		config.validate();
 
-		KMeansRecorder recorder = new KMeansRecorder();
+		KMeansRecorder recorder = new KMeansRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained clustering model
 		 * that refers to the provide name, stage and option

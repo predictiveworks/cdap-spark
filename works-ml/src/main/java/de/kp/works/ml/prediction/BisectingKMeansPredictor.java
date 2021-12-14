@@ -53,7 +53,7 @@ public class BisectingKMeansPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		BisectingKMeansRecorder recorder = new BisectingKMeansRecorder();
+		BisectingKMeansRecorder recorder = new BisectingKMeansRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained clustering model
 		 * that refers to the provide name, stage and option

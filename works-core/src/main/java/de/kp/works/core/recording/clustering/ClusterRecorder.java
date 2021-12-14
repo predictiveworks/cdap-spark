@@ -21,6 +21,7 @@ package de.kp.works.core.recording.clustering;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Names;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Put;
@@ -35,7 +36,8 @@ public class ClusterRecorder extends AbstractRecorder {
 	protected String algoName;
 	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
-	public ClusterRecorder() {
+	public ClusterRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoType = SparkMLManager.CLUSTER;
 	}
 
@@ -54,15 +56,20 @@ public class ClusterRecorder extends AbstractRecorder {
 
 		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
 
+		String[] metricNames = new String[] {
+			Names.SILHOUETTE_EUCLIDEAN,
+			Names.SILHOUETTE_COSINE,
+			Names.PERPLEXITY,
+			Names.LIKELIHOOD
+		};
+
 		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
+		for (String metricName: metricNames) {
+			Double metricValue = (Double) metrics.get(metricName);
+			row.add(metricName, metricValue);
+		}
 
-		Double silhouette_euclidean = (Double) metrics.get(Names.SILHOUETTE_EUCLDIAN);
-		Double silhouette_cosine = (Double) metrics.get(Names.SILHOUETTE_COSINE);
-		Double perplexity = (Double) metrics.get(Names.PERPLEXITY);
-		Double likelihood = (Double) metrics.get(Names.LIKELIHOOD);
-
-		table.put(row.add(Names.SILHOUETTE_EUCLDIAN, silhouette_euclidean).add(Names.SILHOUETTE_COSINE, silhouette_cosine)
-				.add(Names.PERPLEXITY, perplexity).add(Names.LIKELIHOOD, likelihood));
+		table.put(row);
 
 	}
 

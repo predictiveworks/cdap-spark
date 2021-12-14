@@ -68,7 +68,9 @@ public class DependencyParser extends TextCompute {
 		 * Dependency parser models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		model = new DependencyRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = new DependencyRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Dependency Parser model with name '%s' does not exist.",
@@ -78,7 +80,9 @@ public class DependencyParser extends TextCompute {
 		 * Part-of-Speech models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		perceptron = new POSRecorder().read(context, config.posName, config.posStage, LATEST_MODEL);
+		perceptron = new POSRecorder(configReader)
+				.read(context, config.posName, config.posStage, LATEST_MODEL);
+
 		if (perceptron == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech model with name '%s' does not exist.",

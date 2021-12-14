@@ -58,7 +58,7 @@ public class DTVisor extends VisualSink {
             assert modelType != null;
             if (modelType.equals("classifier")) {
 
-                DTCRecorder recorder = new DTCRecorder();
+                DTCRecorder recorder = new DTCRecorder(configReader);
                 /*
                  * Retrieve the trained classification model
                  * that refers to the provide name, stage and option
@@ -70,7 +70,7 @@ public class DTVisor extends VisualSink {
 
              } else if (modelType.equals("regressor")) {
 
-                DTRRecorder recorder = new DTRRecorder();
+                DTRRecorder recorder = new DTRRecorder(configReader);
                 /*
                  * Retrieve the trained regression model
                  * that refers to the provide name, stage and option

@@ -62,7 +62,7 @@ public class GBTPredictor extends PredictorCompute {
 		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
-			GBCRecorder recorder = new GBCRecorder();
+			GBCRecorder recorder = new GBCRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained classification model
 			 * that refers to the provide name, stage and option
@@ -80,7 +80,7 @@ public class GBTPredictor extends PredictorCompute {
 
 		} else if (config.modelType.equals("regressor")) {
 
-			GBRRecorder recorder = new GBRRecorder();
+			GBRRecorder recorder = new GBRRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained regression model
 			 * that refers to the provide name, stage and option

@@ -135,7 +135,8 @@ public class ALSSink extends RecommenderSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ALSRecorder().track(context, modelName, modelStage, paramsJson, modelMetrics, model);
+		new ALSRecorder(configReader)
+				.track(context, modelName, modelStage, paramsJson, modelMetrics, model);
 		
 	}
 

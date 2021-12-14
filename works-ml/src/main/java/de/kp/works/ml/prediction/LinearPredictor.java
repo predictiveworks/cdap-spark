@@ -53,7 +53,7 @@ public class LinearPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 		
-		LinearRecorder recorder = new LinearRecorder();
+		LinearRecorder recorder = new LinearRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

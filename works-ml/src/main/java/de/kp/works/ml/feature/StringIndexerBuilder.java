@@ -93,7 +93,8 @@ public class StringIndexerBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new StringIndexerRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new StringIndexerRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 	

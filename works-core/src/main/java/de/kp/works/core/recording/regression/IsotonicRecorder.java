@@ -20,6 +20,7 @@ package de.kp.works.core.recording.regression;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.regression.IsotonicRegressionModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class IsotonicRecorder extends RegressorRecorder {
 
-	public IsotonicRecorder() {
-		super();
+	public IsotonicRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.ISOTONIC_REGRESSION;
 	}
 

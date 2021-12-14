@@ -121,7 +121,8 @@ public class BucketedLSHBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new BucketedLSHRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new BucketedLSHRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

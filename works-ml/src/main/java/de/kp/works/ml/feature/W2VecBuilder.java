@@ -93,7 +93,8 @@ public class W2VecBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new W2VecRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new W2VecRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 	

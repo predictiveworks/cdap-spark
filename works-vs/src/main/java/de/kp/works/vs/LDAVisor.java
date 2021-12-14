@@ -50,7 +50,7 @@ public class LDAVisor extends VisualSink {
 
         if (model == null) {
 
-            LDARecorder recorder = new LDARecorder();
+            LDARecorder recorder = new LDARecorder(configReader);
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 

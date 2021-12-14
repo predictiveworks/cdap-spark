@@ -53,7 +53,7 @@ public class TFIDF extends FeatureCompute {
 
 	public TFIDF(TFIDFConfig config) {
 		this.config = config;
-		this.recorder = new TFIDFRecorder();
+		this.recorder = new TFIDFRecorder(configReader);
 	}
 
 	@Override

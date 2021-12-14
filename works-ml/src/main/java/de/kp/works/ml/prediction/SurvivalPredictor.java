@@ -53,7 +53,7 @@ public class SurvivalPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 		
-		SurvivalRecorder recorder = new SurvivalRecorder();
+		SurvivalRecorder recorder = new SurvivalRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

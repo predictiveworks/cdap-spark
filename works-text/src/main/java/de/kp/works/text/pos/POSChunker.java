@@ -66,7 +66,9 @@ public class POSChunker extends TextCompute {
 		 * Part-of-Speech models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		model = new POSRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = new POSRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Part-of-Speech analysis model with name '%s' does not exist.",

@@ -53,7 +53,7 @@ public class IsotonicPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		IsotonicRecorder recorder = new IsotonicRecorder();
+		IsotonicRecorder recorder = new IsotonicRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

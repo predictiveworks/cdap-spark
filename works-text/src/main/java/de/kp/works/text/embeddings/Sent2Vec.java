@@ -60,7 +60,9 @@ public class Sent2Vec extends TextCompute {
 		 * Word2Vec models do not have any metrics, i.e. there
 		 * is no model option: always the latest model is used
 		 */
-		model = new Word2VecRecorder().read(context, config.modelName, config.modelStage, LATEST_MODEL);
+		model = new Word2VecRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, LATEST_MODEL);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A Word2Vec embedding model with name '%s' does not exist.",

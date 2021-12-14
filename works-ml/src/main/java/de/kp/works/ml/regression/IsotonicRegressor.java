@@ -119,7 +119,8 @@ public class IsotonicRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new IsotonicRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new IsotonicRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

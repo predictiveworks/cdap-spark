@@ -117,7 +117,8 @@ public class DTRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new DTRRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new DTRRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

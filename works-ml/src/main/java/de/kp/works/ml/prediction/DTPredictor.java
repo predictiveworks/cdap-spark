@@ -68,7 +68,7 @@ public class DTPredictor extends PredictorCompute {
 		assert config.modelType != null;
 		if (config.modelType.equals("classifier")) {
 
-			DTCRecorder recorder = new DTCRecorder();
+			DTCRecorder recorder = new DTCRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained classification model
 			 * that refers to the provide name, stage and option
@@ -86,7 +86,7 @@ public class DTPredictor extends PredictorCompute {
 			
 		} else if (config.modelType.equals("regressor")) {
 
-			DTRRecorder recorder = new DTRRecorder();
+			DTRRecorder recorder = new DTRRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained regression model
 			 * that refers to the provide name, stage and option

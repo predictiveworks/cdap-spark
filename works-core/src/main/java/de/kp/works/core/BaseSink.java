@@ -18,6 +18,7 @@ package de.kp.works.core;
  * 
  */
 
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.configuration.S3Access;
 import io.cdap.cdap.api.spark.sql.DataFrames;
 import org.apache.spark.api.java.JavaRDD;
@@ -34,6 +35,11 @@ import org.apache.spark.sql.types.StructType;
 public abstract class BaseSink extends SparkSink<StructuredRecord> {
 
 	private static final long serialVersionUID = -4938491756852655492L;
+	/*
+	 * The config reader is introduced to enable
+	 * access to static side wide configurations
+	 */
+	protected ConfigReader configReader = new ConfigReader();
 
 	/*
 	 * Reference to input & output schema

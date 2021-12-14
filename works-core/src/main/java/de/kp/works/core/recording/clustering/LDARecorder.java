@@ -20,6 +20,7 @@ package de.kp.works.core.recording.clustering;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.clustering.DistributedLDAModel;
 import org.apache.spark.ml.clustering.LDAModel;
@@ -31,8 +32,8 @@ import java.util.Date;
  */
 public class LDARecorder extends ClusterRecorder {
 
-	public LDARecorder() {
-		super();
+	public LDARecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
 	}
 

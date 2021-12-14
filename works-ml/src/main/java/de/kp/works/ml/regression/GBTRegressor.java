@@ -117,7 +117,8 @@ public class GBTRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new GBRRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new GBRRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

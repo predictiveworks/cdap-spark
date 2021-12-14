@@ -51,7 +51,7 @@ public class BisectingKMeansVisor extends VisualSink {
 
         if (model == null) {
 
-            BisectingKMeansRecorder recorder = new BisectingKMeansRecorder();
+            BisectingKMeansRecorder recorder = new BisectingKMeansRecorder(configReader);
             model = recorder.read(context, config.modelName,
                     config.modelStage, config.modelOption);
 

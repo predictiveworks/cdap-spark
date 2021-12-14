@@ -20,6 +20,7 @@ package de.kp.works.text.recording;
 
 import com.johnsnowlabs.nlp.annotators.pos.perceptron.PerceptronModel;
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TextRecorder;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class POSRecorder extends TextRecorder {
 
-	public POSRecorder() {
-		super();
+	public POSRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.PART_OF_SPEECH;
 	}
 

@@ -20,6 +20,7 @@ package de.kp.works.text.recording;
 
 import com.johnsnowlabs.nlp.annotators.LemmatizerModel;
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TextRecorder;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class LemmatizerRecorder extends TextRecorder {
 
-	public LemmatizerRecorder() {
-		super();
+	public LemmatizerRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.LEMMATIZATION;
 	}
 

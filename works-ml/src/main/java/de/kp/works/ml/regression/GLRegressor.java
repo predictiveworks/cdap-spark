@@ -119,7 +119,8 @@ public class GLRegressor extends RegressorSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new GLRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new GLRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

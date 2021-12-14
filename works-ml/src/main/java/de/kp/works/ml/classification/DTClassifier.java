@@ -115,7 +115,8 @@ public class DTClassifier extends ClassifierSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new DTCRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new DTCRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

@@ -19,6 +19,7 @@ package de.kp.works.text.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TextRecorder;
 import de.kp.works.text.topic.LDATopicModel;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class TopicRecorder extends TextRecorder {
 
-	public TopicRecorder() {
-		super();
+	public TopicRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.LATENT_DIRICHLET_ALLOCATION;
 	}
 

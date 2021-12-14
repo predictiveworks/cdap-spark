@@ -86,7 +86,9 @@ public class NorvigBuilder extends TextSink {
 
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
-		new SpellRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+
+		new SpellRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 	    
 	}
 

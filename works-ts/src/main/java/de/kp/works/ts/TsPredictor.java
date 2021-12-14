@@ -33,7 +33,7 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkCompute;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-import de.kp.works.core.regressor.RFRRecorder;
+import de.kp.works.core.recording.regression.RFRRecorder;
 import de.kp.works.core.time.TimeCompute;
 import de.kp.works.core.time.TimePredictorConfig;
 
@@ -57,7 +57,7 @@ public class TsPredictor extends TimeCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-			recorder = new RFRRecorder();
+			recorder = new RFRRecorder(configReader);
 			/* 
 			 * STEP #1: Retrieve the trained regression model
 			 * that refers to the provide name, stage and option

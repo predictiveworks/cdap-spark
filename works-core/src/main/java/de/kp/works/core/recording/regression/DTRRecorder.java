@@ -20,6 +20,7 @@ package de.kp.works.core.recording.regression;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.regression.DecisionTreeRegressionModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class DTRRecorder extends RegressorRecorder {
 
-	public DTRRecorder() {
-		super();
+	public DTRRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.DECISION_TREE;
 	}
 

@@ -19,6 +19,7 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.MaxAbsScalerModel;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
@@ -37,8 +38,8 @@ import java.util.Date;
  */
 public class ScalerRecorder extends FeatureRecorder {
 
-	public ScalerRecorder() {
-		super();
+	public ScalerRecorder(ConfigReader configReader) {
+		super(configReader);
 	}
 
 	/** MIN MAX **/

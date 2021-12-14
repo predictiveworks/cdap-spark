@@ -61,7 +61,7 @@ public class GaussianMixturePredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		GaussianMixtureRecorder recorder = new GaussianMixtureRecorder();
+		GaussianMixtureRecorder recorder = new GaussianMixtureRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained clustering model
 		 * that refers to the provide name, stage and option

@@ -19,6 +19,7 @@ package de.kp.works.core.feature;
  */
 
 import de.kp.works.core.BaseSink;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.etl.api.batch.SparkPluginContext;
 

@@ -96,7 +96,8 @@ public class VectorIndexerBuilder extends FeatureSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new VectorIndexerRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new VectorIndexerRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 		
 	}
 

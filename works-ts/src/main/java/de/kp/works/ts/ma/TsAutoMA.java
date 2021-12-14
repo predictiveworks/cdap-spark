@@ -51,7 +51,7 @@ public class TsAutoMA extends MACompute {
 		
 		config.validate();
 
-		MARecorder recorder = new MARecorder();
+		MARecorder recorder = new MARecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

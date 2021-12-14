@@ -20,6 +20,7 @@ package de.kp.works.core.recording.classification;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.classification.GBTClassificationModel;
 
@@ -27,8 +28,8 @@ import java.util.Date;
 
 public class GBCRecorder extends ClassifierRecorder {
 
-	public GBCRecorder() {
-		super();
+	public GBCRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.GRADIENT_BOOSTED_TREE;
 	}
 

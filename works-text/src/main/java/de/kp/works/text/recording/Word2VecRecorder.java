@@ -19,6 +19,7 @@ package de.kp.works.text.recording;
  */
 
 import de.kp.works.core.Algorithms;
+import de.kp.works.core.configuration.ConfigReader;
 import de.kp.works.core.recording.TextRecorder;
 import de.kp.works.text.embeddings.Word2VecModel;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -28,8 +29,8 @@ import java.util.Date;
 
 public class Word2VecRecorder extends TextRecorder {
 
-	public Word2VecRecorder() {
-		super();
+	public Word2VecRecorder(ConfigReader configReader) {
+		super(configReader);
 		algoName = Algorithms.WORD2VEC;
 	}
 

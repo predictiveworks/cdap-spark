@@ -117,7 +117,8 @@ public class LRClassifier extends ClassifierSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new LRRecorder().track(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new LRRecorder(configReader)
+				.track(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 
@@ -190,7 +191,7 @@ public class LRClassifier extends ClassifierSink {
 		public void validate() {
 			super.validate();
 
-			/** PARAMETERS **/
+			/* PARAMETERS */
 			if (maxIter < 1)
 				throw new IllegalArgumentException(String.format(
 						"[%s] The maximum number of iterations must be at least 1.", this.getClass().getName()));

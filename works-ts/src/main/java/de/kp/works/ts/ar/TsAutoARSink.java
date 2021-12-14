@@ -108,7 +108,8 @@ public class TsAutoARSink extends ARSink {
 		String modelName = config.modelName;
 		String modelStage = config.modelStage;
 		
-		new ARRecorder().trackAutoAR(context, modelName, modelStage, modelParams, modelMetrics, model);
+		new ARRecorder(configReader)
+				.trackAutoAR(context, modelName, modelStage, modelParams, modelMetrics, model);
 
 	}
 

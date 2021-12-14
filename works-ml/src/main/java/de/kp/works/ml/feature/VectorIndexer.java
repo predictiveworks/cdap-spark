@@ -55,7 +55,7 @@ public class VectorIndexer extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		VectorIndexerRecorder recorder = new VectorIndexerRecorder();
+		VectorIndexerRecorder recorder = new VectorIndexerRecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. Vector Indexer 

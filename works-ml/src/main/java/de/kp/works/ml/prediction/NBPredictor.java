@@ -53,7 +53,7 @@ public class NBPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		NBRecorder recorder = new NBRecorder();
+		NBRecorder recorder = new NBRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained classification model
 		 * that refers to the provide name, stage and option

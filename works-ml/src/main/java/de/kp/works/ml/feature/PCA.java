@@ -54,7 +54,7 @@ public class PCA extends FeatureCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		PCARecorder recorder = new PCARecorder();
+		PCARecorder recorder = new PCARecorder(configReader);
 		/*
 		 * STEP #1: Retrieve the trained feature model that refers 
 		 * to the provide name, stage and option. PCA models do not 

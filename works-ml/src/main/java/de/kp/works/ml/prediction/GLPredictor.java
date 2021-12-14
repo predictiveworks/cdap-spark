@@ -54,7 +54,7 @@ public class GLPredictor extends PredictorCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		GLRecorder recorder = new GLRecorder();
+		GLRecorder recorder = new GLRecorder(configReader);
 		/* 
 		 * STEP #1: Retrieve the trained regression model
 		 * that refers to the provide name, stage and option

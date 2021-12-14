@@ -60,7 +60,9 @@ public class Sentiment extends TextCompute {
 	public void initialize(SparkExecutionPluginContext context) throws Exception {
 		config.validate();
 
-		model = new SentimentRecorder().read(context, config.modelName, config.modelStage, config.modelOption);
+		model = new SentimentRecorder(configReader)
+				.read(context, config.modelName, config.modelStage, config.modelOption);
+
 		if (model == null)
 			throw new IllegalArgumentException(
 					String.format("[%s] A sentiment analysis model with name '%s' does not exist.",
