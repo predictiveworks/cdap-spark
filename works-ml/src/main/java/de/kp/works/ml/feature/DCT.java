@@ -40,7 +40,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DCT")
-@Description("A transformation stage that leverages the Apache Spark ML Discrete Cosine Tranform to map a feature vector in the time domain "
+@Description("A transformation stage that leverages the Apache Spark ML Discrete Cosine Transform to map a feature vector in the time domain "
 		+ "into a feature vector in the frequency domain.")
 public class DCT extends FeatureCompute {
 	/*

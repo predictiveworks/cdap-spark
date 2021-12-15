@@ -55,7 +55,10 @@ public class ClassifierRecorder extends AbstractRecorder {
 		}
 
 	}
-
+	/**
+	 * This method provides the profile of a specific
+	 * model to annotate predictions accordingly.
+	 */
 	public ModelProfile getProfile() {
 		return metadataWriter.getProfile();
 	}
@@ -67,7 +70,10 @@ public class ClassifierRecorder extends AbstractRecorder {
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
 		return metadataWriter.buildModelPath(context, fsPath);
 	}
-
+	/**
+	 * This method supports the registration of the
+	 * metadata of a certain model run.
+	 */
 	protected void setMetadata(SparkExecutionPluginContext context, ModelSpec modelSpec) throws Exception {
 		modelSpec.setAlgoName(algoName);
 		metadataWriter.setMetadata(context, modelSpec);

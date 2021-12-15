@@ -2,10 +2,19 @@
 # Gradient Boosted-Tree Predictor
 
 ## Description
+This machine learning plugin represents the prediction stage that leverages a trained Apache Spark ML 
+"Gradient-Boosted Trees classifier model" or "Gradient-Boosted Trees regressor model. The model type 
+parameter determines whether this stage predicts from a classifier or regressor model.
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
 
 ### Model Configuration
+**Model Name**: The unique name of the machine learning model.
+
+**Model Stage***: The stage of the ML model. Supported values are 'experiment', 'staging', 'production'
+and 'archived'. Default is 'experiment'.
+
+**Model Variant**:
 
 ### Data Configuration

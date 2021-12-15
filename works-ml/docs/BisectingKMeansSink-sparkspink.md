@@ -11,8 +11,8 @@ all observations start in one cluster, and splits are performed recursively as o
 hierarchy. This approach can often be much faster than regular KMeans, but it will generally produce 
 a different clustering.
 
-This machine learning plugin represents the building stage for an Apache Spark ML Bisecting K-Means 
-clustering model. It expects a dataset with at least one 'features' field as an array of numeric values 
+This machine learning plugin represents the building stage for an Apache Spark ML "Bisecting K-Means 
+clustering model". It expects a dataset with at least one 'features' field as an array of numeric values 
 to train the model.
 
 ## Configuration

@@ -3,7 +3,9 @@
 
 ## Description
 
-This machine learning plugin represents the building stage
+This machine learning plugin represents the building stage for an Apache Spark ML "Decision Tree classifier model". 
+This stage expects a dataset with at least two fields to train the model: One as an array of numeric values, and, 
+another that describes the class or label value as numeric value.
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.

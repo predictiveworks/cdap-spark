@@ -8,11 +8,15 @@ hierarchy. This approach can often be much faster than regular KMeans, but it wi
 a different clustering.
 
 This machine learning plugin represents the prediction stage that leverages a trained Apache Spark ML 
-Bisecting K-Means clustering model to assign a certain cluster center to each data record.
+"Bisecting K-Means clustering model" to assign a certain cluster center to each data record.
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
 
 ### Model Configuration
+**Model Name**: The unique name of the machine learning model.
+
+**Model Stage***: The stage of the ML model. Supported values are 'experiment', 'staging', 'production'
+and 'archived'. Default is 'experiment'.
 
 ### Data Configuration

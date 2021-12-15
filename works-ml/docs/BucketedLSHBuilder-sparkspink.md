@@ -3,7 +3,8 @@
 
 ## Description
 
-This machine learning plugin represents the building stage
+This machine learning plugin represents the building stage for an Apache Spark ML "Bucketed Random Projection 
+LSH model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
