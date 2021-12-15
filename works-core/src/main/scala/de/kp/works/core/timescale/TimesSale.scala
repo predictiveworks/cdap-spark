@@ -19,13 +19,14 @@ package de.kp.works.core.timescale
  */
 
 import de.kp.works.core.Names
+import de.kp.works.core.configuration.JdbcConf
+import de.kp.works.core.model.{ClassifierMetric, ClusterMetric, ModelProfile, RegressorMetric}
 import io.cdap.cdap.api.dataset.table.Put
 
 import java.nio.ByteBuffer
 import java.sql.Connection
-import java.util.{Map => JMap}
-import scala.collection.JavaConversions.mapAsScalaMap
-import scala.collection.JavaConverters._
+import java.util.{List => JList}
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
 case class TimeTable(name:String, category:String, symbol:String)
@@ -34,12 +35,10 @@ object TimeScale {
 
   private var instance:Option[TimeScale] = None
 
-  def getInstance(args:JMap[String,String]):TimeScale = {
-
-    val settings = args.asScala.toMap
+  def getInstance(jdbcAccess:JdbcConf):TimeScale = {
 
     if (instance.isEmpty)
-      instance = Some(new TimeScale(settings))
+      instance = Some(new TimeScale(jdbcAccess))
 
     instance.get
 
@@ -54,7 +53,7 @@ object TimeScale {
  * As there currently is no need to work with a connection
  * pool, we switched to support situation specific conns.
  */
-class TimeScale(settings:Map[String,String]) {
+class TimeScale(jdbcAccess:JdbcConf) {
 
   /*
    * A helper method to retrieve a pooled database
@@ -69,13 +68,13 @@ class TimeScale(settings:Map[String,String]) {
   private def getConnection: Connection = try {
 
     val props = new java.util.Properties()
-    val url = settings("dsUrl")
+    val url = jdbcAccess.getUrl
 
     /* Set user & password */
-    val user = settings.getOrElse("dsUser", null)
+    val user = jdbcAccess.getUser
     if (user != null) props.setProperty("user", user)
 
-    val password = settings.getOrElse("dsPassword", null)
+    val password = jdbcAccess.getPassword
     if (password != null) props.setProperty("password", password)
 
     if (connection.isEmpty)
@@ -91,8 +90,41 @@ class TimeScale(settings:Map[String,String]) {
   } catch {
     case t:Throwable => t.printStackTrace();null
   }
+  /**
+   * This method retrieves the classifier metrics from the
+   * algorithm specific table and transforms into a data
+   * structure that is used to determine the best model
+   */
+  def getClassifierMetrics(algoName:String, modelName:String, modelStage:String):JList[ClassifierMetric] = {
 
-  def createClassifierTable(algoName:String, row:Put):Unit = {
+    val metricsSql = SqlBuilder.classifierMetricsSql(algoName, modelName, modelStage)
+    val metrics = readTable(metricsSql)
+
+    metrics.map(row => {
+
+      val metric = new ClassifierMetric()
+      metric.setTs(row.head.asInstanceOf[Long])
+
+      metric.setId(row(1).asInstanceOf[String])
+      metric.setAccuracy(row(2).asInstanceOf[Double])
+
+      metric.setF1(row(3).asInstanceOf[Double])
+      metric.setWeightedFMeasure(row(4).asInstanceOf[Double])
+
+      metric.setWeightedPrecision(row(5).asInstanceOf[Double])
+      metric.setWeightedRecall(row(6).asInstanceOf[Double])
+
+      metric.setWeightedFalsePositiveRate(row(7).asInstanceOf[Double])
+      metric.setWeightedTruePositiveRate(row(8).asInstanceOf[Double])
+
+      metric.setFsPath(row(9).asInstanceOf[String])
+      metric
+
+    }).toList
+
+  }
+
+  def insertClassifierRow(algoName:String, row:Put):Unit = {
     /*
      * Create algorithm specific table if it
      * does not exist already
@@ -181,6 +213,18 @@ class TimeScale(settings:Map[String,String]) {
 
     })
 
+    /* fs_name */
+    val fs_name = new String(values(Names.FS_NAME))
+
+    pos += 1
+    stmt.setString(pos, fs_name)
+
+    /* fs_path */
+    val fs_path = new String(values(Names.FS_PATH))
+
+    pos += 1
+    stmt.setString(pos, fs_path)
+
     stmt.addBatch()
 
     stmt.executeBatch()
@@ -190,8 +234,36 @@ class TimeScale(settings:Map[String,String]) {
     releaseConn(conn)
 
   }
+  /**
+   * This method retrieves the cluster metrics from the
+   * algorithm specific table and transforms into a data
+   * structure that is used to determine the best model
+   */
+  def getClusterMetrics(algoName:String, modelName:String, modelStage:String):JList[ClusterMetric] = {
 
-  def createClusterTable(algoName:String, row:Put):Unit = {
+    val metricsSql = SqlBuilder.clusterMetricsSql(algoName, modelName, modelStage)
+    val metrics = readTable(metricsSql)
+
+    metrics.map(row => {
+
+      val metric = new ClusterMetric()
+      metric.setTs(row.head.asInstanceOf[Long])
+
+      metric.setId(row(1).asInstanceOf[String])
+      metric.setSilhouetteEuclidean(row(2).asInstanceOf[Double])
+
+      metric.setSilhouetteCosine(row(3).asInstanceOf[Double])
+      metric.setPerplexity(row(4).asInstanceOf[Double])
+
+      metric.setLikelihood(row(5).asInstanceOf[Double])
+      metric.setFsPath(row(6).asInstanceOf[String])
+      metric
+
+    }).toList
+
+  }
+
+  def insertClusterRow(algoName:String, row:Put):Unit = {
     /*
      * Create algorithm specific table if it
      * does not exist already
@@ -277,6 +349,18 @@ class TimeScale(settings:Map[String,String]) {
 
     })
 
+    /* fs_name */
+    val fs_name = new String(values(Names.FS_NAME))
+
+    pos += 1
+    stmt.setString(pos, fs_name)
+
+    /* fs_path */
+    val fs_path = new String(values(Names.FS_PATH))
+
+    pos += 1
+    stmt.setString(pos, fs_path)
+
     stmt.addBatch()
 
     stmt.executeBatch()
@@ -287,7 +371,7 @@ class TimeScale(settings:Map[String,String]) {
 
   }
 
-  def createPlainTable(algoName:String, row:Put):Unit = {
+  def insertPlainRow(algoName:String, row:Put):Unit = {
     /*
      * Create algorithm specific table if it
      * does not exist already
@@ -364,6 +448,18 @@ class TimeScale(settings:Map[String,String]) {
     pos += 1
     stmt.setString(pos, model_metrics)
 
+    /* fs_name */
+    val fs_name = new String(values(Names.FS_NAME))
+
+    pos += 1
+    stmt.setString(pos, fs_name)
+
+    /* fs_path */
+    val fs_path = new String(values(Names.FS_PATH))
+
+    pos += 1
+    stmt.setString(pos, fs_path)
+
     stmt.addBatch()
 
     stmt.executeBatch()
@@ -373,8 +469,37 @@ class TimeScale(settings:Map[String,String]) {
     releaseConn(conn)
 
   }
+  /**
+   * This method retrieves the regressor metrics from the
+   * algorithm specific table and transforms into a data
+   * structure that is used to determine the best model
+   */
+  def getRegressorMetrics(algoName:String, modelName:String, modelStage:String):JList[RegressorMetric] = {
 
-  def createRegressorTable(algoName:String, row:Put):Unit = {
+    val metricsSql = SqlBuilder.regressorMetricsSql(algoName, modelName, modelStage)
+    val metrics = readTable(metricsSql)
+
+    metrics.map(row => {
+
+      val metric = new RegressorMetric()
+      metric.setTs(row.head.asInstanceOf[Long])
+
+      metric.setId(row(1).asInstanceOf[String])
+      metric.setRsme(row(2).asInstanceOf[Double])
+
+      metric.setMse(row(3).asInstanceOf[Double])
+      metric.setMae(row(4).asInstanceOf[Double])
+
+      metric.setR2(row(5).asInstanceOf[Double])
+      metric.setFsPath(row(6).asInstanceOf[String])
+
+      metric
+
+    }).toList
+
+  }
+
+  def insertRegressorRow(algoName:String, row:Put):Unit = {
     /*
      * Create algorithm specific table if it
      * does not exist already
@@ -460,6 +585,18 @@ class TimeScale(settings:Map[String,String]) {
 
     })
 
+    /* fs_name */
+    val fs_name = new String(values(Names.FS_NAME))
+
+    pos += 1
+    stmt.setString(pos, fs_name)
+
+    /* fs_path */
+    val fs_path = new String(values(Names.FS_PATH))
+
+    pos += 1
+    stmt.setString(pos, fs_path)
+
     stmt.addBatch()
 
     stmt.executeBatch()
@@ -468,6 +605,56 @@ class TimeScale(settings:Map[String,String]) {
     conn.commit()
     releaseConn(conn)
 
+  }
+  /**
+   * This method retrieves a sorted (ascending time order)
+   * list of model ids and artifact paths for the provided
+   * algo name, model name and stage.
+   *
+   * The last id and artifact path is returned.
+   */
+  def getLastProfile(algoName:String, modelName:String, modelStage:String):ModelProfile = {
+
+    val modelPathSql = SqlBuilder.modelPathSql(algoName, modelName, modelStage)
+    val result = readTable(modelPathSql)
+
+    val profiles = result.map(row => {
+
+      val profile = new ModelProfile()
+
+      profile.setId(row(1).asInstanceOf[String])
+      profile.setPath(row(2).asInstanceOf[String])
+
+      profile
+
+    })
+
+    profiles.last
+
+  }
+
+  def getLastVersion(algoName:String, modelNS:String, modelName:String, modelStage:String):String = {
+
+    val versionSql = SqlBuilder.modelVersionSql(algoName, modelNS, modelName, modelStage)
+    val result = readTable(versionSql)
+
+    if (result.isEmpty) {
+      "M-1"
+    }
+    else {
+
+      val latest = result
+        .map(row =>
+          row(1).asInstanceOf[String]
+        )
+        .last
+
+      val tokens = latest.split("-")
+      val numVersion = Integer.parseInt(tokens(1)) + 1
+
+      Integer.toString(numVersion)
+
+    }
   }
 
   def createIfNotExistsTable(name:String, columns:String):Unit = {

@@ -1,6 +1,6 @@
 package de.kp.works.core.model;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * This software is the confidential and proprietary information of 
  * Dr. Krusche & Partner PartG ("Confidential Information"). 
@@ -18,6 +18,47 @@ import io.cdap.cdap.api.dataset.table.Row;
 import de.kp.works.core.Names;
 
 public class ClassifierMetric {
+
+	public void setFsPath(String fsPath) {
+		this.fsPath = fsPath;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setTs(Long ts) {
+		this.ts = ts;
+	}
+
+	public void setAccuracy(Double accuracy) {
+		this.accuracy = accuracy;
+	}
+
+	public void setF1(Double f1) {
+		this.f1 = f1;
+	}
+
+	public void setWeightedFMeasure(Double weightedFMeasure) {
+		this.weightedFMeasure = weightedFMeasure;
+	}
+
+	public void setWeightedPrecision(Double weightedPrecision) {
+		this.weightedPrecision = weightedPrecision;
+	}
+
+	public void setWeightedRecall(Double weightedRecall) {
+		this.weightedRecall = weightedRecall;
+	}
+
+	public void setWeightedFalsePositiveRate(Double weightedFalsePositiveRate) {
+		this.weightedFalsePositiveRate = weightedFalsePositiveRate;
+	}
+
+	public void setWeightedTruePositiveRate(Double weightedTruePositiveRate) {
+		this.weightedTruePositiveRate = weightedTruePositiveRate;
+	}
+
 	/*
 	 * The target variables of the model scan to 
 	 * determine the best classifier model

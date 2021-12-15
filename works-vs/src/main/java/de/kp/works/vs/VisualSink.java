@@ -54,7 +54,7 @@ abstract public class VisualSink extends SparkSink<StructuredRecord> {
      * The config reader is introduced to enable
      * access to static side wide configurations
      */
-    protected ConfigReader configReader = new ConfigReader();
+    protected ConfigReader configReader = ConfigReader.getInstance();
     /*
      * This class is a CDAP wrapper for the Scala [Visualizer]
      * that performs the entire visualization of the dataset

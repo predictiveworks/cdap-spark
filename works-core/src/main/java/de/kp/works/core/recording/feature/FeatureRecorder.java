@@ -19,37 +19,62 @@ package de.kp.works.core.recording.feature;
  */
 
 import de.kp.works.core.configuration.ConfigReader;
+import de.kp.works.core.model.ModelProfile;
+import de.kp.works.core.model.ModelSpec;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
-import io.cdap.cdap.api.dataset.table.Put;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.recording.metadata.MetadataWriter;
+import de.kp.works.core.recording.metadata.CDAPWriter;
+import de.kp.works.core.recording.metadata.RemoteWriter;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 
 public class FeatureRecorder extends AbstractRecorder {
 
-	protected String algoName;
-
+	protected MetadataWriter metadataWriter;
 	public FeatureRecorder(ConfigReader configReader) {
 		super(configReader);
+		/*
+		 * Assign the algorithm type to this recorder to
+		 * support type specific functionality
+		 */
 		algoType = SparkMLManager.FEATURE;
+		/*
+		 * Determine the metadata writer for this recorder;
+		 * the current implementation supports remote metadata
+		 * registration leveraging a Postgres instance, and also
+		 * internal storage using a CDAP Table dataset.
+		 */
+		String metadataOption = configReader.getMetadataOption();
+		switch (metadataOption) {
+			case ConfigReader.REMOTE_OPTION: {
+				metadataWriter = new RemoteWriter(algoType);
+				break;
+			}
+			case ConfigReader.CDAP_OPTION: {
+				metadataWriter = new CDAPWriter(algoType);
+				break;
+			}
+			default:
+				metadataWriter = null;
+
+		}
 	}
 
-	protected String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption)
-			throws Exception {
-		return getPath(context, algoName, modelName, modelStage, modelOption);
+	public ModelProfile getProfile() {
+		return metadataWriter.getProfile();
+	}
+
+	protected String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
+		return metadataWriter.getModelPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, fsPath);
+		return metadataWriter.buildModelPath(context, fsPath);
 	}
 
-	@Override
-	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-			String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
-
-		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
-		table.put(row.add("metrics", modelMetrics));
-
+	protected void setMetadata(SparkExecutionPluginContext context, ModelSpec modelSpec) throws Exception {
+		modelSpec.setAlgoName(algoName);
+		metadataWriter.setMetadata(context, modelSpec);
 	}
 
 }

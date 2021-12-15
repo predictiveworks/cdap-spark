@@ -18,23 +18,15 @@ package de.kp.works.core.recording.recommendation;
  * 
  */
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import de.kp.works.core.Algorithms;
-import de.kp.works.core.Names;
 import de.kp.works.core.configuration.ConfigReader;
-import io.cdap.cdap.api.dataset.table.Put;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.model.ModelSpec;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.recommendation.ALSModel;
 
-import java.lang.reflect.Type;
 import java.util.Date;
-import java.util.Map;
 
 public class ALSRecorder extends RecommenderRecorder {
-
-	private final Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
 
 	public ALSRecorder(ConfigReader configReader) {
 		super(configReader);
@@ -68,30 +60,21 @@ public class ALSRecorder extends RecommenderRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
 
-	}
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
 
-	@Override
-	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-			String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
 
-		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
 
-		String[] metricNames = new String[] {
-			Names.RSME,
-			Names.MSE,
-			Names.MAE,
-			Names.R2
-		};
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
 
-		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
-		for (String metricName: metricNames) {
-			Double metricValue = (Double) metrics.get(metricName);
-			row.add(metricName, metricValue);
-		}
-
-		table.put(row);
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 
 	}
 

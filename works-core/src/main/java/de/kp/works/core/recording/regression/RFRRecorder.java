@@ -20,6 +20,7 @@ package de.kp.works.core.recording.regression;
 
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.configuration.ConfigReader;
+import de.kp.works.core.model.ModelSpec;
 import de.kp.works.core.recording.SparkMLManager;
 import io.cdap.cdap.api.dataset.table.Table;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
@@ -59,7 +60,20 @@ public class RFRRecorder extends RegressorRecorder {
 
 		/* METADATA */
 
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 

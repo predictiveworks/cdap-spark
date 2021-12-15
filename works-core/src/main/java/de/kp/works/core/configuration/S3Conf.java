@@ -18,15 +18,15 @@ package de.kp.works.core.configuration;
  *
  */
 
-public class S3Access {
+public class S3Conf {
 
     private final String endpoint;
 
     private final String accessKey;
     private final String secretKey;
 
-    public S3Access() {
-        ConfigReader reader = new ConfigReader();
+    public S3Conf() {
+        ConfigReader reader = ConfigReader.getInstance();
 
         this.endpoint = reader.getS3Endpoint();
         this.accessKey = reader.getS3AccessKey();

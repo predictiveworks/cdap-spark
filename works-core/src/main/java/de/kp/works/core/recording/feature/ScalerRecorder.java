@@ -20,6 +20,7 @@ package de.kp.works.core.recording.feature;
 
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.configuration.ConfigReader;
+import de.kp.works.core.model.ModelSpec;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import org.apache.spark.ml.feature.MaxAbsScalerModel;
 import org.apache.spark.ml.feature.MinMaxScalerModel;
@@ -74,7 +75,21 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 
@@ -110,7 +125,21 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 
@@ -146,7 +175,21 @@ public class ScalerRecorder extends FeatureRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksML";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 

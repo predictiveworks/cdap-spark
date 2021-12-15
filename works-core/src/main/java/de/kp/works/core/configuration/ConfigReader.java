@@ -44,7 +44,13 @@ public class ConfigReader {
      * - lfs:   Local file system (for CDAP sandbox)
      * - s3:    AWS S3 storage system
      */
-    private final List<String> artifactOptions = Arrays.asList("fs", "hdfs", "lfs", "s3");
+
+    public static final String FS_OPTION   = "fs";
+    public static final String HDFS_OPTION = "hdfs";
+    public static final String LFS_OPTION  = "lfs";
+    public static final String S3_OPTION   = "s3";
+
+    private final List<String> artifactOptions = Arrays.asList(FS_OPTION, HDFS_OPTION, LFS_OPTION, S3_OPTION);
 
     public static String MODEL_ARTIFACT_OPTION = "model.artifact.option";
     public static String MODEL_ARTIFACT_FOLDER = "model.artifact.folder";
@@ -59,20 +65,39 @@ public class ConfigReader {
      * The current implementation supports the local storage
      * of the metadata assigned to machine learning runs:
      *
-     * - postgres: An external Postgres database is used to
+     * - remote: An external Postgres database is used to
      *   store and manage the model (run) specific metadata
      *
-     * - table: A CDAP Table abstraction used to store and
+     * - cdap: A CDAP Table abstraction used to store and
      *   manage model (run) specific metadata
      */
-    private final List<String> metadataOptions = Arrays.asList("postgres","table");
+    public static final String CDAP_OPTION   = "cdap";
+    public static final String REMOTE_OPTION = "remote";
+
+    private final List<String> metadataOptions = Arrays.asList(REMOTE_OPTION, CDAP_OPTION);
     public static String MODEL_METADATA_OPTION = "model.metadata.option";
 
     public static final String POSTGRES_JDBC_URL      = "postgres.jdbc.url";
     public static final String POSTGRES_JDBC_USER     = "postgres.jdbc.user";
     public static final String POSTGRES_JDBC_PASSWORD = "postgres.jdbc.password";
 
-    public ConfigReader() {
+    private static final ConfigReader instance;
+
+    static {
+
+        try {
+            instance = new ConfigReader();
+        } catch (Exception e) {
+            throw new RuntimeException("[ConfigReader] could not be created.");
+        }
+
+    }
+
+    public static ConfigReader getInstance() {
+        return instance;
+    }
+
+    private ConfigReader() {
         config = CConfiguration.create();
     }
     /**

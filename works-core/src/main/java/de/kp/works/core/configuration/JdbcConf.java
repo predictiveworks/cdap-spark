@@ -18,17 +18,17 @@ package de.kp.works.core.configuration;
  *
  */
 
-public class JdbcAccess {
+public class JdbcConf {
 
     private final String url;
     private final String user;
     private final String password;
 
-    public JdbcAccess() {
-        ConfigReader reader = new ConfigReader();
+    public JdbcConf() {
+        ConfigReader reader = ConfigReader.getInstance();
 
         this.url = reader.getJdbcUrl();
-        this.user = reader.getS3AccessKey();
+        this.user = reader.getJdbcUser();
         this.password = reader.getJdbcPassword();
     }
 

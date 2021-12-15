@@ -1,6 +1,6 @@
 package de.kp.works.core.model;
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * This software is the confidential and proprietary information of 
  * Dr. Krusche & Partner PartG ("Confidential Information"). 
@@ -17,6 +17,34 @@ import io.cdap.cdap.api.dataset.table.Row;
 import de.kp.works.core.Names;
 
 public class RegressorMetric {
+	public void setFsPath(String fsPath) {
+		this.fsPath = fsPath;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setTs(Long ts) {
+		this.ts = ts;
+	}
+
+	public void setRsme(Double rsme) {
+		this.rsme = rsme;
+	}
+
+	public void setMse(Double mse) {
+		this.mse = mse;
+	}
+
+	public void setMae(Double mae) {
+		this.mae = mae;
+	}
+
+	public void setR2(Double r2) {
+		this.r2 = r2;
+	}
+
 	/*
 	 * The target variables of the model scan to 
 	 * determine the best classifier model
@@ -30,10 +58,6 @@ public class RegressorMetric {
 	public Double mse;
 	public Double mae;
 	public Double r2;
-
-	public RegressorMetric() {
-		
-	}
 
 	public void fromRow(Row row) {
 		

@@ -20,6 +20,7 @@ package de.kp.works.ts.recording;
 
 import de.kp.works.core.Algorithms;
 import de.kp.works.core.configuration.ConfigReader;
+import de.kp.works.core.model.ModelSpec;
 import de.kp.works.core.recording.TimeRecorder;
 import de.kp.works.ts.model.ARIMAModel;
 import de.kp.works.ts.model.AutoARIMAModel;
@@ -81,7 +82,21 @@ public class ARIMARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 	
@@ -101,7 +116,21 @@ public class ARIMARecorder extends TimeRecorder {
 		/* METADATA */
 
 		String modelPack = "WorksTS";
-		setMetadata(context, ts, modelName, modelPack, modelStage, modelParams, modelMetrics, fsPath);
+
+		ModelSpec modelSpec = new ModelSpec();
+		modelSpec.setTs(ts);
+
+		modelSpec.setAlgoName(algoName);
+		modelSpec.setModelName(modelName);
+
+		modelSpec.setModelPack(modelPack);
+		modelSpec.setModelStage(modelStage);
+
+		modelSpec.setModelParams(modelParams);
+		modelSpec.setModelMetrics(modelMetrics);
+
+		modelSpec.setFsPath(fsPath);
+		setMetadata(context, modelSpec);
 		
 	}
 

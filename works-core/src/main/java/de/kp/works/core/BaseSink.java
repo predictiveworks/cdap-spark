@@ -19,7 +19,7 @@ package de.kp.works.core;
  */
 
 import de.kp.works.core.configuration.ConfigReader;
-import de.kp.works.core.configuration.S3Access;
+import de.kp.works.core.configuration.S3Conf;
 import io.cdap.cdap.api.spark.sql.DataFrames;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -39,7 +39,7 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 	 * The config reader is introduced to enable
 	 * access to static side wide configurations
 	 */
-	protected ConfigReader configReader = new ConfigReader();
+	protected ConfigReader configReader = ConfigReader.getInstance();
 
 	/*
 	 * Reference to input & output schema
@@ -79,7 +79,7 @@ public abstract class BaseSink extends SparkSink<StructuredRecord> {
 		 * or an AWS S3 bucket to store and manage trained
 		 * Apache Spark ML models.
 		 */
-		S3Access s3Creds = new S3Access();
+		S3Conf s3Creds = new S3Conf();
 		if (s3Creds.nonEmpty()) {
 
 			jsc.hadoopConfiguration().set("fs.s3a.endpoint", s3Creds.getEndpoint());

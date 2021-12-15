@@ -13,65 +13,64 @@ package de.kp.works.core.recording.classification;
  * 
  */
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import de.kp.works.core.Names;
 import de.kp.works.core.configuration.ConfigReader;
+import de.kp.works.core.model.ModelProfile;
+import de.kp.works.core.model.ModelSpec;
 import de.kp.works.core.recording.AbstractRecorder;
 import de.kp.works.core.recording.SparkMLManager;
-import io.cdap.cdap.api.dataset.table.Put;
-import io.cdap.cdap.api.dataset.table.Table;
+import de.kp.works.core.recording.metadata.MetadataWriter;
+import de.kp.works.core.recording.metadata.CDAPWriter;
+import de.kp.works.core.recording.metadata.RemoteWriter;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
-
-import java.lang.reflect.Type;
-import java.util.Map;
 
 public class ClassifierRecorder extends AbstractRecorder {
 
-	protected Type metricsType = new TypeToken<Map<String, Object>>() {}.getType();
-
+	protected MetadataWriter metadataWriter;
 	public ClassifierRecorder(ConfigReader configReader) {
 		super(configReader);
+		/*
+		 * Assign the algorithm type to this recorder to
+		 * support type specific functionality
+		 */
 		algoType = SparkMLManager.CLASSIFIER;
+		/*
+		 * Determine the metadata writer for this recorder;
+		 * the current implementation supports remote metadata
+		 * registration leveraging a Postgres instance, and also
+		 * internal storage using a CDAP Table dataset.
+		 */
+		String metadataOption = configReader.getMetadataOption();
+		switch (metadataOption) {
+			case ConfigReader.REMOTE_OPTION: {
+				metadataWriter = new RemoteWriter(algoType);
+				break;
+			}
+			case ConfigReader.CDAP_OPTION: {
+				metadataWriter = new CDAPWriter(algoType);
+				break;
+			}
+			default:
+				metadataWriter = null;
+
+		}
+
 	}
 
-	/**
-	 * This method retrieves the (internal) CDAP path of a stored
-	 * machine learning model; either the path of the latest
-	 *
-	 */
+	public ModelProfile getProfile() {
+		return metadataWriter.getProfile();
+	}
+
 	protected String getModelPath(SparkExecutionPluginContext context, String modelName, String modelStage, String modelOption) throws Exception {
-		return getPath(context, algoName, modelName, modelStage, modelOption);
+		return metadataWriter.getModelPath(context, algoName, modelName, modelStage, modelOption);
 	}
 
 	protected String buildModelPath(SparkExecutionPluginContext context, String fsPath) throws Exception {
-		return buildPath(context, fsPath);
+		return metadataWriter.buildModelPath(context, fsPath);
 	}
 
-	@Override
-	protected void setMetadata(long ts, Table table, String modelNS, String modelName, String modelPack,
-			String modelStage, String modelParams, String modelMetrics, String fsPath) throws Exception {
-
-		Put row = buildRow(ts, table, modelNS, modelName, modelPack, modelStage, modelParams, fsPath);
-
-		String[] metricNames = new String[] {
-			Names.ACCURACY,
-			Names.F1,
-			Names.WEIGHTED_FMEASURE,
-			Names.WEIGHTED_PRECISION,
-			Names.WEIGHTED_RECALL,
-			Names.WEIGHTED_FALSE_POSITIVE,
-			Names.WEIGHTED_TRUE_POSITIVE
-		};
-
-		Map<String, Object> metrics = new Gson().fromJson(modelMetrics, metricsType);
-		for (String metricName: metricNames) {
-			Double metricValue = (Double) metrics.get(metricName);
-			row.add(metricName, metricValue);
-		}
-
-		table.put(row);
-
+	protected void setMetadata(SparkExecutionPluginContext context, ModelSpec modelSpec) throws Exception {
+		modelSpec.setAlgoName(algoName);
+		metadataWriter.setMetadata(context, modelSpec);
 	}
 
 }
