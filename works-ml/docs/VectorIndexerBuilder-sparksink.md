@@ -2,7 +2,7 @@
 # Vector Indexer Builder
 
 ## Description
-This machine learning plugin represents
+This machine learning plugin represents the building stage for an Apache Spark ML "Vector Indexer model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.

@@ -2,7 +2,7 @@
 # Word2Vec Builder
 
 ## Description
-This machine learning plugin represents
+This machine learning plugin represents the building stage for an Apache Spark ML "Word2Vec feature model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
