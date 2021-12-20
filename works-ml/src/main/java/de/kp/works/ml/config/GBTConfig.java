@@ -51,7 +51,7 @@ public class GBTConfig extends CRConfig {
 	@Macro
 	public Double minInfoGain;
 
-	@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.1.")
+	@Description("The learning rate for shrinking the contribution of each estimator. Must be in the interval (0, 1]. Default is 0.1.")
 	@Macro
 	public Double stepSize;
 

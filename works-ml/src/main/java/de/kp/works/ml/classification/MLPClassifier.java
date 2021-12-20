@@ -150,15 +150,15 @@ public class MLPClassifier extends ClassifierSink {
 		@Macro
 		public Integer maxIter;
 
-		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.03.")
+		@Description("The learning rate for shrinking the contribution of each estimator. Must be in the interval (0, 1]. Default is 0.03.")
 		@Macro
 		public Double stepSize;
 
-		@Description("The solver algorithm for optimization. Supported options are 'gd' (minibatch gradient descent) and 'l-bfgs'. Default is 'l-bfgs'.")
+		@Description("The solver algorithm for optimization. Supported options are 'gd' (mini-batch gradient descent) and 'l-bfgs'. Default is 'l-bfgs'.")
 		@Macro
 		public String solver;
 		
-		@Description("The positive convergence tolerance of iterations. Smaller values wuth lead to higher accuracy with the cost "
+		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
 				+ "of more iterations. Default is 1e-6.")
 		@Macro
 		public Double tol;
