@@ -49,7 +49,7 @@ public class ModelParams {
 
 	/** LINEAR REGRESSION **/
 	
-	public static final String ELASTIC_NET_PARAM_DESC = "The ElasticNet mxing parameter. For value = 0.0, "
+	public static final String ELASTIC_NET_PARAM_DESC = "The ElasticNet mixing parameter. For value = 0.0, "
 			+ "the penalty is an L2 penalty. For value = 1.0, it is an L1 penalty. For 0.0 < value < 1.0, "
 			+ "the penalty is a combination of L1 and L2. Default is 0.0.";
 

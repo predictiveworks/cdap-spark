@@ -31,7 +31,8 @@ public class RecommenderConfig extends BaseConfig {
 	@Macro
 	public String modelName;
 
-	@Description("The stage of the ML model. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+	@Description("The stage of the ML model. Supported values are 'experiment', 'staging'," +
+			" 'production' and 'archived'. Default is 'experiment'.")
 	@Macro
 	public String modelStage;
 
@@ -42,7 +43,7 @@ public class RecommenderConfig extends BaseConfig {
 	public void validate() {
 		super.validate();
 
-		/** MODEL & COLUMNS **/
+		/* MODEL & COLUMNS */
 		if (Strings.isNullOrEmpty(modelName)) {
 			throw new IllegalArgumentException(
 					String.format("[%s] The model name must not be empty.", this.getClass().getName()));

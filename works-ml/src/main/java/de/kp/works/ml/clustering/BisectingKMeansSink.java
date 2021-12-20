@@ -18,14 +18,9 @@ package de.kp.works.ml.clustering;
  * 
  */
 
-import java.util.HashMap;
-import java.util.Map;
-
+import de.kp.works.core.cluster.ClusterConfig;
+import de.kp.works.core.cluster.ClusterSink;
 import de.kp.works.core.recording.clustering.BisectingKMeansRecorder;
-import org.apache.spark.ml.clustering.BisectingKMeansModel;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.annotation.Name;
@@ -35,10 +30,12 @@ import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.StageConfigurer;
 import io.cdap.cdap.etl.api.batch.SparkExecutionPluginContext;
 import io.cdap.cdap.etl.api.batch.SparkSink;
+import org.apache.spark.ml.clustering.BisectingKMeansModel;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 
-import de.kp.works.core.cluster.ClusterConfig;
-import de.kp.works.core.cluster.ClusterSink;
-import de.kp.works.ml.clustering.Evaluator;
+import java.util.HashMap;
+import java.util.Map;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("BisectingKMeansSink")
@@ -147,7 +144,7 @@ public class BisectingKMeansSink extends ClusterSink {
 		@Macro
 		public Double minDivisibleClusterSize;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
 	    @Macro
 	    public Integer maxIter;
 

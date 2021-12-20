@@ -28,3 +28,10 @@ and 'archived'. Default is 'experiment'.
 **Features Field**: The name of the field in the input schema that contains the feature vector.
 
 ### Parameter Configuration
+**Clusters**: The desired number of leaf clusters. Must be > 1. Default is 4.
+
+**Maximum Iterations**: The (maximum) number of iterations the algorithm has to execute. 
+Default value: 20.
+
+**Minimum Points**: The minimum number of points (if greater than or equal to 1.0), or the 
+minimum proportion of points (if less than 1.0) of a divisible cluster. Default is 1.0.

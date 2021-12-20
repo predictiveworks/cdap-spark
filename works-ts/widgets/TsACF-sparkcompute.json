@@ -34,16 +34,6 @@
             ],
             "default": "experiment"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Time Field",
-          "name": "timeCol"
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Value Field",
-          "name": "valueCol"
         }
       ]
     },

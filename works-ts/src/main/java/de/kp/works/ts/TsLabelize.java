@@ -133,7 +133,7 @@ public class TsLabelize extends TimeCompute {
 		@Macro
 		public String featuresCol;
 
-		@Description("The name of the field in the outputschema that contains the label value.")
+		@Description("The name of the field in the output schema that contains the label value.")
 		@Macro
 		public String labelCol;
 

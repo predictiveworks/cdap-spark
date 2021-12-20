@@ -2,7 +2,8 @@
 # Linear Regression Predictor
 
 ## Description
-This machine learning plugin represents the prediction stage
+This machine learning plugin represents the prediction stage that leverages a trained Apache Spark ML 
+"Linear Regression model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
@@ -13,6 +14,11 @@ This machine learning plugin represents the prediction stage
 **Model Stage***: The stage of the ML model. Supported values are 'experiment', 'staging', 'production'
 and 'archived'. Default is 'experiment'.
 
-**Model Variant**:
+**Model Variant**: An indicator to determine which model variant is used for predictions. Supported values
+are 'best' and 'latest'. Default is 'best'. The best model refers to the model with the highest accuracy
+with respect to all other (model) training runs.
 
 ### Data Configuration
+**Features Field**: The name of the field in the input schema that contains the feature vector.
+
+**Prediction Field**: The name of the field in the output schema that contains the predicted label.

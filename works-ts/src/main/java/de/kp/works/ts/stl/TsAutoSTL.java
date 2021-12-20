@@ -125,7 +125,7 @@ public class TsAutoSTL extends STLCompute {
 		@Macro
 		public String lagValues;
 
-		@Description("The threshold used to determine the lag value with the highest correlation score. Default is 0.95")
+		@Description("The threshold used to determine the lag value with the highest correlation score. Default is 0.95.")
 		@Macro
 		public Double threshold;
 

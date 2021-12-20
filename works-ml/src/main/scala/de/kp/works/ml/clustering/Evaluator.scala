@@ -1,6 +1,6 @@
 package de.kp.works.ml.clustering
 /*
- * Copyright (c) 2019 Dr. Krusche & Partner PartG. All rights reserved.
+ * Copyright (c) 2019 - 2021 Dr. Krusche & Partner PartG. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -30,7 +30,7 @@ object Evaluator {
    */
   private val evaluator = new ClusteringEvaluator()
   /*
-   * This evaluator calculates the silhouette coefficent of 
+   * This evaluator calculates the silhouette coefficient of
    * the computed predictions as a means to evaluate the quality 
    * of the chosen parameters.
    * 

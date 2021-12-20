@@ -41,10 +41,10 @@ explicit ratings given to items.
 and 'archived'. Default is 'experiment'.
 
 ### Data Configuration
-**User Field**: The name of the input field that defines the user identifiers. The values must be within 
+**User Field**: The name of the input field that defines the "user" identifiers. The values must be within 
 the integer value range.
 
-**Item Field**: The name of the input field that defines the item identifiers. The values must be within 
+**Item Field**: The name of the input field that defines the "item" identifiers. The values must be within 
 the integer value range.
 
 **Rating Field**: The name of the input field that defines the item ratings. The values must be within 

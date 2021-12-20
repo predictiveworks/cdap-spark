@@ -19,6 +19,6 @@ trained model.
 and 'archived'. Default is 'experiment'.
 
 ### Data Configuration
-**Input Field**:
+**Input Field**: The name of the field in the input schema that contains the features.
 
-**Output Field**:
+**Output Field**: The name of the field in the output schema that contains the transformed features.

@@ -107,7 +107,7 @@ public class TsACF extends TimeCompute {
 		@Macro
 		public String modelName;
 
-		@Description("The stage of the ACF dataset. Supported values are 'experiment', 'stagging', 'production' and 'archived'. Default is 'experiment'.")
+		@Description("The stage of the ACF dataset. Supported values are 'experiment', 'staging', 'production' and 'archived'. Default is 'experiment'.")
 		@Macro
 		public String modelStage;
 

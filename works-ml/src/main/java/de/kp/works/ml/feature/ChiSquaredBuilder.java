@@ -123,7 +123,7 @@ public class ChiSquaredBuilder extends FeatureSink {
 		public String labelCol;
 		
 		@Description("The number of features that selector will select, ordered by ascending p-value. "
-				+ "number of features is less than this parameter value, then this will select all features. "
+				+ "The number of features is less than this parameter value, then this will select all features. "
 				+ "Only applicable when selectorType = 'numTopFeatures'. Default value is 50.")
 		@Macro
 		public Integer numTopFeatures;
