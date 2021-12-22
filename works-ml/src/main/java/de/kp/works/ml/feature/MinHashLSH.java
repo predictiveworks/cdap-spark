@@ -38,7 +38,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MinHashLSH")
-@Description("A transformation stage that leverages a trained MinHash LSH model to project feature vectors onto hash value vectors.")
+@Description("A transformation stage that leverages a trained Apache Spark MinHash LSH model to project feature vectors onto hash value vectors.")
 public class MinHashLSH extends FeatureCompute {
 	/*
 	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage
@@ -138,7 +138,7 @@ public class MinHashLSH extends FeatureCompute {
 		 * In future releases, we will implement AND-amplification so that users 
 		 * can specify the dimensions of these vectors.
 		 * 
-		 * For compliances purposes with CDAP data schemas, we have to resolve
+		 * For compliance purposes with CDAP data schemas, we have to resolve
 		 * the output format as Array Of Double
 		 */
 		Dataset<Row> output = MLUtils.flattenMinHash(model.transform(vectorset), config.outputCol).drop("_input");

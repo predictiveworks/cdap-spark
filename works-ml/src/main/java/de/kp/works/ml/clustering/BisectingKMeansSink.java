@@ -144,7 +144,7 @@ public class BisectingKMeansSink extends ClusterSink {
 		@Macro
 		public Double minDivisibleClusterSize;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value is 20.")
 	    @Macro
 	    public Integer maxIter;
 

@@ -2,7 +2,7 @@
 # String Indexer Builder
 
 ## Description
-This machine learning plugin represents
+This machine learning plugin represents a building stage for an Apache Spark ML "String Indexer model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
@@ -14,3 +14,4 @@ This machine learning plugin represents
 and 'archived'. Default is 'experiment'.
 
 ### Data Configuration
+**Input Field**: The name of the field in the input schema that contains the features to build the model from.

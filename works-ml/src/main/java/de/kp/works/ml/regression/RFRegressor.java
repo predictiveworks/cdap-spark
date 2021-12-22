@@ -39,7 +39,7 @@ import de.kp.works.ml.config.RFConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("RFRegressor")
-@Description("A building stage for an Apache Spark ML Random Forest Trees regressor model. This stage expects " 
+@Description("A building stage for an Apache Spark ML Random Forest regression model. This stage expects "
 		+ "a dataset with at least two fields to train the model: One as an array of numeric values, and, " 
 		+ "another that describes the class or label value as numeric value.")
 public class RFRegressor extends RegressorSink {

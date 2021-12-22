@@ -133,7 +133,7 @@ public class IsotonicRegressor extends RegressorSink {
 		  
 		private static final long serialVersionUID = -4928234679795163044L;
 		
-		@Description("This indicator determines whether whether the output sequence should be 'isotonic' (increasing) or 'antitonic' (decreasing). Default is 'isotonic'.")
+		@Description("This indicator determines whether the output sequence should be 'isotonic' (increasing) or 'antitonic' (decreasing). Default is 'isotonic'.")
 		@Macro
 		public String isotonic;
 

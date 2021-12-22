@@ -38,7 +38,9 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("PCA")
-@Description("A transformation stage that leverages a trained PCA model to project feature vectors onto a lower dimensional vector space.")
+@Description("A transformation stage that leverages a trained Apache Spark ML Principal"
+		+ " Component Analysis feature model to project feature vectors onto a lower"
+		+ " dimensional vector space.")
 public class PCA extends FeatureCompute {
 
 	private static final long serialVersionUID = -7592807362852855002L;

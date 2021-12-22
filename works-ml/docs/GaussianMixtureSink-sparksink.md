@@ -27,3 +27,9 @@ and 'archived'. Default is 'experiment'.
 **Features Field**: The name of the field in the input schema that contains the feature vector.
 
 ### Parameter Configuration
+**Clusters**: The number of independent Gaussian distributions in the dataset. Must be > 1. Default is 2.
+
+**Maximum Iterations**: The (maximum) number of iterations the algorithm has to execute. Default value is 100.
+
+**Conversion Tolerance**: The positive convergence tolerance of iterations. Smaller values will lead to higher 
+accuracy with the cost of more iterations. Default is 0.01.

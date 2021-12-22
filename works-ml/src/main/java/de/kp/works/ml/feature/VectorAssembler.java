@@ -182,7 +182,7 @@ public class VectorAssembler extends FeatureCompute {
 
 		private static final long serialVersionUID = 1127092936375337969L;
 		
-		@Description("The comma-separated list of numeric (or numeric vector) fields that have to be be assembled.")
+		@Description("The comma-separated list of numeric (or numeric vector) fields that have to be assembled.")
 		@Macro
 		public String inputCols;
 

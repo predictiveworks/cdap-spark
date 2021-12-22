@@ -19,6 +19,8 @@ and 'archived'. Default is 'experiment'.
 are 'best' and 'latest'. Default is 'best'. The best model refers to the model with the highest accuracy
 with respect to all other (model) training runs.
 
+**Model Type**: The type of the model that is used for prediction, either 'classifier' or 'regressor'.
+
 ### Data Configuration
 **Features Field**: The name of the field in the input schema that contains the feature vector.
 

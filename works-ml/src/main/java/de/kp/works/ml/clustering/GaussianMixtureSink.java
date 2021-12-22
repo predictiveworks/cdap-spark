@@ -131,7 +131,7 @@ public class GaussianMixtureSink extends ClusterSink {
 		@Macro
 		public Integer k;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 100")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value is 100.")
 	    @Macro
 	    public Integer maxIter;
 

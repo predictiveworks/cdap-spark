@@ -160,7 +160,7 @@ public class LDASink extends ClusterSink {
 	    @Macro
 	    public Integer k;
 		
-	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
+	    @Description("The (maximum) number of iterations the algorithm has to execute. Default value is 20.")
 	    @Macro
 	    public Integer maxIter;
 	    

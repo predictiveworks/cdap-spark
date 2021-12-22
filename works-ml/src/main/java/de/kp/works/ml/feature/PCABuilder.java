@@ -44,7 +44,7 @@ import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("PCABuilder")
-@Description("A building stage for an Apache Spark based Principal Component Analysis feature model.")
+@Description("A building stage for an Apache Spark ML Principal Component Analysis feature model.")
 public class PCABuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -698695950116408878L;
@@ -118,7 +118,7 @@ public class PCABuilder extends FeatureSink {
 
 		private static final long serialVersionUID = -8154181932750250998L;
 		
-		@Description("The positive number of principle components.")
+		@Description("The positive number of principal components.")
 		@Macro
 		public Integer numComp;
 

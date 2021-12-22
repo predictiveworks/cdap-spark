@@ -133,20 +133,20 @@ public class KMeansSink extends ClusterSink {
 		@Macro
 		public Integer k;
 
-		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
+		@Description("The (maximum) number of iterations the algorithm has to execute. Default value is 20.")
 		@Macro
 		public Integer maxIter;
 
-		@Description("The convergence tolerance of the algorithm. Default value: 1e-4.")
+		@Description("The convergence tolerance of the algorithm. Default value is 1e-4.")
 		@Macro
 		public Double tolerance;
 
-		@Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value: 2.")
+		@Description("The number of steps for the initialization mode of the parallel KMeans algorithm. Default value is 2.")
 		@Macro
 		public Integer initSteps;
 
 		@Description("The initialization mode of the algorithm. This can be either 'random' to choose random "
-				+ "random points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value: 'parallel'.")
+				+ "points as initial cluster center, 'parallel' to use the parallel variant of KMeans++. Default value is 'parallel'.")
 		@Nullable
 		public String initMode;
 

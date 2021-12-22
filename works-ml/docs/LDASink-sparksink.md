@@ -34,4 +34,9 @@ and 'archived'. Default is 'experiment'.
 ### Data Configuration
 **Features Field**: The name of the field in the input schema that contains the feature vector.
 
+**Data Split**: The split of the dataset into train & test data, e.g. 80:20. Default is 90:10.
+
 ### Parameter Configuration
+**Clusters**: The number of topics that have to be created. Default is 10.
+
+**Maximum Iterations**: The (maximum) number of iterations the algorithm has to execute. Default value is 20.

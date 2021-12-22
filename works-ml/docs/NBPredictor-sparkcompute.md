@@ -2,7 +2,8 @@
 # Naive Bayes Predictor
 
 ## Description
-This machine learning plugin represents the prediction stage
+This machine learning plugin represents the prediction stage that leverages a trained Apache Spark "ML Naive Bayes 
+classification model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.

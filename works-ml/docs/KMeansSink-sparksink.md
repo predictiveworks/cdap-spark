@@ -27,3 +27,14 @@ and 'archived'. Default is 'experiment'.
 **Features Field**: The name of the field in the input schema that contains the feature vector.
 
 ### Parameter Configuration
+**Clusters**: The number of cluster that have to be created.
+
+**Maximum Iterations**: The (maximum) number of iterations the algorithm has to execute. Default value is 20.
+
+**Initialization Mode**: The initialization mode of the algorithm. This can be either 'random' to choose random 
+points as initial cluster center, 'parallel' to use the parallel variant of KMeans. Default value is 'parallel'.
+
+**Initialization Steps**: The number of steps for the initialization mode of the parallel KMeans algorithm. 
+Default value is 2.
+
+**Convergence Tolerance**: The convergence tolerance of the algorithm. Default value is 1e-4.

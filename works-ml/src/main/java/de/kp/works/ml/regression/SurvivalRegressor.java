@@ -148,7 +148,7 @@ public class SurvivalRegressor extends RegressorSink {
 		public Integer maxIter;
 
 		@Description("The positive convergence tolerance of iterations. Smaller values will lead to higher accuracy with the cost "
-				+ "of more iterations. Default is 1e-6")
+				+ "of more iterations. Default is 1e-6.")
 		@Macro
 		public Double tol;		
 		
