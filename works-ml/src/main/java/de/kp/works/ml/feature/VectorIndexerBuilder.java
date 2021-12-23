@@ -45,7 +45,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("VectorIndexerBuilder")
-@Description("A building stage for an Apache Spark ML VectorIndexer model.")
+@Description("A building stage for an Apache Spark ML Vector Indexer model.")
 public class VectorIndexerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -2349583466809428065L;

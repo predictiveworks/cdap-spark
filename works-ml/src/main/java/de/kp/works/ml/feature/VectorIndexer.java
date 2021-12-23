@@ -38,8 +38,8 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("VectorIndexer")
-@Description("A transformation stage that leverages the Apache Spark ML VectorIndexer to decide which features are "
-		+ "categorical and converts the original values into category indices. This stage requires a trained VectorIndexer model.")
+@Description("A transformation stage that leverages the Apache Spark ML Vector Indexer to decide which features are "
+		+ "categorical and converts the original values into category indices. This stage requires a trained Vector Indexer model.")
 public class VectorIndexer extends FeatureCompute {
 
 	private static final long serialVersionUID = 5944112891925832168L;

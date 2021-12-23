@@ -43,7 +43,7 @@ import de.kp.works.core.feature.FeatureSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("StringIndexerBuilder")
-@Description("A building stage for an Apache Spark ML StringIndexer model.")
+@Description("A building stage for an Apache Spark ML String Indexer model.")
 public class StringIndexerBuilder extends FeatureSink {
 	/*
 	 * A label indexer that maps a string column of labels to an ML column of label indices.

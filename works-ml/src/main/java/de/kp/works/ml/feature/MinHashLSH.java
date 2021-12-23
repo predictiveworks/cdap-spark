@@ -38,7 +38,8 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("MinHashLSH")
-@Description("A transformation stage that leverages a trained Apache Spark MinHash LSH model to project feature vectors onto hash value vectors.")
+@Description("A transformation stage that leverages a trained Apache Spark ML MinHash LSH model"
+		+ " to project feature vectors onto hash value vectors.")
 public class MinHashLSH extends FeatureCompute {
 	/*
 	 * The MinHash LSH algorithm is based on binary vectors, i.e. this pipeline stage

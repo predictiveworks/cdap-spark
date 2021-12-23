@@ -37,7 +37,8 @@ import de.kp.works.core.feature.FeatureCompute;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("StringToIndex")
-@Description("A transformation stage that leverages the Apache Spark ML StringIndexer. This stage requires a trained StringIndexer model.")
+@Description("A transformation stage that leverages the Apache Spark ML String Indexer."
+		+ " This stage requires a trained String Indexer model.")
 public class StringToIndex extends FeatureCompute {
 
 	private static final long serialVersionUID = -4361931347919726410L;

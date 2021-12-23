@@ -52,7 +52,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("ScalerBuilder")
-@Description("A building stage for an Apache Spark ML feature scaling model. Supported models are Min-Max, Max-Abs and Standard Scaler.")
+@Description("A building stage for an Apache Spark ML Scaler model. Supported models are Min-Max, Max-Abs and Standard Scaler.")
 public class ScalerBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = -7301919602186472418L;

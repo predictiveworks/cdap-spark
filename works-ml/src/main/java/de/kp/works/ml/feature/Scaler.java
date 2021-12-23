@@ -41,8 +41,9 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Scaler")
-@Description("A transformation stage that leverages a trained Scaler model to project feature vectors onto scaled vectors. "
-		+ "Supported models are 'Max-Abs', 'Min-Max' and 'Standard'.")
+@Description("A transformation stage that leverages a trained Apache Spark MLScaler model"
+		+ " to project feature vectors onto scaled vectors. Supported models are 'Max-Abs',"
+		+ " 'Min-Max' and 'Standard'.")
 public class Scaler extends FeatureCompute {
 
 	private static final long serialVersionUID = -2419787880853896958L;
