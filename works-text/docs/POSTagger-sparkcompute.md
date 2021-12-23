@@ -2,8 +2,9 @@
 # POS Tagger
 
 ## Description
-
-This machine learning plugin represents the building stage
+This machine learning plugin represents a transformation stage that requires a trained Spark NLP "Part-of-Speech model". 
+This stage appends two fields to the input schema, one that contains the extracted terms per document, and another 
+that contains their POS tags.
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
@@ -15,3 +16,7 @@ This machine learning plugin represents the building stage
 and 'archived'. Default is 'experiment'.
 
 ### Data Configuration
+**Text Field**: The name of the field in the input schema that contains the text document.
+
+**Output Field**: The name of the field in the output schema that contains the mixin of extracted tokens and 
+predicted POS tags.

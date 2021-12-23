@@ -44,7 +44,7 @@ import de.kp.works.text.config.ModelConfig;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Sentiment")
 @Description("A transformation stage that predicts sentiment labels (positive or negative) for "
-		+ "text documents, leveraging a trained Sentiment Analysis model.")
+		+ "text documents, leveraging a trained Spark NLP Sentiment Analysis model.")
 public class Sentiment extends TextCompute {
 
 	private static final long serialVersionUID = -5009925022021738613L;

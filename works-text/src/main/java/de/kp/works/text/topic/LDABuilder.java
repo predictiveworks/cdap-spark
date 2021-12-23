@@ -51,7 +51,7 @@ import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LDABuilder")
-@Description("A building stage for a Latent Dirichlet Allocation (LDA) model. An LDA model can be used for "
+@Description("A building stage for a Spark ML Latent Dirichlet Allocation (LDA) model. An LDA model can be used for "
 		+ "text clustering or labeling. This model training stage requires a pre-trained Word Embedding model.")
 public class LDABuilder extends TextSink {
 
@@ -177,7 +177,7 @@ public class LDABuilder extends TextSink {
 
 		private static final long serialVersionUID = -2548563805267897668L;
 
-		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10")
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 90:10.")
 		@Macro
 		public String dataSplit;
 
@@ -185,7 +185,7 @@ public class LDABuilder extends TextSink {
 		@Macro
 		public Integer k;
 
-		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20")
+		@Description("The (maximum) number of iterations the algorithm has to execute. Default value is 20.")
 		@Macro
 		public Integer maxIter;
 

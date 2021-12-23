@@ -42,7 +42,7 @@ import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("Word2VecBuilder")
-@Description("A building stage for an Apache Spark-NLP based Word2Vec embedding model.")
+@Description("A building stage for an Apache Spark NLP Word2Vec Embedding model.")
 public class Word2VecBuilder extends TextSink {
 
 	private static final long serialVersionUID = 393252026613980477L;
@@ -112,7 +112,7 @@ public class Word2VecBuilder extends TextSink {
 		@Macro
 		public Integer maxIter;
 		
-		@Description("The learning rate for shrinking the contribution of each estimator. Must be in interval (0, 1]. Default is 0.025")
+		@Description("The learning rate for shrinking the contribution of each estimator. Must be in the interval (0, 1]. Default is 0.025.")
 		@Macro
 		public Double stepSize;
 

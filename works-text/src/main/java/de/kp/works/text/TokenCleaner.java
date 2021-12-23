@@ -42,7 +42,7 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("TokenCleaner")
-@Description("A transformation stage that leverages the Spark NLP Stopword Cleaner to map an input "
+@Description("A transformation stage that leverages the Spark NLP Stop Word Cleaner to map an input "
 		+ "text field onto its normalized terms and remove each term that is defined as stop word. "
 		+ "This stage adds an extra field to the input schema that contains the whitespace "
 		+ "separated set of remaining tokens.")		

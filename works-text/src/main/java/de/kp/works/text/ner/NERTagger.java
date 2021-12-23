@@ -46,7 +46,7 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NERTagger")
-@Description("A tagging stage that leverages a trained Word2Vec model and NER (CRF) model to map an input "
+@Description("A tagging stage that leverages a trained Spark NLP Word2Vec model and NER (CRF) model to map an input "
 		+ "text field onto an output token & entities field.")
 public class NERTagger extends TextCompute {
 

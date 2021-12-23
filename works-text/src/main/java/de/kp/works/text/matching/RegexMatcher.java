@@ -42,8 +42,8 @@ import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("RegexMatcher")
-@Description("A transformation stage that leverages the Spark NLP Regex Matcher to detected provided ."
-		+ "Regex rules in the input text document.")
+@Description("A transformation stage that leverages the Spark NLP Regex Matcher to detect provided"
+		+ " Regex rules in the input text document.")
 public class RegexMatcher extends TextCompute {
 
 	private static final long serialVersionUID = -5699840126647930210L;

@@ -45,7 +45,7 @@ import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("NorvigBuilder")
-@Description("A building stage for a Spell Checking model based on Norvig's algorithm. The training "
+@Description("A building stage for a Spark NLP Spell Checking model based on Norvig's algorithm. The training "
 		+ "corpus provides correctly spelled terms with one or multiple terms per document.")
 public class NorvigBuilder extends TextSink {
 

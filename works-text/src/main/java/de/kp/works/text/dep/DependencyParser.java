@@ -46,7 +46,7 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("DependencyParser")
-@Description("A transformation stage that leverages an Unlabeled Dependency Parser model to extract "
+@Description("A transformation stage that leverages a Spark NLP Unlabeled Dependency Parser model to extract "
 		+ "syntactic relations between words in a text document.")
 public class DependencyParser extends TextCompute {
 
@@ -161,7 +161,7 @@ public class DependencyParser extends TextCompute {
 		public String posName;
 
 		@Description("The stage of the Part of Speech model. Supported values are 'experiment', "
-				+ "'stagging', 'production' and 'archived'. Default is 'experiment'.")
+				+ "'staging', 'production' and 'archived'. Default is 'experiment'.")
 		@Macro
 		public String posStage;
 

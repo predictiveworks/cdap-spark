@@ -46,8 +46,8 @@ import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("LDA")
-@Description("A transformation stage to map text documents on their topic vectors or most likely topic label. "
-		+ "This stage is based on two trained models, an LDA model and a Word Embedding model.")
+@Description("A transformation stage to map text documents on their topic vectors, or most likely topic label. "
+		+ "This stage is based on two trained models, an Apache Spark ML LDA model, and a Word Embedding model.")
 public class LDA extends TextCompute {
 
 	private static final long serialVersionUID = 5821757318391348559L;

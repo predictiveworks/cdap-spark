@@ -34,7 +34,22 @@
             ],
             "default": "experiment"
           }
-        },
+        }
+       ]
+    },
+    {
+      "label": "Data Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Token Field",
+          "name": "lineCol"
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
         {
           "widget-type": "textbox",
           "label": "Embedding Name",
@@ -53,22 +68,7 @@
             ],
             "default": "experiment"
           }
-        }
-       ]
-    },
-    {
-      "label": "Data Configuration",
-      "properties": [
-        {
-          "widget-type": "textbox",
-          "label": "Corpus Field",
-          "name": "lineCol"
-        }
-      ]
-    },
-    {
-      "label": "Parameter Configuration",
-      "properties": [
+        },
         {
           "widget-type": "textbox",
           "label": "Minimum Epochs",

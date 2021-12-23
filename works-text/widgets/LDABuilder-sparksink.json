@@ -34,25 +34,6 @@
             ],
             "default": "experiment"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Embedding Name",
-          "name": "embeddingName"
-        },
-         {
-          "widget-type": "select",
-          "label": "Embedding Stage",
-          "name": "embeddingStage",
-          "widget-attributes": {
-            "values": [
-              "experiment",
-              "staging",
-              "production",
-              "archived"
-            ],
-            "default": "experiment"
-          }
         }
       ]
     },
@@ -77,6 +58,25 @@
     {
       "label": "Parameter Configuration",
       "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Embedding Name",
+          "name": "embeddingName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Embedding Stage",
+          "name": "embeddingStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "staging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
+        },
         {
           "widget-type": "textbox",
           "label": "Clusters",

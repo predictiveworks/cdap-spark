@@ -46,7 +46,7 @@ import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("LemmatizerBuilder")
-@Description("A building stage for a Lemmatization model. The training corpus assigns each lemma "
+@Description("A building stage for a Spark NLP Lemmatization model. The training corpus assigns each lemma "
 		+ "to a set of term variations that all map onto this lemma.")
 public class LemmatizerBuilder extends TextSink {
 	/*

@@ -37,7 +37,7 @@ public class Names {
 			+ "Default is 'true'.";
 	
 	
-	public static final String POOLING_STRATEGY = "The pooling strategy how to merge word embedings into sentence embeddings. "
+	public static final String POOLING_STRATEGY = "The pooling strategy how to merge word embeddings into sentence embeddings. "
 			+ "Supported values are 'average' and 'sum'. Default is 'average'.";
 	
 }

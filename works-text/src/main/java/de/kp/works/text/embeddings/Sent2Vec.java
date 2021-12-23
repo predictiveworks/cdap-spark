@@ -39,7 +39,7 @@ import java.util.List;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Sent2Vec")
-@Description("An embedding stage that leverages a trained Word2Vec model to map an input "
+@Description("An embedding stage that leverages a trained Spark NLP Word2Vec Embedding model to map an input "
 		+ "text field onto an output sentence & sentence embedding field with a user-specific pooling strategy.")
 public class Sent2Vec extends TextCompute {
 

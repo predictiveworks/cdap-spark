@@ -45,7 +45,7 @@ import de.kp.works.text.util.Names;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("NorvigChecker")
 @Description("A transformation stage that checks the spelling of each normalized term in a text document, "
-		+ "leveraging a trained Norvig Spelling model. This stage adds an extra field to the input schema "
+		+ "leveraging a trained Spark NLP Norvig Spelling model. This stage adds an extra field to the input schema "
 		+ "that contains the whitespace separated set of suggested spelling corrections.")
 public class NorvigChecker extends TextCompute {
 

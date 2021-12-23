@@ -47,7 +47,7 @@ import de.kp.works.text.embeddings.Word2VecModel;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("NERBuilder")
-@Description("A building stage for an Apache Spark-NLP based NER (CRF) model.")
+@Description("A building stage for an Apache Spark NLP NER (CRF) model.")
 public class NERBuilder extends TextSink {
 
 	private static final long serialVersionUID = 4968897885133224506L;

@@ -42,8 +42,8 @@ import de.kp.works.text.NLP;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("PhraseMatcher")
-@Description("A transformation stage that leverages the Spark NLP Text Matcher to detected provided ."
-		+ "phrases in the input text document.")
+@Description("A transformation stage that leverages the Spark NLP Text Matcher to detect provided"
+		+ " phrases in the input text document.")
 public class PhraseMatcher extends TextCompute {
 
 	private static final long serialVersionUID = 2804482371714576676L;

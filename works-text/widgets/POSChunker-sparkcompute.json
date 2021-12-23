@@ -47,11 +47,6 @@
         },
         {
           "widget-type": "textbox",
-          "label": "Token Field",
-          "name": "tokenCol"
-        },
-        {
-          "widget-type": "textbox",
           "label": "Chunk Field",
           "name": "chunkCol"
         }

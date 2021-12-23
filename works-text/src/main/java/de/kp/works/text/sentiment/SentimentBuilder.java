@@ -44,7 +44,7 @@ import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("SentimentBuilder")
-@Description("A building stage for a Sentiment Analysis model based on the sentiment algorithm "
+@Description("A building stage for a Spark NLP Sentiment Analysis model based on the sentiment algorithm "
 		+ 	"introduced by Vivek Narayanan. The training corpus comprises a labeled set of sentiment "
 		+ 	"tokens.")
 public class SentimentBuilder extends TextSink {
@@ -135,7 +135,7 @@ public class SentimentBuilder extends TextSink {
 		@Macro
 		public String sentimentDelimiter;
 
-		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30")
+		@Description("The split of the dataset into train & test data, e.g. 80:20. Default is 70:30.")
 		@Macro
 		public String dataSplit;
 

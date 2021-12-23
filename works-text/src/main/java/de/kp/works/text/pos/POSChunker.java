@@ -46,7 +46,7 @@ import de.kp.works.text.util.Names;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSChunker")
 @Description("A transformation stage that extracts meaningful phrases from text documents. Phrase extraction "
-		+ "is based on patterns of part-of-speech tags. This stage requires a trained Part-of-Speech model.")
+		+ "is based on patterns of part-of-speech tags. This stage requires a trained Spark NLP Part-of-Speech model.")
 public class POSChunker extends TextCompute {
 	
 	private static final long serialVersionUID = 4211653733506144147L;

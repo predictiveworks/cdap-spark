@@ -63,7 +63,7 @@ import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("DependencyBuilder")
-@Description("A building stage for an Apache Spark-NLP based Unlabeled Dependency Parser model.")
+@Description("A building stage for a Spark NLP Unlabeled Dependency Parser model.")
 public class DependencyBuilder extends TextSink {
 
 	private static final long serialVersionUID = 3384231592795011247L;

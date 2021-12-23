@@ -45,7 +45,7 @@ import de.kp.works.text.config.ModelConfig;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("POSBuilder")
-@Description("A building stage for a Part of Speech model.")
+@Description("A building stage for a Spark NLP Part of Speech model.")
 public class POSBuilder extends TextSink {
 
 	private static final long serialVersionUID = 1L;

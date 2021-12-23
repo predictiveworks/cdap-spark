@@ -40,7 +40,7 @@ import de.kp.works.core.text.TextCompute;
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Topic")
 @Description("A transformation stage to either determine the topic-distribution per document "
-		+ "or term-distribution per topic. This stage is based on a trained Topic model.")
+		+ "or term-distribution per topic. This stage is based on a trained Apache Spark ML Topic model.")
 public class Topic extends TextCompute {
 
 	private static final long serialVersionUID = 6494628611665323901L;

@@ -44,7 +44,7 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Lemmatizer")
-@Description("A transformation stage requires a trained Lemmatization model. It extracts "
+@Description("A transformation stage requires a trained Spark NLP Lemmatization model. It extracts "
 		+ "normalized terms from a text document and maps each term onto its trained lemma. "
 		+ "This stage adds an extra field to the input schema that contains the whitespace "
 		+ "separated set of lemmas.")

@@ -2,8 +2,8 @@
 # Word Dependency Builder
 
 ## Description
-
-This machine learning plugin represents the building stage
+This machine learning plugin represents the building stage for a Spark NLP "Unlabeled Dependency 
+Parser model".
 
 ## Configuration
 **Reference Name**: Name used to uniquely identify this plugin for lineage, annotating metadata, etc.
@@ -15,5 +15,10 @@ This machine learning plugin represents the building stage
 and 'archived'. Default is 'experiment'.
 
 ### Data Configuration
+**Corpus Field**: The name of the field in the input schema that contains the annotated corpus document.
 
 ### Parameter Configuration
+**Corpus Format**: The format of the training corpus. Supported values are 'conll-u' (CoNLL-U corpus) 
+and 'treebank' (TreeBank corpus). Default is 'conll-u'.
+
+**Iterations**: The number of iterations to train the model. Default is 10.

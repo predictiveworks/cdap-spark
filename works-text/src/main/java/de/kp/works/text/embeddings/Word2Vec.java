@@ -42,8 +42,8 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("Word2Vec")
-@Description("An embedding stage that leverages a trained Word2Vec model to map an input "
-		+ "text field onto an output token & word embedding field.")
+@Description("An embedding stage that leverages a trained Spark NLP Word2Vec Embedding model"
+		+ " to map an input text field onto an output token & word embedding field.")
 public class Word2Vec extends TextCompute {
 
 	private static final long serialVersionUID = 1849637381439375304L;

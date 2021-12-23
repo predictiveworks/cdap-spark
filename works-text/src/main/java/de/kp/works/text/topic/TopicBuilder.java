@@ -45,7 +45,7 @@ import de.kp.works.core.text.TextSink;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("TopicBuilder")
-@Description("A building stage for a Latent Dirichlet Allocation (LDA) model. In contrast to "
+@Description("A building stage for an Apache Spark ML Latent Dirichlet Allocation (LDA) model. In contrast to "
 		+ "the LDABuilder plugin, this stage leverages an implicit document vectorization based "
 		+ "on the term counts of the provided corpus. The trained model can be used to either "
 		+ "determine the topic distribution per document or term-distribution per topic.")
@@ -153,7 +153,7 @@ public class TopicBuilder extends TextSink {
 		@Macro
 		public Integer k;
 
-		@Description("The (maximum) number of iterations the algorithm has to execute. Default value: 20.")
+		@Description("The (maximum) number of iterations the algorithm has to execute. Default value is 20.")
 		@Macro
 		public Integer maxIter;
 

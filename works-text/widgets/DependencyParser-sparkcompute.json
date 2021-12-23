@@ -34,25 +34,6 @@
             ],
             "default": "experiment"
           }
-        },
-        {
-          "widget-type": "textbox",
-          "label": "Part-of-Speech Name",
-          "name": "posName"
-        },
-        {
-          "widget-type": "select",
-          "label": "Part-of-Speech Stage",
-          "name": "posStage",
-          "widget-attributes": {
-            "values": [
-              "experiment",
-              "staging",
-              "production",
-              "archived"
-            ],
-            "default": "experiment"
-          }
         }
       ]
     },
@@ -73,6 +54,30 @@
           "widget-type": "textbox",
           "label": "Dependency Field",
           "name": "dependencyCol"
+        }
+      ]
+    },
+    {
+      "label": "Parameter Configuration",
+      "properties": [
+        {
+          "widget-type": "textbox",
+          "label": "Part-of-Speech Name",
+          "name": "posName"
+        },
+        {
+          "widget-type": "select",
+          "label": "Part-of-Speech Stage",
+          "name": "posStage",
+          "widget-attributes": {
+            "values": [
+              "experiment",
+              "staging",
+              "production",
+              "archived"
+            ],
+            "default": "experiment"
+          }
         }
       ]
     }

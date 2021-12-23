@@ -44,7 +44,7 @@ import de.kp.works.text.util.Names;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("POSTagger")
-@Description("A transformation stage that requires a trained Part-of-Speech model. This stage appends "
+@Description("A transformation stage that requires a trained Spark NLP Part-of-Speech model. This stage appends "
 		+ "two fields to the input schema, one that contains the extracted terms per document, and "
 		+ "another that contains their POS tags.")
 public class POSTagger extends TextCompute {
