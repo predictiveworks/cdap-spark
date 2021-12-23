@@ -38,7 +38,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("ChiSquaredSelector")
-@Description("A transformation stage that leverages a trained Apache Spark MLChi-Squared Selector model to select "
+@Description("A transformation stage that leverages a trained Apache Spark ML Chi-Squared Selector model to select "
 		+ "categorical features to use for predicting categorical labels.")
 public class ChiSquaredSelector extends FeatureCompute {
 

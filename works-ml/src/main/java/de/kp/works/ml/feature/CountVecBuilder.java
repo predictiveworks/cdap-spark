@@ -42,7 +42,7 @@ import java.util.Map;
 
 @Plugin(type = SparkSink.PLUGIN_TYPE)
 @Name("CountVecBuilder")
-@Description("A building stage for an Apache Spark ML CountVectorizer model.")
+@Description("A building stage for an Apache Spark ML Count Vectorizer model.")
 public class CountVecBuilder extends FeatureSink {
 
 	private static final long serialVersionUID = 2389361295065144103L;

@@ -38,7 +38,7 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("BucketedLSH")
-@Description("A transformation stage that leverages a trained Apache Spark MLBucketed Random Projection LSH model "
+@Description("A transformation stage that leverages a trained Apache Spark ML Bucketed Random Projection LSH model "
 		+ "to project feature vectors onto hash value vectors. Similar feature vectors are mapped onto "
 		+ "the same hash value vector.")
 public class BucketedLSH extends FeatureCompute {

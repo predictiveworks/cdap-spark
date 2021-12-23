@@ -38,8 +38,8 @@ import de.kp.works.core.recording.MLUtils;
 
 @Plugin(type = SparkCompute.PLUGIN_TYPE)
 @Name("CountVec")
-@Description("A transformation stage that leverages the Apache Spark ML CountVectorizer."
-		+ " This stage requires a trained CountVectorizer model.")
+@Description("A transformation stage that leverages the Apache Spark ML Count Vectorizer."
+		+ " This stage requires a trained Count Vectorizer model.")
 public class CountVec extends FeatureCompute {
 
 	private static final long serialVersionUID = -6547859144514311308L;
