@@ -2,6 +2,14 @@
   "metadata": {"spec-version": "1.5"},
 
   "display-name": "RF Regressor",
+
+  "icon": {
+    "arguments": {
+      "data": ""
+    },
+    "type": "inline"
+  },
+
   "configuration-groups": [
     {
       "label": "Plugin Configuration",

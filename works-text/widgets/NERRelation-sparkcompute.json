@@ -2,7 +2,15 @@
   "metadata": {"spec-version": "1.5"},
 
   "display-name": "NER Relation",
-   "configuration-groups": [
+
+  "icon": {
+    "arguments": {
+      "data": ""
+    },
+    "type": "inline"
+  },
+
+  "configuration-groups": [
      {
        "label": "Plugin Configuration",
        "properties": [
